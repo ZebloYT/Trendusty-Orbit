@@ -1,0 +1,4501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Search Engine Optimization (SEO) -->
+  <meta name="description" content="Trendusty Orbit provides real-time global monitoring, OSINT intelligence, and 3D satellite tracking in a unified Common Operating Picture (COP).">
+  <meta name="keywords" content="OSINT, global monitoring, satellite tracking, real-time intelligence, common operating picture, cyber security, aviation tracking, maritime AIS">
+  <meta name="author" content="Trendusty">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Trendusty Orbit — Real-Time Global Monitoring & OSINT Intelligence">
+  <meta property="og:description" content="Deploy a unified 3D Common Operating Picture (COP) merging aviation, maritime AIS, satellites, and cyber threats with zero data leakage.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/bilawalsidhu/gods-eye-view/main/assets/earth/earth-satellite.jpg">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Trendusty Orbit — Global Intelligence COP">
+  <meta name="twitter:description" content="Experience real-time OSINT intelligence, 3D satellite tracking, and global monitoring in your browser.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/bilawalsidhu/gods-eye-view/main/assets/earth/earth-satellite.jpg">
+
+  <!-- International SEO (Hreflang) -->
+  <link rel="alternate" hreflang="en" href="index-en.html" />
+  <link rel="alternate" hreflang="es" href="index-es.html" />
+  <link rel="alternate" hreflang="fr" href="index-fr.html" />
+  <link rel="alternate" hreflang="ar" href="index-ar.html" />
+  <link rel="alternate" hreflang="x-default" href="index.html" />
+
+  <title>Trendusty Orbit — Real-Time Global Monitoring & OSINT Intelligence</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090e;
+      --bg-surface: #0c1017;
+      --bg-card: rgba(13, 18, 28, 0.75);
+      --glass-border: rgba(0, 245, 184, 0.16);
+      --glass-border-hover: rgba(0, 245, 184, 0.45);
+      --accent: #00f5b8;
+      --accent-dim: rgba(0, 245, 184, 0.12);
+      --accent-glow: rgba(0, 245, 184, 0.4);
+      --accent-blue: #00b4d8;
+      --text: #f0fdf4;
+      --text-muted: rgba(240, 253, 244, 0.65);
+      --text-dim: rgba(240, 253, 244, 0.38);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 245, 184, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 10% 30%, rgba(0, 180, 216, 0.05) 0%, transparent 40%),
+        linear-gradient(to bottom, #07090e, #05070a);
+      background-attachment: fixed;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-size: 48px 48px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Top Navigation */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: all 0.3s ease;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .brand-logo-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      background: var(--accent-dim);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .brand-logo-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent);
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .lang-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .lang-select option {
+      background: var(--bg-surface);
+      color: var(--text);
+    }
+
+    .btn-ghost {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--glass-border);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      padding: 10px 22px;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #05070a;
+      box-shadow: 0 0 20px var(--accent-glow);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 245, 184, 0.6);
+      background: #33ffc7;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      padding: 10px 22px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding-top: 170px;
+      padding-bottom: 90px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      border-radius: 100px;
+      background: var(--accent-dim);
+      border: 1px solid var(--glass-border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 28px;
+      animation: pulse-glow 3s infinite;
+    }
+
+    .radar-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 10px rgba(0, 245, 184, 0.2); }
+      50% { box-shadow: 0 0 25px rgba(0, 245, 184, 0.4); }
+    }
+
+    .hero h1 {
+      font-size: 64px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #ffffff 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 20px;
+      max-width: 840px;
+      margin: 0 auto 36px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .hero-cta {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .stat-item {
+      text-align: center;
+      position: relative;
+    }
+
+    .stat-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 15%;
+      height: 70%;
+      width: 1px;
+      background: var(--glass-border);
+    }
+
+    .stat-number {
+      font-family: var(--font-mono);
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--accent);
+      text-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+
+    /* Interface Simulator Showcase */
+    .showcase {
+      margin-top: 80px;
+      margin-bottom: 120px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: block;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 42px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 18px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-desc {
+      text-align: center;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 48px;
+      font-size: 17px;
+    }
+
+    .interface-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 245, 184, 0.1);
+      position: relative;
+    }
+
+    .interface-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(10, 14, 22, 0.95);
+      border-bottom: 1px solid var(--glass-border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .window-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .window-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .interface-screen {
+      height: 520px;
+      background: 
+        radial-gradient(circle at center, rgba(0, 245, 184, 0.05) 0%, transparent 70%),
+        linear-gradient(rgba(0, 245, 184, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 184, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Radar sweep animation */
+    .radar-sweep {
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 245, 184, 0.25);
+      box-shadow: 0 0 40px rgba(0, 245, 184, 0.1);
+    }
+
+    .radar-sweep::before {
+      content: "";
+      position: absolute;
+      inset: 40px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 245, 184, 0.2);
+    }
+
+    .radar-sweep::after {
+      content: "";
+      position: absolute;
+      inset: 100px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 245, 184, 0.2);
+    }
+
+    .sweep-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 220px;
+      height: 220px;
+      transform-origin: 0 0;
+      background: conic-gradient(from 0deg, rgba(0, 245, 184, 0.35) 0deg, transparent 60deg);
+      border-radius: 100% 0 0 0;
+      animation: sweep 4s linear infinite;
+    }
+
+    @keyframes sweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Target blips */
+    .target-blip {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+      animation: blip 2s infinite ease-in-out;
+    }
+
+    @keyframes blip {
+      0%, 100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.4); }
+    }
+
+    .hud-overlay {
+      position: absolute;
+      inset: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      pointer-events: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .hud-telemetry {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .telemetry-box {
+      background: rgba(10, 14, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      padding: 12px 16px;
+      border-radius: 8px;
+      line-height: 1.8;
+      backdrop-filter: blur(8px);
+    }
+
+    .telemetry-val {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .cctv-preview-box {
+      width: 190px;
+      height: 120px;
+      background: #000;
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cctv-preview-box::before {
+      content: "LIVE FEED // CAM-409";
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      font-size: 9px;
+      color: #ff4757;
+      letter-spacing: 1px;
+    }
+
+    .cctv-scanline {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(0, 245, 184, 0.05) 0px, transparent 2px, transparent 4px);
+    }
+
+    /* Why Section */
+    .why-section {
+      padding: 90px 0;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 32px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      border-color: var(--glass-border-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 245, 184, 0.1);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--accent-dim);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--accent);
+      font-size: 22px;
+    }
+
+    .feature-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Capabilities 3-Col Grid */
+    .capabilities-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .capability-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .capability-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 245, 184, 0.12);
+    }
+
+    .cap-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .cap-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      background: var(--accent-dim);
+      border-radius: 4px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Steps Section */
+    .steps-section {
+      padding: 90px 0;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .step-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 32px;
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--accent);
+      opacity: 0.3;
+      margin-bottom: 12px;
+    }
+
+    .step-card h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* Live Feeds Marquee */
+    .feeds-section {
+      padding: 60px 0;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(10, 14, 22, 0.5);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .feeds-title {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 16px;
+      width: max-content;
+      animation: marquee 30s linear infinite;
+    }
+
+    .feed-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .feed-pill span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* Live COP Preview Section (No background app required) */
+    .live-preview-section {
+      margin: 90px 0 130px;
+    }
+
+    .preview-panel {
+      background: #06090f;
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0, 245, 184, 0.15), 0 30px 60px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    .preview-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: rgba(10, 15, 24, 0.95);
+      border-bottom: 1px solid var(--glass-border);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .cop-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: 1.5px;
+    }
+
+    .status-pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      animation: blip 1.5s infinite;
+    }
+
+    .cop-coords {
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .preview-canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 620px;
+      background: #030508;
+      overflow: hidden;
+      user-select: none;
+      cursor: grab;
+    }
+
+    .preview-canvas-wrapper:active {
+      cursor: grabbing;
+    }
+
+    #cop-webgl-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      pointer-events: none;
+    }
+
+    #live-cop-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hud-card {
+      position: absolute;
+      background: rgba(8, 12, 20, 0.88);
+      border: 1px solid var(--glass-border);
+      padding: 14px 18px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      z-index: 10;
+      line-height: 1.8;
+      pointer-events: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .hud-top-left {
+      top: 24px;
+      left: 24px;
+    }
+
+    .hud-top-right {
+      top: 24px;
+      right: 24px;
+    }
+
+    .hud-bottom-left {
+      bottom: 74px;
+      left: 24px;
+    }
+
+    .hud-bottom-right {
+      bottom: 74px;
+      right: 24px;
+      text-align: right;
+    }
+
+    .hud-card-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 4px;
+    }
+
+    .val-accent {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .val-warning {
+      color: #ff9f43;
+      font-weight: 600;
+    }
+
+    .cctv-recon-window {
+      width: 210px;
+      padding: 10px;
+      pointer-events: auto;
+    }
+
+    .cctv-header-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: #ff4757;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .cctv-red-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ff4757;
+      box-shadow: 0 0 6px #ff4757;
+      animation: blip 1s infinite;
+    }
+
+    .cctv-viewport {
+      position: relative;
+      width: 100%;
+      height: 105px;
+      background: #000;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #cctv-stream-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    
+
+    .cctv-cam-id {
+      position: absolute;
+      bottom: 4px;
+      left: 6px;
+      font-size: 8px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    .cop-bottom-toolbar {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(10, 15, 24, 0.92);
+      border: 1px solid var(--glass-border);
+      padding: 6px 14px;
+      border-radius: 100px;
+      backdrop-filter: blur(12px);
+      z-index: 20;
+    }
+
+    .cop-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cop-btn.active, .cop-btn:hover {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .mode-toggles {
+      display: flex;
+      gap: 4px;
+      margin-left: 10px;
+      border-left: 1px solid var(--glass-border);
+      padding-left: 10px;
+    }
+
+    .cop-mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .cop-mode-btn.active {
+      background: var(--accent);
+      color: #05070a;
+    }
+
+    .preview-panel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(8, 12, 18, 0.95);
+      border-top: 1px solid var(--glass-border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--glass-border);
+      padding: 60px 0 36px;
+      background: #05070a;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-col h4 {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 10px;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent);
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 28px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 42px; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .cards-grid, .capabilities-grid, .steps-grid, .footer-grid { grid-template-columns: 1fr; }
+      .stat-item:not(:last-child)::after { display: none; }
+      .nav-links { display: none; }
+    }
+  
+    /* Multi-language & RTL Support */
+    html[dir="rtl"] {
+      direction: rtl;
+      text-align: right;
+    }
+    html[dir="rtl"] .nav-inner,
+    html[dir="rtl"] .nav-links,
+    html[dir="rtl"] .nav-actions,
+    html[dir="rtl"] .hero-cta,
+    html[dir="rtl"] .footer-grid,
+    html[dir="rtl"] .footer-inner {
+      direction: rtl;
+    }
+    html[dir="rtl"] .hero-badge {
+      flex-direction: row-reverse;
+    }
+    html[dir="rtl"] .footer-col ul {
+      padding-right: 0;
+    }
+    html[dir="rtl"] .hud-top-left {
+      left: auto;
+      right: 24px;
+      text-align: right;
+    }
+    html[dir="rtl"] .hud-top-right {
+      right: auto;
+      left: 24px;
+    }
+    html[dir="rtl"] .hud-bottom-left {
+      left: auto;
+      right: 24px;
+      text-align: right;
+    }
+    html[dir="rtl"] .hud-bottom-right {
+      right: auto;
+      left: 24px;
+      text-align: left;
+    }
+    html[dir="rtl"] .cop-coords {
+      direction: ltr;
+      display: inline-block;
+    }
+    html[dir="rtl"] .spec-row {
+      direction: rtl;
+      text-align: right;
+    }
+
+  
+    /* =========================================================
+       ELITE CYBER ANIMATIONS & INTERACTIVE MOTION
+       ========================================================= */
+
+    
+
+    /* Radar Sonar Wave Pulse */
+    .radar-dot {
+      position: relative;
+    }
+
+    .radar-dot::before,
+    .radar-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: inherit;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: sonarWave 2.4s infinite cubic-bezier(0.2, 0.8, 0.4, 1);
+    }
+
+    .radar-dot::after {
+      animation-delay: 1.2s;
+    }
+
+    @keyframes sonarWave {
+      0% {
+        width: 100%;
+        height: 100%;
+        opacity: 0.9;
+      }
+      100% {
+        width: 380%;
+        height: 380%;
+        opacity: 0;
+      }
+    }
+
+    /* Shimmer Light-Sweep on CTA buttons */
+    .btn-primary, .btn-download {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after, .btn-download::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(
+        60deg,
+        transparent,
+        rgba(255, 255, 255, 0.32),
+        transparent
+      );
+      transform: rotate(25deg);
+      animation: btnShimmer 4s infinite ease-in-out;
+    }
+
+    @keyframes btnShimmer {
+      0%, 70% { left: -60%; }
+      100% { left: 140%; }
+    }
+
+    /* Scroll Reveal Animations */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(32px);
+      filter: blur(4px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform, filter;
+    }
+
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .stagger-1 { transition-delay: 0.08s; }
+    .stagger-2 { transition-delay: 0.16s; }
+    .stagger-3 { transition-delay: 0.24s; }
+    .stagger-4 { transition-delay: 0.32s; }
+
+    /* Interactive 3D Card Hover Glow & Tilt */
+    .feature-card, .capability-card, .step-card, .download-card {
+      position: relative;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.35s ease,
+                  box-shadow 0.35s ease;
+      will-change: transform;
+    }
+
+    .feature-card:hover, .capability-card:hover, .step-card:hover {
+      transform: translateY(-6px) scale(1.015);
+      border-color: rgba(0, 245, 184, 0.45);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 245, 184, 0.12);
+    }
+
+    /* Ambient Cyber Scanline Overlay */
+    .cyber-scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0, 245, 184, 0.015) 50%,
+        rgba(0, 245, 184, 0.015)
+      );
+      background-size: 100% 4px;
+    }
+
+    /* Animated Floating Badges */
+    .hero-badge, .release-badge {
+      animation: floatBadge 4s ease-in-out infinite;
+    }
+
+    @keyframes floatBadge {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Text Glow Pulse on Headers */
+    .gradient-text {
+      background-size: 200% auto;
+      animation: gradientFlow 6s linear infinite;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .reveal-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+    }
+
+  
+    .cop-zoom-controls {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 25;
+    }
+    .cop-zoom-btn {
+      width: 32px;
+      height: 32px;
+      background: rgba(10, 15, 24, 0.9);
+      border: 1px solid var(--glass-border);
+      color: var(--accent);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .cop-zoom-btn:hover {
+      background: var(--accent);
+      color: #05070a;
+      box-shadow: 0 0 12px var(--accent);
+    }
+    .hud-action-btn {
+      background: rgba(0, 245, 184, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: all 0.2s;
+    }
+    .hud-action-btn.active, .hud-action-btn:hover {
+      background: var(--accent);
+      color: #030508;
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .cctv-cam-selector {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .cctv-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cctv-btn.active, .cctv-btn:hover {
+      background: rgba(255, 71, 87, 0.25);
+      border-color: #ff4757;
+      color: #ff4757;
+    }
+    
+    
+    
+    .cctv-recon-window {
+      pointer-events: auto;
+    }
+    .cctv-viewport {
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .cctv-viewport:hover {
+      border-color: var(--accent);
+    }
+
+  
+    /* Fullscreen Mode Styling */
+    .cop-fullscreen-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cop-fullscreen-btn:hover {
+      background: var(--accent);
+      color: #030508;
+      box-shadow: 0 0 12px var(--accent);
+    }
+    .preview-panel.is-fullscreen {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      z-index: 999999 !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      background: #030508 !important;
+    }
+    .preview-panel.is-fullscreen .preview-canvas-wrapper {
+      height: calc(100vh - 104px) !important;
+    }
+
+    /* Zoom Indicator */
+    .cop-zoom-controls {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      z-index: 25;
+    }
+    .cop-zoom-indicator {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--accent);
+      background: rgba(6, 11, 20, 0.9);
+      border: 1px solid var(--glass-border);
+      padding: 2px 4px;
+      border-radius: 4px;
+      width: 36px;
+      text-align: center;
+    }
+    .cop-zoom-btn {
+      width: 32px;
+      height: 32px;
+      background: rgba(10, 15, 24, 0.9);
+      border: 1px solid var(--glass-border);
+      color: var(--accent);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .cop-zoom-btn:hover {
+      background: var(--accent);
+      color: #05070a;
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    /* Right-Click Tactical Intelligence Dossier Modal */
+    .intel-dossier-popup {
+      position: absolute;
+      background: rgba(6, 11, 20, 0.96);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #fff;
+      z-index: 100;
+      min-width: 330px;
+      max-width: 420px;
+      box-shadow: 0 0 35px rgba(0, 245, 184, 0.25), 0 20px 50px rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(16px);
+      pointer-events: auto;
+      display: none;
+      animation: popupOpen 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes popupOpen {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .dossier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 245, 184, 0.25);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .dossier-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(0, 245, 184, 0.15);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .dossier-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 4px;
+    }
+    .dossier-close:hover {
+      color: #ff4757;
+    }
+    .dossier-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      margin-bottom: 14px;
+      font-size: 11px;
+    }
+    .dossier-item span {
+      display: block;
+      color: var(--text-dim);
+      font-size: 9px;
+      letter-spacing: 0.5px;
+      margin-bottom: 1px;
+    }
+    .dossier-item strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .dossier-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .dossier-btn {
+      flex: 1;
+      background: rgba(0, 245, 184, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 7px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .dossier-btn:hover {
+      background: var(--accent);
+      color: #030508;
+    }
+
+  
+    /* Real Earth vs Digital Mode Corner Toggle Button */
+    .cop-earth-mode-btn {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(7, 14, 26, 0.94);
+      border: 1.5px solid #00d2ff;
+      color: #00d2ff;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      z-index: 9999 !important;
+      pointer-events: auto !important;
+      box-shadow: 0 4px 20px rgba(0, 210, 255, 0.35);
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+    .cop-earth-mode-btn:hover {
+      background: #00d2ff;
+      color: #030508;
+      box-shadow: 0 0 25px rgba(0, 210, 255, 0.65);
+      transform: translateY(-2px);
+    }
+    .cop-earth-mode-btn.is-real {
+      border-color: #38bdf8;
+      background: rgba(14, 165, 233, 0.25);
+      color: #e0f2fe;
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.5);
+    }
+    .earth-mode-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+    /* Shift HUD top-left down slightly to make room for the corner toggle */
+    .hud-top-left {
+      top: 64px !important;
+      left: 24px;
+    }
+    html[dir="rtl"] .cop-earth-mode-btn {
+      left: auto;
+      right: 24px;
+      flex-direction: row-reverse;
+    }
+    html[dir="rtl"] .hud-top-left {
+      left: auto;
+      right: 24px;
+    }
+
+  
+    /* Tactical Context Menu (Right-Click Shortcuts UI) */
+    .tactical-context-menu, .tactical-context-menu * {
+      cursor: none !important;
+    }
+    .tactical-context-menu {
+      position: fixed;
+      z-index: 2147483640 !important;
+      width: 285px;
+      background: rgba(6, 12, 22, 0.97);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 245, 184, 0.22);
+      backdrop-filter: blur(20px);
+      font-family: var(--font-sans);
+      user-select: none;
+      animation: tcmAnim 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-origin: top left;
+      display: none;
+    }
+
+    @keyframes tcmAnim {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .tcm-header {
+      padding: 6px 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 6px;
+    }
+    .tcm-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: #00f5b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+    }
+    .tcm-sub {
+      font-size: 9px;
+      color: #64748b;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+    }
+
+    .tcm-section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      padding: 6px 10px 3px;
+      letter-spacing: 0.8px;
+    }
+
+    .tcm-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 7px;
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: none !important;
+      text-align: left;
+      transition: all 0.15s ease;
+      box-sizing: border-box;
+    }
+    .tcm-item:hover {
+      background: rgba(0, 245, 184, 0.14);
+      color: #00f5b8;
+      box-shadow: inset 0 0 10px rgba(0, 245, 184, 0.12);
+      transform: translateX(3px);
+    }
+    .tcm-icon {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .tcm-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tcm-key {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: #64748b;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .tcm-item:hover .tcm-key {
+      color: #00f5b8;
+      border-color: rgba(0, 245, 184, 0.35);
+      background: rgba(0, 245, 184, 0.12);
+    }
+    .tcm-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 5px 0;
+    }
+
+
+    .mouse-trail-dot {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: #00f5b8;
+      border-radius: 50%;
+      pointer-events: none !important;
+      z-index: 2147483645 !important;
+      opacity: 0.8;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      box-shadow: 0 0 6px #00f5b8;
+    }
+
+  </style>
+
+    
+<style id="custom-cursor-style">
+    /* ==========================================================================
+       TACTICAL ORBIT CURSOR - ADVANCED STATES
+       ========================================================================== */
+    html, body, *, *::before, *::after { cursor: none !important; }
+    a, button, input, textarea, select, canvas, [role="button"], label { cursor: none !important; }
+
+    /* Precision Center Dot */
+    .orbit-cursor-dot {
+      position: fixed; top: 0; left: 0;
+      width: 5px; height: 5px;
+      background: #00f5b8; border-radius: 50%;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 8px rgba(0, 245, 184, 0.9), 0 0 2px #ffffff;
+      will-change: transform, width, height;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease, opacity 0.15s ease, box-shadow 0.3s ease, transform 0.08s ease;
+    }
+
+    /* Outer Ring */
+    .orbit-cursor-ring {
+      position: fixed; top: 0; left: 0;
+      width: 56px; height: 56px;
+      border: 1px solid rgba(0, 245, 184, 0.5);
+      background: rgba(0, 245, 184, 0.03);
+      border-radius: 50%;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 18px rgba(0, 245, 184, 0.15), inset 0 0 10px rgba(0, 245, 184, 0.05);
+      will-change: transform, width, height;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease, border-width 0.3s ease, box-shadow 0.3s ease, opacity 0.2s ease, border-radius 0.3s ease;
+    }
+
+    /* Loading Spinner Pseudo-element */
+    .orbit-cursor-ring::after {
+      content: ""; position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      border-radius: 50%; border: 2px solid transparent;
+      transition: border-top-color 0.3s ease, border-right-color 0.3s ease;
+    }
+    @keyframes orbit-spin { 100% { transform: rotate(360deg); } }
+
+    /* --- STATES --- */
+
+    /* HOVER (Clickable) */
+    .orbit-cursor-ring.is-hovering {
+      width: 66px; height: 66px;
+      border: 1.5px solid rgba(0, 245, 184, 0.65);
+      background: rgba(0, 245, 184, 0.08);
+      box-shadow: 0 0 26px rgba(0, 245, 184, 0.4), inset 0 0 14px rgba(0, 245, 184, 0.12);
+    }
+    .orbit-cursor-dot.is-hovering {
+      background: #ffffff;
+      box-shadow: 0 0 12px #00f5b8, 0 0 4px #ffffff;
+      width: 8px; height: 8px;
+    }
+
+    /* TEXT (I-beam) */
+    .orbit-cursor-ring.is-text {
+      width: 24px; height: 44px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 245, 184, 0.4);
+      background: transparent; box-shadow: none;
+    }
+    .orbit-cursor-dot.is-text {
+      width: 2px; height: 24px;
+      border-radius: 1px;
+      background: #00f5b8; box-shadow: 0 0 8px #00f5b8;
+    }
+
+    /* LOADING (Wait) */
+    .orbit-cursor-ring.is-loading {
+      width: 44px; height: 44px;
+      border-color: rgba(0, 245, 184, 0.1);
+      background: transparent; box-shadow: none;
+    }
+    .orbit-cursor-ring.is-loading::after {
+      border-top-color: #00f5b8; border-right-color: rgba(0, 245, 184, 0.4);
+      animation: orbit-spin 0.8s linear infinite;
+    }
+    .orbit-cursor-dot.is-loading {
+      background: #00d2ff; box-shadow: 0 0 10px #00d2ff;
+    }
+
+    /* ACTIVE (Press/Click) */
+    .orbit-cursor-ring.is-active {
+      width: 28px; height: 28px;
+      border: 1.5px solid #00d2ff;
+      background: rgba(0, 210, 255, 0.25);
+      box-shadow: 0 0 24px rgba(0, 210, 255, 0.8);
+    }
+    .orbit-cursor-dot.is-active {
+      background: #00d2ff; box-shadow: 0 0 12px #00d2ff;
+      width: 6px; height: 6px;
+    }
+
+    /* Touch screen fallback */
+    @media (pointer: coarse) {
+      html, body, *, *::before, *::after { cursor: auto !important; }
+      .orbit-cursor-dot, .orbit-cursor-ring { display: none !important; }
+    }
+
+    .mouse-trail-dot {
+      position: fixed; width: 4px; height: 4px;
+      background: #00f5b8; border-radius: 50%;
+      pointer-events: none !important;
+      z-index: 2147483645 !important;
+      opacity: 0.8;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      box-shadow: 0 0 6px #00f5b8;
+    }
+</style>
+</head>
+<body>
+
+  <!-- Tactical Right-Click Shortcuts Menu UI -->
+  <div class="tactical-context-menu" id="tactical-context-menu" aria-hidden="true">
+    <div class="tcm-header">
+      <div class="tcm-badge"><span class="status-pulse-dot" style="margin: 0;"></span> ORBIT COMMAND MATRIX</div>
+      <span class="tcm-sub">GEOSPATIAL SHORTCUTS</span>
+    </div>
+
+    <div class="tcm-section-label">PRIMARY ACTIONS</div>
+    
+    <a href="../windows/download.html" class="tcm-item" target="_blank" onclick="closeContextMenu()">
+      <span class="tcm-icon">⬇</span>
+      <span class="tcm-text">Download Orbit Setup</span>
+      <span class="tcm-key">Setup.exe</span>
+    </a>
+
+    <a href="#interface" class="tcm-item" onclick="closeContextMenu()">
+      <span class="tcm-icon">🛰</span>
+      <span class="tcm-text">Jump to Live Earth COP</span>
+      <span class="tcm-key">#preview</span>
+    </a>
+
+    <div class="tcm-divider"></div>
+    <div class="tcm-section-label">OPERATIONS & SENSORS</div>
+
+    <button class="tcm-item" onclick="tcmAction('earthMode')">
+      <span class="tcm-icon">🌍</span>
+      <span class="tcm-text">Toggle Google Earth Satellite View</span>
+      <span class="tcm-key">SPACE</span>
+    </button>
+
+    <button class="tcm-item" onclick="tcmAction('invertDrag')">
+      <span class="tcm-icon">🔄</span>
+      <span class="tcm-text">Invert Drag Direction</span>
+      <span class="tcm-key">I</span>
+    </button>
+
+    <button class="tcm-item" onclick="tcmAction('fullscreen')">
+      <span class="tcm-icon">⛶</span>
+      <span class="tcm-text">Toggle Fullscreen COP</span>
+      <span class="tcm-key">F11</span>
+    </button>
+
+    <button class="tcm-item" onclick="tcmAction('lockTarget')">
+      <span class="tcm-icon">🎯</span>
+      <span class="tcm-text">Lock Radar Target (UAL-482)</span>
+      <span class="tcm-key">LOCK</span>
+    </button>
+
+    <button class="tcm-item" onclick="tcmAction('cycleCctv')">
+      <span class="tcm-icon">📷</span>
+      <span class="tcm-text">Cycle CCTV Recon Camera</span>
+      <span class="tcm-key">CAM</span>
+    </button>
+
+    <button class="tcm-item" onclick="tcmAction('resetView')">
+      <span class="tcm-icon">⟲</span>
+      <span class="tcm-text">Reset View & Orientation</span>
+      <span class="tcm-key">RESET</span>
+    </button>
+
+    <div class="tcm-divider"></div>
+    <div class="tcm-section-label">QUICK NAVIGATION</div>
+
+    <a href="#features" class="tcm-item" onclick="closeContextMenu()">
+      <span class="tcm-icon">🌐</span>
+      <span class="tcm-text">Why Trendusty Orbit</span>
+      <span class="tcm-key">01</span>
+    </a>
+
+    <a href="#capabilities" class="tcm-item" onclick="closeContextMenu()">
+      <span class="tcm-icon">⚡</span>
+      <span class="tcm-text">Sensors & Capabilities</span>
+      <span class="tcm-key">02</span>
+    </a>
+
+    <a href="#feeds" class="tcm-item" onclick="closeContextMenu()">
+      <span class="tcm-icon">📡</span>
+      <span class="tcm-text">Live Intelligence Feeds</span>
+      <span class="tcm-key">03</span>
+    </a>
+
+    <button class="tcm-item" onclick="tcmAction('copyCoords')">
+      <span class="tcm-icon">📋</span>
+      <span class="tcm-text" id="tcm-copy-coords-text">Copy Telemetry Coordinates</span>
+      <span class="tcm-key">LAT/LON</span>
+    </button>
+  </div>
+
+  <!-- Tactical Orbit Mouse Cursor (Dot + Bigger Lighter Follower Ring) -->
+  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
+
+    
+
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-inner">
+      <a href="#" class="brand">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        </div>
+        TRENDUSTY <span>ORBIT</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features" data-i18n="nav_features">Features</a>
+        <a href="#interface" data-i18n="nav_interface">Interface</a>
+        <a href="#capabilities" data-i18n="nav_capabilities">Capabilities</a>
+        <a href="#architecture" data-i18n="nav_how">How It Works</a>
+        <a href="#feeds" data-i18n="nav_feeds">Live Feeds</a>
+      </nav>
+
+      <div class="nav-actions">
+        <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)">
+          <option value="en">EN English</option>
+          <option value="fr">FR Français</option>
+          <option value="es">ES Español</option>
+          <option value="ar">AR العربية</option>
+        </select>
+        <a href="#live-preview" class="btn-ghost" data-i18n="nav_sim">Live Simulation</a>
+        <a href="../windows/download.html" class="btn-primary" target="_blank" data-i18n="nav_download">Download Setup &rarr;</a>
+        <a href="../cursor/tactical-cursor.zip" download class="btn-primary" style="margin-left:8px; background: rgba(0, 245, 184, 0.15); border: 1px solid #00f5b8; color: #00f5b8;">Download Cursor 🎯</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <div class="radar-dot"></div>
+        <span data-i18n="hero_badge">REAL-TIME GLOBAL MONITORING · 60,000+ CONTACTS ACTIVE</span>
+      </div>
+
+      <h1>
+        <span data-i18n="hero_title_1">See everything.</span><br>
+        <span class="gradient-text" data-i18n="hero_title_2">Everywhere. Live.</span>
+      </h1>
+
+      <p data-i18n="hero_desc">Trendusty Orbit is an AI-powered intelligence operations center that fuses live aviation, maritime AIS, satellite tracking, worldwide CCTV, seismic activity, wildfires, cyber threats and conflict monitoring into one interactive global picture — with an advanced OSINT toolkit and zero-lag 3D geospatial rendering.</p>
+
+      <div class="hero-cta">
+        <a href="../windows/download.html" class="btn-primary" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          <span data-i18n="hero_enter">Enter the Orbit</span>
+        </a>
+        <a href="#live-preview" class="btn-secondary">
+          <span data-i18n="hero_explore">Explore Operating Picture &darr;</span>
+        </a>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-number">23+</div>
+          <div class="stat-label" data-i18n="stat_layers">Intelligence Layers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">60K+</div>
+          <div class="stat-label" data-i18n="stat_entities">Live Entities</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">20+</div>
+          <div class="stat-label" data-i18n="stat_feeds">Global Feeds</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label" data-i18n="stat_watch">Continuous Watch</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interface Showcase -->
+  <section class="showcase reveal-on-scroll" id="interface">
+    <div class="container">
+      <span class="section-tag" data-i18n="interface_tag">// The Interface</span>
+      <h2 class="section-title" data-i18n="interface_title">A living map of the planet</h2>
+      <p class="section-desc" data-i18n="interface_desc">Common Operating Picture — 60,000+ live entities across 23 intelligence layers. Click any flight, vessel, satellite, or CCTV camera to stream telemetry in place.</p>
+
+      <div class="preview-panel">
+        
+        <div class="preview-panel-header">
+          <div class="cop-title">
+            <span class="status-pulse-dot"></span>
+            <strong>TRENDUSTY ORBIT // COMMON OPERATING PICTURE (COP)</strong>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="cop-coords">
+              LAT 37.7749 | LON -122.4194 | ALT 28,400 FT
+            </div>
+            <button class="cop-fullscreen-btn" id="btn-earth-mode-nav" title="Toggle Google Earth Satellite vs Digital Mode" style="margin-right: 8px;">
+              <span id="earth-mode-icon-nav" style="font-size: 13px; margin-right: 4px;">🌍</span>
+              <span id="earth-mode-text-nav">GOOGLE EARTH</span>
+            </button>
+            <button class="cop-fullscreen-btn" id="btn-fullscreen" onclick="toggleCopFullscreen()" title="Toggle Fullscreen Mode">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+              <span>FULLSCREEN</span>
+            </button>
+          </div>
+        </div>
+
+
+        
+        
+        <div class="preview-canvas-wrapper" id="preview-wrapper">
+          <canvas id="cop-webgl-canvas"></canvas>
+          <canvas id="live-cop-canvas"></canvas>
+
+          <!-- Corner Button: Toggle Real Earth vs Digital Mode -->
+          <button class="cop-earth-mode-btn" id="btn-earth-mode" title="Switch between Google Earth Satellite Imagery and Cyber Digital Grid">
+            <span class="earth-mode-icon" id="earth-mode-icon">🌍</span>
+            <span id="earth-mode-text">GOOGLE EARTH</span>
+          </button>
+
+
+          <!-- Top Left HUD: Target Telemetry with Interactive Controls -->
+          <div class="hud-card hud-top-left" style="pointer-events: auto;">
+            <div class="hud-card-label" data-i18n="hud_primary_target">PRIMARY RADAR TARGET</div>
+            <div>TARGET: <span class="val-accent" id="hud-target">UAL-482 (B787-9)</span></div>
+            <div>AIRSPEED: <span class="val-accent" id="hud-speed">492 KTS</span></div>
+            <div>HEADING: <span class="val-accent" id="hud-heading">284&deg; WNW</span></div>
+            <div>SQUAWK: <span class="val-warning" id="hud-squawk">7700 [MONITORED]</span></div>
+            <div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="hud-action-btn active" id="btn-track-target" onclick="toggleTargetTracking()">🎯 TRACK TARGET</button>
+              <button class="hud-action-btn" onclick="relockUAL482()">RE-LOCK UAL-482</button>
+            </div>
+          </div>
+
+          <!-- Top Right HUD: CCTV Recon Active with Feed Switcher -->
+          <div class="hud-card hud-top-right cctv-recon-window">
+            <div class="cctv-header-badge">
+              <span class="cctv-red-dot"></span>
+              <span data-i18n="hud_cctv_recon">[CCTV RECON ACTIVE]</span>
+            </div>
+            <div class="cctv-viewport" onclick="cycleNextCctv()" title="Click to cycle surveillance camera feed">
+              <canvas id="cctv-stream-canvas" width="200" height="100"></canvas>
+              
+              <div class="cctv-cam-id" id="cctv-cam-id">CAM-SF-08 // SFO APRON</div>
+            </div>
+            <div class="cctv-cam-selector">
+              <button class="cctv-btn active" id="cctv-btn-0" onclick="switchCctvCam(0)">SFO</button>
+              <button class="cctv-btn" id="cctv-btn-1" onclick="switchCctvCam(1)">LHR</button>
+              <button class="cctv-btn" id="cctv-btn-2" onclick="switchCctvCam(2)">HND</button>
+              <button class="cctv-btn" id="cctv-btn-3" onclick="switchCctvCam(3)">DXB</button>
+            </div>
+          </div>
+
+          <!-- Zoom & View Control Bar with Zoom Percentage -->
+          <div class="cop-zoom-controls">
+            <button class="cop-zoom-btn" onclick="zoomIn()" title="Zoom In (+)">+</button>
+            <div class="cop-zoom-indicator" id="cop-zoom-indicator">100%</div>
+            <button class="cop-zoom-btn" onclick="zoomOut()" title="Zoom Out (−)">−</button>
+            <button class="cop-zoom-btn" onclick="resetGlobeView()" title="Reset View & Scale">⟲</button>
+          </div>
+
+          <!-- Bottom Left HUD: Orbital Pass -->
+          <div class="hud-card hud-bottom-left" style="pointer-events: auto;">
+            <div class="hud-card-label" data-i18n="hud_ephemeris">SATELLITE EPHEMERIS</div>
+            <div>ORBITAL PASS: <span class="val-accent" id="hud-orbit-name">ISS (ZARYA)</span></div>
+            <div>NEXT RISE: <span class="val-accent" id="hud-orbit-rise">+14m 22s (ELEV 68&deg;)</span></div>
+            <div>APOGEE: <span style="color: var(--text-muted);">418 KM // INC 51.6&deg;</span></div>
+            <div style="margin-top: 6px;">
+              <button class="hud-action-btn" onclick="focusIssOrbit()">🛰 LOCK ISS ORBIT</button>
+            </div>
+          </div>
+
+          <!-- Bottom Right HUD: System Diagnostics & Engine -->
+          <div class="hud-card hud-bottom-right">
+            <div class="hud-card-label" data-i18n="hud_diagnostics">DIAGNOSTICS & ENGINE</div>
+            <div>RENDER ENGINE: <span class="val-accent">ZERO-LAG GPU FXAA</span></div>
+            <div>FEED INTEGRITY: <span class="val-accent">100% NOMINAL</span></div>
+            <div>FPS: <span class="val-accent" id="hud-fps">60.0</span> &middot; LATENCY: <span class="val-accent">18ms</span></div>
+          </div>
+
+          <!-- Right-Click Tactical Intelligence Dossier Modal -->
+          <div class="intel-dossier-popup" id="intel-dossier-popup">
+            <div class="dossier-header">
+              <span class="dossier-badge" id="dossier-badge">INTEL CONTACT</span>
+              <button class="dossier-close" onclick="closeDossier()">&times;</button>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px;" id="dossier-title">TARGET DOSSIER</div>
+            <div style="font-size: 10px; color: var(--accent); margin-bottom: 12px;" id="dossier-subtitle">AUTHENTICATED REAL-TIME TELEMETRY</div>
+            
+            <div class="dossier-grid" id="dossier-grid">
+              <!-- Dynamically populated -->
+            </div>
+
+            <div class="dossier-actions">
+              <button class="dossier-btn" id="dossier-action-btn" onclick="executeDossierAction()">🎯 TRACK CONTACT</button>
+              <button class="dossier-btn" style="border-color: rgba(255,255,255,0.2); color: var(--text-muted);" onclick="closeDossier()">DISMISS</button>
+            </div>
+          </div>
+
+          <!-- Bottom Floating Toolbar for Interactivity -->
+          <div class="cop-bottom-toolbar">
+            <button class="cop-btn active" data-layer="flights" onclick="toggleCopLayer(this, 'flights')">&#9992; FLIGHTS</button>
+            <button class="cop-btn active" data-layer="ais" onclick="toggleCopLayer(this, 'ais')">&#128674; AIS</button>
+            <button class="cop-btn active" data-layer="satellites" onclick="toggleCopLayer(this, 'satellites')">&#128752; SATELLITES</button>
+            <button class="cop-btn active" data-layer="cctv" onclick="toggleCopLayer(this, 'cctv')">&#128247; CCTV</button>
+            <button class="cop-btn active" data-layer="weather" onclick="toggleCopLayer(this, 'weather')">&#9889; WEATHER</button>
+            <button class="cop-btn active" data-layer="threats" onclick="toggleCopLayer(this, 'threats')">&#9888; THREATS</button>
+            
+            <div class="mode-toggles">
+              <button class="cop-mode-btn active" onclick="setCopMode(this, 'normal')">NORMAL</button>
+              <button class="cop-mode-btn" onclick="setCopMode(this, 'nvg')">NVG</button>
+              <button class="cop-mode-btn" onclick="setCopMode(this, 'flir')">FLIR</button>
+            </div>
+
+            
+          </div>
+        </div>
+
+
+
+        <div class="preview-panel-footer">
+          <div data-i18n="preview_tag">INTERACTIVE SIMULATION &mdash; DRAG TO ROTATE &middot; NO BACKGROUND SERVER REQUIRED</div>
+          <div style="color: var(--accent);" data-i18n="preview_engine">CLIENT-SIDE ACCELERATION ACTIVE &bull; 60 FPS</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Section -->
+  <section class="why-section reveal-on-scroll" id="features">
+    <div class="container">
+      <span class="section-tag" data-i18n="why_tag">// Why Trendusty Orbit</span>
+      <h2 class="section-title" data-i18n="why_title">Situational awareness used to cost millions</h2>
+      <p class="section-desc" data-i18n="why_desc">Intelligence agencies and defense contractors pay fortunes for fused, real-time operating pictures. Trendusty Orbit brings that capability to your own PC and server — open, auditable, and under your complete control.</p>
+
+      <div class="cards-grid">
+        <div class="feature-card reveal-on-scroll stagger-2">
+          <div class="card-icon">🌐</div>
+          <h3 data-i18n="feature_1_title">One picture, every domain</h3>
+          <p data-i18n="feature_1_desc">Flights, ships, satellites, cameras, earthquakes, wildfires, cyber threats and conflicts — fused into a single live operating picture instead of twenty disconnected browser tabs.</p>
+        </div>
+
+        <div class="feature-card reveal-on-scroll stagger-3">
+          <div class="card-icon">⚡</div>
+          <h3 data-i18n="feature_2_title">Real time, not reports</h3>
+          <p data-i18n="feature_2_desc">Events appear as they happen. When a wildfire ignites, a ship deviates from its corridor, or a conflict escalates, you see it move on the map — not in tomorrow's morning briefing.</p>
+        </div>
+
+        <div class="feature-card reveal-on-scroll stagger-4">
+          <div class="card-icon">🛡️</div>
+          <h3 data-i18n="feature_3_title">Private by design</h3>
+          <p data-i18n="feature_3_desc">Self-hosted on your own computer. Role-based access, audit logging, encrypted sessions — your searches, watchlist queries, and intelligence data never leave your infrastructure.</p>
+        </div>
+
+        <div class="feature-card reveal-on-scroll stagger-1">
+          <div class="card-icon">👥</div>
+          <h3 data-i18n="feature_4_title">Built for teams & analysts</h3>
+          <p data-i18n="feature_4_desc">Admin operations center, API keys with scopes and rate limits, high-performance rendering presets, plugin management — a full operational deck an entire security crew can rely on.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Capabilities Section -->
+  <section class="why-section reveal-on-scroll" id="capabilities">
+    <div class="container">
+      <span class="section-tag" data-i18n="cap_tag">// Capabilities</span>
+      <h2 class="section-title" data-i18n="cap_title">One platform, every sensor</h2>
+      <p class="section-desc" data-i18n="cap_desc">Comprehensive multi-domain intelligence tools built for physical surveillance, cyber reconnaissance, and environmental situational awareness.</p>
+
+      <div class="capabilities-grid">
+        <div class="capability-card reveal-on-scroll stagger-2">
+          <div class="cap-header">
+            <span class="cap-badge">ADS-B</span>
+            <h3 data-i18n="cap_aviation_title">Live Aviation</h3>
+          </div>
+          <p data-i18n="cap_aviation_desc">10,000+ aircraft tracked in real time — commercial airliners, general aviation, and military reconnaissance flights worldwide with 3D cockpit ride-along.</p>
+        </div>
+
+        <div class="capability-card reveal-on-scroll stagger-3">
+          <div class="cap-header">
+            <span class="cap-badge">AIS</span>
+            <h3 data-i18n="cap_maritime_title">Global Maritime</h3>
+          </div>
+          <p data-i18n="cap_maritime_desc">Tens of thousands of vessels via live terrestrial and satellite AIS — cargo carriers, oil tankers, fishing fleets, passenger liners, and naval deployments.</p>
+        </div>
+
+        <div class="capability-card reveal-on-scroll stagger-4">
+          <div class="cap-header">
+            <span class="cap-badge">CELESTRAK</span>
+            <h3 data-i18n="cap_orbital_title">Orbital Tracking</h3>
+          </div>
+          <p data-i18n="cap_orbital_desc">2,000+ satellites, space stations, and rocket launches plotted live with altitude telemetry, orbit propagation, and ground pass prediction schedules.</p>
+        </div>
+
+        <div class="capability-card reveal-on-scroll stagger-1">
+          <div class="cap-header">
+            <span class="cap-badge">STREAMS</span>
+            <h3 data-i18n="cap_cctv_title">CCTV Network</h3>
+          </div>
+          <p data-i18n="cap_cctv_desc">Worldwide public camera feeds plus the ability to mount your own external RTSP and HLS video streams directly onto real-world GPS coordinates.</p>
+        </div>
+
+        <div class="capability-card reveal-on-scroll stagger-2">
+          <div class="cap-header">
+            <span class="cap-badge">RECON</span>
+            <h3 data-i18n="cap_osint_title">OSINT Toolkit</h3>
+          </div>
+          <p data-i18n="cap_osint_desc">DNS mapping, WHOIS lookups, SSL certificates, port scanners, subdomains, and threat telemetry investigation directly inside the browser console.</p>
+        </div>
+
+        <div class="capability-card reveal-on-scroll stagger-3">
+          <div class="cap-header">
+            <span class="cap-badge">SECURITY</span>
+            <h3 data-i18n="cap_breach_title">Breach Intelligence</h3>
+          </div>
+          <p data-i18n="cap_breach_desc">Correlate compromised credentials and infrastructure breaches against global target sets with full cryptographic audit logging and export capabilities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="steps-section reveal-on-scroll" id="architecture">
+    <div class="container">
+      <span class="section-tag" data-i18n="how_tag">// How It Works</span>
+      <h2 class="section-title" data-i18n="how_title">From raw signals to a clear picture</h2>
+      <p class="section-desc" data-i18n="how_desc">Three simple stages transform noisy global radio telemetry and public sensor APIs into unified operational intelligence.</p>
+
+      <div class="steps-grid">
+        <div class="step-card reveal-on-scroll stagger-2">
+          <div class="step-num">01</div>
+          <h3 data-i18n="how_1_title">Connect</h3>
+          <p data-i18n="how_1_desc">Over 20 live feeds stream in continuously — ADS-B radio receivers, AIS maritime vessels, satellite TLEs, USGS seismic networks, NASA FIRMS fire satellites, and cyber threat nodes.</p>
+        </div>
+
+        <div class="step-card reveal-on-scroll stagger-3">
+          <div class="step-num">02</div>
+          <h3 data-i18n="how_2_title">Fuse</h3>
+          <p data-i18n="how_2_desc">Every entity is normalized and plotted onto one interactive 3D globe. Layers stack cleanly: flights over ships over active fault lines over conflict zones — filtered exactly the way you need.</p>
+        </div>
+
+        <div class="step-card reveal-on-scroll stagger-1">
+          <div class="step-num">03</div>
+          <h3 data-i18n="how_3_title">Act</h3>
+          <p data-i18n="how_3_desc">Investigate with the built-in OSINT toolkit, open instant live street camera streams, lock camera tracking onto moving targets, and export tactical intelligence packages to your team.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Feeds Marquee -->
+  <section class="feeds-section" id="feeds">
+    <div class="feeds-title">LIVE MULTI-DOMAIN DATA FEEDS INTEGRATED</div>
+    <div class="marquee-track">
+      <div class="feed-pill"><span></span> ADS-B Aviation</div>
+      <div class="feed-pill"><span></span> AIS Maritime Vessels</div>
+      <div class="feed-pill"><span></span> CelesTrak Satellites</div>
+      <div class="feed-pill"><span></span> USGS Seismic Quakes</div>
+      <div class="feed-pill"><span></span> NASA FIRMS Wildfires</div>
+      <div class="feed-pill"><span></span> Worldwide Public CCTV</div>
+      <div class="feed-pill"><span></span> Cyber Threat Intel</div>
+      <div class="feed-pill"><span></span> GDELT Global Events</div>
+      <div class="feed-pill"><span></span> Space Weather & Solar</div>
+      <div class="feed-pill"><span></span> Nuclear Facilities</div>
+      <div class="feed-pill"><span></span> Geopolitical Conflict Zones</div>
+      <div class="feed-pill"><span></span> GPS Jamming Corridors</div>
+      <div class="feed-pill"><span></span> Atmospheric Forecast Radar</div>
+      <div class="feed-pill"><span></span> OpenSky Aircraft Network</div>
+      <!-- Duplicate for seamless loop -->
+      <div class="feed-pill"><span></span> ADS-B Aviation</div>
+      <div class="feed-pill"><span></span> AIS Maritime Vessels</div>
+      <div class="feed-pill"><span></span> CelesTrak Satellites</div>
+      <div class="feed-pill"><span></span> USGS Seismic Quakes</div>
+      <div class="feed-pill"><span></span> NASA FIRMS Wildfires</div>
+      <div class="feed-pill"><span></span> Worldwide Public CCTV</div>
+    </div>
+  </section>
+
+  <!-- Bottom Mission Operations Status Banner -->
+  <section class="bottom-mission-banner reveal-on-scroll" style="margin: 60px 0 110px;">
+    <div class="container" style="text-align: center; max-width: 860px; margin: 0 auto; background: rgba(7, 14, 24, 0.7); border: 1px solid rgba(0, 245, 184, 0.18); border-radius: 20px; padding: 50px 36px; backdrop-filter: blur(16px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);">
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 245, 184, 0.1); border: 1px solid rgba(0, 245, 184, 0.3); padding: 5px 16px; border-radius: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--accent); margin-bottom: 22px;">
+        <span class="status-pulse-dot" style="margin: 0;"></span> CONTINUOUS ORBITAL WATCH
+      </div>
+      <h2 class="section-title" style="margin-bottom: 16px; font-size: 32px;" data-i18n="cta_title">The world is moving. Watch it.</h2>
+      <p class="section-desc" style="margin-bottom: 34px; max-width: 620px; margin-left: auto; margin-right: auto;" data-i18n="cta_desc">Zero configuration required. Connect to live satellite feeds, ADS-B transponders, maritime AIS, and global CCTV on your machine.</p>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="#interface" class="btn btn-primary" style="padding: 13px 30px; font-size: 13px;" data-i18n="btn_explore_cop">Explore Live Operations Center ↑</a>
+        <a href="../windows/download.html" class="btn btn-outline" style="padding: 13px 30px; font-size: 13px;" target="_blank" data-i18n="btn_download_setup">Download Trendusty Orbit Setup ⬇</a>
+        <a href="../cursor/tactical-cursor.zip" download class="btn btn-outline" style="padding: 13px 30px; font-size: 13px; border-color: #00f5b8; color: #00f5b8;">Download Custom Cursor 🖱️</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="brand" style="margin-bottom: 16px;">
+            <div class="brand-logo-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            TRENDUSTY <span>ORBIT</span>
+          </div>
+          <p style="line-height: 1.6; max-width: 380px;" data-i18n="footer_desc">Trendusty Orbit is an open-source intelligence platform fusing global aviation, maritime, satellite, CCTV, and threat-intelligence feeds into one live operational picture.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer_prod">PRODUCT</h4>
+          <ul>
+            <li><a href="../windows/download.html" target="_blank">Download Setup (.exe)</a></li>
+            <li><a href="#live-preview">Common Operating Picture</a></li>
+            <li><a href="#capabilities">Sensor Capabilities</a></li>
+            <li><a href="#feeds">Integrated Feeds</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer_sys">SYSTEM</h4>
+          <ul>
+            <li><a href="#live-preview">Live Simulation (Browser)</a></li>
+            <li><a href="../windows/download.html" target="_blank">Desktop Release v2.0</a></li>
+            <li><a href="../../SECURITY.md">Security Architecture</a></li>
+            <li><a href="../../DATA_SOURCES.md">Data Sources & Attribution</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer_ops">OPERATIONS</h4>
+          <p style="font-size: 13px; line-height: 1.7; margin-bottom: 12px;">
+            Self-hosted private deployment.<br>
+            All queries remain strictly local.
+          </p>
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent);">
+            ● SYSTEM ONLINE: 100%
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div data-i18n="footer_copy">&copy; 2026 Trendusty Orbit &mdash; Made by Trendusty</div>
+        <div style="color: var(--accent);" data-i18n="footer_auth">Authorized personnel only &middot; All access is audited</div>
+      </div>
+    </div>
+  </footer>
+
+  
+  
+  <!-- Hyper-Interactive 3D Common Operating Picture Engine -->
+  <script>
+    (function() {
+      // Configuration & State
+      const state = {
+        rotX: 0.35,
+        rotY: 1.25,
+        targetRotX: 0.35,
+        targetRotY: 1.25,
+        velX: 0,
+        velY: 0.002,
+        zoom: 1.0,
+        targetZoom: 1.0,
+        isDragging: false,
+        isPaused: false,
+        timeWarp: 1,
+        trackTarget: true,
+        selectedTargetId: 'UAL-482',
+        activeCctvIndex: 0,
+        lastMouseX: 0,
+        lastMouseY: 0,
+        hoveredEntity: null,
+        activeDossierEntity: null,
+        userWaypoint: null,
+        earthMode: 'digital',
+        cloudDrift: 0,
+        colorMode: 'normal',
+        layers: {
+          flights: true,
+          ais: true,
+          satellites: true,
+          cctv: true,
+          weather: true,
+          threats: true
+        },
+        issRiseSeconds: 14 * 60 + 22,
+        baseSpeed: 492,
+        invertDrag: localStorage.getItem('orbit_invert_drag') === 'true'
+      };
+
+      const PALETTES = {
+        normal: {
+          accent: '#00f5b8',
+          accentDim: 'rgba(0, 245, 184, 0.18)',
+          accentGlow: 'rgba(0, 245, 184, 0.4)',
+          globeBg: '#060b14',
+          globeBorder: '#0e2238',
+          gridLines: 'rgba(0, 245, 184, 0.09)',
+          land: 'rgba(0, 245, 184, 0.14)',
+          landBorder: 'rgba(0, 245, 184, 0.45)',
+          flightTrail: 'rgba(0, 210, 255, 0.35)',
+          flightBlip: '#00d2ff',
+          targetCol: '#ffaa00',
+          aisCol: '#2ed573',
+          cctvCol: '#ff4757',
+          satCol: '#eccc68',
+          weatherCol: 'rgba(56, 189, 248, 0.28)',
+          threatCol: 'rgba(239, 68, 68, 0.28)'
+        },
+        nvg: {
+          accent: '#39ff14',
+          accentDim: 'rgba(57, 255, 20, 0.2)',
+          accentGlow: 'rgba(57, 255, 20, 0.5)',
+          globeBg: '#021206',
+          globeBorder: '#0b3312',
+          gridLines: 'rgba(57, 255, 20, 0.12)',
+          land: 'rgba(57, 255, 20, 0.15)',
+          landBorder: 'rgba(57, 255, 20, 0.55)',
+          flightTrail: 'rgba(57, 255, 20, 0.4)',
+          flightBlip: '#39ff14',
+          targetCol: '#70ff00',
+          aisCol: '#20bf6b',
+          cctvCol: '#00ff88',
+          satCol: '#98ff98',
+          weatherCol: 'rgba(57, 255, 20, 0.25)',
+          threatCol: 'rgba(255, 100, 100, 0.35)'
+        },
+        flir: {
+          accent: '#ff9f43',
+          accentDim: 'rgba(255, 159, 67, 0.2)',
+          accentGlow: 'rgba(255, 159, 67, 0.5)',
+          globeBg: '#120806',
+          globeBorder: '#38160e',
+          gridLines: 'rgba(255, 159, 67, 0.1)',
+          land: 'rgba(255, 159, 67, 0.14)',
+          landBorder: 'rgba(255, 159, 67, 0.5)',
+          flightTrail: 'rgba(255, 255, 255, 0.4)',
+          flightBlip: '#ffffff',
+          targetCol: '#ff3838',
+          aisCol: '#ffb142',
+          cctvCol: '#ff5252',
+          satCol: '#ffda79',
+          weatherCol: 'rgba(255, 255, 255, 0.2)',
+          threatCol: 'rgba(255, 40, 40, 0.4)'
+        }
+      };
+
+      // Continental Polyline Approximations
+      const CONTINENTS = [
+        [ [70, -160], [71, -130], [68, -100], [58, -75], [52, -56], [45, -60], [30, -81], [25, -80], [18, -90], [15, -92], [22, -106], [32, -117], [38, -123], [48, -125], [58, -136], [60, -145], [65, -168], [70, -160] ],
+        [ [12, -72], [10, -62], [5, -52], [-5, -35], [-22, -41], [-35, -57], [-54, -67], [-52, -75], [-35, -73], [-18, -70], [-5, -81], [5, -77], [12, -72] ],
+        [ [71, 28], [69, 60], [60, 50], [55, 38], [44, 40], [37, 28], [36, -5], [43, -9], [48, -4], [54, 5], [58, 12], [63, 20], [71, 28] ],
+        [ [37, 10], [32, 32], [22, 37], [12, 51], [-4, 40], [-26, 33], [-34, 18], [-22, 14], [5, 10], [5, -1], [15, -17], [28, -13], [36, -5], [37, 10] ],
+        [ [75, 100], [72, 140], [66, 170], [60, 162], [50, 140], [38, 120], [22, 108], [8, 103], [12, 80], [24, 68], [25, 57], [40, 50], [50, 58], [60, 75], [75, 100] ],
+        [ [-12, 131], [-15, 145], [-24, 153], [-37, 150], [-38, 141], [-32, 116], [-22, 114], [-16, 123], [-12, 131] ],
+        [ [58, -5], [55, -2], [50, 1], [50, -5], [54, -5], [58, -5] ],
+        [ [44, 144], [38, 141], [33, 131], [35, 135], [40, 140], [44, 144] ]
+      ];
+
+      // Dynamic Flight Entities
+      const FLIGHTS = [
+        { id: 'UAL-482', model: 'B787-9', operator: 'UNITED AIRLINES', route: 'KSFO ➔ RJAA', lat: 37.7749, lon: -122.4194, alt: 28400, spd: 492, hdg: 284, squawk: '7700 [MONITORED]', trail: [] },
+        { id: 'BAW-117', model: 'A350-1000', operator: 'BRITISH AIRWAYS', route: 'EGLL ➔ KJFK', lat: 51.5074, lon: -0.1278, alt: 36000, spd: 520, hdg: 270, squawk: '4211 [ROUTINE]', trail: [] },
+        { id: 'ANA-008', model: 'B777-300ER', operator: 'ALL NIPPON AIRWAYS', route: 'RJTT ➔ KLAX', lat: 35.6762, lon: 139.6503, alt: 34000, spd: 510, hdg: 65, squawk: '1200 [VFR-PAC]', trail: [] },
+        { id: 'UAE-201', model: 'A380-800', operator: 'EMIRATES', route: 'OMDB ➔ LFPG', lat: 25.2048, lon: 55.2708, alt: 38000, spd: 540, hdg: 310, squawk: '6342 [IN-FLIGHT]', trail: [] },
+        { id: 'QFA-001', model: 'B787-9', operator: 'QANTAS', route: 'YSSY ➔ KLAX', lat: -33.8688, lon: 151.2093, alt: 39000, spd: 485, hdg: 335, squawk: '2105 [PAC-ROUTE]', trail: [] },
+        { id: 'AFR-022', model: 'A350-900', operator: 'AIR FRANCE', route: 'LFPG ➔ KJFK', lat: 48.8566, lon: 2.3522, alt: 35000, spd: 505, hdg: 260, squawk: '7000 [TRANSIT]', trail: [] },
+        { id: 'SIA-322', model: 'A380-800', operator: 'SINGAPORE AIRLINES', route: 'WSSS ➔ EGLL', lat: 1.3521, lon: 103.8198, alt: 37000, spd: 515, hdg: 315, squawk: '3514 [EN-ROUTE]', trail: [] },
+        { id: 'DLH-456', model: 'B747-8i', operator: 'LUFTHANSA', route: 'EDDF ➔ KORD', lat: 50.1109, lon: 8.6821, alt: 33000, spd: 498, hdg: 275, squawk: '4022 [ATLANTIC]', trail: [] }
+      ];
+
+      // Maritime AIS Vessels
+      const SHIPS = [
+        { name: 'EVER GIVEN', type: 'CONTAINER CARRIER (20K TEU)', imo: '9811000', mmsi: '353136000', dest: 'ROTTERDAM', lat: 30.01, lon: 32.56, hdg: 340, spd: 16 },
+        { name: 'PACIFIC RUBY', type: 'VLCC SUPERTANKER', imo: '9723044', mmsi: '538006124', dest: 'NINGBO', lat: 1.25, lon: 104.05, hdg: 80, spd: 14 },
+        { name: 'MAERSK MC-KINNEY', type: 'TRIPLE-E CONTAINER', imo: '9619907', mmsi: '219018581', dest: 'BREMERHAVEN', lat: 51.95, lon: 4.02, hdg: 260, spd: 21 },
+        { name: 'GLOVIS CENTURY', type: 'VEHICLE CARRIER', imo: '9610999', mmsi: '440129000', dest: 'LONG BEACH', lat: 33.72, lon: -118.26, hdg: 170, spd: 18 },
+        { name: 'NORDIC BREEZE', type: 'BULK CARRIER', imo: '9499876', mmsi: '256123000', dest: 'GIBRALTAR', lat: 36.14, lon: -5.35, hdg: 90, spd: 13 },
+        { name: 'TI EUROPE', type: 'TI CLASS SUPERTANKER', imo: '9235268', mmsi: '205432000', dest: 'BALBOA', lat: 9.12, lon: -79.71, hdg: 310, spd: 15 }
+      ];
+
+      // CCTV Recon Cameras & Feeds
+      const CCTV_FEEDS = [
+        { id: 'CAM-SF-08', label: 'CAM-SF-08 // SFO APRON', city: 'SAN FRANCISCO', lens: 'Optical PTZ 36x', res: '1080p @ 60fps', lat: 37.6213, lon: -122.3790 },
+        { id: 'CAM-LHR-02', label: 'CAM-LHR-02 // HEATHROW T5', city: 'LONDON', lens: 'Dual FLIR Thermal', res: '1080p @ 60fps', lat: 51.4700, lon: -0.4543 },
+        { id: 'CAM-HND-04', label: 'CAM-HND-04 // TOKYO HANEDA', city: 'TOKYO', lens: 'High-Lux Low Light', res: '4K @ 30fps', lat: 35.5494, lon: 139.7798 },
+        { id: 'CAM-DXB-01', label: 'CAM-DXB-01 // DUBAI CONCOURSE', city: 'DUBAI', lens: 'Mid-Wave IR Heat', res: '1080p @ 60fps', lat: 25.2532, lon: 55.3657 }
+      ];
+
+      // Weather Storm Cells (Simulated Doppler)
+      const WEATHER_CELLS = [
+        { lat: 22, lon: -140, radius: 240, intensity: 0.8 },
+        { lat: 38, lon: -65, radius: 310, intensity: 0.7 },
+        { lat: 15, lon: 128, radius: 280, intensity: 0.9 },
+        { lat: 56, lon: -25, radius: 260, intensity: 0.6 }
+      ];
+
+      // Geopolitical Threat & Jamming Zones
+      const THREAT_ZONES = [
+        { lat: 31.5, lon: 34.8, radius: 180, label: 'GPS JAMMING SIG-RED' },
+        { lat: 14.5, lon: 43.5, radius: 220, label: 'RED SEA MARITIME RISK' },
+        { lat: 49.0, lon: 35.0, radius: 300, label: 'ELECTRONIC WARFARE ZONE' }
+      ];
+
+      // Stars
+      const STARS = [];
+      for (let i = 0; i < 90; i++) {
+        STARS.push({
+          x: Math.random(),
+          y: Math.random(),
+          size: Math.random() * 1.5 + 0.5,
+          alpha: Math.random() * 0.7 + 0.2
+        });
+      }
+
+      // Initialize Elements
+      const canvas = document.getElementById('live-cop-canvas');
+      const ctx = canvas.getContext('2d');
+      const copWebglCanvas = document.getElementById('cop-webgl-canvas');
+      const wrapper = document.getElementById('preview-wrapper');
+
+      // ----------------------------------------------------
+      // WEBGL REAL EARTH RENDERER (GOOGLE EARTH SATELLITE ENGINE)
+      // Genuine 4K satellite composite + Keyless Google Earth tile streaming
+      // ----------------------------------------------------
+      function createRealEarthRenderer(c) {
+        if (!c) return null;
+        let gl = null;
+        try {
+          gl = c.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false }) ||
+               c.getContext('experimental-webgl', { alpha: true, antialias: true, premultipliedAlpha: false });
+        } catch(e) {
+          console.warn('WebGL init error:', e);
+        }
+        if (!gl) return null;
+
+        const vsSource = `
+          attribute vec2 a_pos;
+          void main() {
+            gl_Position = vec4(a_pos, 0.0, 1.0);
+          }
+        `;
+
+        const fsSource = `
+          precision highp float;
+          uniform vec2 u_res;
+          uniform vec2 u_center;
+          uniform float u_radius;
+          uniform float u_rotX;
+          uniform float u_rotY;
+          uniform sampler2D u_dayTexture;
+          uniform sampler2D u_nightTexture;
+
+          const float PI = 3.14159265358979323846;
+
+          void main() {
+            vec2 p = gl_FragCoord.xy;
+            float dx = (p.x - u_center.x) / u_radius;
+            float dy = (p.y - (u_res.y - u_center.y)) / u_radius;
+            float distSq = dx * dx + dy * dy;
+
+            if (distSq > 1.34) {
+              discard;
+            }
+
+            // Outer atmospheric Rayleigh scatter halo
+            if (distSq > 1.0) {
+              float dist = sqrt(distSq);
+              float alpha = smoothstep(1.32, 1.0, dist) * 0.48;
+              vec3 atmoColor = mix(vec3(0.04, 0.28, 0.75), vec3(0.25, 0.70, 1.0), smoothstep(1.22, 1.0, dist));
+              gl_FragColor = vec4(atmoColor * alpha, alpha);
+              return;
+            }
+
+            // On-sphere calculations (Orthographic camera matching canvas 2D project)
+            float x1 = dx;
+            float y2 = -dy;
+            float z2 = sqrt(max(0.0, 1.0 - x1 * x1 - y2 * y2));
+
+            // Invert rotations to ground lat/lon
+            float cosX = cos(u_rotX);
+            float sinX = sin(u_rotX);
+            float y0 = y2 * cosX + z2 * sinX;
+            float z1 = -y2 * sinX + z2 * cosX;
+
+            float cosY = cos(u_rotY);
+            float sinY = sin(u_rotY);
+            float x0 = x1 * cosY - z1 * sinY;
+            float z0 = x1 * sinY + z1 * cosY;
+
+            float lat = -asin(clamp(y0, -1.0, 1.0));
+            float lon = atan(x0, z0);
+
+            float u = lon / (2.0 * PI) + 0.5;
+            float v = 0.5 - lat / PI;
+
+            vec4 dayTex = texture2D(u_dayTexture, vec2(u, v));
+            vec4 nightTex = texture2D(u_nightTexture, vec2(u, v));
+
+            // Sun illumination vector (simulated orbit sun angle)
+            vec3 normal = vec3(x1, -y2, z2);
+            vec3 sunDir = normalize(vec3(-0.62, 0.42, 0.66));
+            float NdotL = dot(normal, sunDir);
+
+            // Natural day / night transition across terminator
+            float dayFactor = smoothstep(-0.18, 0.22, NdotL);
+            vec3 surface = mix(nightTex.rgb * 1.7, dayTex.rgb * 1.08, dayFactor);
+
+            // Water specular reflection glint
+            float isWater = clamp((dayTex.b - dayTex.r) * 2.8, 0.0, 1.0);
+            vec3 viewDir = vec3(0.0, 0.0, 1.0);
+            vec3 halfDir = normalize(sunDir + viewDir);
+            float spec = pow(max(0.0, dot(normal, halfDir)), 32.0) * isWater * max(0.0, NdotL);
+            surface += vec3(0.45, 0.78, 1.0) * spec * 0.95;
+
+            // Limb Rayleigh haze
+            float rim = pow(1.0 - z2, 3.0);
+            surface += vec3(0.12, 0.60, 1.0) * rim * max(0.0, NdotL + 0.35);
+
+            gl_FragColor = vec4(surface, 1.0);
+          }
+        `;
+
+        function createShader(type, src) {
+          const s = gl.createShader(type);
+          gl.shaderSource(s, src);
+          gl.compileShader(s);
+          if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+            console.error('Shader compile error:', gl.getShaderInfoLog(s));
+            gl.deleteShader(s);
+            return null;
+          }
+          return s;
+        }
+
+        const vs = createShader(gl.VERTEX_SHADER, vsSource);
+        const fs = createShader(gl.FRAGMENT_SHADER, fsSource);
+        if (!vs || !fs) return null;
+
+        const prog = gl.createProgram();
+        gl.attachShader(prog, vs);
+        gl.attachShader(prog, fs);
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+          console.error('Program link error:', gl.getProgramInfoLog(prog));
+          return null;
+        }
+
+        const posAttr = gl.getAttribLocation(prog, 'a_pos');
+        const posBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+          -1, -1,
+           1, -1,
+          -1,  1,
+          -1,  1,
+           1, -1,
+           1,  1
+        ]), gl.STATIC_DRAW);
+
+        const uRes = gl.getUniformLocation(prog, 'u_res');
+        const uCenter = gl.getUniformLocation(prog, 'u_center');
+        const uRadius = gl.getUniformLocation(prog, 'u_radius');
+        const uRotX = gl.getUniformLocation(prog, 'u_rotX');
+        const uRotY = gl.getUniformLocation(prog, 'u_rotY');
+        const uDay = gl.getUniformLocation(prog, 'u_dayTexture');
+        const uNight = gl.getUniformLocation(prog, 'u_nightTexture');
+
+        // Create initial fallback canvas texture
+        function makeFallbackTexture(color) {
+          const fbCanvas = document.createElement('canvas');
+          fbCanvas.width = 512;
+          fbCanvas.height = 256;
+          const fbCtx = fbCanvas.getContext('2d');
+          fbCtx.fillStyle = color;
+          fbCtx.fillRect(0, 0, 512, 256);
+          fbCtx.fillStyle = 'rgba(45, 130, 65, 0.85)';
+          fbCtx.beginPath();
+          fbCtx.ellipse(140, 90, 80, 50, 0, 0, Math.PI * 2);
+          fbCtx.ellipse(320, 90, 90, 60, 0, 0, Math.PI * 2);
+          fbCtx.ellipse(300, 160, 50, 60, 0, 0, Math.PI * 2);
+          fbCtx.ellipse(390, 180, 40, 30, 0, 0, Math.PI * 2);
+          fbCtx.fill();
+          return fbCanvas;
+        }
+
+        const dayTex = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, dayTex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, makeFallbackTexture('#0e355c'));
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+        const nightTex = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, nightTex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, makeFallbackTexture('#02040a'));
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+        // Load 4K Satellite Imagery Composite
+        const dayImg = new Image();
+        dayImg.crossOrigin = 'anonymous';
+        dayImg.onload = function() {
+          try {
+            gl.bindTexture(gl.TEXTURE_2D, dayTex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dayImg);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+            console.log('Real Earth 4K satellite texture successfully loaded in WebGL');
+          } catch(e) {
+            console.warn('Satellite texture GPU upload error:', e);
+          }
+        };
+        dayImg.src = '../assets/earth/earth-satellite.jpg';
+
+        // Load 4K Night Lights
+        const nightImg = new Image();
+        nightImg.crossOrigin = 'anonymous';
+        nightImg.onload = function() {
+          try {
+            gl.bindTexture(gl.TEXTURE_2D, nightTex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, nightImg);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+          } catch(e) {
+            console.warn('Night texture GPU upload error:', e);
+          }
+        };
+        nightImg.src = '../assets/earth/earth-night.jpg';
+
+        // Live Google Earth Satellite Tile Stitching (Keyless Feed)
+        (function loadLiveGoogleEarthTiles() {
+          const z = 1;
+          const numTiles = 2;
+          const stitchCanvas = document.createElement('canvas');
+          stitchCanvas.width = numTiles * 256;
+          stitchCanvas.height = numTiles * 256;
+          const sCtx = stitchCanvas.getContext('2d');
+          let loadedCount = 0;
+          const totalTiles = numTiles * numTiles;
+
+          for (let tx = 0; tx < numTiles; tx++) {
+            for (let ty = 0; ty < numTiles; ty++) {
+              const tileImg = new Image();
+              tileImg.crossOrigin = 'anonymous';
+              const serverIdx = (tx + ty) % 4;
+              tileImg.onload = function() {
+                try {
+                  sCtx.drawImage(tileImg, tx * 256, ty * 256, 256, 256);
+                  loadedCount++;
+                  if (loadedCount === totalTiles) {
+                    gl.bindTexture(gl.TEXTURE_2D, dayTex);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, stitchCanvas);
+                    gl.generateMipmap(gl.TEXTURE_2D);
+                    console.log('Google Earth keyless live satellite feed synchronized to WebGL');
+                  }
+                } catch(err) {
+                  // Fallback to high-res local satellite texture
+                }
+              };
+              tileImg.src = 'https://mt' + serverIdx + '.google.com/vt/lyrs=s&x=' + tx + '&y=' + ty + '&z=' + z;
+            }
+          }
+        })();
+
+        return {
+          render: function(cx, cy, radius, rotX, rotY, w, h, dpr) {
+            gl.viewport(0, 0, w * dpr, h * dpr);
+            gl.clearColor(0.0, 0.0, 0.0, 0.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.useProgram(prog);
+
+            gl.enableVertexAttribArray(posAttr);
+            gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+            gl.vertexAttribPointer(posAttr, 2, gl.FLOAT, false, 0, 0);
+
+            gl.uniform2f(uRes, w * dpr, h * dpr);
+            gl.uniform2f(uCenter, cx * dpr, cy * dpr);
+            gl.uniform1f(uRadius, radius * dpr);
+            gl.uniform1f(uRotX, rotX);
+            gl.uniform1f(uRotY, rotY);
+
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, dayTex);
+            gl.uniform1i(uDay, 0);
+
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, nightTex);
+            gl.uniform1i(uNight, 1);
+
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+          }
+        };
+      }
+
+      const webglEarth = createRealEarthRenderer(copWebglCanvas);
+      const panel = document.querySelector('.preview-panel');
+
+      const cctvCanvas = document.getElementById('cctv-stream-canvas');
+      const cctvCtx = cctvCanvas ? cctvCanvas.getContext('2d') : null;
+
+      const hudTarget = document.getElementById('hud-target');
+      const hudSpeed = document.getElementById('hud-speed');
+      const hudHeading = document.getElementById('hud-heading');
+      const hudSquawk = document.getElementById('hud-squawk');
+      const hudOrbitRise = document.getElementById('hud-orbit-rise');
+      const hudFps = document.getElementById('hud-fps');
+      const cctvRecTime = document.getElementById('cctv-rec-time');
+      const cctvCamId = document.getElementById('cctv-cam-id');
+      const topCoords = document.querySelector('.cop-coords');
+      const zoomIndicator = document.getElementById('cop-zoom-indicator');
+
+      // Dossier Elements
+      const dossierModal = document.getElementById('intel-dossier-popup');
+      const dossierTitle = document.getElementById('dossier-title');
+      const dossierSubtitle = document.getElementById('dossier-subtitle');
+      const dossierBadge = document.getElementById('dossier-badge');
+      const dossierGrid = document.getElementById('dossier-grid');
+      const dossierActionBtn = document.getElementById('dossier-action-btn');
+
+      let width = 0;
+      let height = 0;
+      let radarAngle = 0;
+      let frameCount = 0;
+      let lastFpsTime = performance.now();
+      let measuredFps = 60.0;
+      let issOrbitPhase = 0.42;
+
+      let clickableEntities = [];
+
+      function resize() {
+        if (!wrapper || !canvas) return;
+        const rect = wrapper.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+        if (copWebglCanvas) {
+          copWebglCanvas.width = width * dpr;
+          copWebglCanvas.height = height * dpr;
+        }
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+
+      // Mouse & Touch Interactivity
+      let dragStartX = 0, dragStartY = 0;
+      let didDrag = false;
+
+      wrapper.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return; // Only left-click drags
+        state.isDragging = true;
+        didDrag = false;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        state.lastMouseX = e.clientX;
+        state.lastMouseY = e.clientY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+
+        if (!state.isDragging) {
+          // Entity Hover Detection
+          let found = null;
+          for (const ent of clickableEntities) {
+            const dist = Math.hypot(ent.x - mx, ent.y - my);
+            if (dist < 22) {
+              found = ent;
+              break;
+            }
+          }
+          state.hoveredEntity = found;
+          canvas.style.cursor = found ? 'crosshair' : 'grab';
+          return;
+        }
+
+        const dx = e.clientX - state.lastMouseX;
+        const dy = e.clientY - state.lastMouseY;
+        if (Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY) > 5) {
+          didDrag = true;
+          state.trackTarget = false;
+          const trackBtn = document.getElementById('btn-track-target');
+          if (trackBtn) trackBtn.classList.remove('active');
+        }
+
+        const inv = state.invertDrag ? -1 : 1;
+        state.rotY += dx * (0.005 / state.zoom) * inv;
+        state.rotX -= dy * (0.005 / state.zoom) * inv;
+        state.rotX = Math.max(-1.15, Math.min(1.15, state.rotX));
+        state.velY = dx * 0.0006 * inv;
+        state.lastMouseX = e.clientX;
+        state.lastMouseY = e.clientY;
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (e.button === 0 && state.isDragging && !didDrag) {
+          handleCanvasClick(e);
+        }
+        state.isDragging = false;
+        canvas.style.cursor = 'grab';
+      });
+
+      // Smooth Wheel Zoom (Expanded range 0.6x to 5.0x)
+      wrapper.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.22 : 0.22;
+        updateZoom(state.targetZoom + delta);
+      }, { passive: false });
+
+      // Double-Click To Quick Zoom-In
+      wrapper.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        updateZoom(state.targetZoom + 0.6);
+      });
+
+      function updateZoom(newZ) {
+        state.targetZoom = Math.max(0.6, Math.min(5.0, newZ));
+      }
+
+      // Right-Click Context Menu for Tactical Intelligence Dossier
+      canvas.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+
+        let targetEnt = state.hoveredEntity;
+        if (!targetEnt) {
+          let closest = 28;
+          for (const ent of clickableEntities) {
+            const d = Math.hypot(ent.x - mx, ent.y - my);
+            if (d < closest) {
+              closest = d;
+              targetEnt = ent;
+            }
+          }
+        }
+
+        if (targetEnt) {
+          showDossierPopup(targetEnt, e.clientX, e.clientY);
+        } else {
+          showGeoDossierPopup(mx, my, e.clientX, e.clientY);
+        }
+      });
+
+      function showDossierPopup(ent, clientX, clientY) {
+        state.activeDossierEntity = ent;
+        const wrapRect = wrapper.getBoundingClientRect();
+        let posX = clientX - wrapRect.left + 15;
+        let posY = clientY - wrapRect.top + 15;
+
+        // Keep inside wrapper
+        if (posX + 340 > wrapRect.width) posX = wrapRect.width - 350;
+        if (posY + 260 > wrapRect.height) posY = wrapRect.height - 270;
+        if (posX < 10) posX = 10;
+        if (posY < 10) posY = 10;
+
+        dossierModal.style.left = posX + 'px';
+        dossierModal.style.top = posY + 'px';
+        dossierModal.style.display = 'block';
+
+        if (ent.type === 'flight') {
+          dossierBadge.textContent = 'AIRCRAFT // ADS-B LIVE';
+          dossierTitle.textContent = ent.id + ' — ' + ent.model;
+          dossierSubtitle.textContent = (ent.raw.operator || 'COMMERCIAL FLIGHT') + ' · ' + (ent.raw.route || 'INTERNATIONAL');
+          dossierGrid.innerHTML = `
+            <div class="dossier-item"><span>AIRSPEED</span><strong>${ent.spd} KTS (${Math.round(ent.spd * 1.852)} KM/H)</strong></div>
+            <div class="dossier-item"><span>ALTITUDE</span><strong>${ent.alt.toLocaleString()} FT (FL${Math.floor(ent.alt / 100)})</strong></div>
+            <div class="dossier-item"><span>HEADING</span><strong>${ent.hdg}&deg; ${getHeadingDir(ent.hdg)}</strong></div>
+            <div class="dossier-item"><span>SQUAWK</span><strong style="color: #ff9f43;">${ent.squawk}</strong></div>
+            <div class="dossier-item"><span>LATITUDE</span><strong>${ent.lat.toFixed(4)}&deg;</strong></div>
+            <div class="dossier-item"><span>LONGITUDE</span><strong>${ent.lon.toFixed(4)}&deg;</strong></div>
+            <div class="dossier-item"><span>STATUS</span><strong>AIRBORNE // NOMINAL</strong></div>
+            <div class="dossier-item"><span>FEED INTEGRITY</span><strong>100% CRYPTO-VALIDATED</strong></div>
+          `;
+          dossierActionBtn.textContent = '🎯 TRACK AIRCRAFT';
+        } else if (ent.type === 'ship') {
+          dossierBadge.textContent = 'MARITIME // AIS CLASS-A';
+          dossierTitle.textContent = ent.id;
+          dossierSubtitle.textContent = ent.model + ' · DEST: ' + ent.raw.dest;
+          dossierGrid.innerHTML = `
+            <div class="dossier-item"><span>CRUISING SPEED</span><strong>${ent.spd} KNOTS</strong></div>
+            <div class="dossier-item"><span>HEADING VECTOR</span><strong>${ent.hdg}&deg; NAVIGATION</strong></div>
+            <div class="dossier-item"><span>IMO NUMBER</span><strong>${ent.raw.imo}</strong></div>
+            <div class="dossier-item"><span>MMSI ID</span><strong>${ent.raw.mmsi}</strong></div>
+            <div class="dossier-item"><span>LATITUDE</span><strong>${ent.lat.toFixed(4)}&deg;</strong></div>
+            <div class="dossier-item"><span>LONGITUDE</span><strong>${ent.lon.toFixed(4)}&deg;</strong></div>
+            <div class="dossier-item"><span>VESSEL STATUS</span><strong>UNDERWAY USING ENGINE</strong></div>
+            <div class="dossier-item"><span>CORRIDOR</span><strong>HIGH-SEAS ACTIVE</strong></div>
+          `;
+          dossierActionBtn.textContent = '🚢 TRACK VESSEL';
+        } else if (ent.type === 'sat') {
+          dossierBadge.textContent = 'SPACE STATION // LEO ORBIT';
+          dossierTitle.textContent = 'ISS (ZARYA) // NORAD 25544';
+          dossierSubtitle.textContent = 'INTERNATIONAL SPACE STATION · CREW ACTIVE';
+          dossierGrid.innerHTML = `
+            <div class="dossier-item"><span>ORBIT VELOCITY</span><strong>27,600 KM/H (7.66 KM/S)</strong></div>
+            <div class="dossier-item"><span>PERIGEE / APOGEE</span><strong>414 KM / 418 KM</strong></div>
+            <div class="dossier-item"><span>INCLINATION</span><strong>51.64&deg; ORBITAL PLANE</strong></div>
+            <div class="dossier-item"><span>NEXT OVERPASS</span><strong>${hudOrbitRise ? hudOrbitRise.textContent : '+14m 22s'}</strong></div>
+            <div class="dossier-item"><span>PAYLOAD WEIGHT</span><strong>419,725 KG</strong></div>
+            <div class="dossier-item"><span>TELEMETRY FEED</span><strong>NASA S-BAND NOMINAL</strong></div>
+          `;
+          dossierActionBtn.textContent = '🛰 LOCK ORBIT';
+        } else if (ent.type === 'cctv') {
+          dossierBadge.textContent = 'RECON CCTV // SECURE STREAM';
+          dossierTitle.textContent = ent.id;
+          dossierSubtitle.textContent = ent.raw.city + ' · ' + ent.raw.label;
+          dossierGrid.innerHTML = `
+            <div class="dossier-item"><span>OPTICAL LENS</span><strong>${ent.raw.lens}</strong></div>
+            <div class="dossier-item"><span>STREAM RES</span><strong>${ent.raw.res}</strong></div>
+            <div class="dossier-item"><span>LATITUDE</span><strong>${ent.lat.toFixed(4)}&deg;</strong></div>
+            <div class="dossier-item"><span>LONGITUDE</span><strong>${ent.lon.toFixed(4)}&deg;</strong></div>
+            <div class="dossier-item"><span>PROTOCOL</span><strong>RTSP / HLS SECURE</strong></div>
+            <div class="dossier-item"><span>PAN/TILT/ZOOM</span><strong>CALIBRATED 360&deg;</strong></div>
+          `;
+          dossierActionBtn.textContent = '📷 SWITCH RECON FEED';
+        }
+      }
+
+      function showGeoDossierPopup(mx, my, clientX, clientY) {
+        const cx = width / 2;
+        const cy = height / 2;
+        const radius = Math.min(width, height) * 0.38 * state.zoom;
+        const dx = (mx - cx) / radius;
+        const dy = (my - cy) / radius;
+        const r2 = dx * dx + dy * dy;
+
+        if (r2 <= 1.0) {
+          const z2 = Math.sqrt(1.0 - r2);
+          const y0 = dy * Math.cos(state.rotX) + z2 * Math.sin(state.rotX);
+          const z1 = -dy * Math.sin(state.rotX) + z2 * Math.cos(state.rotX);
+          const x0 = dx * Math.cos(state.rotY) - z1 * Math.sin(state.rotY);
+          const z0 = dx * Math.sin(state.rotY) + z1 * Math.cos(state.rotY);
+
+          const lat = -Math.asin(Math.max(-1, Math.min(1, y0))) * (180 / Math.PI);
+          const lon = Math.atan2(x0, z0) * (180 / Math.PI);
+
+          const wrapRect = wrapper.getBoundingClientRect();
+          let posX = clientX - wrapRect.left + 15;
+          let posY = clientY - wrapRect.top + 15;
+          if (posX + 340 > wrapRect.width) posX = wrapRect.width - 350;
+          if (posY + 220 > wrapRect.height) posY = wrapRect.height - 230;
+
+          dossierModal.style.left = posX + 'px';
+          dossierModal.style.top = posY + 'px';
+          dossierModal.style.display = 'block';
+
+          dossierBadge.textContent = 'GEOSPATIAL POINT // RECON';
+          dossierTitle.textContent = 'COORDINATE RECONNAISSANCE';
+          dossierSubtitle.textContent = 'GRID FIX · COMPUTED ORTHOGRAPHIC SURFACE';
+          dossierGrid.innerHTML = `
+            <div class="dossier-item"><span>LATITUDE</span><strong>${lat.toFixed(5)}&deg;</strong></div>
+            <div class="dossier-item"><span>LONGITUDE</span><strong>${lon.toFixed(5)}&deg;</strong></div>
+            <div class="dossier-item"><span>ELEVATION</span><strong>SEA LEVEL / TERRAIN</strong></div>
+            <div class="dossier-item"><span>RADAR VISIBILITY</span><strong>LINE-OF-SIGHT CLEAR</strong></div>
+          `;
+          state.activeDossierEntity = { type: 'waypoint', lat, lon };
+          dossierActionBtn.textContent = '📍 DROP RECON PIN';
+        }
+      }
+
+      window.closeDossier = function() {
+        if (dossierModal) dossierModal.style.display = 'none';
+        state.activeDossierEntity = null;
+      };
+
+      window.executeDossierAction = function() {
+        if (!state.activeDossierEntity) return;
+        const ent = state.activeDossierEntity;
+        if (ent.type === 'waypoint') {
+          state.userWaypoint = { lat: ent.lat, lon: ent.lon, time: Date.now() };
+          if (topCoords) topCoords.textContent = 'WAYPOINT: LAT ' + ent.lat.toFixed(4) + ' | LON ' + ent.lon.toFixed(4) + ' | RECON DROP';
+        } else {
+          selectEntity(ent);
+        }
+        closeDossier();
+      };
+
+      // Click on canvas
+      function handleCanvasClick(e) {
+        if (state.hoveredEntity) {
+          selectEntity(state.hoveredEntity);
+          return;
+        }
+
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+
+        const cx = width / 2;
+        const cy = height / 2;
+        const radius = Math.min(width, height) * 0.38 * state.zoom;
+        const dx = (mx - cx) / radius;
+        const dy = (my - cy) / radius;
+        const r2 = dx * dx + dy * dy;
+
+        if (r2 <= 1.0) {
+          const z2 = Math.sqrt(1.0 - r2);
+          const y0 = dy * Math.cos(state.rotX) + z2 * Math.sin(state.rotX);
+          const z1 = -dy * Math.sin(state.rotX) + z2 * Math.cos(state.rotX);
+          const x0 = dx * Math.cos(state.rotY) - z1 * Math.sin(state.rotY);
+          const z0 = dx * Math.sin(state.rotY) + z1 * Math.cos(state.rotY);
+
+          const lat = -Math.asin(Math.max(-1, Math.min(1, y0))) * (180 / Math.PI);
+          const lon = Math.atan2(x0, z0) * (180 / Math.PI);
+
+          state.userWaypoint = { lat, lon, time: Date.now() };
+          if (topCoords) {
+            topCoords.textContent = 'WAYPOINT: LAT ' + lat.toFixed(4) + ' | LON ' + lon.toFixed(4) + ' | RECON DROP';
+          }
+        }
+      }
+
+      function selectEntity(ent) {
+        if (ent.type === 'flight') {
+          state.selectedTargetId = ent.id;
+          state.baseSpeed = ent.spd;
+          state.trackTarget = true;
+          const trackBtn = document.getElementById('btn-track-target');
+          if (trackBtn) trackBtn.classList.add('active');
+
+          if (hudTarget) hudTarget.textContent = ent.id + ' (' + ent.model + ')';
+          if (hudSpeed) hudSpeed.textContent = ent.spd + ' KTS';
+          if (hudHeading) hudHeading.textContent = ent.hdg + '° ' + getHeadingDir(ent.hdg);
+          if (hudSquawk) hudSquawk.textContent = ent.squawk;
+          if (topCoords) {
+            topCoords.textContent = 'LAT ' + ent.lat.toFixed(4) + ' | LON ' + ent.lon.toFixed(4) + ' | ALT ' + ent.alt.toLocaleString() + ' FT';
+          }
+          rotateToLatLon(ent.lat, ent.lon);
+        } else if (ent.type === 'cctv') {
+          const idx = CCTV_FEEDS.findIndex(c => c.id === ent.id);
+          if (idx !== -1) switchCctvCam(idx);
+          rotateToLatLon(ent.lat, ent.lon);
+        } else if (ent.type === 'ship') {
+          if (hudTarget) hudTarget.textContent = ent.id + ' [' + ent.model + ']';
+          if (hudSpeed) hudSpeed.textContent = ent.spd + ' KTS';
+          if (hudHeading) hudHeading.textContent = ent.hdg + '° NAV';
+          if (hudSquawk) hudSquawk.textContent = 'AIS-VHF [MONITORED]';
+          if (topCoords) {
+            topCoords.textContent = 'LAT ' + ent.lat.toFixed(4) + ' | LON ' + ent.lon.toFixed(4) + ' | SEA LEVEL';
+          }
+          rotateToLatLon(ent.lat, ent.lon);
+        } else if (ent.type === 'sat') {
+          focusIssOrbit();
+        }
+      }
+
+      function rotateToLatLon(targetLat, targetLon) {
+        state.targetRotY = -(targetLon * Math.PI) / 180 + Math.PI / 2;
+        state.targetRotX = (targetLat * Math.PI) / 180 * 0.6;
+      }
+
+      function getHeadingDir(hdg) {
+        const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+        return dirs[Math.floor(((hdg + 11.25) % 360) / 22.5)];
+      }
+
+      // Global Interactive Window Functions
+      
+      let lastEarthToggleTime = 0;
+      window.toggleInvertDrag = function() {
+        state.invertDrag = !state.invertDrag;
+        localStorage.setItem('orbit_invert_drag', state.invertDrag ? 'true' : 'false');
+        const txt = state.invertDrag ? 'DRAG CONTROLS: INVERTED (CAMERA)' : 'DRAG CONTROLS: NATURAL (GLOBE GRAB)';
+        console.log(txt);
+        if (topCoords) {
+          const orig = topCoords.textContent;
+          topCoords.textContent = 'TELEMETRY // ' + txt;
+          setTimeout(() => { topCoords.textContent = orig; }, 1800);
+        }
+      };
+
+      window.toggleRealEarthMode = function(e) {
+        if (e) {
+          if (e.stopPropagation) e.stopPropagation();
+          if (e.preventDefault) e.preventDefault();
+        }
+        const now = Date.now();
+        if (now - lastEarthToggleTime < 250) {
+          return; // Ignore duplicate event triggers within 250ms
+        }
+        lastEarthToggleTime = now;
+
+        state.earthMode = (state.earthMode === 'digital' ? 'real' : 'digital');
+        console.log("COP Earth Mode switched to:", state.earthMode);
+
+        const btn = document.getElementById('btn-earth-mode');
+        const icon = document.getElementById('earth-mode-icon');
+        const text = document.getElementById('earth-mode-text');
+
+        const btnNav = document.getElementById('btn-earth-mode-nav');
+        const iconNav = document.getElementById('earth-mode-icon-nav');
+        const textNav = document.getElementById('earth-mode-text-nav');
+
+        if (state.earthMode === 'real') {
+          if (btn) btn.classList.add('is-real');
+          if (icon) icon.textContent = '🌐';
+          if (text) text.textContent = 'DIGITAL GRID';
+
+          if (btnNav) btnNav.classList.add('is-real');
+          if (iconNav) iconNav.textContent = '🌐';
+          if (textNav) textNav.textContent = 'DIGITAL GRID';
+
+          if (topCoords) topCoords.textContent = 'EARTH OBSERVATORY // GOOGLE EARTH TRUE-SATELLITE IMAGERY [KEYLESS FEED ACTIVE]';
+        } else {
+          if (btn) btn.classList.remove('is-real');
+          if (icon) icon.textContent = '🌍';
+          if (text) text.textContent = 'GOOGLE EARTH';
+
+          if (btnNav) btnNav.classList.remove('is-real');
+          if (iconNav) iconNav.textContent = '🌍';
+          if (textNav) textNav.textContent = 'GOOGLE EARTH';
+
+          if (topCoords) topCoords.textContent = 'LAT 37.7749 | LON -122.4194 | ALT 28,400 FT';
+        }
+      };
+
+      // Single dedicated click & isolation listeners
+      ['btn-earth-mode', 'btn-earth-mode-nav'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) {
+          b.onclick = function(ev) {
+            if (ev) {
+              ev.stopPropagation();
+              ev.preventDefault();
+            }
+            toggleRealEarthMode(ev);
+            return false;
+          };
+          b.onmousedown = function(ev) {
+            if (ev) ev.stopPropagation();
+          };
+          b.onmouseup = function(ev) {
+            if (ev) ev.stopPropagation();
+          };
+        }
+      });
+  
+      window.toggleCopFullscreen = function() {
+        if (!panel) return;
+        const btn = document.getElementById('btn-fullscreen');
+        const isFs = panel.classList.contains('is-fullscreen') || document.fullscreenElement;
+
+        if (!isFs) {
+          if (panel.requestFullscreen) {
+            panel.requestFullscreen().catch(() => panel.classList.add('is-fullscreen'));
+          } else {
+            panel.classList.add('is-fullscreen');
+          }
+          panel.classList.add('is-fullscreen');
+          if (btn) btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg><span>EXIT FULLSCREEN</span>';
+        } else {
+          if (document.exitFullscreen && document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+          }
+          panel.classList.remove('is-fullscreen');
+          if (btn) btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg><span>FULLSCREEN</span>';
+        }
+        setTimeout(resize, 100);
+      };
+
+      document.addEventListener('fullscreenchange', () => {
+        const btn = document.getElementById('btn-fullscreen');
+        if (!document.fullscreenElement && panel) {
+          panel.classList.remove('is-fullscreen');
+          if (btn) btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg><span>FULLSCREEN</span>';
+          setTimeout(resize, 100);
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeDossier();
+          if (panel && panel.classList.contains('is-fullscreen')) {
+            toggleCopFullscreen();
+          }
+        }
+      });
+
+      window.zoomIn = function() {
+        updateZoom(state.targetZoom + 0.35);
+      };
+
+      window.zoomOut = function() {
+        updateZoom(state.targetZoom - 0.35);
+      };
+
+      window.resetGlobeView = function() {
+        state.targetZoom = 1.0;
+        state.targetRotX = 0.35;
+        state.targetRotY = 1.25;
+        state.trackTarget = false;
+        const trackBtn = document.getElementById('btn-track-target');
+        if (trackBtn) trackBtn.classList.remove('active');
+        state.userWaypoint = null;
+        closeDossier();
+        relockUAL482();
+      };
+
+      window.relockUAL482 = function() {
+        state.selectedTargetId = 'UAL-482';
+        state.baseSpeed = 492;
+        state.trackTarget = true;
+        const ual = FLIGHTS.find(f => f.id === 'UAL-482');
+        if (ual) {
+          if (hudTarget) hudTarget.textContent = 'UAL-482 (B787-9)';
+          if (hudSpeed) hudSpeed.textContent = '492 KTS';
+          if (hudHeading) hudHeading.textContent = '284° WNW';
+          if (hudSquawk) hudSquawk.textContent = '7700 [MONITORED]';
+          if (topCoords) topCoords.textContent = 'LAT 37.7749 | LON -122.4194 | ALT 28,400 FT';
+          rotateToLatLon(ual.lat, ual.lon);
+        }
+        const trackBtn = document.getElementById('btn-track-target');
+        if (trackBtn) trackBtn.classList.add('active');
+      };
+
+      window.toggleTargetTracking = function() {
+        state.trackTarget = !state.trackTarget;
+        const trackBtn = document.getElementById('btn-track-target');
+        if (trackBtn) {
+          if (state.trackTarget) trackBtn.classList.add('active');
+          else trackBtn.classList.remove('active');
+        }
+      };
+
+      window.focusIssOrbit = function() {
+        state.targetZoom = 1.45;
+        state.targetRotX = 0.25;
+        if (topCoords) topCoords.textContent = 'ORBITAL TRACK: ISS (ZARYA) · ALT 418 KM · INC 51.6°';
+      };
+
+      window.switchCctvCam = function(index) {
+        state.activeCctvIndex = index;
+        document.querySelectorAll('.cctv-btn').forEach((b, i) => {
+          if (i === index) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        const feed = CCTV_FEEDS[index];
+        if (cctvCamId && feed) {
+          cctvCamId.textContent = feed.label;
+        }
+        if (feed) rotateToLatLon(feed.lat, feed.lon);
+      };
+
+      window.cycleNextCctv = function() {
+        const nextIdx = (state.activeCctvIndex + 1) % CCTV_FEEDS.length;
+        switchCctvCam(nextIdx);
+      };
+
+      window.setTimeWarp = function(speed) {
+        state.timeWarp = speed;
+        document.querySelectorAll('.time-btn').forEach(b => {
+          if (b.id === 'time-btn-' + speed) b.classList.add('active');
+          else if (b.id !== 'btn-pause') b.classList.remove('active');
+        });
+      };
+
+      window.togglePauseSimulation = function() {
+        state.isPaused = !state.isPaused;
+        const btn = document.getElementById('btn-pause');
+        if (btn) {
+          btn.textContent = state.isPaused ? '▶' : '⏸';
+          if (state.isPaused) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      };
+
+      window.toggleCopLayer = function(btn, layerName) {
+        if (state.layers[layerName] !== undefined) {
+          state.layers[layerName] = !state.layers[layerName];
+          if (state.layers[layerName]) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      };
+
+      window.setCopMode = function(btn, modeName) {
+        state.colorMode = modeName;
+        document.querySelectorAll('.cop-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      };
+
+      function project(latDeg, lonDeg, radius, cx, cy) {
+        const lat = (latDeg * Math.PI) / 180;
+        const lon = (lonDeg * Math.PI) / 180;
+
+        const x0 = Math.cos(lat) * Math.sin(lon);
+        const y0 = -Math.sin(lat);
+        const z0 = Math.cos(lat) * Math.cos(lon);
+
+        const x1 = x0 * Math.cos(state.rotY) + z0 * Math.sin(state.rotY);
+        const z1 = -x0 * Math.sin(state.rotY) + z0 * Math.cos(state.rotY);
+
+        const y2 = y0 * Math.cos(state.rotX) - z1 * Math.sin(state.rotX);
+        const z2 = y0 * Math.sin(state.rotX) + z1 * Math.cos(state.rotX);
+
+        return {
+          x: cx + x1 * radius,
+          y: cy + y2 * radius,
+          z: z2,
+          visible: z2 > -0.05
+        };
+      }
+
+      function renderCctvFeed() {
+        if (!cctvCtx) return;
+        const cw = cctvCanvas.width;
+        const ch = cctvCanvas.height;
+
+        cctvCtx.fillStyle = '#050a07';
+        cctvCtx.fillRect(0, 0, cw, ch);
+
+        cctvCtx.strokeStyle = 'rgba(0, 245, 184, 0.25)';
+        cctvCtx.lineWidth = 1;
+        cctvCtx.beginPath();
+        cctvCtx.moveTo(0, ch * 0.7);
+        cctvCtx.lineTo(cw, ch * 0.7);
+        cctvCtx.moveTo(cw * 0.2, ch * 0.7);
+        cctvCtx.lineTo(cw * 0.05, ch);
+        cctvCtx.moveTo(cw * 0.5, ch * 0.7);
+        cctvCtx.lineTo(cw * 0.5, ch);
+        cctvCtx.moveTo(cw * 0.8, ch * 0.7);
+        cctvCtx.lineTo(cw * 0.95, ch);
+        cctvCtx.stroke();
+
+        const time = Date.now() * 0.001;
+        const planeX = (cw * 0.45) + Math.sin(time * 0.4) * 15;
+        const planeY = ch * 0.65;
+
+        if (state.activeCctvIndex === 0) {
+          cctvCtx.fillStyle = '#00f5b8';
+          cctvCtx.beginPath();
+          cctvCtx.moveTo(planeX, planeY - 6);
+          cctvCtx.lineTo(planeX + 18, planeY);
+          cctvCtx.lineTo(planeX + 28, planeY - 3);
+          cctvCtx.lineTo(planeX + 28, planeY + 2);
+          cctvCtx.lineTo(planeX + 10, planeY + 3);
+          cctvCtx.lineTo(planeX - 12, planeY + 4);
+          cctvCtx.lineTo(planeX - 24, planeY);
+          cctvCtx.closePath();
+          cctvCtx.fill();
+        } else if (state.activeCctvIndex === 1) {
+          for (let i = 0; i < 6; i++) {
+            cctvCtx.fillStyle = '#ffffff';
+            cctvCtx.fillRect(cw * 0.5 - 2, ch * 0.7 + i * 5, 4, 3);
+          }
+        } else if (state.activeCctvIndex === 2) {
+          cctvCtx.fillStyle = 'rgba(0, 210, 255, 0.4)';
+          cctvCtx.fillRect(0, ch * 0.75, cw, ch * 0.25);
+        } else {
+          cctvCtx.fillStyle = 'rgba(255, 170, 0, 0.6)';
+          cctvCtx.fillRect(cw * 0.7, ch * 0.35, 12, ch * 0.35);
+          cctvCtx.fillRect(cw * 0.66, ch * 0.32, 20, 5);
+        }
+
+        if (Math.sin(time * 4) > 0.3) {
+          cctvCtx.fillStyle = '#ff4757';
+          cctvCtx.beginPath();
+          cctvCtx.arc(planeX + 2, planeY - 7, 2, 0, Math.PI * 2);
+          cctvCtx.fill();
+        }
+
+        const imgData = cctvCtx.getImageData(0, 0, cw, ch);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 16) {
+          const noise = (Math.random() - 0.5) * 22;
+          data[i] = Math.max(0, Math.min(255, data[i] + noise));
+          data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise * 1.5));
+          data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise));
+        }
+        cctvCtx.putImageData(imgData, 0, 0);
+
+        const scanY = (Date.now() * 0.05) % ch;
+        cctvCtx.fillStyle = 'rgba(0, 245, 184, 0.08)';
+        cctvCtx.fillRect(0, scanY, cw, 6);
+
+        cctvCtx.strokeStyle = 'rgba(0, 245, 184, 0.5)';
+        cctvCtx.lineWidth = 1;
+        cctvCtx.beginPath();
+        cctvCtx.moveTo(8, 16); cctvCtx.lineTo(8, 8); cctvCtx.lineTo(16, 8);
+        cctvCtx.moveTo(cw - 16, 8); cctvCtx.lineTo(cw - 8, 8); cctvCtx.lineTo(cw - 8, 16);
+        cctvCtx.moveTo(8, ch - 16); cctvCtx.lineTo(8, ch - 8); cctvCtx.lineTo(16, ch - 8);
+        cctvCtx.moveTo(cw - 16, ch - 8); cctvCtx.lineTo(cw - 8, ch - 8); cctvCtx.lineTo(cw - 8, ch - 16);
+        cctvCtx.stroke();
+
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        const ms = String(Math.floor(now.getMilliseconds() / 100));
+        if (cctvRecTime) {
+          cctvRecTime.textContent = 'REC ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()) + '.' + ms;
+        }
+      }
+
+      function render(timestamp) {
+        requestAnimationFrame(render);
+
+        clickableEntities = [];
+
+        frameCount++;
+        if (timestamp - lastFpsTime >= 500) {
+          measuredFps = (frameCount * 1000) / (timestamp - lastFpsTime);
+          frameCount = 0;
+          lastFpsTime = timestamp;
+          if (hudFps) hudFps.textContent = measuredFps.toFixed(1);
+        }
+
+        state.zoom += (state.targetZoom - state.zoom) * 0.14;
+        if (zoomIndicator) {
+          zoomIndicator.textContent = Math.round(state.zoom * 100) + '%';
+        }
+
+        if (state.targetRotY !== undefined) {
+          state.rotY += (state.targetRotY - state.rotY) * 0.08;
+          state.rotX += (state.targetRotX - state.rotX) * 0.08;
+          if (Math.abs(state.targetRotY - state.rotY) < 0.001) state.targetRotY = undefined;
+        }
+
+        if (hudSpeed && Math.random() < 0.1 && !state.isPaused) {
+          const jitter = Math.floor(Math.random() * 5) - 2;
+          hudSpeed.textContent = (state.baseSpeed + jitter) + ' KTS';
+        }
+
+        if (timestamp % 1000 < 20 && !state.isPaused) {
+          state.issRiseSeconds = Math.max(0, state.issRiseSeconds - state.timeWarp);
+          if (state.issRiseSeconds <= 0) state.issRiseSeconds = 14 * 60 + 22;
+          const mins = Math.floor(state.issRiseSeconds / 60);
+          const secs = state.issRiseSeconds % 60;
+          if (hudOrbitRise) {
+            hudOrbitRise.textContent = '+' + mins + 'm ' + String(secs).padStart(2, '0') + 's (ELEV 68°)';
+          }
+        }
+
+        if (!state.isDragging && !state.isPaused && state.targetRotY === undefined) {
+          if (!state.trackTarget) {
+            state.rotY += state.velY * state.timeWarp;
+          }
+        }
+
+        const pal = PALETTES[state.colorMode] || PALETTES.normal;
+        const cx = width / 2;
+        const cy = height / 2;
+        const radius = Math.min(width, height) * 0.38 * state.zoom;
+
+        const dpr = window.devicePixelRatio || 1;
+
+        if (state.earthMode === 'real') {
+          // ==========================================
+          // GOOGLE EARTH TRUE-SATELLITE WEBGL RENDERER
+          // ==========================================
+          if (copWebglCanvas) copWebglCanvas.style.display = 'block';
+          if (webglEarth) {
+            webglEarth.render(cx, cy, radius, state.rotX, state.rotY, width, height, dpr);
+          }
+
+          ctx.clearRect(0, 0, width, height);
+
+          // Deep space stars (rendered in space outside Earth's disk)
+          for (let star of STARS) {
+            const sx = star.x * width;
+            const sy = star.y * height;
+            if (Math.hypot(sx - cx, sy - cy) > radius * 1.04) {
+              ctx.fillStyle = 'rgba(200, 230, 255, ' + star.alpha + ')';
+              ctx.beginPath();
+              ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+
+          // Procedural fallback if WebGL is unavailable on host
+          if (!webglEarth) {
+            const atmoGrad = ctx.createRadialGradient(cx, cy, radius * 0.96, cx, cy, radius * 1.30);
+            atmoGrad.addColorStop(0, 'rgba(80, 195, 255, 0.58)');
+            atmoGrad.addColorStop(0.22, 'rgba(25, 120, 255, 0.36)');
+            atmoGrad.addColorStop(0.65, 'rgba(10, 45, 180, 0.12)');
+            atmoGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = atmoGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 1.30, 0, Math.PI * 2);
+            ctx.fill();
+
+            const sunX = cx - radius * 0.42;
+            const sunY = cy - radius * 0.42;
+            const oceanGrad = ctx.createRadialGradient(sunX, sunY, radius * 0.05, cx, cy, radius);
+            oceanGrad.addColorStop(0, '#267bb2');
+            oceanGrad.addColorStop(0.22, '#154e7d');
+            oceanGrad.addColorStop(0.60, '#0b2b4e');
+            oceanGrad.addColorStop(0.88, '#041324');
+            oceanGrad.addColorStop(1.00, '#01060f');
+            ctx.fillStyle = oceanGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            CONTINENTS.forEach((poly, polyIdx) => {
+              ctx.beginPath();
+              let first = true;
+              let anyVisible = false;
+              poly.forEach(([lat, lon]) => {
+                const p = project(lat, lon, radius, cx, cy);
+                if (p.visible) anyVisible = true;
+                if (first) { ctx.moveTo(p.x, p.y); first = false; }
+                else { ctx.lineTo(p.x, p.y); }
+              });
+              if (anyVisible) {
+                ctx.fillStyle = (polyIdx === 3 ? '#d8a75e' : (polyIdx === 5 ? '#b85e28' : '#2e5b30'));
+                ctx.fill();
+              }
+            });
+          }
+
+          // Photorealistic Atmospheric Cloud Formations Drifting Over Google Earth
+          if (!state.isPaused) {
+            state.cloudDrift += 0.00035 * state.timeWarp;
+          }
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.clip();
+
+          const cloudBands = [
+            { lat: 6, lonOff: 0, rad: 38, count: 8 },
+            { lat: 42, lonOff: 75, rad: 32, count: 7 },
+            { lat: -32, lonOff: 140, rad: 34, count: 7 },
+            { lat: 26, lonOff: 210, rad: 28, count: 6 },
+            { lat: -55, lonOff: 90, rad: 36, count: 8 }
+          ];
+
+          cloudBands.forEach((band) => {
+            const step = 360 / band.count;
+            for (let i = 0; i < band.count; i++) {
+              const lon = -180 + i * step + (state.cloudDrift * 160) + band.lonOff;
+              const cp = project(band.lat + Math.sin(i * 1.5) * 6, lon, radius * 1.012, cx, cy);
+              if (cp.visible) {
+                const cGrad = ctx.createRadialGradient(cp.x, cp.y, 0, cp.x, cp.y, band.rad * state.zoom);
+                cGrad.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+                cGrad.addColorStop(0.50, 'rgba(240, 248, 255, 0.20)');
+                cGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = cGrad;
+                ctx.beginPath();
+                ctx.arc(cp.x, cp.y, band.rad * state.zoom, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+          });
+          ctx.restore();
+
+        } else {
+          // ==========================================
+          // DIGITAL CYBER VECTOR GRID RENDERER
+          // ==========================================
+          if (copWebglCanvas) copWebglCanvas.style.display = 'none';
+
+          ctx.fillStyle = '#030508';
+          ctx.fillRect(0, 0, width, height);
+
+          for (let star of STARS) {
+            ctx.fillStyle = 'rgba(200, 230, 255, ' + star.alpha + ')';
+            ctx.beginPath();
+            ctx.arc(star.x * width, star.y * height, star.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          // ==========================================
+          // DIGITAL CYBER VECTOR GRID RENDERER
+          // ==========================================
+          const haloGrad = ctx.createRadialGradient(cx, cy, radius * 0.95, cx, cy, radius * 1.25);
+          haloGrad.addColorStop(0, pal.accentDim);
+          haloGrad.addColorStop(0.5, 'rgba(0, 245, 184, 0.04)');
+          haloGrad.addColorStop(1, 'transparent');
+          ctx.fillStyle = haloGrad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius * 1.25, 0, Math.PI * 2);
+          ctx.fill();
+
+          const globeGrad = ctx.createRadialGradient(cx - radius * 0.35, cy - radius * 0.35, radius * 0.1, cx, cy, radius);
+          globeGrad.addColorStop(0, pal.globeBg);
+          globeGrad.addColorStop(0.8, '#04070e');
+          globeGrad.addColorStop(1, '#020306');
+          ctx.fillStyle = globeGrad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = pal.accentDim;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.strokeStyle = pal.gridLines;
+          ctx.lineWidth = 1;
+          const parallels = [-60, -40, -20, 0, 20, 40, 60];
+          parallels.forEach(lat => {
+            ctx.beginPath();
+            let started = false;
+            for (let lon = -180; lon <= 180; lon += 6) {
+              const p = project(lat, lon, radius, cx, cy);
+              if (p.visible) {
+                if (!started) { ctx.moveTo(p.x, p.y); started = true; }
+                else { ctx.lineTo(p.x, p.y); }
+              } else {
+                started = false;
+              }
+            }
+            ctx.stroke();
+          });
+
+          for (let lon = -180; lon < 180; lon += 30) {
+            ctx.beginPath();
+            let started = false;
+            for (let lat = -90; lat <= 90; lat += 5) {
+              const p = project(lat, lon, radius, cx, cy);
+              if (p.visible) {
+                if (!started) { ctx.moveTo(p.x, p.y); started = true; }
+                else { ctx.lineTo(p.x, p.y); }
+              } else {
+                started = false;
+              }
+            }
+            ctx.stroke();
+          }
+
+          CONTINENTS.forEach(poly => {
+            ctx.beginPath();
+            let first = true;
+            let anyVisible = false;
+            poly.forEach(([lat, lon]) => {
+              const p = project(lat, lon, radius, cx, cy);
+              if (p.visible) anyVisible = true;
+              if (first) { ctx.moveTo(p.x, p.y); first = false; }
+              else { ctx.lineTo(p.x, p.y); }
+            });
+            if (anyVisible) {
+              ctx.fillStyle = pal.land;
+              ctx.fill();
+              ctx.strokeStyle = pal.landBorder;
+              ctx.lineWidth = 1.2;
+              ctx.stroke();
+            }
+          });
+        }
+
+        if (state.layers.weather) {
+          WEATHER_CELLS.forEach((cell, idx) => {
+            const p = project(cell.lat, cell.lon, radius, cx, cy);
+            if (p.visible) {
+              const pulse = Math.sin(timestamp * 0.003 + idx) * 4 + (cell.radius * 0.06 * state.zoom);
+              const wGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, pulse);
+              wGrad.addColorStop(0, pal.weatherCol);
+              wGrad.addColorStop(0.7, 'rgba(56, 189, 248, 0.1)');
+              wGrad.addColorStop(1, 'transparent');
+              ctx.fillStyle = wGrad;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, pulse, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          });
+        }
+
+        if (state.layers.threats) {
+          THREAT_ZONES.forEach((tz, idx) => {
+            const p = project(tz.lat, tz.lon, radius, cx, cy);
+            if (p.visible) {
+              const tPulse = (timestamp * 0.002 + idx * 0.5) % 1;
+              ctx.strokeStyle = 'rgba(239, 68, 68, ' + (1 - tPulse) + ')';
+              ctx.lineWidth = 1.2;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, 8 + tPulse * 22 * state.zoom, 0, Math.PI * 2);
+              ctx.stroke();
+
+              ctx.fillStyle = pal.threatCol;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, 6 * state.zoom, 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.font = '8px monospace';
+              ctx.fillStyle = '#ef4444';
+              ctx.fillText(tz.label, p.x + 8, p.y + 3);
+            }
+          });
+        }
+
+        if (!state.isPaused) {
+          radarAngle += 0.025 * state.timeWarp;
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.clip(); // Ensure everything below is clipped to the globe's edge so it doesn't bleed out
+
+        // 1. Radar Sweep Line
+        const sweepX = cx + Math.cos(radarAngle) * radius;
+        const sweepY = cy + Math.sin(radarAngle) * radius;
+
+        ctx.strokeStyle = pal.accentGlow;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(sweepX, sweepY);
+        ctx.stroke();
+        
+        // 2. Radar Sweep Glow Cone (The big green shape the user might be referring to!)
+        ctx.fillStyle = 'rgba(0, 245, 184, 0.15)';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, radarAngle - 0.4, radarAngle, false);
+        ctx.lineTo(cx, cy);
+        ctx.fill();
+
+        // 3. Waypoint Ping (Clipped so it doesn't hang off the edge)
+        if (state.userWaypoint) {
+          const wp = project(state.userWaypoint.lat, state.userWaypoint.lon, radius, cx, cy);
+          if (wp.visible) {
+            const ping = (Date.now() * 0.003) % 1;
+            ctx.strokeStyle = 'rgba(0, 245, 184, ' + (1 - ping) + ')';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(wp.x, wp.y, 4 + ping * 18, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#00f5b8';
+            ctx.beginPath();
+            ctx.arc(wp.x, wp.y, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '9px monospace';
+            ctx.fillStyle = '#00f5b8';
+            ctx.fillText('WAYPOINT', wp.x + 8, wp.y - 4);
+          }
+        }
+        
+        ctx.restore(); // End globe clipping
+
+        // 1. Maritime AIS Vessels Layer
+        if (state.layers.ais) {
+          SHIPS.forEach(ship => {
+            const p = project(ship.lat, ship.lon, radius, cx, cy);
+            if (p.visible) {
+              clickableEntities.push({
+                type: 'ship',
+                id: ship.name,
+                model: ship.type,
+                spd: ship.spd,
+                hdg: ship.hdg,
+                lat: ship.lat,
+                lon: ship.lon,
+                raw: ship,
+                x: p.x,
+                y: p.y
+              });
+
+              ctx.fillStyle = pal.aisCol;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, 3 * Math.min(state.zoom, 2.2), 0, Math.PI * 2);
+              ctx.fill();
+
+              const hdgRad = (ship.hdg * Math.PI) / 180;
+              ctx.strokeStyle = pal.aisCol;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p.x + Math.sin(hdgRad) * 8 * Math.min(state.zoom, 2.0), p.y - Math.cos(hdgRad) * 8 * Math.min(state.zoom, 2.0));
+              ctx.stroke();
+
+              ctx.font = (state.zoom > 1.8 ? '10px' : '8px') + ' monospace';
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+              ctx.fillText(ship.name, p.x + 6, p.y + 3);
+            }
+          });
+        }
+
+        // 2. Flight Entities Layer
+        if (state.layers.flights) {
+          FLIGHTS.forEach(flight => {
+            if (!state.isPaused) {
+              const speedFact = flight.spd * 0.000004 * state.timeWarp;
+              flight.lon += Math.sin((flight.hdg * Math.PI) / 180) * speedFact * 10;
+              flight.lat += Math.cos((flight.hdg * Math.PI) / 180) * speedFact * 10;
+            }
+
+            const isTarget = (flight.id === state.selectedTargetId);
+            if (isTarget && state.trackTarget) {
+              rotateToLatLon(flight.lat, flight.lon);
+            }
+
+            const p = project(flight.lat, flight.lon, radius, cx, cy);
+            if (p.visible) {
+              clickableEntities.push({
+                type: 'flight',
+                id: flight.id,
+                model: flight.model,
+                spd: flight.spd,
+                hdg: flight.hdg,
+                alt: flight.alt,
+                squawk: flight.squawk,
+                lat: flight.lat,
+                lon: flight.lon,
+                raw: flight,
+                x: p.x,
+                y: p.y
+              });
+
+              flight.trail.push({ x: p.x, y: p.y });
+              if (flight.trail.length > 25) flight.trail.shift();
+
+              if (flight.trail.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(flight.trail[0].x, flight.trail[0].y);
+                for (let i = 1; i < flight.trail.length; i++) {
+                  ctx.lineTo(flight.trail[i].x, flight.trail[i].y);
+                }
+                ctx.strokeStyle = isTarget ? 'rgba(255, 170, 0, 0.5)' : pal.flightTrail;
+                ctx.lineWidth = 1.2 * Math.min(state.zoom, 2.0);
+                ctx.stroke();
+              }
+
+              ctx.fillStyle = isTarget ? pal.targetCol : pal.flightBlip;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, (isTarget ? 4.5 : 3) * Math.min(state.zoom, 2.0), 0, Math.PI * 2);
+              ctx.fill();
+
+              if (isTarget) {
+                const pulse = Math.sin(timestamp * 0.006) * 3 + 12 * Math.min(state.zoom, 2.0);
+                ctx.strokeStyle = pal.targetCol;
+                ctx.lineWidth = 1.3;
+
+                ctx.beginPath();
+                ctx.moveTo(p.x - pulse, p.y - pulse + 4); ctx.lineTo(p.x - pulse, p.y - pulse); ctx.lineTo(p.x - pulse + 4, p.y - pulse);
+                ctx.moveTo(p.x + pulse - 4, p.y - pulse); ctx.lineTo(p.x + pulse, p.y - pulse); ctx.lineTo(p.x + pulse, p.y - pulse + 4);
+                ctx.moveTo(p.x - pulse, p.y + pulse - 4); ctx.lineTo(p.x - pulse, p.y + pulse); ctx.lineTo(p.x - pulse + 4, p.y + pulse);
+                ctx.moveTo(p.x + pulse - 4, p.y + pulse); ctx.lineTo(p.x + pulse, p.y + pulse); ctx.lineTo(p.x + pulse, p.y + pulse - 4);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(p.x + pulse, p.y - pulse);
+                ctx.lineTo(p.x + pulse + 16, p.y - pulse - 12);
+                ctx.lineTo(p.x + pulse + 76, p.y - pulse - 12);
+                ctx.stroke();
+
+                ctx.font = '9px monospace';
+                ctx.fillStyle = pal.targetCol;
+                ctx.fillText('TARGET: ' + flight.id, p.x + pulse + 20, p.y - pulse - 15);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('FL' + Math.floor(flight.alt / 100) + ' · ' + flight.spd + 'KTS', p.x + pulse + 20, p.y - pulse - 3);
+              } else {
+                ctx.font = (state.zoom > 1.8 ? '10px' : '8px') + ' monospace';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+                ctx.fillText(flight.id, p.x + 6, p.y - 4);
+              }
+            }
+          });
+        }
+
+        // 3. CCTV Camera Pins Layer
+        if (state.layers.cctv) {
+          CCTV_FEEDS.forEach((cam, idx) => {
+            const p = project(cam.lat, cam.lon, radius, cx, cy);
+            if (p.visible) {
+              clickableEntities.push({
+                type: 'cctv',
+                id: cam.id,
+                label: cam.label,
+                lat: cam.lat,
+                lon: cam.lon,
+                raw: cam,
+                x: p.x,
+                y: p.y
+              });
+
+              const isCurrentCctv = (idx === state.activeCctvIndex);
+              const ping = (timestamp * 0.003 + idx * 0.3) % 1;
+              ctx.strokeStyle = 'rgba(255, 71, 87, ' + (1 - ping) + ')';
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, (4 + ping * 12) * Math.min(state.zoom, 2.0), 0, Math.PI * 2);
+              ctx.stroke();
+
+              ctx.fillStyle = isCurrentCctv ? '#00f5b8' : pal.cctvCol;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, (isCurrentCctv ? 4.5 : 3) * Math.min(state.zoom, 2.0), 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.font = '8px monospace';
+              ctx.fillStyle = isCurrentCctv ? '#00f5b8' : pal.cctvCol;
+              ctx.fillText(cam.id, p.x + 6, p.y - 4);
+            }
+          });
+        }
+
+        // 4. Satellite / ISS Orbit Layer
+        if (state.layers.satellites) {
+          if (!state.isPaused) {
+            issOrbitPhase += 0.0015 * state.timeWarp;
+          }
+          const inc = (51.6 * Math.PI) / 180;
+          const satAltRadius = radius * 1.08;
+
+          ctx.beginPath();
+          let started = false;
+          for (let u = 0; u <= Math.PI * 2; u += 0.08) {
+            const ox = Math.cos(u);
+            const oy = Math.sin(u) * Math.sin(inc);
+            const oz = Math.sin(u) * Math.cos(inc);
+
+            const rx = ox * Math.cos(state.rotY) + oz * Math.sin(state.rotY);
+            const rz = -ox * Math.sin(state.rotY) + oz * Math.cos(state.rotY);
+            const ry = oy * Math.cos(state.rotX) - rz * Math.sin(state.rotX);
+            const finalZ = oy * Math.sin(state.rotX) + rz * Math.cos(state.rotX);
+
+            const px = cx + rx * satAltRadius;
+            const py = cy + ry * satAltRadius;
+
+            if (finalZ > -0.2) {
+              if (!started) { ctx.moveTo(px, py); started = true; }
+              else { ctx.lineTo(px, py); }
+            } else {
+              started = false;
+            }
+          }
+          ctx.strokeStyle = 'rgba(236, 204, 104, 0.35)';
+          ctx.setLineDash([3, 5]);
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          const iu = issOrbitPhase;
+          const iox = Math.cos(iu);
+          const ioy = Math.sin(iu) * Math.sin(inc);
+          const ioz = Math.sin(iu) * Math.cos(inc);
+
+          const irx = iox * Math.cos(state.rotY) + ioz * Math.sin(state.rotY);
+          const irz = -iox * Math.sin(state.rotY) + ioz * Math.cos(state.rotY);
+          const iry = ioy * Math.cos(state.rotX) - irz * Math.sin(state.rotX);
+          const ifinalZ = ioy * Math.sin(state.rotX) + irz * Math.cos(state.rotX);
+
+          if (ifinalZ > -0.1) {
+            const isx = cx + irx * satAltRadius;
+            const isy = cy + iry * satAltRadius;
+
+            clickableEntities.push({
+              type: 'sat',
+              id: 'ISS (ZARYA)',
+              x: isx,
+              y: isy
+            });
+
+            ctx.fillStyle = pal.satCol;
+            ctx.fillRect(isx - 7 * Math.min(state.zoom, 2.0), isy - 2, 14 * Math.min(state.zoom, 2.0), 4);
+            ctx.fillRect(isx - 2, isy - 6 * Math.min(state.zoom, 2.0), 4, 12 * Math.min(state.zoom, 2.0));
+
+            ctx.font = '8px monospace';
+            ctx.fillStyle = pal.satCol;
+            ctx.fillText('ISS (ZARYA)', isx + 8, isy - 4);
+          }
+        }
+
+        // Interactive Hover Target Ring
+        if (state.hoveredEntity) {
+          const h = state.hoveredEntity;
+          ctx.strokeStyle = '#00f5b8';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(h.x, h.y, 14, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.fillStyle = 'rgba(5, 10, 18, 0.94)';
+          ctx.strokeStyle = 'rgba(0, 245, 184, 0.6)';
+          const tipText = 'R-CLICK: DOSSIER | L-CLICK: ' + h.id;
+          ctx.font = '9px monospace';
+          const tw = ctx.measureText(tipText).width + 12;
+          ctx.fillRect(h.x + 12, h.y - 18, tw, 18);
+          ctx.strokeRect(h.x + 12, h.y - 18, tw, 18);
+
+          ctx.fillStyle = '#00f5b8';
+          ctx.fillText(tipText, h.x + 18, h.y - 6);
+        }
+
+        renderCctvFeed();
+      }
+
+      requestAnimationFrame(render);
+    })();
+  </script>
+
+
+
+  <!-- Internationalization & Dynamic Language Engine -->
+  <script>
+    const I18N_DICTS = {"en":{"lang_name":"English","dir":"ltr","nav_features":"Features","nav_interface":"Interface","nav_capabilities":"Capabilities","nav_how":"How It Works","nav_feeds":"Live Feeds","nav_sim":"Live Simulation","nav_download":"Download Setup →","hero_badge":"REAL-TIME GLOBAL MONITORING · 60,000+ CONTACTS ACTIVE","hero_title_1":"See everything.","hero_title_2":"Everywhere. Live.","hero_desc":"Trendusty Orbit is an AI-powered intelligence operations center that fuses live aviation, maritime AIS, satellite tracking, worldwide CCTV, seismic activity, wildfires, cyber threats and conflict monitoring into one interactive global picture — with an advanced OSINT toolkit and zero-lag 3D geospatial rendering.","hero_enter":"Enter the Orbit","hero_explore":"Explore Operating Picture ↓","stat_layers":"Intelligence Layers","stat_entities":"Live Entities","stat_feeds":"Global Feeds","stat_watch":"Continuous Watch","interface_tag":"// The Interface","interface_title":"A living map of the planet","interface_desc":"Common Operating Picture — 60,000+ live entities across 23 intelligence layers. Click any flight, vessel, satellite, or CCTV camera to stream telemetry in place.","why_tag":"// Why Trendusty Orbit","why_title":"Situational awareness used to cost millions","why_desc":"Intelligence agencies and defense contractors pay fortunes for fused, real-time operating pictures. Trendusty Orbit brings that capability to your own PC and server — open, auditable, and under your complete control.","feature_1_title":"One picture, every domain","feature_1_desc":"Flights, ships, satellites, cameras, earthquakes, wildfires, cyber threats and conflicts — fused into a single live operating picture instead of twenty disconnected browser tabs.","feature_2_title":"Real time, not reports","feature_2_desc":"Events appear as they happen. When a wildfire ignites, a ship deviates from its corridor, or a conflict escalates, you see it move on the map — not in tomorrow's morning briefing.","feature_3_title":"Private by design","feature_3_desc":"Self-hosted on your own computer. Role-based access, audit logging, encrypted sessions — your searches, watchlist queries, and intelligence data never leave your infrastructure.","feature_4_title":"Built for teams & analysts","feature_4_desc":"Admin operations center, API keys with scopes and rate limits, high-performance rendering presets, plugin management — a full operational deck an entire security crew can rely on.","cap_tag":"// Capabilities","cap_title":"One platform, every sensor","cap_desc":"Comprehensive multi-domain intelligence tools built for physical surveillance, cyber reconnaissance, and environmental situational awareness.","cap_aviation_title":"Live Aviation","cap_aviation_desc":"10,000+ aircraft tracked in real time — commercial airliners, general aviation, and military reconnaissance flights worldwide with 3D cockpit ride-along.","cap_maritime_title":"Global Maritime","cap_maritime_desc":"Tens of thousands of vessels via live terrestrial and satellite AIS — cargo carriers, oil tankers, fishing fleets, passenger liners, and naval deployments.","cap_orbital_title":"Orbital Tracking","cap_orbital_desc":"2,000+ satellites, space stations, and rocket launches plotted live with altitude telemetry, orbit propagation, and ground pass prediction schedules.","cap_cctv_title":"CCTV Network","cap_cctv_desc":"Worldwide public camera feeds plus the ability to mount your own external RTSP and HLS video streams directly onto real-world GPS coordinates.","cap_osint_title":"OSINT Toolkit","cap_osint_desc":"DNS mapping, WHOIS lookups, SSL certificates, port scanners, subdomains, and threat telemetry investigation directly inside the browser console.","cap_breach_title":"Breach Intelligence","cap_breach_desc":"Correlate compromised credentials and infrastructure breaches against global target sets with full cryptographic audit logging and export capabilities.","how_tag":"// How It Works","how_title":"From raw signals to a clear picture","how_desc":"Three simple stages transform noisy global radio telemetry and public sensor APIs into unified operational intelligence.","how_1_title":"Connect","how_1_desc":"Over 20 live feeds stream in continuously — ADS-B radio receivers, AIS maritime vessels, satellite TLEs, USGS seismic networks, NASA FIRMS fire satellites, and cyber threat nodes.","how_2_title":"Fuse","how_2_desc":"Every entity is normalized and plotted onto one interactive 3D globe. Layers stack cleanly: flights over ships over active fault lines over conflict zones — filtered exactly the way you need.","how_3_title":"Act","how_3_desc":"Investigate with the built-in OSINT toolkit, open instant live street camera streams, lock camera tracking onto moving targets, and export tactical intelligence packages to your team.","who_tag":"// Who Uses Trendusty Orbit","who_title":"Built for watchers, analysts and response teams","who_desc":"From corporate security operations centers to independent OSINT investigators and maritime enthusiasts.","who_1_title":"Security & SOC Teams","who_1_desc":"Monitor cyber threats, run recon on suspicious infrastructure, and watch physical-world events that intersect with your security posture.","who_2_title":"Researchers & Journalists","who_2_desc":"Verify events against independent live feeds — vessel movements, flight paths, seismic data and conflict zones, all with sources one click away.","who_3_title":"Aviation & Maritime Watchers","who_3_desc":"Track rare aircraft, follow vessels through chokepoints, and spot patterns across the busiest transport corridors on the planet.","who_4_title":"Open Source Analysts","who_4_desc":"Cross-reference multiple sensor domains, verify ground truth, and document geolocated signals in a sovereign private environment.","preview_tag":"INTERACTIVE SIMULATION — DRAG TO ROTATE · NO BACKGROUND SERVER REQUIRED","preview_engine":"CLIENT-SIDE ACCELERATION ACTIVE • 60 FPS","hud_primary_target":"PRIMARY RADAR TARGET","hud_cctv_recon":"[CCTV RECON ACTIVE]","hud_ephemeris":"SATELLITE EPHEMERIS","hud_diagnostics":"DIAGNOSTICS & ENGINE","btn_flights":"✈ FLIGHTS","btn_ais":"🚢 AIS","btn_sat":"🛰 SATELLITES","btn_cctv":"📷 CCTV","footer_desc":"Trendusty Orbit is an open-source intelligence platform fusing global aviation, maritime, satellite, CCTV, and threat-intelligence feeds into one live operational picture.","footer_prod":"PRODUCT","footer_sys":"SYSTEM","footer_ops":"OPERATIONS","footer_ops_text":"Self-hosted private deployment.<br>All queries remain strictly local.","footer_sys_online":"● SYSTEM ONLINE: 100%","footer_copy":"© 2026 Trendusty Orbit — Made by Trendusty","footer_auth":"Authorized personnel only · All access is audited"},"es":{"lang_name":"Español","dir":"ltr","nav_features":"Características","nav_interface":"Interfaz","nav_capabilities":"Capacidades","nav_how":"Cómo Funciona","nav_feeds":"Fuentes en Vivo","nav_sim":"Simulación 3D","nav_download":"Descargar Instalador →","hero_badge":"MONITOREO GLOBAL EN TIEMPO REAL · 60.000+ CONTACTOS ACTIVOS","hero_title_1":"Observa todo.","hero_title_2":"En todas partes. En vivo.","hero_desc":"Trendusty Orbit es un centro de operaciones de inteligencia con IA que fusiona aviación en vivo, AIS marítimo, rastreo satelital, CCTV mundial, actividad sísmica, incendios forestales, ciberamenazas y monitoreo de conflictos en una imagen operativa 3D interactiva y sin latencia.","hero_enter":"Entrar a Orbit","hero_explore":"Explorar Imagen Operativa ↓","stat_layers":"Capas de Inteligencia","stat_entities":"Entidades en Vivo","stat_feeds":"Fuentes Globales","stat_watch":"Vigilancia Continua","interface_tag":"// La Interfaz","interface_title":"Un mapa vivo del planeta","interface_desc":"Imagen Operativa Común: más de 60.000 entidades en vivo en 23 capas. Haz clic en cualquier vuelo, barco, satélite o cámara CCTV para transmitir telemetría en tiempo real.","why_tag":"// Por qué Trendusty Orbit","why_title":"El conocimiento situacional solía costar millones","why_desc":"Las agencias de inteligencia y defensa pagan fortunas por imágenes operativas fusionadas. Trendusty Orbit lleva esa capacidad a tu propia PC: abierta, auditable y bajo tu control total.","feature_1_title":"Una sola imagen, todos los dominios","feature_1_desc":"Vuelos, barcos, satélites, cámaras, terremotos, incendios y ciberamenazas fusionados en una sola consola en vivo en lugar de veinte pestañas desconectadas.","feature_2_title":"Tiempo real, no informes demorados","feature_2_desc":"Los eventos se visualizan en cuanto ocurren. Si se inicia un incendio o un barco se desvía, lo observas en el mapa en el instante, no en el informe de mañana.","feature_3_title":"Privado por diseño","feature_3_desc":"Alojado en tu propia computadora. Control de acceso por roles, registro de auditoría, sesiones cifradas: tus consultas y datos jamás salen de tu infraestructura.","feature_4_title":"Diseñado para equipos y analistas","feature_4_desc":"Centro de operaciones, claves API con límites y permisos, ajustes de renderizado de alto rendimiento: una plataforma de comando para misiones críticas.","cap_tag":"// Capacidades","cap_title":"Una plataforma, cada sensor","cap_desc":"Herramientas integrales de inteligencia multidominio diseñadas para vigilancia física, reconocimiento cibernético y alerta ambiental.","cap_aviation_title":"Aviación en Vivo","cap_aviation_desc":"Más de 10.000 aeronaves rastreadas en tiempo real: vuelos comerciales, privados y militares globales mediante señales ADS-B.","cap_maritime_title":"Marítimo Global","cap_maritime_desc":"Decenas de miles de buques mediante AIS en directo: tráfico de carga, petroleros, pesqueros y navales en rutas estratégicas.","cap_orbital_title":"Seguimiento Orbital","cap_orbital_desc":"Más de 2.000 satélites y la ISS graficados en vivo con efemérides y proyecciones de paso orbital.","cap_cctv_title":"Red Mundial de CCTV","cap_cctv_desc":"Transmisiones de cámaras públicas mundiales e integración de transmisiones de video externas en coordenadas GPS.","cap_osint_title":"Herramientas OSINT","cap_osint_desc":"DNS, WHOIS, certificados SSL, escaneo de puertos, subdominios y reconocimiento de infraestructura directamente desde el navegador.","cap_breach_title":"Inteligencia de Brechas","cap_breach_desc":"Búsqueda de filtraciones en bases de datos mundiales con flujo de trabajo analítico y auditoría exhaustiva.","how_tag":"// Cómo Funciona","how_title":"De señales en bruto a claridad operativa","how_desc":"Tres etapas simples transforman la telemetría de radio global en inteligencia operativa unificada.","how_1_title":"Conectar","how_1_desc":"Más de 20 fuentes en vivo transmiten continuamente: receptores ADS-B, balizas AIS, TLEs satelitales, redes sísmicas e incendios de la NASA.","how_2_title":"Fusionar","how_2_desc":"Cada entidad se normaliza y se traza en un globo interactivo 3D. Las capas se superponen limpiamente según tus requerimientos.","how_3_title":"Actuar","how_3_desc":"Investiga con las herramientas OSINT integradas, abre transmisiones de video en vivo y exporta informes de inteligencia al instante.","who_tag":"// Quién Utiliza Trendusty Orbit","who_title":"Creado para analistas, investigadores y equipos de respuesta","who_desc":"Desde centros de operaciones de seguridad empresarial hasta investigadores OSINT independientes.","who_1_title":"Equipos de Seguridad y SOC","who_1_desc":"Monitorea ciberamenazas, analiza infraestructura sospechosa y supervisa eventos físicos que intersectan con tu seguridad.","who_2_title":"Investigadores y Periodistas","who_2_desc":"Verifica hechos mediante fuentes independientes en vivo: rutas marítimas, vuelos, sismos y zonas de conflicto.","who_3_title":"Observadores de Aviación y Marítimos","who_3_desc":"Rastrea aeronaves raras, sigue barcos en pasos estrechos y detecta patrones en los corredores más transitados del mundo.","who_4_title":"Analistas de Fuentes Abiertas","who_4_desc":"Cruza múltiples dominios de sensores y documenta señales geolocalizadas en un entorno local y soberano.","preview_tag":"SIMULACIÓN INTERACTIVA — ARRASTRA PARA ROTAR · NO REQUIERE SERVIDOR EN SEGUNDO PLANO","preview_engine":"ACELERACIÓN POR GPU ACTIVA • 60 FPS","hud_primary_target":"BLANCO DE RADAR PRINCIPAL","hud_cctv_recon":"[RECON CCTV ACTIVO]","hud_ephemeris":"EFEMÉRIDES SATELITALES","hud_diagnostics":"DIAGNÓSTICO Y MOTOR","btn_flights":"✈ VUELOS","btn_ais":"🚢 AIS","btn_sat":"🛰 SATÉLITES","btn_cctv":"📷 CCTV","footer_desc":"Trendusty Orbit es una plataforma de inteligencia de código abierto que fusiona aviación, marítimo, satélites, CCTV y ciberamenazas en una imagen operativa viva.","footer_prod":"PRODUCTO","footer_sys":"SISTEMA","footer_ops":"OPERACIONES","footer_ops_text":"Despliegue privado auto-alojado.<br>Todas las consultas permanecen estrictamente locales.","footer_sys_online":"● SISTEMA EN LÍNEA: 100%","footer_copy":"© 2026 Trendusty Orbit — Hecho por Trendusty","footer_auth":"Solo personal autorizado · Todo acceso es auditado"},"fr":{"lang_name":"Français","dir":"ltr","nav_features":"Fonctionnalités","nav_interface":"Interface","nav_capabilities":"Capacités","nav_how":"Fonctionnement","nav_feeds":"Flux en Direct","nav_sim":"Simulation 3D","nav_download":"Télécharger l'Installateur →","hero_badge":"SURVEILLANCE GLOBALE EN TEMPS RÉEL · 60 000+ CONTACTS ACTIFS","hero_title_1":"Tout observer.","hero_title_2":"Partout. En direct.","hero_desc":"Trendusty Orbit est un centre d'opérations de renseignement alimenté par l'IA qui fusionne l'aviation en direct, l'AIS maritime, le suivi satellitaire, les caméras CCTV mondiales, l'activité sismique, les feux de forêt et les cybermenaces en une image opérationnelle 3D unique sans latence.","hero_enter":"Entrer dans Orbit","hero_explore":"Explorer l'Image Opérationnelle ↓","stat_layers":"Couches de Renseignement","stat_entities":"Entités en Direct","stat_feeds":"Flux Mondiaux","stat_watch":"Veille 24/7","interface_tag":"// L'Interface","interface_title":"Une carte vivante de la planète","interface_desc":"Image Opérationnelle Commune : 60 000+ entités en direct sur 23 couches. Cliquez sur un vol, navire, satellite ou caméra CCTV pour afficher sa télémétrie.","why_tag":"// Pourquoi Trendusty Orbit","why_title":"La connaissance situationnelle coûtait des millions","why_desc":"Les agences de renseignement dépensent des fortunes pour des images opérationnelles fusionnées. Trendusty Orbit met cette puissance souveraine sur votre bureau : ouverte, vérifiable et sous votre contrôle.","feature_1_title":"Une seule vue, tous les domaines","feature_1_desc":"Vols, navires, satellites, caméras, séismes, incendies et cybermenaces regroupés dans une vue unifiée plutôt que dans vingt onglets distincts.","feature_2_title":"Temps réel, pas de rapports tardifs","feature_2_desc":"Les événements apparaissent en direct. Lorsqu'un feu se déclare ou qu'un navire dévie, vous le voyez bouger instantanément sur la carte.","feature_3_title":"Privé par conception","feature_3_desc":"Auto-hébergé sur votre propre machine. Sessions chiffrées, gestion des rôles et journaux d'audit : vos données ne quittent jamais votre infrastructure.","feature_4_title":"Conçu pour les équipes et analystes","feature_4_desc":"Console d'opérations, bloc-notes d'investigation, clés API avec quotas stricts : une plateforme de commandement pour vos missions critiques.","cap_tag":"// Capacités","cap_title":"Une plateforme, tous les capteurs","cap_desc":"Outils de renseignement multi-domaines complets pour la surveillance physique, la reconnaissance cybernétique et l'alerte environnementale.","cap_aviation_title":"Aviation en Direct","cap_aviation_desc":"Plus de 10 000 avions suivis en temps réel : vols commerciaux, privés et militaires dans le monde entier via les récepteurs ADS-B.","cap_maritime_title":"Maritime Mondial","cap_maritime_desc":"Des dizaines de milliers de navires suivis via AIS : porte-conteneurs, pétroliers, bateaux de pêche et forces navales.","cap_orbital_title":"Suivi Orbital","cap_orbital_desc":"Plus de 2 000 satellites et l'ISS cartographiés en direct avec filtres, données d'éphémérides et calcul des passages.","cap_cctv_title":"Réseau Mondial CCTV","cap_cctv_desc":"Flux vidéo publics mondiaux et intégration de caméras externes personnalisées avec coordonnées GPS.","cap_osint_title":"Boîte à Outils OSINT","cap_osint_desc":"DNS, WHOIS, certificats SSL, analyse de ports, sous-domaines et reconnaissance réseau directement dans le navigateur.","cap_breach_title":"Renseignement sur les Fuites","cap_breach_desc":"Recherche d'identifiants compromis dans les bases de fuites avec traçabilité et historique complet.","how_tag":"// Fonctionnement","how_title":"Des signaux bruts à la clarté opérationnelle","how_desc":"Trois étapes simples transforment les signaux bruts en une image de renseignement tactique claire.","how_1_title":"Connecter","how_1_desc":"Plus de 20 flux en direct alimentent la plateforme en continu : ADS-B, AIS, TLE satellites, réseaux sismiques et feux NASA.","how_2_title":"Fusionner","how_2_desc":"Chaque entité est normalisée et projetée sur un globe 3D interactif : les vols survolent les navires, les séismes et les zones d'alerte.","how_3_title":"Agir","how_3_desc":"Enquêtez avec les outils OSINT intégrés, ouvrez les flux vidéo en direct et exportez rapidement des synthèses de renseignement.","who_tag":"// Qui Utilise Trendusty Orbit","who_title":"Conçu pour les veilleurs, analystes et cellules de crise","who_desc":"Des équipes de cybersécurité opérationnelle aux chercheurs indépendants et analystes géopolitiques.","who_1_title":"Équipes Sécurité & SOC","who_1_desc":"Surveillez les cybermenaces, explorez les infrastructures suspectes et reliez les incidents physiques à votre posture de sécurité.","who_2_title":"Chercheurs & Journalistes","who_2_desc":"Vérifiez les événements à l'aide de données indépendantes : routes maritimes, couloirs aériens, sismicité et zones de conflit.","who_3_title":"Observateurs Passionnés","who_3_desc":"Suivez les appareils rares, observez les détroits maritimes stratégiques et décelez les anomalies de trafic en direct.","who_4_title":"Analystes OSINT","who_4_desc":"Recoupez plusieurs domaines de capteurs et confirmez la vérité terrain dans un environnement local et souverain.","preview_tag":"SIMULATION INTERACTIVE — GLISSER POUR PIVOTER · AUCUN SERVEUR REQUIS","preview_engine":"ACCÉLÉRATION GPU CLIENT ACTIVE • 60 FPS","hud_primary_target":"CIBLE RADAR PRINCIPALE","hud_cctv_recon":"[RECON CCTV ACTIF]","hud_ephemeris":"ÉPHÉMÉRIDES SATELLITES","hud_diagnostics":"DIAGNOSTICS & MOTEUR","btn_flights":"✈ VOLS","btn_ais":"🚢 AIS","btn_sat":"🛰 SATELLITES","btn_cctv":"📷 CCTV","footer_desc":"Trendusty Orbit est une plateforme de renseignement open-source fusionnant aviation, maritime, satellites, CCTV et cybermenaces en une image opérationnelle unique.","footer_prod":"PRODUIT","footer_sys":"SYSTÈME","footer_ops":"OPÉRATIONS","footer_ops_text":"Déploiement privé auto-hébergé.<br>Toutes les requêtes demeurent strictement locales.","footer_sys_online":"● SYSTÈME EN LIGNE: 100%","footer_copy":"© 2026 Trendusty Orbit — Fait par Trendusty","footer_auth":"Personnel autorisé uniquement · Tout accès est audité"},"ar":{"lang_name":"العربية","dir":"rtl","nav_features":"الميزات","nav_interface":"واجهة النظام","nav_capabilities":"القدرات","nav_how":"كيف يعمل","nav_feeds":"البث المباشر","nav_sim":"المحاكاة ثلاثية الأبعاد","nav_download":"تحميل التثبيت ←","hero_badge":"مراقبة عالمية في الوقت الفعلي · أكثر من 60,000 هدف نشط","hero_title_1":"شاهد كل شيء.","hero_title_2":"في كل مكان. مباشرة.","hero_desc":"ترندستي أوربت هو مركز عمليات استخباراتية مدعوم بالذكاء الاصطناعي يدمج حركة الطيران المباشرة، الملاحة البحرية، تتبع الأقمار الصناعية، كاميرات المراقبة العالمية، النشاط الزلزالي، حرائق الغابات والتهديدات السيبرانية في صورة عملياتية تفاعلية ثلاثية الأبعاد بدون أي تأخير.","hero_enter":"الدخول إلى أوربت","hero_explore":"استكشف الصورة العملياتية ↓","stat_layers":"طبقات استخباراتية","stat_entities":"أهداف مباشرة","stat_feeds":"مصادر عالمية","stat_watch":"مراقبة مستمرة 24/7","interface_tag":"// واجهة النظام","interface_title":"خريطة حية لكوكب الأرض","interface_desc":"الصورة العملياتية المشتركة — أكثر من 60,000 هدف مباشر عبر 23 طبقة استخباراتية. انقر على أي رحلة طيران أو سفينة أو قمر صناعي لعرض بيانات التتبع فورا.","why_tag":"// لماذا ترندستي أوربت","why_title":"كانت المعرفة الميدانية تكلف الملايين","why_desc":"تدفع وكالات الاستخبارات والدفاع ثروات طائلة للحصول على صور عملياتية موحدة. يجلب ترندستي أوربت هذه القدرة السيادية مباشرة إلى حاسوبك — مفتوحة وقابلة للتدقيق وتحت سيطرتك الكاملة.","feature_1_title":"صورة واحدة، كل الميادين","feature_1_desc":"رحلات طيران، سفن، أقمار صناعية، كاميرات مراقبة، زلازل، حرائق وتهديدات أمنية مدمجة في شاشة تشغيلية واحدة بدلاً من عشرات النوافذ المنفصلة.","feature_2_title":"لحظي ومباشر، وليس تقارير متأخرة","feature_2_desc":"تظهر الأحداث فور وقوعها. عندما يندلع حريق أو تنحرف سفينة عن مسارها، تراها تتحرك على الخريطة في ذات اللحظة.","feature_3_title":"خصوصية كاملة بالتصميم","feature_3_desc":"يعمل محلياً بالكامل على جهازك الخاص. صلاحيات دخول مشفرة وسجلات تدقيق — لا تغادر استفساراتك أو بياناتك نظامك المحلي أبداً.","feature_4_title":"مصمم للفرق والمحللين","feature_4_desc":"مركز عمليات، سجلات بحث، مفاتيح برمجة محددة النطاق والسرعة — منصة قيادة متكاملة للمهام الحساسة والحرجة.","cap_tag":"// القدرات التشغيلية","cap_title":"منصة واحدة، لكافة المستشعرات","cap_desc":"أدوات استخباراتية شاملة متعددة المجالات مصممة للمراقبة الميدانية، الاستطلاع السيبراني، والتنبيه البيئي المبكر.","cap_aviation_title":"ملاحة جوية مباشرة","cap_aviation_desc":"تتبع أكثر من 10,000 طائرة في الوقت الفعلي — رحلات تجارية وخاصة وعسكرية حول العالم عبر تقنية ADS-B.","cap_maritime_title":"ملاحة بحرية عالمية","cap_maritime_desc":"عشرات الآلاف من السفن عبر نظام AIS المباشر — ناقلات بضائع ونفط وسفن صيد وقوات بحرية في المضائق الحيوية.","cap_orbital_title":"تتبع مداري للأقمار","cap_orbital_desc":"أكثر من 2000 قمر صناعي ومحطة الفضاء الدولية (ISS) مع بيانات المدارات وتوقعات أوقات الظهور.","cap_cctv_title":"شبكة كاميرات المراقبة","cap_cctv_desc":"بث حي لكاميرات المراقبة العامة حول العالم مع إمكانية ربط كاميراتك الخاصة وتحديد إحداثياتها بدقة.","cap_osint_title":"أدوات OSINT المتقدمة","cap_osint_desc":"فحص DNS وWHOIS وشهادات SSL والمنافذ والنطاقات الفرعية والاستخبارات السيبرانية مباشرة من المتصفح.","cap_breach_title":"استخبارات تسريبات البيانات","cap_breach_desc":"البحث في قواعد بيانات التسريبات العالمية مع سجل تدقيق وسير عمل احترافي للتحقق.","how_tag":"// كيف يعمل النظام","how_title":"من إشارات خام إلى وضوح عملياتي متكامل","how_desc":"ثلاث مراحل بسيطة تحول البث الراديوي المشوش إلى استخبارات تشغيلية واضحة وموحدة.","how_1_title":"الاتصال","how_1_desc":"أكثر من 20 مصدراً مباشراً يبث باستمرار — مستقبلات ADS-B، وسائط AIS، مدارات الأقمار، شبكات الزلازل وبيانات ناسا للحرائق.","how_2_title":"الدمج","how_2_desc":"تتم معالجة كل هدف وإسقاطه على كرة أرضية ثلاثية الأبعاد تفاعلية. طبقات متراكبة مع تصفية دقيقة وفق متطلباتك.","how_3_title":"التنفيذ","how_3_desc":"تحقق باستخدام أدوات OSINT المدمجة، افتح بث الكاميرات المباشرة، وقم بتصدير تقارير استخباراتية فورية وسلسة.","who_tag":"// من يستخدم ترندستي أوربت","who_title":"مبني للمراقبين والمحللين وفرق الاستجابة السريعة","who_desc":"من مراكز عمليات الأمن السيبراني إلى محققي OSINT المستقلين ومراقبي الملاحة.","who_1_title":"فرق الأمن السيبراني وSOC","who_1_desc":"راقب التهديدات السيبرانية وافحص البنية التحتية المشبوهة وتابع الأحداث المادية التي تتقاطع مع أمن منظومتك.","who_2_title":"الباحثون والصحفيون الاستقصائيون","who_2_desc":"تحقق من الأحداث عبر مصادر حية ومستقلة — مسارات السفن والرحلات والنشاط الزلزالي ومناطق النزاع بضغطة زر.","who_3_title":"مراقبو الملاحة الجوية والبحرية","who_3_desc":"تتبع الطائرات النادرة والسفن عبر الممرات المائية الحيوية واكتشف الأنماط غير الاعتيادية حول العالم.","who_4_title":"محللو المصادر المفتوحة OSINT","who_4_desc":"طابق مجالات الاستشعار المتعددة ووثق الإشارات المحددة جغرافياً في بيئة محلية سيادية وخاصة تماماً.","preview_tag":"محاكاة تفاعلية — اسحب بالماوس للتدوير · لا يتطلب تشغيل خادم في الخلفية","preview_engine":"تسريع رسومي محلي نشط • 60 إطار بالثانية","hud_primary_target":"الهدف الراداري الأساسي","hud_cctv_recon":"[استطلاع كاميرات المراقبة نشط]","hud_ephemeris":"بيانات المدارات الفلكية","hud_diagnostics":"التشخيص ومحرك الرسوم","btn_flights":"✈ الرحلات","btn_ais":"🚢 السفن","btn_sat":"🛰 الأقمار","btn_cctv":"📷 الكاميرات","footer_desc":"ترندستي أوربت هي منصة استخباراتية مفتوحة المصدر تدمج الملاحة الجوية والبحرية والأقمار الصناعية وكاميرات المراقبة والتهديدات السيبرانية في لوحة تشغيلية حية واحدة.","footer_prod":"المنتج","footer_sys":"النظام","footer_ops":"العمليات","footer_ops_text":"تشغيل محلي خاص وذاتي.<br>جميع الاستفسارات تبقى محلية تماماً.","footer_sys_online":"● النظام متصل: 100%","footer_copy":"© 2026 ترندستي أوربت — صنع بواسطة Trendusty","footer_auth":"للمصرح لهم فقط · جميع عمليات الدخول تخضع للتدقيق"}};
+
+    function applyLanguage(lang, updateUrl = true) {
+      if (!I18N_DICTS[lang]) lang = 'en';
+      const dict = I18N_DICTS[lang];
+
+      // Update lang select dropdown
+      const sel = document.getElementById('lang-select');
+      if (sel) sel.value = lang;
+
+      // Update html lang and dir
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', dict.dir || 'ltr');
+
+      // Update all data-i18n elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          if (dict[key].includes('<') || dict[key].includes('&')) {
+            el.innerHTML = dict[key];
+          } else {
+            el.textContent = dict[key];
+          }
+        }
+      });
+
+      // Update URL query param (=en, =es, =fr, =ar)
+      if (updateUrl) {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.set('lang', lang);
+          window.history.replaceState({ lang }, '', url.toString());
+        } catch (e) {
+          // fallback for file:// without URL API support
+        }
+      }
+
+      localStorage.setItem('orbit_lang', lang);
+    }
+
+    window.changeLanguage = function(lang) {
+      applyLanguage(lang, true);
+    };
+
+    // Auto-detect on load from URL param (e.g. ?lang=es or ending with =es)
+    document.addEventListener('DOMContentLoaded', () => {
+      let activeLang = 'en';
+      const search = window.location.search || '';
+      const hash = window.location.hash || '';
+
+      const match = search.match(/[?&]lang=([a-z]{2})/i) || search.match(/=([a-z]{2})/i) || hash.match(/#([a-z]{2})/i);
+      if (match && I18N_DICTS[match[1].toLowerCase()]) {
+        activeLang = match[1].toLowerCase();
+      } else {
+        const saved = localStorage.getItem('orbit_lang');
+        if (saved && I18N_DICTS[saved]) {
+          activeLang = saved;
+        }
+      }
+      applyLanguage(activeLang, false);
+    });
+  </script>
+
+
+  <!-- Interactive Motion & Scroll Animation Engine -->
+  <script>
+    (function initAnimations() {
+      // Tactical Cursor handled by initOrbitCursor
+      // 2. Scroll Reveal Intersection Observer
+      const reveals = document.querySelectorAll('.reveal-on-scroll');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+        reveals.forEach(el => observer.observe(el));
+      } else {
+        reveals.forEach(el => el.classList.add('revealed'));
+      }
+
+      // 3. Stats Number Counter Animation
+      const stats = document.querySelectorAll('.stat-number');
+      let statsAnimated = false;
+      const statsBar = document.querySelector('.stats-bar');
+
+      if (statsBar && 'IntersectionObserver' in window) {
+        const statsObserver = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && !statsAnimated) {
+            statsAnimated = true;
+            animateStats();
+            statsObserver.disconnect();
+          }
+        }, { threshold: 0.25 });
+        statsObserver.observe(statsBar);
+      }
+
+      function animateStats() {
+        stats.forEach(el => {
+          const text = el.textContent.trim();
+          if (text === '23+') countUp(el, 0, 23, '+', 1400);
+          else if (text === '60K+') countUp(el, 0, 60, 'K+', 1600);
+          else if (text === '20+') countUp(el, 0, 20, '+', 1200);
+        });
+      }
+
+      function countUp(el, start, end, suffix, duration) {
+        const startTime = performance.now();
+        function update(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          const val = Math.floor(start + (end - start) * ease);
+          el.textContent = val + suffix;
+          if (progress < 1) requestAnimationFrame(update);
+          else el.textContent = end + suffix;
+        }
+        requestAnimationFrame(update);
+      }
+    })();
+  </script>
+
+
+    
+
+  <!-- Tactical Orbit Cursor Animation Engine -->
+  <script>
+    (function initOrbitCursor() {
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      if (!dot || !ring) return;
+
+      let mouseX = -100, mouseY = -100;
+      let ringX = -100, ringY = -100;
+      let isVisible = false;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          isVisible = true;
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+          ringX = mouseX;
+          ringY = mouseY;
+        }
+        dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)';
+      }, { passive: true });
+
+      // Mouse Trail Logic
+      const trails = [];
+      const MAX_TRAILS = 12;
+      let trailIndex = 0;
+      for (let i = 0; i < MAX_TRAILS; i++) {
+        const t = document.createElement('div');
+        t.className = 'mouse-trail-dot';
+        t.style.opacity = '0';
+        document.body.appendChild(t);
+        trails.push(t);
+      }
+      window.addEventListener('mousemove', (e) => {
+        const t = trails[trailIndex];
+        t.style.left = e.clientX + 'px';
+        t.style.top = e.clientY + 'px';
+        t.style.opacity = '0.6';
+        t.style.transform = 'translate(-50%, -50%) scale(1)';
+        setTimeout(() => {
+          t.style.opacity = '0';
+          t.style.transform = 'translate(-50%, -50%) scale(0.2)';
+        }, 50);
+        trailIndex = (trailIndex + 1) % MAX_TRAILS;
+      }, { passive: true });
+
+      window.addEventListener('mousedown', () => {
+        ring.classList.add('is-active');
+        dot.classList.add('is-active');
+      });
+      window.addEventListener('mouseup', () => {
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
+      });
+      document.addEventListener('mouseleave', () => {
+        isVisible = false;
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      });
+      document.addEventListener('mouseenter', () => {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+      });
+
+      function renderFollower() {
+        if (isVisible) {
+          const ease = 0.18;
+          ringX += (mouseX - ringX) * ease;
+          ringY += (mouseY - ringY) * ease;
+          ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
+        }
+        requestAnimationFrame(renderFollower);
+      }
+      requestAnimationFrame(renderFollower);
+
+      const interactiveSelector = '.tcm-item, a, button, input[type="button"], input[type="submit"], select, [role="button"], .interactive, .hud-action-btn, .cop-zoom-btn, .cop-earth-mode-btn, .cop-fullscreen-btn, .cctv-viewport, .cctv-btn, .btn, .feature-card, .capability-card, .step-card, .user-card, .feed-badge, .cop-layer-toggle, .lang-option, .dossier-btn';
+      const textSelector = 'p, h1, h2, h3, h4, h5, h6, span:not(.btn):not(.tcm-item), label, input[type="text"], input[type="password"], input[type="email"], textarea';
+
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        
+        let isClickable = el.closest(interactiveSelector) !== null;
+        let isText = el.closest(textSelector) !== null;
+        let isLoading = el.closest('.loading') !== null;
+        
+        try {
+            let style = window.getComputedStyle(el);
+            if (style.cursor === 'wait' || style.cursor === 'progress') isLoading = true;
+            if (style.cursor === 'pointer') isClickable = true;
+            if (style.cursor === 'text') isText = true;
+        } catch(err){}
+
+        ring.classList.remove('is-hovering', 'is-text', 'is-loading');
+        dot.classList.remove('is-hovering', 'is-text', 'is-loading');
+
+        if (isLoading) {
+          ring.classList.add('is-loading');
+          dot.classList.add('is-loading');
+        } else if (isClickable) {
+          ring.classList.add('is-hovering');
+          dot.classList.add('is-hovering');
+        } else if (isText) {
+          ring.classList.add('is-text');
+          dot.classList.add('is-text');
+        }
+      });
+    })();
+  </script>
+
+  <!-- Tactical Right-Click Shortcuts Engine -->
+  <script>
+    (function initContextMenu() {
+      const menu = document.getElementById('tactical-context-menu');
+      if (!menu) return;
+
+      window.openTacticalContextMenu = function(clientX, clientY) {
+        menu.style.display = 'block';
+        const w = 285;
+        const h = menu.offsetHeight || 420;
+        let x = clientX + 4;
+        let y = clientY + 4;
+
+        if (x + w > window.innerWidth) x = clientX - w - 4;
+        if (y + h > window.innerHeight) y = clientY - h - 4;
+        if (x < 10) x = 10;
+        if (y < 10) y = 10;
+
+        menu.style.left = x + 'px';
+        menu.style.top = y + 'px';
+      };
+
+      window.closeContextMenu = function() {
+        if (menu) menu.style.display = 'none';
+      };
+
+      window.tcmAction = function(action) {
+        if (action === 'earthMode') {
+          if (window.toggleRealEarthMode) window.toggleRealEarthMode();
+        } else if (action === 'invertDrag') {
+          if (window.toggleInvertDrag) window.toggleInvertDrag();
+        } else if (action === 'fullscreen') {
+          if (window.toggleCopFullscreen) window.toggleCopFullscreen();
+        } else if (action === 'lockTarget') {
+          if (window.relockUAL482) window.relockUAL482();
+          const p = document.getElementById('interface');
+          if (p) p.scrollIntoView({ behavior: 'smooth' });
+        } else if (action === 'cycleCctv') {
+          if (window.cycleNextCctv) window.cycleNextCctv();
+          const p = document.getElementById('interface');
+          if (p) p.scrollIntoView({ behavior: 'smooth' });
+        } else if (action === 'resetView') {
+          if (window.resetGlobeView) window.resetGlobeView();
+        } else if (action === 'copyCoords') {
+          const txt = 'LAT 37.7749 | LON -122.4194 | ALT 28,400 FT';
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(txt);
+          }
+          const label = document.getElementById('tcm-copy-coords-text');
+          if (label) {
+            const orig = label.textContent;
+            label.textContent = '✓ COPIED TELEMETRY!';
+            setTimeout(() => { label.textContent = orig; }, 1400);
+          }
+          return;
+        }
+        closeContextMenu();
+      };
+
+      // Intercept right-clicks on non-clickable areas
+      window.addEventListener('contextmenu', (e) => {
+        const el = e.target;
+        
+        // If clicking on text inputs/textareas, allow standard browser input behavior
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+          return;
+        }
+
+        // If clicking on canvas and hovering over an entity, let canvas handle the dossier
+        if (el && el.id === 'live-cop-canvas') {
+          if (window._copHoveredEntity) {
+            return; // Radar target dossier
+          }
+        }
+
+        // If right clicking on interactive links or buttons, let standard action occur if needed, otherwise show our shortcuts
+        e.preventDefault();
+        openTacticalContextMenu(e.clientX, e.clientY);
+      });
+
+      // Close menu on outside click or escape
+      window.addEventListener('click', (e) => {
+        if (menu.style.display !== 'none') {
+          if (!e.target.closest('#tactical-context-menu')) {
+            closeContextMenu();
+          }
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'i' || e.key === 'I') {
+          if (!e.target || (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA')) {
+            if (window.toggleInvertDrag) window.toggleInvertDrag();
+          }
+        }
+        if (e.key === 'Escape') {
+          closeContextMenu();
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Search Engine Optimization (SEO) -->
+  <meta name="description" content="Download Trendusty Orbit Desktop Edition. Native Windows installer for the ultimate 3D Common Operating Picture (COP).">
+  <meta name="keywords" content="Download Trendusty Orbit, OSINT software, COP desktop application, Windows 11 OSINT, satellite tracker download">
+  <meta name="author" content="Trendusty">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Download Trendusty Orbit — Desktop Edition">
+  <meta property="og:description" content="Download the lightweight native Windows installer for Trendusty Orbit. Zero data leakage, direct hardware acceleration.">
+  
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Download Trendusty Orbit">
+  <meta name="twitter:description" content="Download the lightweight native Windows installer for Trendusty Orbit.">
+
+  <!-- International SEO (Hreflang) -->
+  <link rel="alternate" hreflang="en" href="download-en.html" />
+  <link rel="alternate" hreflang="es" href="download-es.html" />
+  <link rel="alternate" hreflang="fr" href="download-fr.html" />
+  <link rel="alternate" hreflang="ar" href="download-ar.html" />
+  <link rel="alternate" hreflang="x-default" href="download.html" />
+
+  <title>Download Trendusty Orbit — Windows Setup & Installation</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030508;
+      --surface: #070c14;
+      --surface-card: #0b1320;
+      --border: rgba(0, 245, 184, 0.16);
+      --accent: #00f5b8;
+      --accent-glow: rgba(0, 245, 184, 0.35);
+      --accent-dim: rgba(0, 245, 184, 0.08);
+      --accent-hover: #00d9a3;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 245, 184, 0.15), transparent),
+        radial-gradient(circle at 10% 80%, rgba(0, 168, 255, 0.05), transparent);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* Navbar */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 12, 20, 0.85);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 72px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      font-size: 17px;
+    }
+
+    .brand-logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(0, 245, 184, 0.1);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--accent);
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    /* Hero Section */
+    .download-hero {
+      padding: 70px 0 50px;
+      text-align: center;
+    }
+
+    .release-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .download-hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .download-hero h1 span {
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .download-hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto 40px;
+    }
+
+    /* Master Download Card */
+    .download-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 44px 36px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 245, 184, 0.1);
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .app-icon-large {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      border-radius: 20px;
+      background: #0b1523;
+      border: 1px solid rgba(0, 245, 184, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0, 245, 184, 0.15);
+    }
+
+    .app-icon-large img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card-meta {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+    }
+
+    .card-meta span {
+      color: var(--accent);
+    }
+
+    /* Download Buttons */
+    .btn-download {
+      display: block;
+      width: 100%;
+      background: var(--accent);
+      color: #030508;
+      text-decoration: none;
+      padding: 18px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 25px rgba(0, 245, 184, 0.35);
+      margin-bottom: 16px;
+    }
+
+    .btn-download:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(0, 245, 184, 0.45);
+    }
+
+    .btn-download span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-download small {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    .btn-secondary-dl {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary-dl:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* Security & Hash Bar */
+    .checksum-box {
+      margin-top: 28px;
+      padding: 14px 18px;
+      background: rgba(3, 5, 8, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hash-text {
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hash-text strong {
+      color: var(--accent);
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #030508;
+    }
+
+    /* Steps Section */
+    .steps-section {
+      padding: 80px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-title h2 {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .step-card {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 28px 24px;
+      position: relative;
+    }
+
+    .step-number {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+    }
+
+    .step-card h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Specs & Requirements Table */
+    .specs-section {
+      padding: 0 0 90px;
+    }
+
+    .specs-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .spec-row {
+      display: flex;
+      padding: 18px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+    }
+
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+
+    .spec-label {
+      width: 220px;
+      color: var(--text-muted);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .spec-value {
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .spec-value span {
+      color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 40px 0;
+      background: #020407;
+      margin-top: auto;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-inner a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-inner a:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+      .spec-row {
+        flex-direction: column;
+        gap: 6px;
+      }
+      .spec-label {
+        width: 100%;
+      }
+      .download-hero h1 {
+        font-size: 32px;
+      }
+    }
+  
+    /* Multi-language & RTL Support */
+    html[dir="rtl"] {
+      direction: rtl;
+      text-align: right;
+    }
+    html[dir="rtl"] .nav-inner,
+    html[dir="rtl"] .nav-links,
+    html[dir="rtl"] .nav-actions,
+    html[dir="rtl"] .hero-cta,
+    html[dir="rtl"] .footer-grid,
+    html[dir="rtl"] .footer-inner {
+      direction: rtl;
+    }
+    html[dir="rtl"] .hero-badge {
+      flex-direction: row-reverse;
+    }
+    html[dir="rtl"] .footer-col ul {
+      padding-right: 0;
+    }
+    html[dir="rtl"] .hud-top-left {
+      left: auto;
+      right: 24px;
+      text-align: right;
+    }
+    html[dir="rtl"] .hud-top-right {
+      right: auto;
+      left: 24px;
+    }
+    html[dir="rtl"] .hud-bottom-left {
+      left: auto;
+      right: 24px;
+      text-align: right;
+    }
+    html[dir="rtl"] .hud-bottom-right {
+      right: auto;
+      left: 24px;
+      text-align: left;
+    }
+    html[dir="rtl"] .cop-coords {
+      direction: ltr;
+      display: inline-block;
+    }
+    html[dir="rtl"] .spec-row {
+      direction: rtl;
+      text-align: right;
+    }
+
+  
+    /* =========================================================
+       ELITE CYBER ANIMATIONS & INTERACTIVE MOTION
+       ========================================================= */
+
+    
+
+    /* Radar Sonar Wave Pulse */
+    .radar-dot {
+      position: relative;
+    }
+
+    .radar-dot::before,
+    .radar-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: inherit;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: sonarWave 2.4s infinite cubic-bezier(0.2, 0.8, 0.4, 1);
+    }
+
+    .radar-dot::after {
+      animation-delay: 1.2s;
+    }
+
+    @keyframes sonarWave {
+      0% {
+        width: 100%;
+        height: 100%;
+        opacity: 0.9;
+      }
+      100% {
+        width: 380%;
+        height: 380%;
+        opacity: 0;
+      }
+    }
+
+    /* Shimmer Light-Sweep on CTA buttons */
+    .btn-primary, .btn-download {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after, .btn-download::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(
+        60deg,
+        transparent,
+        rgba(255, 255, 255, 0.32),
+        transparent
+      );
+      transform: rotate(25deg);
+      animation: btnShimmer 4s infinite ease-in-out;
+    }
+
+    @keyframes btnShimmer {
+      0%, 70% { left: -60%; }
+      100% { left: 140%; }
+    }
+
+    /* Scroll Reveal Animations */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(32px);
+      filter: blur(4px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform, filter;
+    }
+
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .stagger-1 { transition-delay: 0.08s; }
+    .stagger-2 { transition-delay: 0.16s; }
+    .stagger-3 { transition-delay: 0.24s; }
+    .stagger-4 { transition-delay: 0.32s; }
+
+    /* Interactive 3D Card Hover Glow & Tilt */
+    .feature-card, .capability-card, .step-card, .download-card {
+      position: relative;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.35s ease,
+                  box-shadow 0.35s ease;
+      will-change: transform;
+    }
+
+    .feature-card:hover, .capability-card:hover, .step-card:hover {
+      transform: translateY(-6px) scale(1.015);
+      border-color: rgba(0, 245, 184, 0.45);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 245, 184, 0.12);
+    }
+
+    /* Ambient Cyber Scanline Overlay */
+    .cyber-scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0, 245, 184, 0.015) 50%,
+        rgba(0, 245, 184, 0.015)
+      );
+      background-size: 100% 4px;
+    }
+
+    /* Animated Floating Badges */
+    .hero-badge, .release-badge {
+      animation: floatBadge 4s ease-in-out infinite;
+    }
+
+    @keyframes floatBadge {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Text Glow Pulse on Headers */
+    .gradient-text {
+      background-size: 200% auto;
+      animation: gradientFlow 6s linear infinite;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .reveal-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+    }
+
+  
+    /* Tactical Context Menu (Right-Click Shortcuts UI) */
+    .tactical-context-menu, .tactical-context-menu * {
+      cursor: none !important;
+    }
+    .tactical-context-menu {
+      position: fixed;
+      z-index: 2147483640 !important;
+      width: 285px;
+      background: rgba(6, 12, 22, 0.97);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 245, 184, 0.22);
+      backdrop-filter: blur(20px);
+      font-family: var(--font-sans);
+      user-select: none;
+      animation: tcmAnim 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-origin: top left;
+      display: none;
+    }
+
+    @keyframes tcmAnim {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .tcm-header {
+      padding: 6px 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 6px;
+    }
+    .tcm-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: #00f5b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+    }
+    .tcm-sub {
+      font-size: 9px;
+      color: #64748b;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+    }
+
+    .tcm-section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      padding: 6px 10px 3px;
+      letter-spacing: 0.8px;
+    }
+
+    .tcm-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 7px;
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: none !important;
+      text-align: left;
+      transition: all 0.15s ease;
+      box-sizing: border-box;
+    }
+    .tcm-item:hover {
+      background: rgba(0, 245, 184, 0.14);
+      color: #00f5b8;
+      box-shadow: inset 0 0 10px rgba(0, 245, 184, 0.12);
+      transform: translateX(3px);
+    }
+    .tcm-icon {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .tcm-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tcm-key {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: #64748b;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .tcm-item:hover .tcm-key {
+      color: #00f5b8;
+      border-color: rgba(0, 245, 184, 0.35);
+      background: rgba(0, 245, 184, 0.12);
+    }
+    .tcm-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 5px 0;
+    }
+
+</style>
+
+    
+<style id="custom-cursor-style">
+    /* ==========================================================================
+       TACTICAL ORBIT CURSOR: CRISP CENTER DOT + BIGGER, LIGHTER FOLLOWER RING
+       ========================================================================== */
+    html, body, *, *::before, *::after {
+      cursor: none !important;
+    }
+    a, button, input, textarea, select, canvas, [role="button"], label {
+      cursor: none !important;
+    }
+
+    /* Precision Center Dot (Snaps synchronously with mouse pointer) */
+    .orbit-cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 5px;
+      background: #00f5b8;
+      border-radius: 50%;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 8px rgba(0, 245, 184, 0.9), 0 0 2px #ffffff;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.15s ease, transform 0.08s ease;
+    }
+
+    /* Outer Ring: Bigger & Lighter translucent ethereal orbit circle */
+    .orbit-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(0, 245, 184, 0.38);
+      background: rgba(0, 245, 184, 0.03);
+      border-radius: 50%;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 18px rgba(0, 245, 184, 0.15), inset 0 0 10px rgba(0, 245, 184, 0.05);
+      will-change: transform, width, height;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                  height 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.24s ease,
+                  border-color 0.24s ease,
+                  border-width 0.24s ease,
+                  box-shadow 0.24s ease,
+                  opacity 0.2s ease;
+    }
+
+    /* Interactive Hover: Smoothly enlarges to 66px with subtle ethereal glow */
+    .orbit-cursor-ring.is-hovering {
+      width: 66px;
+      height: 66px;
+      border: 1.5px solid rgba(0, 245, 184, 0.65);
+      background: rgba(0, 245, 184, 0.08);
+      box-shadow: 0 0 26px rgba(0, 245, 184, 0.4), inset 0 0 14px rgba(0, 245, 184, 0.12);
+    }
+    .orbit-cursor-dot.is-hovering {
+      background: #ffffff;
+      box-shadow: 0 0 12px #00f5b8, 0 0 4px #ffffff;
+      transform: translate3d(var(--mx, -100px), var(--my, -100px), 0) translate(-50%, -50%) scale(1.3);
+    }
+
+    /* Active Press / Click: Compresses to 28px with bright neon cyan accent */
+    .orbit-cursor-ring.is-active {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid #00d2ff;
+      background: rgba(0, 210, 255, 0.25);
+      box-shadow: 0 0 24px rgba(0, 210, 255, 0.8);
+    }
+    .orbit-cursor-dot.is-active {
+      background: #00d2ff;
+      box-shadow: 0 0 12px #00d2ff;
+    }
+
+    /* Touch screen fallback: Restore default cursor on mobile devices */
+    @media (pointer: coarse) {
+      html, body, *, *::before, *::after {
+        cursor: auto !important;
+      }
+      .orbit-cursor-dot,
+      .orbit-cursor-ring {
+        display: none !important;
+      }
+    }
+</style>
+</head>
+<body>
+
+  <!-- Tactical Right-Click Shortcuts Menu UI (Download Hub) -->
+  <div class="tactical-context-menu" id="tactical-context-menu" aria-hidden="true">
+    <div class="tcm-header">
+      <div class="tcm-badge"><span class="status-pulse-dot" style="margin: 0;"></span> ORBIT DOWNLOAD MATRIX</div>
+      <span class="tcm-sub">DEPLOYMENT SHORTCUTS</span>
+    </div>
+
+    <div class="tcm-section-label">INSTALLATION PACKAGES</div>
+    
+    <a href="Trendusty-Orbit-Setup.exe" class="tcm-item" download onclick="closeContextMenu()">
+      <span class="tcm-icon">⬇</span>
+      <span class="tcm-text">Download Windows Setup (.exe)</span>
+      <span class="tcm-key">365 KB</span>
+    </a>
+
+    <a href="Trendusty-Orbit-Setup.exe" class="tcm-item" download onclick="closeContextMenu()">
+      <span class="tcm-icon">🪞</span>
+      <span class="tcm-text">Mirror Download Link</span>
+      <span class="tcm-key">HTTPS</span>
+    </a>
+
+    <a href="downloads/Trendusty-Orbit-Batch-Installer.bat" class="tcm-item" download onclick="closeContextMenu()">
+      <span class="tcm-icon">⚙</span>
+      <span class="tcm-text">Batch Installer Script (.bat)</span>
+      <span class="tcm-key">SHELL</span>
+    </a>
+
+    <div class="tcm-divider"></div>
+    <div class="tcm-section-label">NAVIGATION & INTEL</div>
+
+    <a href="../home/index.html#interface" class="tcm-item" onclick="closeContextMenu()">
+      <span class="tcm-icon">🛰</span>
+      <span class="tcm-text">Launch Live Earth COP Preview</span>
+      <span class="tcm-key">LIVE</span>
+    </a>
+
+    <a href="../home/index.html" class="tcm-item" onclick="closeContextMenu()">
+      <span class="tcm-icon">🏠</span>
+      <span class="tcm-text">Return to Main Overview</span>
+      <span class="tcm-key">HOME</span>
+    </a>
+
+    <button class="tcm-item" onclick="tcmDownloadAction('copyHash')">
+      <span class="tcm-icon">📋</span>
+      <span class="tcm-text" id="tcm-copy-hash-text">Copy SHA-256 Checksum</span>
+      <span class="tcm-key">HASH</span>
+    </button>
+  </div>
+
+  <!-- Tactical Orbit Mouse Cursor (Dot + Bigger Lighter Follower Ring) -->
+  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
+
+    
+
+
+  <!-- Navigation -->
+  <header>
+    <div class="container nav-inner">
+      <a href="../home/index.html" class="brand">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        </div>
+        TRENDUSTY <span>ORBIT</span>
+      </a>
+
+      
+      <div class="nav-links" style="display: flex; align-items: center; gap: 16px;">
+        <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)" style="background: rgba(12, 16, 23, 0.9); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; font-size: 13px; font-family: var(--font-mono); cursor: pointer;">
+          <option value="en">EN English</option>
+          <option value="fr">FR Français</option>
+          <option value="es">ES Español</option>
+          <option value="ar">AR العربية</option>
+        </select>
+        <a href="../home/index.html" data-i18n="back_link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Overview
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero & Master Download -->
+  <section class="download-hero">
+    <div class="container">
+      <div class="release-badge">
+        <span class="badge-dot"></span>
+        <span data-i18n="badge">PRODUCTION RELEASE · V2.0.0 (X64)</span>
+      </div>
+
+      <h1><span data-i18n="title_1">Install</span> <span data-i18n="title_2">Trendusty Orbit</span></h1>
+      <p>
+        Deploy the full Common Operating Picture (COP) directly to your Windows system. Fuses live aviation, maritime AIS, satellite ephemeris, CCTV, and threat intelligence with zero telemetry leakage.
+      </p>
+
+      <div class="download-card reveal-on-scroll">
+        <div class="app-icon-large">
+          <img src="../favicon.ico" alt="Trendusty Orbit Logo">
+        </div>
+
+        <h2 class="card-title" data-i18n="card_title">Trendusty Orbit Desktop Edition</h2>
+        <div class="card-meta">
+          WINDOWS 10 / 11 (64-BIT) &middot; VERSION <span>2.0.0</span> &middot; SIZE <span>365 KB</span>
+        </div>
+
+        <!-- Primary Executable Download -->
+        <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-download" id="dl-btn">
+          <span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="btn_dl">Download Trendusty-Orbit-Setup.exe</span>
+          </span>
+          <small><span data-i18n="btn_sub">Standalone Windows Setup &middot; Embedded Icon &middot; Auto-Creates Shortcuts</span></small>
+        </a>
+
+        <!-- Alternative Downloads -->
+        <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-secondary-dl">
+            <span data-i18n="mirror_link">Mirror Download Link</span>
+          </a>
+          <a href="../Install%20Trendusty%20Orbit.bat" download class="btn-secondary-dl">
+            <span data-i18n="batch_link">Batch Installer (.bat)</span>
+          </a>
+        </div>
+
+        <!-- SHA-256 Hash Verification -->
+        <div class="checksum-box">
+          <div class="hash-text" title="SHA-256 Checksum">
+            <strong>SHA256:</strong> <span id="hash-val">98bc32efd7e455cc643acee9c1594e1a29c90c08645f8b2825545c68408b432d</span>
+          </div>
+          <button class="copy-btn" onclick="copyHash()"><span data-i18n="copy_hash">COPY HASH</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-Step Setup Instructions -->
+  <section class="steps-section reveal-on-scroll">
+    <div class="container">
+      <div class="section-title">
+        <h2 data-i18n="steps_title">Quick 3-Step Deployment</h2>
+        <p data-i18n="steps_desc">No complex database setup or background daemon configuration required.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card reveal-on-scroll stagger-2">
+          <div class="step-number">STEP 01</div>
+          <h3 data-i18n="step_1_title">Download Installer</h3>
+          <p>Click the download button above to get the official <code>Trendusty-Orbit-Setup.exe</code> package (~365 KB).</p>
+        </div>
+
+        <div class="step-card reveal-on-scroll stagger-3">
+          <div class="step-number">STEP 02</div>
+          <h3 data-i18n="step_2_title">Run Setup</h3>
+          <p>Launch the setup file. It installs Trendusty Orbit cleanly into your user directory without directory permission locks.</p>
+        </div>
+
+        <div class="step-card reveal-on-scroll stagger-1">
+          <div class="step-number">STEP 03</div>
+          <h3 data-i18n="step_3_title">Instant Launch</h3>
+          <p>Double-click the created Desktop or Start Menu shortcut to initiate the full operations center console.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- System Specifications -->
+  <section class="specs-section reveal-on-scroll">
+    <div class="container">
+      <div class="section-title">
+        <h2 data-i18n="specs_title">System Specifications</h2>
+        <p data-i18n="specs_desc">Optimized for ultra-responsive rendering with hardware GPU FXAA.</p>
+      </div>
+
+      <div class="specs-card">
+        <div class="spec-row">
+          <div class="spec-label" data-i18n="spec_os_label">Operating System</div>
+          <div class="spec-value">Windows 10 / Windows 11 (64-bit Architecture)</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label" data-i18n="spec_ram_label">Memory (RAM)</div>
+          <div class="spec-value">4 GB Minimum <span>(8 GB Recommended for 60K+ entity rendering)</span></div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label" data-i18n="spec_gpu_label">Graphics (GPU)</div>
+          <div class="spec-value">DirectX 11 / WebGL 2.0 compatible GPU (Intel HD 520+, GTX 750+, Radeon R7+)</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label" data-i18n="spec_storage_label">Storage Required</div>
+          <div class="spec-value">~150 MB available local disk space</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label" data-i18n="spec_net_label">Network Architecture</div>
+          <div class="spec-value">100% Local / Self-Hosted <span>&middot; Zero queries sent to external corporate servers</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-inner">
+      <div>
+        &copy; 2026 Trendusty Orbit &mdash; Made by Trendusty &middot; All Rights Reserved
+      </div>
+      <div>
+        <a href="../home/index.html">Live Web Overview</a> &middot;
+        <a href="../home/index.html#live-preview">3D Simulation</a> &middot;
+        <a href="#dl-btn" style="color: var(--accent);">Direct Download</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function copyHash() {
+      const hash = document.getElementById('hash-val').innerText;
+      navigator.clipboard.writeText(hash).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerText = 'COPIED!';
+        btn.style.background = 'var(--accent)';
+        btn.style.color = '#030508';
+        setTimeout(() => {
+          btn.innerText = 'COPY HASH';
+          btn.style.background = 'transparent';
+          btn.style.color = 'var(--accent)';
+        }, 2000);
+      });
+    }
+  </script>
+
+  <script>
+    const DL_I18N_DICTS = {"en":{"lang_name":"English","dir":"ltr","back_link":"Back to Overview","badge":"PRODUCTION RELEASE · V2.0.0 (X64)","title_1":"Install","title_2":"Trendusty Orbit","desc":"Deploy the full Common Operating Picture (COP) directly to your Windows system. Fuses live aviation, maritime AIS, satellite ephemeris, CCTV, and threat intelligence with zero telemetry leakage.","card_title":"Trendusty Orbit Desktop Edition","card_meta":"WINDOWS 10 / 11 (64-BIT) · VERSION <span>2.0.0</span> · SIZE <span>365 KB</span>","btn_dl":"Download Trendusty-Orbit-Setup.exe","btn_sub":"Standalone Windows Setup · Embedded Icon · Auto-Creates Shortcuts","mirror_link":"Mirror Download Link","batch_link":"Batch Installer (.bat)","copy_hash":"COPY HASH","copied":"COPIED!","steps_title":"Quick 3-Step Deployment","steps_desc":"No complex database setup or background daemon configuration required.","step_1_title":"Download Installer","step_1_desc":"Click the download button above to get the official <code>Trendusty-Orbit-Setup.exe</code> package (~365 KB).","step_2_title":"Run Setup","step_2_desc":"Launch the setup file. It installs Trendusty Orbit cleanly into your user directory without directory permission locks.","step_3_title":"Instant Launch","step_3_desc":"Double-click the created Desktop or Start Menu shortcut to initiate the full operations center console.","specs_title":"System Specifications","specs_desc":"Optimized for ultra-responsive rendering with hardware GPU FXAA.","spec_os_label":"Operating System","spec_os_val":"Windows 10 / Windows 11 (64-bit Architecture)","spec_ram_label":"Memory (RAM)","spec_ram_val":"4 GB Minimum <span>(8 GB Recommended for 60K+ entity rendering)</span>","spec_gpu_label":"Graphics (GPU)","spec_gpu_val":"DirectX 11 / WebGL 2.0 compatible GPU (Intel HD 520+, GTX 750+, Radeon R7+)","spec_storage_label":"Storage Required","spec_storage_val":"~150 MB available local disk space","spec_net_label":"Network Architecture","spec_net_val":"100% Local / Self-Hosted <span>· Zero queries sent to external corporate servers</span>","footer_copy":"© 2026 Trendusty Orbit — Made by Trendusty · All Rights Reserved","footer_web":"Live Web Overview","footer_sim":"3D Simulation","footer_direct":"Direct Download"},"es":{"lang_name":"Español","dir":"ltr","back_link":"Volver a la Vista General","badge":"VERSIÓN DE PRODUCCIÓN · V2.0.0 (X64)","title_1":"Instalar","title_2":"Trendusty Orbit","desc":"Despliega la Imagen Operativa Común (COP) directamente en tu sistema Windows. Fusiona aviación, AIS marítimo, satélites, CCTV y ciberamenazas sin fuga de datos.","card_title":"Trendusty Orbit Edición de Escritorio","card_meta":"WINDOWS 10 / 11 (64-BIT) · VERSIÓN <span>2.0.0</span> · TAMAÑO <span>365 KB</span>","btn_dl":"Descargar Trendusty-Orbit-Setup.exe","btn_sub":"Instalador nativo de Windows · Icono integrado · Accesos directos automáticos","mirror_link":"Enlace de Descarga Espejo","batch_link":"Instalador por Lotes (.bat)","copy_hash":"COPIAR HASH","copied":"¡COPIADO!","steps_title":"Despliegue Rápido en 3 Pasos","steps_desc":"Sin configuración compleja de bases de datos ni demonios en segundo plano.","step_1_title":"Descargar Instalador","step_1_desc":"Haz clic en el botón de descarga para obtener el paquete oficial <code>Trendusty-Orbit-Setup.exe</code> (~365 KB).","step_2_title":"Ejecutar Instalador","step_2_desc":"Inicia el archivo de instalación. Se instala limpiamente en tu directorio de usuario sin bloqueos de permisos.","step_3_title":"Lanzamiento Inmediato","step_3_desc":"Haz doble clic en el acceso directo del Escritorio o Menú Inicio para abrir la consola de operaciones.","specs_title":"Especificaciones del Sistema","specs_desc":"Optimizado para renderizado ultra fluido con aceleración FXAA por hardware.","spec_os_label":"Sistema Operativo","spec_os_val":"Windows 10 / Windows 11 (Arquitectura de 64 bits)","spec_ram_label":"Memoria (RAM)","spec_ram_val":"4 GB Mínimo <span>(8 GB recomendados para renderizar más de 60.000 entidades)</span>","spec_gpu_label":"Gráficos (GPU)","spec_gpu_val":"GPU compatible con DirectX 11 / WebGL 2.0 (Intel HD 520+, GTX 750+, Radeon R7+)","spec_storage_label":"Almacenamiento Requerido","spec_storage_val":"~150 MB de espacio disponible en disco","spec_net_label":"Arquitectura de Red","spec_net_val":"100% Local / Auto-alojado <span>· Cero consultas enviadas a servidores corporativos</span>","footer_copy":"© 2026 Trendusty Orbit — Hecho por Trendusty · Todos los Derechos Reservados","footer_web":"Visión General Web","footer_sim":"Simulación 3D","footer_direct":"Descarga Directa"},"fr":{"lang_name":"Français","dir":"ltr","back_link":"Retour à l'Aperçu","badge":"VERSION DE PRODUCTION · V2.0.0 (X64)","title_1":"Installer","title_2":"Trendusty Orbit","desc":"Déployez l'Image Opérationnelle Commune (COP) directement sur votre système Windows. Renseignement aérien, maritime AIS, orbital et CCTV sans aucune fuite de données.","card_title":"Trendusty Orbit Édition Bureau","card_meta":"WINDOWS 10 / 11 (64-BIT) · VERSION <span>2.0.0</span> · TAILLE <span>365 KB</span>","btn_dl":"Télécharger Trendusty-Orbit-Setup.exe","btn_sub":"Installateur autonome Windows · Icône intégrée · Raccourcis automatiques","mirror_link":"Lien de Téléchargement Miroir","batch_link":"Installateur Batch (.bat)","copy_hash":"COPIER HACHAGE","copied":"COPIÉ !","steps_title":"Déploiement Rapide en 3 Étapes","steps_desc":"Aucune configuration de base de données complexe ni de démon d'arrière-plan.","step_1_title":"Télécharger l'Installateur","step_1_desc":"Cliquez sur le bouton ci-dessus pour télécharger le package officiel <code>Trendusty-Orbit-Setup.exe</code> (~365 KB).","step_2_title":"Lancer l'Installation","step_2_desc":"Exécutez le fichier de configuration. Il s'installe proprement dans votre dossier utilisateur sans blocage de droits.","step_3_title":"Lancement Immédiat","step_3_desc":"Double-cliquez sur le raccourci Bureau ou Menu Démarrer pour lancer immédiatement la console opérationnelle.","specs_title":"Spécifications Système","specs_desc":"Optimisé pour un affichage ultra réactif avec accélération matérielle GPU FXAA.","spec_os_label":"Système d'Exploitation","spec_os_val":"Windows 10 / Windows 11 (Architecture 64-bit)","spec_ram_label":"Mémoire (RAM)","spec_ram_val":"4 Go Minimum <span>(8 Go recommandés pour l'affichage de 60K+ entités)</span>","spec_gpu_label":"Carte Graphique (GPU)","spec_gpu_val":"GPU compatible DirectX 11 / WebGL 2.0 (Intel HD 520+, GTX 750+, Radeon R7+)","spec_storage_label":"Espace Disque Requis","spec_storage_val":"~150 Mo d'espace disque disponible","spec_net_label":"Architecture Réseau","spec_net_val":"100% Local / Auto-hébergé <span>· Zéro requête transmise vers des serveurs tiers</span>","footer_copy":"© 2026 Trendusty Orbit — Réalisé par Trendusty · Tous Droits Réservés","footer_web":"Aperçu Web Direct","footer_sim":"Simulation 3D","footer_direct":"Téléchargement Direct"},"ar":{"lang_name":"العربية","dir":"rtl","back_link":"العودة للواجهة الرئيسية","badge":"الإصدار الإنتاجي المعتمد · V2.0.0 (X64)","title_1":"تثبيت برنامج","title_2":"ترندستي أوربت","desc":"قم بتشغيل الصورة العملياتية المشتركة (COP) مباشرة على نظام ويندوز. دمج فوري للملاحة الجوية والبحرية والأقمار الصناعية والتهديدات مع خصوصية محلية مطلقة.","card_title":"ترندستي أوربت - إصدار الحاسوب المكتبي","card_meta":"ويندوز 10 / 11 (64 بت) · الإصدار <span>2.0.0</span> · الحجم <span>365 كيلوبايت</span>","btn_dl":"تحميل Trendusty-Orbit-Setup.exe","btn_sub":"برنامج تثبيت مستقل لويندوز · أيقونة مدمجة · إنشاء اختصارات سطح المكتب تلقائياً","mirror_link":"رابط تحميل بديل (Mirror)","batch_link":"مثبت الملف الدفعي (.bat)","copy_hash":"نسخ البصمة (Hash)","copied":"تم النسخ!","steps_title":"تثبيت سريع في 3 خطوات","steps_desc":"لا يتطلب إعداد قواعد بيانات معقدة أو تشغيل خدمات خلفية ثقيلة.","step_1_title":"تحميل برنامج التثبيت","step_1_desc":"انقر فوق زر التحميل أعلاه للحصول على حزمة <code>Trendusty-Orbit-Setup.exe</code> الرسمية (~365 كيلوبايت).","step_2_title":"تشغيل التثبيت","step_2_desc":"قم بتشغيل الملف ليتم تثبيته بسلاسة في مجلد المستخدم الخاص بك دون تعارض مع الصلاحيات.","step_3_title":"تشغيل فوري للعمليات","step_3_desc":"انقر نقراً مزدوجاً على اختصار سطح المكتب أو قائمة ابدأ لبدء غرفة العمليات المتكاملة مباشرة.","specs_title":"متطلبات النظام","specs_desc":"معالجة رسومية فورية فائقة الاستجابة مدعومة بتقنية FXAA لتسريع كرت الشاشة.","spec_os_label":"نظام التشغيل","spec_os_val":"ويندوز 10 / ويندوز 11 (معمارية 64-بت)","spec_ram_label":"الذاكرة العشوائية (RAM)","spec_ram_val":"4 جيجابايت كحد أدنى <span>(8 جيجابايت موصى بها لعرض أكثر من 60 ألف هدف بسلاسة)</span>","spec_gpu_label":"معالج الرسوميات (GPU)","spec_gpu_val":"كرت شاشة متوافق مع DirectX 11 / WebGL 2.0 (Intel HD 520+, GTX 750+, Radeon R7+)","spec_storage_label":"مساحة التخزين المطلوبة","spec_storage_val":"~150 ميجابايت مساحة فارغة على القرص","spec_net_label":"معمارية الشبكة والخصوصية","spec_net_val":"محلي 100% / ذاتي الاستضافة <span>· لا يتم إرسال أي استفسار لخوادم خارجية إطلاقاً</span>","footer_copy":"© 2026 ترندستي أوربت — تطوير Trendusty · جميع الحقوق محفوظة","footer_web":"الواجهة التفاعلية","footer_sim":"المحاكاة ثلاثية الأبعاد","footer_direct":"التحميل المباشر"}};
+
+    function applyLanguage(lang, updateUrl = true) {
+      if (!DL_I18N_DICTS[lang]) lang = 'en';
+      const dict = DL_I18N_DICTS[lang];
+
+      const sel = document.getElementById('lang-select');
+      if (sel) sel.value = lang;
+
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', dict.dir || 'ltr');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          if (dict[key].includes('<') || dict[key].includes('&')) {
+            el.innerHTML = dict[key];
+          } else {
+            el.textContent = dict[key];
+          }
+        }
+      });
+
+      if (updateUrl) {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.set('lang', lang);
+          window.history.replaceState({ lang }, '', url.toString());
+        } catch (e) {}
+      }
+
+      localStorage.setItem('orbit_lang', lang);
+    }
+
+    window.changeLanguage = function(lang) {
+      applyLanguage(lang, true);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      let activeLang = 'en';
+      const search = window.location.search || '';
+      const match = search.match(/[?&]lang=([a-z]{2})/i) || search.match(/=([a-z]{2})/i);
+      if (match && DL_I18N_DICTS[match[1].toLowerCase()]) {
+        activeLang = match[1].toLowerCase();
+      } else {
+        const saved = localStorage.getItem('orbit_lang');
+        if (saved && DL_I18N_DICTS[saved]) {
+          activeLang = saved;
+        }
+      }
+      applyLanguage(activeLang, false);
+    });
+  </script>
+
+
+  <!-- Interactive Motion & Scroll Animation Engine -->
+  <script>
+    (function initAnimations() {
+      // Tactical Cursor handled by initOrbitCursor
+      // 2. Scroll Reveal Intersection Observer
+      const reveals = document.querySelectorAll('.reveal-on-scroll');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+        reveals.forEach(el => observer.observe(el));
+      } else {
+        reveals.forEach(el => el.classList.add('revealed'));
+      }
+
+      // 3. Stats Number Counter Animation
+      const stats = document.querySelectorAll('.stat-number');
+      let statsAnimated = false;
+      const statsBar = document.querySelector('.stats-bar');
+
+      if (statsBar && 'IntersectionObserver' in window) {
+        const statsObserver = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && !statsAnimated) {
+            statsAnimated = true;
+            animateStats();
+            statsObserver.disconnect();
+          }
+        }, { threshold: 0.25 });
+        statsObserver.observe(statsBar);
+      }
+
+      function animateStats() {
+        stats.forEach(el => {
+          const text = el.textContent.trim();
+          if (text === '23+') countUp(el, 0, 23, '+', 1400);
+          else if (text === '60K+') countUp(el, 0, 60, 'K+', 1600);
+          else if (text === '20+') countUp(el, 0, 20, '+', 1200);
+        });
+      }
+
+      function countUp(el, start, end, suffix, duration) {
+        const startTime = performance.now();
+        function update(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          const val = Math.floor(start + (end - start) * ease);
+          el.textContent = val + suffix;
+          if (progress < 1) requestAnimationFrame(update);
+          else el.textContent = end + suffix;
+        }
+        requestAnimationFrame(update);
+      }
+    })();
+  </script>
+
+
+    
+
+  <!-- Tactical Orbit Cursor Animation Engine -->
+  <script>
+    (function initOrbitCursor() {
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      if (!dot || !ring) return;
+
+      let mouseX = -100, mouseY = -100;
+      let ringX = -100, ringY = -100;
+      let isVisible = false;
+      let isHovered = false;
+      let isActive = false;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          isVisible = true;
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+          ringX = mouseX;
+          ringY = mouseY;
+        }
+        // Center dot snaps instantly with 0 lag
+        dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)' + (isActive ? ' scale(0.7)' : isHovered ? ' scale(1.4)' : ' scale(1.0)');
+      }, { passive: true });
+
+      window.addEventListener('mousedown', () => {
+        isActive = true;
+        ring.classList.add('is-active');
+        dot.classList.add('is-active');
+      });
+
+      window.addEventListener('mouseup', () => {
+        isActive = false;
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
+      });
+
+      document.addEventListener('mouseleave', () => {
+        isVisible = false;
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      });
+
+      document.addEventListener('mouseenter', () => {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+      });
+
+      // Smooth fluid spring interpolation for the outer ring
+      function renderFollower() {
+        if (isVisible) {
+          const ease = 0.18; // smooth trailing motion
+          ringX += (mouseX - ringX) * ease;
+          ringY += (mouseY - ringY) * ease;
+          ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
+        }
+        requestAnimationFrame(renderFollower);
+      }
+      requestAnimationFrame(renderFollower);
+
+      const interactiveSelector = '.tcm-item, a, button, input, textarea, select, [role="button"], .interactive, .hud-action-btn, .cop-zoom-btn, .cop-earth-mode-btn, .cop-fullscreen-btn, .cctv-viewport, .cctv-btn, .btn, .feature-card, .capability-card, .step-card, .user-card, .feed-badge, .cop-layer-toggle, .lang-option, .dossier-btn';
+
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target;
+        if (el && el.closest && el.closest(interactiveSelector)) {
+          isHovered = true;
+          ring.classList.add('is-hovering');
+          dot.classList.add('is-hovering');
+        }
+      });
+
+      document.addEventListener('mouseout', (e) => {
+        const el = e.target;
+        if (el && el.closest && el.closest(interactiveSelector)) {
+          const rel = e.relatedTarget;
+          if (!rel || !rel.closest || !rel.closest(interactiveSelector)) {
+            isHovered = false;
+            ring.classList.remove('is-hovering');
+            dot.classList.remove('is-hovering');
+          }
+        }
+      });
+    })();
+  </script>
+
+  <!-- Tactical Right-Click Shortcuts Engine (Download Hub) -->
+  <script>
+    (function initDownloadContextMenu() {
+      const menu = document.getElementById('tactical-context-menu');
+      if (!menu) return;
+
+      window.openTacticalContextMenu = function(clientX, clientY) {
+        menu.style.display = 'block';
+        const w = 285;
+        const h = menu.offsetHeight || 320;
+        let x = clientX + 4;
+        let y = clientY + 4;
+
+        if (x + w > window.innerWidth) x = clientX - w - 4;
+        if (y + h > window.innerHeight) y = clientY - h - 4;
+        if (x < 10) x = 10;
+        if (y < 10) y = 10;
+
+        menu.style.left = x + 'px';
+        menu.style.top = y + 'px';
+      };
+
+      window.closeContextMenu = function() {
+        if (menu) menu.style.display = 'none';
+      };
+
+      window.tcmDownloadAction = function(action) {
+        if (action === 'copyHash') {
+          const hash = '98bc32efd7e455cc643acee9c1594e1a29c98c08645f8b2825545c68408b432d';
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(hash);
+          }
+          const label = document.getElementById('tcm-copy-hash-text');
+          if (label) {
+            const orig = label.textContent;
+            label.textContent = '✓ COPIED SHA256 HASH!';
+            setTimeout(() => { label.textContent = orig; }, 1400);
+          }
+          return;
+        }
+        closeContextMenu();
+      };
+
+      window.addEventListener('contextmenu', (e) => {
+        const el = e.target;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+          return;
+        }
+        e.preventDefault();
+        openTacticalContextMenu(e.clientX, e.clientY);
+      });
+
+      window.addEventListener('click', (e) => {
+        if (menu.style.display !== 'none') {
+          if (!e.target.closest('#tactical-context-menu')) {
+            closeContextMenu();
+          }
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeContextMenu();
+      });
+    })();
+  </script>
+
+</body>
+</html>
