@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Progress & Development Radar - Trendusty Orbit</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-color: #07090e;
+    --bg-surface: #0c1017;
+    --card-bg: rgba(13, 18, 28, 0.75);
+    --glass-border: rgba(0, 245, 184, 0.16);
+    --glass-border-hover: rgba(0, 245, 184, 0.45);
+    --accent: #00f5b8;
+    --accent-dim: rgba(0, 245, 184, 0.12);
+    --accent-glow: rgba(0, 245, 184, 0.4);
+    --accent-blue: #00b4d8;
+    --accent-warning: #ffb703;
+    --accent-warning-bg: rgba(255, 183, 3, 0.12);
+    --accent-success: #00f5b8;
+    --accent-success-bg: rgba(0, 245, 184, 0.12);
+    --text-main: #f0fdf4;
+    --text-sub: rgba(240, 253, 244, 0.65);
+    --primary-grad: linear-gradient(135deg, #00f5b8 0%, #00b4d8 100%);
+    --border-color: rgba(0, 245, 184, 0.16);
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Inter', sans-serif;
+  }
+
+  html, body, *, *::before, *::after { cursor: none !important; }
+  a, button, input, textarea, select { cursor: none !important; }
+
+  /* Tactical Orbit Cursor */
+  .orbit-cursor-dot {
+    position: fixed; top: 0; left: 0;
+    width: 5px; height: 5px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483647 !important;
+    box-shadow: 0 0 12px var(--accent), 0 0 4px #ffffff;
+    opacity: 0;
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease, opacity 0.3s ease;
+  }
+  .orbit-cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 56px; height: 56px;
+    border: 1px solid rgba(0, 245, 184, 0.5);
+    background: rgba(0, 245, 184, 0.03);
+    border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483646 !important;
+    box-shadow: 0 0 18px rgba(0, 245, 184, 0.3), inset 0 0 10px rgba(0, 245, 184, 0.1);
+    opacity: 0;
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease, border-color 0.5s ease, opacity 0.3s ease;
+  }
+  .orbit-cursor-ring.is-hovering {
+    width: 66px; height: 66px;
+    border: 1.5px solid var(--accent);
+    background: rgba(0, 245, 184, 0.08);
+    box-shadow: 0 0 26px var(--accent-glow);
+  }
+  .orbit-cursor-dot.is-hovering {
+    background: #ffffff;
+    box-shadow: 0 0 14px var(--accent);
+    width: 8px; height: 8px;
+  }
+  .orbit-cursor-ring.is-active {
+    width: 28px; height: 28px;
+    border: 1.5px solid #00d2ff;
+    background: rgba(0, 210, 255, 0.25);
+  }
+  .mouse-trail-dot {
+    position: fixed; width: 4px; height: 4px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483645 !important;
+    opacity: 0.8;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    box-shadow: 0 0 6px var(--accent);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 245, 184, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 10% 30%, rgba(0, 180, 216, 0.05) 0%, transparent 40%),
+        linear-gradient(to bottom, #07090e, #05070a);
+    background-attachment: fixed;
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-size: 48px 48px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    pointer-events: none; z-index: -1;
+  }
+
+  .navbar {
+    background: rgba(7, 9, 14, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .nav-logo {
+    font-size: 22px;
+    font-weight: 800;
+    background: var(--primary-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-links { margin-left: 40px; display: flex; gap: 20px; }
+  .nav-links a { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 15px; transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+  .container { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+
+  .header-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 36px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--primary-grad);
+  }
+
+  .badge-pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--glass-border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .pulse-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulseAnim 1.8s infinite;
+  }
+  @keyframes pulseAnim {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  h1 { font-size: 36px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -1px; }
+  p.subtitle { color: var(--text-sub); font-size: 16px; margin: 0; max-width: 700px; }
+
+  /* Overall progress bar */
+  .progress-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .progress-track {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    height: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 82%;
+    background: var(--primary-grad);
+    box-shadow: 0 0 15px var(--accent-glow);
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+  }
+
+  /* Grid of modules */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .mod-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .mod-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 12px 24px rgba(0, 245, 184, 0.12);
+  }
+
+  .mod-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .mod-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+  
+  .status-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .status-tag.in-progress {
+    background: var(--accent-warning-bg);
+    color: var(--accent-warning);
+    border: 1px solid rgba(255, 183, 3, 0.3);
+  }
+  .status-tag.completed {
+    background: var(--accent-success-bg);
+    color: var(--accent-success);
+    border: 1px solid rgba(0, 245, 184, 0.3);
+  }
+
+  .mod-desc { color: var(--text-sub); font-size: 14px; margin-bottom: 20px; min-height: 44px; }
+
+  .checklist { list-style: none; padding: 0; margin: 0 0 20px 0; font-size: 13px; }
+  .checklist li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: var(--text-main);
+  }
+  .checklist li.done { color: var(--text-sub); text-decoration: line-through; }
+  .checklist li .chk-icon { font-size: 14px; }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+  }
+  .action-btn:hover {
+    background: rgba(0, 245, 184, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Live Terminal Logs */
+  .terminal-card {
+    background: #05070a;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    font-family: var(--font-mono);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+  .terminal-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .terminal-title { font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+  .terminal-body { font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+  .log-line { display: flex; gap: 14px; }
+  .log-time { color: rgba(240, 253, 244, 0.4); min-width: 80px; }
+  .log-ok { color: var(--accent); }
+  .log-warn { color: var(--accent-warning); }
+</style>
+</head>
+<body>
+
+<div class="orbit-cursor-dot" id="orbit-cursor-dot"></div>
+<div class="orbit-cursor-ring" id="orbit-cursor-ring"></div>
+
+<nav class="navbar">
+  <div class="nav-logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#pgrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="pgrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00f5b8" /><stop offset="100%" stop-color="#00b4d8" /></linearGradient></defs><path d="M4 4l16 16M4 20L20 4"/></svg>
+    TRENDUSTY ORBIT
+  </div>
+  <div class="nav-links">
+    <a href="home/index.html">Live COP</a>
+    <a href="windows/cursor-download.html">Custom Cursors</a>
+    <a href="windows/download.html">Desktop Client</a>
+    <a href="progress.html" class="active">Development Radar</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header-card">
+    <div class="badge-pulse">
+      <div class="pulse-dot"></div>
+      ACTIVE CONSTRUCTION RADAR · CONTINUOUS DEPLOYMENT
+    </div>
+    <h1>System Construction & Progress</h1>
+    <p class="subtitle">Live tracking of ongoing features, construction modules, and real-time release milestones across the Trendusty Orbit network.</p>
+
+    <div class="progress-section">
+      <div class="progress-meta">
+        <span>OVERALL PLATFORM READINESS</span>
+        <span style="color: var(--accent);">82% OPERATIONAL</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Module 1: Cursor Gallery & Ingestion -->
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-title">Custom Cursor Gallery</div>
+        <span class="status-tag in-progress">Under Construction</span>
+      </div>
+      <div class="mod-desc">Interactive dual-cursor gallery featuring real-time equip previews, zero-ad layout, and offline packaging.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> Dark Cyberpunk Glassmorphism UI</li>
+        <li class="done"><span class="chk-icon">✅</span> Dual Idle (Arrow + Pointer) Layout</li>
+        <li class="done"><span class="chk-icon">✅</span> SmartScreen-Safe ZIP Builder</li>
+        <li><span class="chk-icon">🚧</span> Ingesting New Batch (Minecraft, Anime, Memes)</li>
+      </ul>
+      <a href="windows/cursor-download.html" class="action-btn">Launch Gallery ↗</a>
+    </div>
+
+    <!-- Module 2: Tactical Cursor Engine -->
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-title">Tactical Orbit Cursor</div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">High-precision cursor follower engine with trailing neon physics and adaptive hover states.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> Precision Center Dot + Expanding Ring</li>
+        <li class="done"><span class="chk-icon">✅</span> Trailing Particle Physics Engine</li>
+        <li class="done"><span class="chk-icon">✅</span> Context-Aware Button & Card States</li>
+        <li class="done"><span class="chk-icon">✅</span> Seamless Custom Pack Hover Transition</li>
+      </ul>
+      <a href="home/index.html" class="action-btn">Test On Live COP ↗</a>
+    </div>
+
+    <!-- Module 3: 3D Intelligence COP -->
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-title">Global OSINT Intelligence COP</div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">Real-time global tracking merging live aviation radar, maritime AIS, and orbital satellite tracking.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> 3D Earth WebGL Globe Engine</li>
+        <li class="done"><span class="chk-icon">✅</span> 60,000+ Active Telemetry Contacts</li>
+        <li class="done"><span class="chk-icon">✅</span> Tactical HUD & CCTV Recon Matrix</li>
+        <li class="done"><span class="chk-icon">✅</span> Zero Data Leakage Architecture</li>
+      </ul>
+      <a href="home/index.html" class="action-btn">Open COP Dashboard ↗</a>
+    </div>
+
+    <!-- Module 4: Client Installer -->
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-title">Windows Desktop Setup</div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">Native Windows workstation installer with self-contained runtime and automatic service routing.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> Compiled Setup.exe Distribution</li>
+        <li class="done"><span class="chk-icon">✅</span> Local Offline Environment Support</li>
+        <li class="done"><span class="chk-icon">✅</span> International Localized Guides (EN/ES/FR/AR)</li>
+      </ul>
+      <a href="windows/download.html" class="action-btn">View Setup Portal ↗</a>
+    </div>
+  </div>
+
+  <!-- Terminal Live Log -->
+  <div class="terminal-card">
+    <div class="terminal-top">
+      <div class="terminal-title">
+        <span style="color: var(--accent);">●</span> DEPLOYMENT & MILESTONE EVENT LOG
+      </div>
+      <span style="color: rgba(240, 253, 244, 0.4); font-size: 11px;">SYNC: GITHUB / MAIN</span>
+    </div>
+    <div class="terminal-body">
+      <div class="log-line">
+        <span class="log-time">[LATEST]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Initialized progress.html tracker; unified platform architecture across all routes.</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[DEPLOY]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Pushed verified release to GitHub (ZebloYT/Trendusty-Orbit).</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[UI]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Imported OG Tactical Orbit Cursor engine to cursor-download.html.</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[THEME]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Converted cursor gallery to Cyberpunk Trendusty Orbit glassmorphism theme.</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[BATCH]</span>
+        <span class="log-warn">[IN-PROGRESS]</span>
+        <span>Pending ingestion of new Minecraft and Anime custom cursor pack batch.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tactical Orbit Cursor Engine
+  (function initOrbitCursor() {
+    const dot = document.getElementById('orbit-cursor-dot');
+    const ring = document.getElementById('orbit-cursor-ring');
+    if (!dot || !ring) return;
+
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+    let isVisible = false;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!isVisible) {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        ringX = mouseX; ringY = mouseY;
+      }
+      dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)';
+    }, { passive: true });
+
+    const trails = [];
+    const MAX_TRAILS = 12;
+    let trailIndex = 0;
+    for (let i = 0; i < MAX_TRAILS; i++) {
+      const t = document.createElement('div');
+      t.className = 'mouse-trail-dot';
+      t.style.opacity = '0';
+      document.body.appendChild(t);
+      trails.push(t);
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      const t = trails[trailIndex];
+      t.style.left = e.clientX + 'px';
+      t.style.top = e.clientY + 'px';
+      t.style.opacity = '0.6';
+      t.style.transform = 'translate(-50%, -50%) scale(1)';
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translate(-50%, -50%) scale(0.2)';
+      }, 50);
+      trailIndex = (trailIndex + 1) % MAX_TRAILS;
+    }, { passive: true });
+
+    window.addEventListener('mousedown', () => {
+      ring.classList.add('is-active');
+      dot.classList.add('is-active');
+    });
+    window.addEventListener('mouseup', () => {
+      ring.classList.remove('is-active');
+      dot.classList.remove('is-active');
+    });
+    document.addEventListener('mouseleave', () => {
+      isVisible = false;
+      dot.style.opacity = '0'; ring.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+      isVisible = true;
+      dot.style.opacity = '1'; ring.style.opacity = '1';
+    });
+
+    function renderFollower() {
+      if (isVisible) {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
+      }
+      requestAnimationFrame(renderFollower);
+    }
+    requestAnimationFrame(renderFollower);
+
+    const interactiveSelector = 'a, button, .action-btn, .mod-card';
+    document.addEventListener('mouseover', (e) => {
+      const el = e.target;
+      if (!el || !el.closest) return;
+      if (el.closest(interactiveSelector)) {
+        ring.classList.add('is-hovering');
+        dot.classList.add('is-hovering');
+      } else {
+        ring.classList.remove('is-hovering');
+        dot.classList.remove('is-hovering');
+      }
+    });
+  })();
+</script>
+</body>
+</html>
