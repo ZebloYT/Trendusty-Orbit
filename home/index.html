@@ -102,6 +102,9 @@
     }
 
     /* Top Navigation */
+    header .container {
+      max-width: 1400px;
+    }
     header {
       position: fixed;
       top: 0;
@@ -156,7 +159,7 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 16px;
       font-size: 14px;
       font-weight: 500;
       color: var(--text-muted);
@@ -169,7 +172,7 @@
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     .lang-select {
@@ -1749,11 +1752,11 @@
       background: #00f5b8; border-radius: 50%;
       pointer-events: none !important;
       z-index: 2147483647 !important;
-      box-shadow: 0 0 8px rgba(0, 245, 184, 0.9), 0 0 2px #ffffff;
+      box-shadow: 0 0 12px rgba(0, 245, 184, 1), 0 0 4px #ffffff, 0 0 8px #000000;
       will-change: transform, width, height;
       opacity: 0;
       transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-      transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease, opacity 0.15s ease, box-shadow 0.3s ease, transform 0.08s ease;
+      transition: width 0.4s cubic-bezier(0.25, 1, 0.25, 1), height 0.4s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.4s ease, border-radius 0.4s ease, opacity 0.3s ease, box-shadow 0.4s ease, transform 0.08s ease;
     }
 
     /* Outer Ring */
@@ -1765,11 +1768,11 @@
       border-radius: 50%;
       pointer-events: none !important;
       z-index: 2147483646 !important;
-      box-shadow: 0 0 18px rgba(0, 245, 184, 0.15), inset 0 0 10px rgba(0, 245, 184, 0.05);
+      box-shadow: 0 0 18px rgba(0, 245, 184, 0.3), 0 0 4px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(0, 245, 184, 0.1);
       will-change: transform, width, height;
       opacity: 0;
       transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease, border-width 0.3s ease, box-shadow 0.3s ease, opacity 0.2s ease, border-radius 0.3s ease;
+      transition: width 0.5s cubic-bezier(0.25, 1, 0.25, 1), height 0.5s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.5s ease, border-color 0.5s ease, border-width 0.5s ease, box-shadow 0.5s ease, opacity 0.3s ease, border-radius 0.5s cubic-bezier(0.25, 1, 0.25, 1);
     }
 
     /* Loading Spinner Pseudo-element */
@@ -1977,7 +1980,7 @@
         </select>
         <a href="#live-preview" class="btn-ghost" data-i18n="nav_sim">Live Simulation</a>
         <a href="../windows/download.html" class="btn-primary" target="_blank" data-i18n="nav_download">Download Setup &rarr;</a>
-        <a href="../cursor/tactical-cursor.zip" download class="btn-primary" style="margin-left:8px; background: rgba(0, 245, 184, 0.15); border: 1px solid #00f5b8; color: #00f5b8;">Download Cursor 🎯</a>
+        <a href="../windows/cursor-download.html" class="btn-primary" style="background: rgba(0, 245, 184, 0.15); border: 1px solid #00f5b8; color: #00f5b8;">Other Services ⚙️</a>
       </div>
     </div>
   </header>
@@ -2341,7 +2344,7 @@
       <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
         <a href="#interface" class="btn btn-primary" style="padding: 13px 30px; font-size: 13px;" data-i18n="btn_explore_cop">Explore Live Operations Center ↑</a>
         <a href="../windows/download.html" class="btn btn-outline" style="padding: 13px 30px; font-size: 13px;" target="_blank" data-i18n="btn_download_setup">Download Trendusty Orbit Setup ⬇</a>
-        <a href="../cursor/tactical-cursor.zip" download class="btn btn-outline" style="padding: 13px 30px; font-size: 13px; border-color: #00f5b8; color: #00f5b8;">Download Custom Cursor 🖱️</a>
+        <a href="../windows/cursor-download.html" class="btn btn-outline" style="padding: 13px 30px; font-size: 13px; border-color: #00f5b8; color: #00f5b8;">Other Services ⚙️</a>
       </div>
     </div>
   </section>

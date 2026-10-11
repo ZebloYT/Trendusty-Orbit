@@ -840,62 +840,55 @@
     
 <style id="custom-cursor-style">
     /* ==========================================================================
-       TACTICAL ORBIT CURSOR: CRISP CENTER DOT + BIGGER, LIGHTER FOLLOWER RING
+       TACTICAL ORBIT CURSOR - ADVANCED STATES
        ========================================================================== */
-    html, body, *, *::before, *::after {
-      cursor: none !important;
-    }
-    a, button, input, textarea, select, canvas, [role="button"], label {
-      cursor: none !important;
-    }
+    html, body, *, *::before, *::after { cursor: none !important; }
+    a, button, input, textarea, select, canvas, [role="button"], label { cursor: none !important; }
 
-    /* Precision Center Dot (Snaps synchronously with mouse pointer) */
+    /* Precision Center Dot */
     .orbit-cursor-dot {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 5px;
-      height: 5px;
-      background: #00f5b8;
-      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      width: 5px; height: 5px;
+      background: #00f5b8; border-radius: 50%;
       pointer-events: none !important;
       z-index: 2147483647 !important;
-      box-shadow: 0 0 8px rgba(0, 245, 184, 0.9), 0 0 2px #ffffff;
-      will-change: transform;
+      box-shadow: 0 0 12px rgba(0, 245, 184, 1), 0 0 4px #ffffff, 0 0 8px #000000;
+      will-change: transform, width, height;
       opacity: 0;
       transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-      transition: opacity 0.15s ease, transform 0.08s ease;
+      transition: width 0.4s cubic-bezier(0.25, 1, 0.25, 1), height 0.4s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.4s ease, border-radius 0.4s ease, opacity 0.3s ease, box-shadow 0.4s ease, transform 0.08s ease;
     }
 
-    /* Outer Ring: Bigger & Lighter translucent ethereal orbit circle */
+    /* Outer Ring */
     .orbit-cursor-ring {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 44px;
-      height: 44px;
-      border: 1px solid rgba(0, 245, 184, 0.38);
+      position: fixed; top: 0; left: 0;
+      width: 56px; height: 56px;
+      border: 1px solid rgba(0, 245, 184, 0.5);
       background: rgba(0, 245, 184, 0.03);
       border-radius: 50%;
       pointer-events: none !important;
       z-index: 2147483646 !important;
-      box-shadow: 0 0 18px rgba(0, 245, 184, 0.15), inset 0 0 10px rgba(0, 245, 184, 0.05);
+      box-shadow: 0 0 18px rgba(0, 245, 184, 0.3), 0 0 4px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(0, 245, 184, 0.1);
       will-change: transform, width, height;
       opacity: 0;
       transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-      transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-                  height 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-                  background-color 0.24s ease,
-                  border-color 0.24s ease,
-                  border-width 0.24s ease,
-                  box-shadow 0.24s ease,
-                  opacity 0.2s ease;
+      transition: width 0.5s cubic-bezier(0.25, 1, 0.25, 1), height 0.5s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.5s ease, border-color 0.5s ease, border-width 0.5s ease, box-shadow 0.5s ease, opacity 0.3s ease, border-radius 0.5s cubic-bezier(0.25, 1, 0.25, 1);
     }
 
-    /* Interactive Hover: Smoothly enlarges to 66px with subtle ethereal glow */
+    /* Loading Spinner Pseudo-element */
+    .orbit-cursor-ring::after {
+      content: ""; position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      border-radius: 50%; border: 2px solid transparent;
+      transition: border-top-color 0.3s ease, border-right-color 0.3s ease;
+    }
+    @keyframes orbit-spin { 100% { transform: rotate(360deg); } }
+
+    /* --- STATES --- */
+
+    /* HOVER (Clickable) */
     .orbit-cursor-ring.is-hovering {
-      width: 66px;
-      height: 66px;
+      width: 66px; height: 66px;
       border: 1.5px solid rgba(0, 245, 184, 0.65);
       background: rgba(0, 245, 184, 0.08);
       box-shadow: 0 0 26px rgba(0, 245, 184, 0.4), inset 0 0 14px rgba(0, 245, 184, 0.12);
@@ -903,31 +896,63 @@
     .orbit-cursor-dot.is-hovering {
       background: #ffffff;
       box-shadow: 0 0 12px #00f5b8, 0 0 4px #ffffff;
-      transform: translate3d(var(--mx, -100px), var(--my, -100px), 0) translate(-50%, -50%) scale(1.3);
+      width: 8px; height: 8px;
     }
 
-    /* Active Press / Click: Compresses to 28px with bright neon cyan accent */
+    /* TEXT (I-beam) */
+    .orbit-cursor-ring.is-text {
+      width: 24px; height: 44px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 245, 184, 0.4);
+      background: transparent; box-shadow: none;
+    }
+    .orbit-cursor-dot.is-text {
+      width: 2px; height: 24px;
+      border-radius: 1px;
+      background: #00f5b8; box-shadow: 0 0 8px #00f5b8;
+    }
+
+    /* LOADING (Wait) */
+    .orbit-cursor-ring.is-loading {
+      width: 44px; height: 44px;
+      border-color: rgba(0, 245, 184, 0.1);
+      background: transparent; box-shadow: none;
+    }
+    .orbit-cursor-ring.is-loading::after {
+      border-top-color: #00f5b8; border-right-color: rgba(0, 245, 184, 0.4);
+      animation: orbit-spin 0.8s linear infinite;
+    }
+    .orbit-cursor-dot.is-loading {
+      background: #00d2ff; box-shadow: 0 0 10px #00d2ff;
+    }
+
+    /* ACTIVE (Press/Click) */
     .orbit-cursor-ring.is-active {
-      width: 28px;
-      height: 28px;
+      width: 28px; height: 28px;
       border: 1.5px solid #00d2ff;
       background: rgba(0, 210, 255, 0.25);
       box-shadow: 0 0 24px rgba(0, 210, 255, 0.8);
     }
     .orbit-cursor-dot.is-active {
-      background: #00d2ff;
-      box-shadow: 0 0 12px #00d2ff;
+      background: #00d2ff; box-shadow: 0 0 12px #00d2ff;
+      width: 6px; height: 6px;
     }
 
-    /* Touch screen fallback: Restore default cursor on mobile devices */
+    /* Touch screen fallback */
     @media (pointer: coarse) {
-      html, body, *, *::before, *::after {
-        cursor: auto !important;
-      }
-      .orbit-cursor-dot,
-      .orbit-cursor-ring {
-        display: none !important;
-      }
+      html, body, *, *::before, *::after { cursor: auto !important; }
+      .orbit-cursor-dot, .orbit-cursor-ring { display: none !important; }
+    }
+
+    .mouse-trail-dot {
+      position: fixed; width: 4px; height: 4px;
+      background: #00f5b8; border-radius: 50%;
+      pointer-events: none !important;
+      z-index: 2147483645 !important;
+      opacity: 0.8;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      box-shadow: 0 0 6px #00f5b8;
     }
 </style>
 </head>
@@ -1293,8 +1318,6 @@
       let mouseX = -100, mouseY = -100;
       let ringX = -100, ringY = -100;
       let isVisible = false;
-      let isHovered = false;
-      let isActive = false;
 
       window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
@@ -1306,38 +1329,55 @@
           ringX = mouseX;
           ringY = mouseY;
         }
-        // Center dot snaps instantly with 0 lag
-        dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)' + (isActive ? ' scale(0.7)' : isHovered ? ' scale(1.4)' : ' scale(1.0)');
+        dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)';
+      }, { passive: true });
+
+      // Mouse Trail Logic
+      const trails = [];
+      const MAX_TRAILS = 12;
+      let trailIndex = 0;
+      for (let i = 0; i < MAX_TRAILS; i++) {
+        const t = document.createElement('div');
+        t.className = 'mouse-trail-dot';
+        t.style.opacity = '0';
+        document.body.appendChild(t);
+        trails.push(t);
+      }
+      window.addEventListener('mousemove', (e) => {
+        const t = trails[trailIndex];
+        t.style.left = e.clientX + 'px';
+        t.style.top = e.clientY + 'px';
+        t.style.opacity = '0.6';
+        t.style.transform = 'translate(-50%, -50%) scale(1)';
+        setTimeout(() => {
+          t.style.opacity = '0';
+          t.style.transform = 'translate(-50%, -50%) scale(0.2)';
+        }, 50);
+        trailIndex = (trailIndex + 1) % MAX_TRAILS;
       }, { passive: true });
 
       window.addEventListener('mousedown', () => {
-        isActive = true;
         ring.classList.add('is-active');
         dot.classList.add('is-active');
       });
-
       window.addEventListener('mouseup', () => {
-        isActive = false;
         ring.classList.remove('is-active');
         dot.classList.remove('is-active');
       });
-
       document.addEventListener('mouseleave', () => {
         isVisible = false;
         dot.style.opacity = '0';
         ring.style.opacity = '0';
       });
-
       document.addEventListener('mouseenter', () => {
         isVisible = true;
         dot.style.opacity = '1';
         ring.style.opacity = '1';
       });
 
-      // Smooth fluid spring interpolation for the outer ring
       function renderFollower() {
         if (isVisible) {
-          const ease = 0.18; // smooth trailing motion
+          const ease = 0.18;
           ringX += (mouseX - ringX) * ease;
           ringY += (mouseY - ringY) * ease;
           ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
@@ -1346,26 +1386,36 @@
       }
       requestAnimationFrame(renderFollower);
 
-      const interactiveSelector = '.tcm-item, a, button, input, textarea, select, [role="button"], .interactive, .hud-action-btn, .cop-zoom-btn, .cop-earth-mode-btn, .cop-fullscreen-btn, .cctv-viewport, .cctv-btn, .btn, .feature-card, .capability-card, .step-card, .user-card, .feed-badge, .cop-layer-toggle, .lang-option, .dossier-btn';
+      const interactiveSelector = '.tcm-item, a, button, input[type="button"], input[type="submit"], select, [role="button"], .interactive, .hud-action-btn, .cop-zoom-btn, .cop-earth-mode-btn, .cop-fullscreen-btn, .cctv-viewport, .cctv-btn, .btn, .feature-card, .capability-card, .step-card, .user-card, .feed-badge, .cop-layer-toggle, .lang-option, .dossier-btn';
+      const textSelector = 'p, h1, h2, h3, h4, h5, h6, span:not(.btn):not(.tcm-item), label, input[type="text"], input[type="password"], input[type="email"], textarea';
 
       document.addEventListener('mouseover', (e) => {
         const el = e.target;
-        if (el && el.closest && el.closest(interactiveSelector)) {
-          isHovered = true;
+        if (!el || !el.closest) return;
+        
+        let isClickable = el.closest(interactiveSelector) !== null;
+        let isText = el.closest(textSelector) !== null;
+        let isLoading = el.closest('.loading') !== null;
+        
+        try {
+            let style = window.getComputedStyle(el);
+            if (style.cursor === 'wait' || style.cursor === 'progress') isLoading = true;
+            if (style.cursor === 'pointer') isClickable = true;
+            if (style.cursor === 'text') isText = true;
+        } catch(err){}
+
+        ring.classList.remove('is-hovering', 'is-text', 'is-loading');
+        dot.classList.remove('is-hovering', 'is-text', 'is-loading');
+
+        if (isLoading) {
+          ring.classList.add('is-loading');
+          dot.classList.add('is-loading');
+        } else if (isClickable) {
           ring.classList.add('is-hovering');
           dot.classList.add('is-hovering');
-        }
-      });
-
-      document.addEventListener('mouseout', (e) => {
-        const el = e.target;
-        if (el && el.closest && el.closest(interactiveSelector)) {
-          const rel = e.relatedTarget;
-          if (!rel || !rel.closest || !rel.closest(interactiveSelector)) {
-            isHovered = false;
-            ring.classList.remove('is-hovering');
-            dot.classList.remove('is-hovering');
-          }
+        } else if (isText) {
+          ring.classList.add('is-text');
+          dot.classList.add('is-text');
         }
       });
     })();
