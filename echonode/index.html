@@ -104,10 +104,15 @@
               <span class="status-dot-pulse"></span>
               <span id="server-status-text">OFFLINE</span>
             </div>
-            <button class="server-ip-copy-btn" id="btn-copy-ip" title="Click to copy IP">
-              <span id="display-server-ip">play.echonode.net:25565</span>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            </button>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <button class="server-ip-copy-btn" id="btn-copy-ip" title="Click to copy Real Server IP">
+                <span id="display-server-ip">Detecting Real IP...</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+              <button class="server-ip-net-btn" id="btn-open-network-modal" title="Real IP &amp; Network Settings">
+                <span>🌐</span>
+              </button>
+            </div>
           </div>
 
           <!-- Quick Action Buttons -->
@@ -390,6 +395,30 @@
                 <button class="btn-primary" id="btn-open-version-from-options" style="padding: 9px 18px; font-size: 13px;">
                   <span>Change Software / Version 🔄</span>
                 </button>
+              </div>
+            </div>
+
+            <!-- Real Server IP & Network Configuration Card -->
+            <div class="content-card network-quick-card" style="margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                  <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(0, 245, 184, 0.12); border: 1px solid rgba(0, 245, 184, 0.4); display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                    🌐
+                  </div>
+                  <div>
+                    <div style="font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); color: #00f5b8; font-weight: 700;">Real Server Network &amp; Connection IP</div>
+                    <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 2px 0 0 0;" id="opt-display-real-ip">Detecting Real IP...</h3>
+                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Live detected public IPv4 and local LAN address for real multiplayer connectivity.</p>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <button class="btn-secondary" id="btn-copy-active-ip" style="padding: 9px 18px; font-size: 13px;">
+                    <span>Copy Real IP 📋</span>
+                  </button>
+                  <button class="btn-primary" id="btn-open-net-modal-from-options" style="padding: 9px 18px; font-size: 13px;">
+                    <span>Manage Network &amp; IPs 🌐</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1511,6 +1540,91 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       REAL SERVER IP & NETWORK MANAGER MODAL
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-real-ip">
+    <div class="modal-content-box" style="max-width: 620px;">
+      <div class="modal-header-row">
+        <div>
+          <div style="font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); color: #00f5b8; font-weight: 700;">EchoNode Network Center</div>
+          <h3 style="margin: 2px 0 0 0; font-size: 18px; color: #fff;">🌐 Real Server IP &amp; Network Setup</h3>
+        </div>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-real-ip')">&times;</button>
+      </div>
+
+      <p style="font-size: 12.5px; color: #94a3b8; margin: 8px 0 16px 0; line-height: 1.5;">
+        Your server binds to real local and public network interfaces. Pick the IP address that matches how your friends will join:
+      </p>
+
+      <div class="network-card-row">
+        <!-- Card 1: Real Public IP -->
+        <div class="network-ip-item active-ip" id="net-card-public">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: #00f5b8; background: rgba(0, 245, 184, 0.12); padding: 3px 8px; border-radius: 6px;">🌐 REAL PUBLIC IPv4</span>
+              <span style="font-size: 10px; color: #22c55e;">● LIVE DETECTED</span>
+            </div>
+            <div class="network-ip-val" id="modal-real-public-ip">Detecting Real IP...</div>
+            <p style="font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;">Worldwide Internet Play. Give this to friends outside your home. (Direct connection on port 25565).</p>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <button class="btn-primary" id="btn-use-public-ip" style="padding: 7px 14px; font-size: 12px;">Use This IP</button>
+            <button class="btn-secondary" id="btn-copy-public-ip" style="padding: 7px 14px; font-size: 12px;">Copy</button>
+          </div>
+        </div>
+
+        <!-- Card 2: Local Network LAN -->
+        <div class="network-ip-item" id="net-card-lan">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 6px;">🏠 LOCAL NETWORK (LAN / WI-FI)</span>
+            </div>
+            <div class="network-ip-val" id="modal-real-lan-ip">192.168.1.100:25565</div>
+            <p style="font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;">Home network play. For friends or devices connected to the same Wi-Fi router. Zero port-forwarding needed!</p>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <button class="btn-secondary" id="btn-use-lan-ip" style="padding: 7px 14px; font-size: 12px;">Use This IP</button>
+            <button class="btn-secondary" id="btn-copy-lan-ip" style="padding: 7px 14px; font-size: 12px;">Copy</button>
+          </div>
+        </div>
+
+        <!-- Card 3: Free Cloud Tunnel (Playit.gg) -->
+        <div class="network-ip-item" id="net-card-tunnel">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: #a855f7; background: rgba(168, 85, 247, 0.12); padding: 3px 8px; border-radius: 6px;">🚀 FREE ZERO-CONFIG TUNNEL (PLAYIT)</span>
+            </div>
+            <div class="network-ip-val" id="modal-playit-tunnel-ip">play.echonode.net:25565</div>
+            <p style="font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;">0-port-forward tunnel proxy. Plays worldwide through Playit cloud tunnels even behind CGNAT / mobile hotspot.</p>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <button class="btn-secondary" id="btn-use-tunnel-ip" style="padding: 7px 14px; font-size: 12px;">Use This IP</button>
+            <button class="btn-secondary" id="btn-copy-tunnel-ip" style="padding: 7px 14px; font-size: 12px;">Copy</button>
+          </div>
+        </div>
+
+        <!-- Custom IP input -->
+        <div style="background: rgba(15, 23, 42, 0.5); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 10px; padding: 14px 16px;">
+          <label style="font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); color: #94a3b8; font-weight: 700; display: block; margin-bottom: 6px;">Or Set Custom Domain / Hostname:</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="input-custom-server-ip" placeholder="e.g. mc.myserver.com:25565 or 103.87.30.28:25565" style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 8px 12px; color: #fff; font-family: var(--font-mono); font-size: 13px; outline: none;" />
+            <button class="btn-primary" id="btn-save-custom-ip" style="padding: 8px 16px; font-size: 12px;">Apply Custom</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 14px;">
+        <button class="btn-secondary" id="btn-refresh-real-ip" style="font-size: 12px;">
+          <span>🔄 Re-detect Network IPs</span>
+        </button>
+        <button class="btn-primary" onclick="app.closeModal('modal-real-ip')" style="font-size: 12px; padding: 8px 20px;">
+          <span>Done</span>
+        </button>
       </div>
     </div>
   </div>

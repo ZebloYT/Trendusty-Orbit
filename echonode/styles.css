@@ -428,6 +428,67 @@ body.mode-3d .spatial-hud-controls {
   border-color: var(--accent-cyan);
 }
 
+.server-ip-net-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  font-size: 11px;
+  color: #38bdf8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.server-ip-net-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+/* Real IP & Network Manager Modal & Cards */
+.network-card-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.network-ip-item {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  transition: all 0.2s ease;
+}
+
+.network-ip-item:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.network-ip-item.active-ip {
+  border-color: #00f5b8;
+  box-shadow: 0 0 16px rgba(0, 245, 184, 0.15);
+}
+
+.network-ip-val {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+  user-select: text;
+}
+
 /* Quick Action Buttons (Aternos Style Start / Restart / Stop) */
 .status-quick-actions {
   display: grid;

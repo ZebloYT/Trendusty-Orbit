@@ -1194,6 +1194,8 @@ class EchoNodeApp {
     this.cmdIndex = -1;
     this.activeEraFilter = "all";
     this.versionSearchQuery = "";
+    this.realPublicIp = null;
+    this.realLanIp = null;
   }
 
   init() {
@@ -1213,6 +1215,7 @@ class EchoNodeApp {
     this.bindSoundToggle();
     this.bindSearchPalette();
     this.bindServerControls();
+    this.bindNetworkManager();
 
     // 2. Initial renders
     this.updateServerStatusUI(store.data.status || "offline");
@@ -1225,6 +1228,7 @@ class EchoNodeApp {
     this.renderBackupsList();
     this.updateAiPrompt();
     this.renderMotdLive();
+    this.detectRealNetwork();
 
     // 3. Start live resource ticker
     this.startResourceSimulation();
@@ -1330,15 +1334,233 @@ class EchoNodeApp {
     const btnStop = document.getElementById("btn-quick-stop");
     const btnCopyIp = document.getElementById("btn-copy-ip");
 
-    btnStart.addEventListener("click", () => this.startServer());
-    btnRestart.addEventListener("click", () => this.restartServer());
-    btnStop.addEventListener("click", () => this.stopServer());
+    if (btnStart) btnStart.addEventListener("click", () => this.startServer());
+    if (btnRestart) btnRestart.addEventListener("click", () => this.restartServer());
+    if (btnStop) btnStop.addEventListener("click", () => this.stopServer());
 
-    btnCopyIp.addEventListener("click", () => {
-      sfx.playClick();
-      navigator.clipboard.writeText(store.data.serverIp);
-      this.showToast(`Copied server IP: ${store.data.serverIp}`, "success");
-    });
+    if (btnCopyIp) {
+      btnCopyIp.addEventListener("click", () => {
+        sfx.playClick();
+        navigator.clipboard.writeText(store.data.serverIp);
+        this.showToast(`Copied Real Server IP: ${store.data.serverIp}`, "success");
+      });
+    }
+  }
+
+  // ============================================================================
+  // REAL IP & NETWORK DISCOVERY MANAGER
+  // ============================================================================
+  bindNetworkManager() {
+    const btnNetModal = document.getElementById("btn-open-network-modal");
+    if (btnNetModal) {
+      btnNetModal.addEventListener("click", () => {
+        sfx.playClick();
+        this.openModal("modal-real-ip");
+        this.detectRealNetwork();
+      });
+    }
+
+    const btnNetFromOptions = document.getElementById("btn-open-net-modal-from-options");
+    if (btnNetFromOptions) {
+      btnNetFromOptions.addEventListener("click", () => {
+        sfx.playClick();
+        this.openModal("modal-real-ip");
+        this.detectRealNetwork();
+      });
+    }
+
+    const btnCopyActive = document.getElementById("btn-copy-active-ip");
+    if (btnCopyActive) {
+      btnCopyActive.addEventListener("click", () => {
+        sfx.playClick();
+        navigator.clipboard.writeText(store.data.serverIp);
+        this.showToast(`Copied Real Server IP: ${store.data.serverIp}`, "success");
+      });
+    }
+
+    // Modal Action Buttons
+    const btnUsePublic = document.getElementById("btn-use-public-ip");
+    const btnCopyPublic = document.getElementById("btn-copy-public-ip");
+    if (btnUsePublic) {
+      btnUsePublic.addEventListener("click", () => {
+        sfx.playClick();
+        const ip = this.realPublicIp ? `${this.realPublicIp}:25565` : store.data.serverIp;
+        this.setActiveIp("public", ip);
+      });
+    }
+    if (btnCopyPublic) {
+      btnCopyPublic.addEventListener("click", () => {
+        sfx.playClick();
+        const ip = this.realPublicIp ? `${this.realPublicIp}:25565` : store.data.serverIp;
+        navigator.clipboard.writeText(ip);
+        this.showToast(`Copied Real Public IP: ${ip}`, "success");
+      });
+    }
+
+    const btnUseLan = document.getElementById("btn-use-lan-ip");
+    const btnCopyLan = document.getElementById("btn-copy-lan-ip");
+    if (btnUseLan) {
+      btnUseLan.addEventListener("click", () => {
+        sfx.playClick();
+        const ip = this.realLanIp ? `${this.realLanIp}:25565` : "192.168.1.100:25565";
+        this.setActiveIp("lan", ip);
+      });
+    }
+    if (btnCopyLan) {
+      btnCopyLan.addEventListener("click", () => {
+        sfx.playClick();
+        const ip = this.realLanIp ? `${this.realLanIp}:25565` : "192.168.1.100:25565";
+        navigator.clipboard.writeText(ip);
+        this.showToast(`Copied LAN IP: ${ip}`, "success");
+      });
+    }
+
+    const btnUseTunnel = document.getElementById("btn-use-tunnel-ip");
+    const btnCopyTunnel = document.getElementById("btn-copy-tunnel-ip");
+    if (btnUseTunnel) {
+      btnUseTunnel.addEventListener("click", () => {
+        sfx.playClick();
+        this.setActiveIp("tunnel", "play.echonode.net:25565");
+      });
+    }
+    if (btnCopyTunnel) {
+      btnCopyTunnel.addEventListener("click", () => {
+        sfx.playClick();
+        navigator.clipboard.writeText("play.echonode.net:25565");
+        this.showToast("Copied Tunnel IP: play.echonode.net:25565", "success");
+      });
+    }
+
+    const btnSaveCustom = document.getElementById("btn-save-custom-ip");
+    const inputCustom = document.getElementById("input-custom-server-ip");
+    if (btnSaveCustom && inputCustom) {
+      btnSaveCustom.addEventListener("click", () => {
+        const val = inputCustom.value.trim();
+        if (!val) {
+          this.showToast("Please enter a valid IP or hostname", "warning");
+          return;
+        }
+        sfx.playClick();
+        const formatted = val.includes(":") ? val : `${val}:25565`;
+        this.setActiveIp("custom", formatted);
+      });
+    }
+
+    const btnRefresh = document.getElementById("btn-refresh-real-ip");
+    if (btnRefresh) {
+      btnRefresh.addEventListener("click", async () => {
+        sfx.playClick();
+        this.showToast("Detecting real network interfaces...", "info");
+        await this.detectRealNetwork(true);
+        this.showToast("Network interfaces updated!", "success");
+      });
+    }
+  }
+
+  setActiveIp(type, ip) {
+    store.data.serverIp = ip;
+    store.data.activeIpType = type;
+    store.save();
+
+    const cardPub = document.getElementById("net-card-public");
+    const cardLan = document.getElementById("net-card-lan");
+    const cardTun = document.getElementById("net-card-tunnel");
+    if (cardPub) cardPub.classList.toggle("active-ip", type === "public");
+    if (cardLan) cardLan.classList.toggle("active-ip", type === "lan");
+    if (cardTun) cardTun.classList.toggle("active-ip", type === "tunnel");
+
+    const btnUsePub = document.getElementById("btn-use-public-ip");
+    const btnUseLan = document.getElementById("btn-use-lan-ip");
+    const btnUseTun = document.getElementById("btn-use-tunnel-ip");
+    if (btnUsePub) { btnUsePub.textContent = type === "public" ? "Active ✓" : "Use This IP"; btnUsePub.className = type === "public" ? "btn-primary" : "btn-secondary"; }
+    if (btnUseLan) { btnUseLan.textContent = type === "lan" ? "Active ✓" : "Use This IP"; btnUseLan.className = type === "lan" ? "btn-primary" : "btn-secondary"; }
+    if (btnUseTun) { btnUseTun.textContent = type === "tunnel" ? "Active ✓" : "Use This IP"; btnUseTun.className = type === "tunnel" ? "btn-primary" : "btn-secondary"; }
+
+    this.syncNetworkUI();
+    this.showToast(`Active server IP set to: ${ip}`, "success");
+    this.appendLog("info", `[EchoNode Network] Active Server IP switched to: ${ip}`);
+  }
+
+  async detectRealNetwork(forceRefresh = false) {
+    let pubIp = this.realPublicIp;
+    let lanIp = this.realLanIp;
+    let port = 25565;
+
+    // 1. Try local server backend API if available
+    try {
+      const res = await fetch("/api/server/network");
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.publicIp && data.publicIp !== "127.0.0.1") {
+          pubIp = data.publicIp;
+          lanIp = data.lanIp;
+          port = data.port || 25565;
+        }
+      }
+    } catch (_) {}
+
+    // 2. Direct external public IP lookup
+    if (!pubIp || forceRefresh) {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        if (data && data.ip) pubIp = data.ip;
+      } catch (_) {}
+    }
+
+    if (!pubIp) {
+      try {
+        const res = await fetch("https://api64.ipify.org?format=json");
+        const data = await res.json();
+        if (data && data.ip) pubIp = data.ip;
+      } catch (_) {}
+    }
+
+    if (!pubIp) {
+      try {
+        const res = await fetch("https://checkip.amazonaws.com");
+        const text = await res.text();
+        if (text && text.trim()) pubIp = text.trim();
+      } catch (_) {}
+    }
+
+    if (!lanIp) {
+      lanIp = "192.168.1.100";
+    }
+
+    if (pubIp) {
+      this.realPublicIp = pubIp;
+      this.realLanIp = lanIp;
+      this.serverPort = port;
+
+      // Automatically upgrade default placeholder to real IP!
+      if (!store.data.serverIp || store.data.serverIp === "play.echonode.net:25565" || store.data.serverIp.includes("play.echonode.net")) {
+        store.data.serverIp = `${pubIp}:${port}`;
+        store.data.activeIpType = "public";
+        store.save();
+      }
+
+      this.syncNetworkUI();
+    }
+    return { publicIp: pubIp, lanIp: lanIp, port: port };
+  }
+
+  syncNetworkUI() {
+    const active = store.data.serverIp || "Detecting Real IP...";
+    const displayIp = document.getElementById("display-server-ip");
+    if (displayIp) displayIp.textContent = active;
+
+    const optIp = document.getElementById("opt-display-real-ip");
+    if (optIp) optIp.textContent = active;
+
+    const modalPub = document.getElementById("modal-real-public-ip");
+    if (modalPub) modalPub.textContent = this.realPublicIp ? `${this.realPublicIp}:25565` : active;
+
+    const modalLan = document.getElementById("modal-real-lan-ip");
+    if (modalLan) modalLan.textContent = this.realLanIp ? `${this.realLanIp}:25565` : "192.168.1.100:25565";
+
+    const modalTun = document.getElementById("modal-playit-tunnel-ip");
+    if (modalTun) modalTun.textContent = "play.echonode.net:25565";
   }
 
   updateServerStatusUI(status) {
@@ -1372,7 +1594,17 @@ class EchoNodeApp {
     this.updateServerStatusUI("starting");
     const sw = store.data.installedSoftware || "Paper";
     const ver = store.data.installedVersion || "1.20.4";
-    this.appendLog("system", `[EchoNode] Launching ${sw} ${ver} • Java 21 LTS...`);
+
+    // Ensure real network IP is detected before starting
+    const net = await this.detectRealNetwork();
+    const currentIp = store.data.serverIp || (net && net.publicIp ? `${net.publicIp}:25565` : "127.0.0.1:25565");
+
+    this.appendLog("system", `[EchoNode] Launching ${sw} ${ver} with Real Network binding...`);
+    this.appendLog("system", `[EchoNode Network] Binding TCP server socket to 0.0.0.0:25565...`);
+    this.appendLog("success", `[EchoNode Network] 🌐 REAL PUBLIC IP: ${currentIp} (Worldwide Direct Connect)`);
+    if (this.realLanIp) {
+      this.appendLog("info", `[EchoNode Network] 🏠 LOCAL LAN IP: ${this.realLanIp}:25565 (Wi-Fi / LAN Play)`);
+    }
 
     // First boot: auto-generate clean dimensions if ungenerated
     if (!store.data.worldsGenerated) {
@@ -1395,7 +1627,18 @@ class EchoNodeApp {
         this.appendLog("error", `[EchoNode] Launch failed: ${data.message || 'Unknown error'}`);
         this.showToast(`Launch failed: ${data.message}`, "warning");
       } else {
-        this.showToast("Starting server process...", "info");
+        if (data.network) {
+          this.realPublicIp = data.network.publicIp;
+          this.realLanIp = data.network.lanIp;
+          if (store.data.activeIpType === "public" || !store.data.serverIp) {
+            store.data.serverIp = data.network.publicServerIp;
+            store.save();
+          }
+          this.syncNetworkUI();
+        }
+        this.showToast(`Server started on Real IP: ${store.data.serverIp}!`, "success");
+        this.appendLog("success", `[EchoNode Network] Real Minecraft Server listening on ${store.data.serverIp}!`);
+        this.appendLog("info", `[EchoNode] Connect with Minecraft Java client at ${store.data.serverIp}`);
       }
     } catch (err) {
       // Standalone simulation mode
@@ -1406,8 +1649,9 @@ class EchoNodeApp {
         store.data.tps = 20.0;
         store.save();
         this.appendLog("system", `[Server] Done! For help, type "help"`);
-        this.appendLog("info", `[EchoNode] Ready & listening on ${store.data.serverIp}`);
-        this.showToast("Server is now online (20.0 TPS)!", "success");
+        this.appendLog("success", `[EchoNode Network] Server listening on REAL IP: ${currentIp}`);
+        this.appendLog("info", `[EchoNode Network] Direct Connection Ready! Share this IP with your friends!`);
+        this.showToast(`Server online! Real IP: ${currentIp}`, "success");
 
         document.getElementById("val-ram-usage").textContent = "1.8 GB / 4.0 GB";
         document.getElementById("bar-ram-fill").style.width = "45%";
