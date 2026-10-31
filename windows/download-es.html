@@ -2,6 +2,41 @@
 <html lang="es" dir="ltr">
 <head>
   <meta charset="UTF-8">
+  <!-- Clean URL & Route Normalizer -->
+  <script>
+    (function() {
+      try {
+        var proto = window.location.protocol;
+        if (proto === 'http:' || proto === 'https:') {
+          var p = window.location.pathname;
+          if (p.endsWith('.html')) {
+            var clean = p.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+            var newUrl = clean + window.location.search + window.location.hash;
+            window.history.replaceState(null, '', newUrl);
+          }
+          document.addEventListener('click', function(e) {
+            var a = e.target.closest('a');
+            if (a && a.href && a.origin === window.location.origin) {
+              if (a.pathname.endsWith('.html')) {
+                var cleanPath = a.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+                a.href = cleanPath + a.search + a.hash;
+              }
+            }
+          }, true);
+        } else if (proto === 'file:') {
+          document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a[href]').forEach(function(a) {
+              var h = a.getAttribute('href');
+              if (h && !h.startsWith('http') && !h.startsWith('#') && !h.startsWith('mailto:') && !h.endsWith('.html') && !h.endsWith('/')) {
+                if (!h.includes('.')) a.setAttribute('href', h + '.html');
+              }
+            });
+          });
+        }
+      } catch(e) {}
+    })();
+  </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- Search Engine Optimization (SEO) -->
@@ -21,11 +56,11 @@
   <meta name="twitter:description" content="Download the lightweight native Windows installer for Trendusty Orbit.">
 
   <!-- International SEO (Hreflang) -->
-  <link rel="alternate" hreflang="en" href="download-en.html" />
-  <link rel="alternate" hreflang="es" href="download-es.html" />
-  <link rel="alternate" hreflang="fr" href="download-fr.html" />
-  <link rel="alternate" hreflang="ar" href="download-ar.html" />
-  <link rel="alternate" hreflang="x-default" href="download.html" />
+  <link rel="alternate" hreflang="en" href="download?lang=en" />
+  <link rel="alternate" hreflang="es" href="download?lang=es" />
+  <link rel="alternate" hreflang="fr" href="download?lang=fr" />
+  <link rel="alternate" hreflang="ar" href="download?lang=ar" />
+  <link rel="alternate" hreflang="x-default" href="download" />
 
   <title>Download Trendusty Orbit — Windows Setup & Installation</title>
   <link rel="icon" type="image/x-icon" href="../favicon.ico">
@@ -988,13 +1023,13 @@
     <div class="tcm-divider"></div>
     <div class="tcm-section-label">NAVIGATION & INTEL</div>
 
-    <a href="../home/index.html#interface" class="tcm-item" onclick="closeContextMenu()">
+    <a href="../home/#interface" class="tcm-item" onclick="closeContextMenu()">
       <span class="tcm-icon">🛰</span>
       <span class="tcm-text">Launch Live Earth COP Preview</span>
       <span class="tcm-key">LIVE</span>
     </a>
 
-    <a href="../home/index.html" class="tcm-item" onclick="closeContextMenu()">
+    <a href="../home/" class="tcm-item" onclick="closeContextMenu()">
       <span class="tcm-icon">🏠</span>
       <span class="tcm-text">Return to Main Overview</span>
       <span class="tcm-key">HOME</span>
@@ -1017,7 +1052,7 @@
   <!-- Navigation -->
   <header>
     <div class="container nav-inner">
-      <a href="../home/index.html" class="brand">
+      <a href="../home/" class="brand">
         <div class="brand-logo-icon">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
         </div>
@@ -1032,7 +1067,7 @@
           <option value="es" selected>ES Español</option>
           <option value="ar">AR العربية</option>
         </select>
-        <a href="../home/index.html" data-i18n="back_link">Volver a la Vista General</svg>
+        <a href="../home/" data-i18n="back_link">Volver a la Vista General</svg>
           Back to Overview
         </a>
       </div>
@@ -1163,8 +1198,8 @@
         &copy; 2026 Trendusty Orbit &mdash; Made by Trendusty &middot; All Rights Reserved
       </div>
       <div>
-        <a href="../home/index.html">Live Web Overview</a> &middot;
-        <a href="../home/index.html#live-preview">3D Simulation</a> &middot;
+        <a href="../home/">Live Web Overview</a> &middot;
+        <a href="../home/#live-preview">3D Simulation</a> &middot;
         <a href="#dl-btn" style="color: var(--accent);">Direct Download</a>
       </div>
     </div>

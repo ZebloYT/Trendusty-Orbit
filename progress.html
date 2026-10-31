@@ -2,6 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <!-- Clean URL & Route Normalizer -->
+  <script>
+    (function() {
+      try {
+        var proto = window.location.protocol;
+        if (proto === 'http:' || proto === 'https:') {
+          var p = window.location.pathname;
+          if (p.endsWith('.html')) {
+            var clean = p.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+            var newUrl = clean + window.location.search + window.location.hash;
+            window.history.replaceState(null, '', newUrl);
+          }
+          document.addEventListener('click', function(e) {
+            var a = e.target.closest('a');
+            if (a && a.href && a.origin === window.location.origin) {
+              if (a.pathname.endsWith('.html')) {
+                var cleanPath = a.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+                a.href = cleanPath + a.search + a.hash;
+              }
+            }
+          }, true);
+        } else if (proto === 'file:') {
+          document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a[href]').forEach(function(a) {
+              var h = a.getAttribute('href');
+              if (h && !h.startsWith('http') && !h.startsWith('#') && !h.startsWith('mailto:') && !h.endsWith('.html') && !h.endsWith('/')) {
+                if (!h.includes('.')) a.setAttribute('href', h + '.html');
+              }
+            });
+          });
+        }
+      } catch(e) {}
+    })();
+  </script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>System Progress & Development Radar - Trendusty Orbit</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -211,7 +246,7 @@
   }
   .progress-bar {
     height: 100%;
-    width: 91%;
+    width: 95%;
     background: var(--primary-grad);
     box-shadow: 0 0 15px var(--accent-glow);
     border-radius: 10px;
@@ -337,11 +372,11 @@
     TRENDUSTY ORBIT
   </div>
   <div class="nav-links">
-    <a href="home/index.html">Live COP</a>
-    <a href="windows/cursor-download.html">Custom Cursors</a>
+    <a href="home/">Live COP</a>
+    <a href="windows/cursor-download">Custom Cursors</a>
     <a href="echonode/" target="_blank" rel="noopener noreferrer">EchoNode Cloud ↗</a>
-    <a href="windows/download.html">Desktop Client</a>
-    <a href="progress.html" class="active">Development Radar</a>
+    <a href="windows/download">Desktop Client</a>
+    <a href="progress" class="active">Development Radar</a>
   </div>
 </nav>
 
@@ -357,7 +392,7 @@
     <div class="progress-section">
       <div class="progress-meta">
         <span>OVERALL PLATFORM READINESS</span>
-        <span style="color: var(--accent);">91% OPERATIONAL</span>
+        <span style="color: var(--accent);">95% OPERATIONAL</span>
       </div>
       <div class="progress-track">
         <div class="progress-bar"></div>
@@ -401,7 +436,7 @@
         <li class="done"><span class="chk-icon">✅</span> SmartScreen-Safe ZIP Builder</li>
         <li><span class="chk-icon">🚧</span> Ingesting New Batch (Minecraft, Anime, Memes)</li>
       </ul>
-      <a href="windows/cursor-download.html" class="action-btn">Launch Gallery ↗</a>
+      <a href="windows/cursor-download" class="action-btn">Launch Gallery ↗</a>
     </div>
 
     <!-- Module 2: Tactical Cursor Engine -->
@@ -417,7 +452,7 @@
         <li class="done"><span class="chk-icon">✅</span> Context-Aware Button & Card States</li>
         <li class="done"><span class="chk-icon">✅</span> Seamless Custom Pack Hover Transition</li>
       </ul>
-      <a href="home/index.html" class="action-btn">Test On Live COP ↗</a>
+      <a href="home/" class="action-btn">Test On Live COP ↗</a>
     </div>
 
     <!-- Module 3: 3D Intelligence COP -->
@@ -433,7 +468,7 @@
         <li class="done"><span class="chk-icon">✅</span> Tactical HUD & CCTV Recon Matrix</li>
         <li class="done"><span class="chk-icon">✅</span> Zero Data Leakage Architecture</li>
       </ul>
-      <a href="home/index.html" class="action-btn">Open COP Dashboard ↗</a>
+      <a href="home/" class="action-btn">Open COP Dashboard ↗</a>
     </div>
 
     <!-- Module 4: Client Installer -->
@@ -448,7 +483,7 @@
         <li class="done"><span class="chk-icon">✅</span> Local Offline Environment Support</li>
         <li class="done"><span class="chk-icon">✅</span> International Localized Guides (EN/ES/FR/AR)</li>
       </ul>
-      <a href="windows/download.html" class="action-btn">View Setup Portal ↗</a>
+      <a href="windows/download" class="action-btn">View Setup Portal ↗</a>
     </div>
   </div>
 
@@ -462,9 +497,15 @@
     </div>
     <div class="terminal-body">
       <div class="log-line">
+        <span class="log-time">[CLEAN-URL]</span>
+        <span class="log-ok">[DEPLOYED]</span>
+        <span>Removed .html extensions across all platform routes; deployed synchronous address bar normalizer and clean routing.</span>
+      </div>
+
+      <div class="log-line">
         <span class="log-time">[ECHONODE]</span>
         <span class="log-ok">[DEPLOYED]</span>
-        <span>Deployed EchoNode Web 24/7 Minecraft Cloud Suite to /echonode/ with 3D WebGL models & GitHub Actions CI/CD.</span>
+        <span>Deployed EchoNode Web 24/7 Minecraft Cloud Suite to /echonode/ with 3D WebGL models &amp; GitHub Actions CI/CD.</span>
       </div>
 
       <div class="log-line">
