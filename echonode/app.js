@@ -110,7 +110,10 @@ const GUEST_DEFAULT_STATE = {
   maxPlayers: 20,
   soundEnabled: true,
   currentMode: "2d", // '2d' or '3d'
-  worldsGenerated: false, // ZERO WORLDS GENERATED!
+  worldsGenerated: true, // Default normal Overworld generated
+  netherEndGenerated: false, // Nether & The End generate when 1st player joins
+  customSeed: "782194018249102",
+  levelType: "DEFAULT",
   
   options: {
     gamemode: "survival",
@@ -266,8 +269,24 @@ class StateStore {
 
     if (!this.data.plugins) this.data.plugins = (this.currentProfile === "skyheaven" ? SKY_HEAVEN_STATE.plugins : GUEST_DEFAULT_STATE.plugins);
     if (!this.data.options) this.data.options = (this.currentProfile === "skyheaven" ? SKY_HEAVEN_STATE.options : GUEST_DEFAULT_STATE.options);
-    if (this.currentProfile === "guest_server" && this.data.worldsGenerated === undefined) {
-      this.data.worldsGenerated = false;
+    
+    // Default normal Overworld is always active; Nether & End deferred until 1st player joins
+    if (this.currentProfile === "guest_server") {
+      if (this.data.worldsGenerated === undefined || this.data.worldsGenerated === false) {
+        this.data.worldsGenerated = true;
+      }
+      if (this.data.netherEndGenerated === undefined) {
+        this.data.netherEndGenerated = false;
+      }
+      if (!this.data.customSeed) {
+        this.data.customSeed = "782194018249102";
+      }
+      if (!this.data.levelType) {
+        this.data.levelType = "DEFAULT";
+      }
+    } else {
+      if (this.data.worldsGenerated === undefined) this.data.worldsGenerated = true;
+      if (this.data.netherEndGenerated === undefined) this.data.netherEndGenerated = true;
     }
   }
 
@@ -1639,18 +1658,20 @@ class EchoNodeApp {
       this.appendLog("info", `[EchoNode Network] 🏠 LOCAL LAN IP: ${this.realLanIp}:25565 (Wi-Fi / LAN Play)`);
     }
 
-    // First boot: auto-generate clean dimensions if ungenerated
-    if (!store.data.worldsGenerated) {
-      store.data.worldsGenerated = true;
-      if (!store.data.customSeed) {
-        store.data.customSeed = `${Math.floor(Math.random() * 8999999999999999) + 1000000000000000}`;
-      }
-      store.save();
-      this.appendLog("info", `[Server] Generating Overworld spawn region (Seed: ${store.data.customSeed})...`);
-      this.appendLog("info", `[Server] Preparing start region for dimension 'minecraft:overworld'...`);
-      this.appendLog("info", `[Server] Time elapsed: 1420 ms (Spawn Area 100%)`);
-      this.renderWorldsList();
+    // Default normal Overworld is active; Nether and End deferred until 1st player joins
+    store.data.worldsGenerated = true;
+    if (!store.data.customSeed) {
+      store.data.customSeed = "782194018249102";
     }
+    store.save();
+    this.appendLog("info", `[Server] Loading Overworld spawn region (Dimension: minecraft:overworld, Seed: ${store.data.customSeed})...`);
+    this.appendLog("info", `[Server] Preparing start region for dimension 'minecraft:overworld' [Spawn Area 100%]`);
+    if (!store.data.netherEndGenerated) {
+      this.appendLog("info", `[World Engine] Dimensions 'minecraft:the_nether' and 'minecraft:the_end' deferred (will generate when 1st player joins)`);
+    } else {
+      this.appendLog("info", `[World Engine] Dimensions 'minecraft:the_nether' and 'minecraft:the_end' active.`);
+    }
+    this.renderWorldsList();
 
     try {
       const res = await fetch("/api/server/start", { method: "POST" });
@@ -1925,6 +1946,12 @@ class EchoNodeApp {
             document.getElementById("metric-cpu-live").textContent = `${sData.cpu}%`;
             document.getElementById("metric-players-live").textContent = `${sData.players} / 50 Online`;
             document.getElementById("badge-players-count").textContent = `${sData.players} Online`;
+
+            // Auto-trigger Nether & End generation when 1st player joins
+            if (!store.data.netherEndGenerated && sData.players > 0) {
+              const firstPlayer = (sData.playerList && sData.playerList[0]) || "Player 1";
+              this.generateNetherAndEndDimensions(firstPlayer);
+            }
           } else if (sData.status === "starting") {
             document.getElementById("metric-ram-live").textContent = "Allocating...";
             document.getElementById("metric-cpu-live").textContent = "Loading";
@@ -1951,6 +1978,11 @@ class EchoNodeApp {
           if (lData.logs && lData.logs.length > 0) {
             lData.logs.forEach(l => {
               this.appendLog(l.type, l.text);
+              if (!store.data.netherEndGenerated && (l.text.includes("joined the game") || l.text.includes("logged in with entity id"))) {
+                const match = l.text.match(/([a-zA-Z0-9_]{3,16})\s+(?:joined the game|logged in)/i);
+                const playerName = match ? match[1] : "Player 1";
+                this.generateNetherAndEndDimensions(playerName);
+              }
             });
             this.lastLogId = lData.latestId;
           }
@@ -3166,12 +3198,18 @@ class EchoNodeApp {
       ]
     };
 
-    if (store.data.worldsGenerated) {
-      sampleFiles["/world"] = [
-        { name: "level.dat", size: "4.2 KB", date: "Today", isEditable: false },
-        { name: "region/", size: "Clean chunks", date: "Today", isEditable: false }
-      ];
+    const worldFiles = [
+      { name: "level.dat", size: "4.2 KB", date: "Today", isEditable: false },
+      { name: "region/", size: "Normal biomes chunks", date: "Today", isEditable: false },
+      { name: "data/", size: "World data", date: "Today", isEditable: false }
+    ];
+    if (store.data.netherEndGenerated) {
+      worldFiles.push(
+        { name: "DIM-1/", size: "Nether chunks", date: "Today", isEditable: false },
+        { name: "DIM1/", size: "The End chunks", date: "Today", isEditable: false }
+      );
     }
+    sampleFiles["/world"] = worldFiles;
 
     // Merge custom imported folder files if present
     let files = [];
@@ -3246,6 +3284,11 @@ class EchoNodeApp {
       input.value = "";
       this.renderPlayersList("ops");
       this.showToast(`Added ${name} to operators!`, "success");
+
+      // Auto-trigger Nether & End generation on first player
+      if (!store.data.netherEndGenerated) {
+        this.generateNetherAndEndDimensions(name);
+      }
     });
   }
 
@@ -4071,45 +4114,62 @@ ${custom}
   }
 
   // ============================================================================
-  // ZERO-STATE WORLDS & DIMENSIONS
+  // DEFAULT NORMAL OVERWORLD & DEFERRED NETHER / END DIMENSIONS
   // ============================================================================
   bindWorlds() {
     const container = document.getElementById("worlds-view-container");
     if (!container) return;
 
     container.addEventListener("click", (e) => {
-      const genBtn = e.target.closest("#btn-generate-world-now");
-      if (genBtn) {
+      const simBtn = e.target.closest("#btn-simulate-first-player, .btn-generate-player-now");
+      if (simBtn) {
         sfx.playClick();
-        this.generateFreshWorlds();
+        this.generateNetherAndEndDimensions("Player 1");
         return;
       }
 
-      const verBtn = e.target.closest("#btn-goto-version-from-worlds");
-      if (verBtn) {
+      const filesBtn = e.target.closest("#btn-goto-world-files, .btn-open-dimension-files");
+      if (filesBtn) {
         sfx.playClick();
-        this.switchTab("version");
+        this.switchTab("files");
+        this.renderFilesList("/world");
+        return;
+      }
+
+      const resetBtn = e.target.closest("#btn-reset-nether-end");
+      if (resetBtn) {
+        sfx.playWarning();
+        store.data.netherEndGenerated = false;
+        delete store.data.netherEndTriggeredBy;
+        delete store.data.netherEndGeneratedAt;
+        store.save();
+        this.renderWorldsList();
+        this.renderFilesList("/");
+        this.appendLog("system", "[World Engine] Reset Nether & The End to deferred ungenerated state (Pending 1st player join).");
+        this.showToast("Reset Nether & The End dimensions (Waiting for 1st player)", "info");
         return;
       }
     });
   }
 
-  generateFreshWorlds() {
+  generateNetherAndEndDimensions(playerName = "Player 1") {
+    if (store.data.netherEndGenerated) return;
+
     sfx.playSuccess();
-    const seedInput = document.getElementById("input-custom-seed");
-    const typeSelect = document.getElementById("select-level-type");
-
-    const seed = seedInput && seedInput.value.trim() ? seedInput.value.trim() : `${Math.floor(Math.random() * 8999999999999999) + 1000000000000000}`;
-    const levelType = typeSelect ? typeSelect.value : "DEFAULT";
-
-    store.data.customSeed = seed;
-    store.data.levelType = levelType;
     store.data.worldsGenerated = true;
+    store.data.netherEndGenerated = true;
+    store.data.netherEndTriggeredBy = playerName;
+    store.data.netherEndGeneratedAt = new Date().toLocaleTimeString();
     store.save();
 
+    this.appendLog("system", `[World Engine] ⚡ 1st player connected (${playerName})! Generating deferred dimensions...`);
+    this.appendLog("info", `[World Engine] Preparing dimension 'minecraft:the_nether' (world_nether)... Chunks allocated!`);
+    this.appendLog("info", `[World Engine] Preparing dimension 'minecraft:the_end' (world_the_end)... Stronghold & End Pillars initialized!`);
+    this.appendLog("success", `[World Engine] Nether and The End dimensions generated successfully!`);
+
     this.renderWorldsList();
-    this.appendLog("system", `[World Generator] Created clean dimensions (Seed: ${seed}, Type: ${levelType})`);
-    this.showToast("Clean world dimensions generated!", "success");
+    this.renderFilesList("/");
+    this.showToast(`⚡ 1st player joined (${playerName})! Nether & End dimensions generated!`, "success");
   }
 
   renderWorldsList() {
@@ -4117,103 +4177,134 @@ ${custom}
     const badgeWorlds = document.getElementById("badge-worlds-count");
     if (!container) return;
 
-    if (!store.data.worldsGenerated) {
-      if (badgeWorlds) badgeWorlds.textContent = "0 Dims";
-      container.innerHTML = `
-        <div class="empty-worlds-card">
-          <div class="empty-world-glow"></div>
-          <div class="empty-world-icon">🌍</div>
-          <h3>No Worlds Generated Yet</h3>
-          <p>This server starts with zero generated terrain or saved player data. Once you choose your version and press <strong>Start Server</strong>, the Overworld, Nether, and The End dimensions will generate automatically.</p>
-          
-          <div class="world-seed-prep">
-            <div class="seed-input-group">
-              <label>Custom Seed (Optional):</label>
-              <input type="text" id="input-custom-seed" class="form-input" placeholder="Leave empty for random seed..." value="${store.data.customSeed || ''}">
-            </div>
-            <div class="seed-input-group">
-              <label>World Dimension Type:</label>
-              <select id="select-level-type" class="form-input">
-                <option value="DEFAULT">Default (Normal Biomes &amp; Caves)</option>
-                <option value="FLAT">Superflat</option>
-                <option value="LARGE_BIOMES">Large Biomes</option>
-                <option value="AMPLIFIED">Amplified (Extreme Peaks)</option>
-              </select>
-            </div>
-          </div>
+    const seed = store.data.customSeed || "782194018249102";
+    const netherEndReady = !!store.data.netherEndGenerated;
 
-          <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn-primary" id="btn-generate-world-now" style="padding: 10px 22px; font-size: 13px;">
-              <span>⚡ Generate Clean Dimensions Now</span>
-            </button>
-            <button class="btn-secondary" id="btn-goto-version-from-worlds" style="padding: 10px 22px; font-size: 13px;">
-              <span>📦 Change Version First</span>
-            </button>
-          </div>
-        </div>
-      `;
-    } else {
-      if (badgeWorlds) badgeWorlds.textContent = "3 Dims";
-      const seed = store.data.customSeed || "Random Seed";
-      container.innerHTML = `
-        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px 20px;">
-          <div style="font-size: 13px; color: #4ade80; font-weight: 600;">✓ Clean Dimensions Active • Seed: <code>${seed}</code></div>
-          <button class="file-act-btn" style="color: #f87171;" id="btn-reset-worlds">Reset World Dimensions</button>
-        </div>
-        <div class="worlds-cards-grid">
-          <div class="world-card">
-            <div class="world-card-top">
-              <div class="world-type-icon overworld">🌍</div>
-              <div class="world-meta">
-                <h3>world</h3>
-                <p>Overworld Dimension</p>
-              </div>
-            </div>
-            <div class="world-specs-list">
-              <div class="world-spec-row"><span>World Seed</span><strong style="color: #38bdf8;">${seed}</strong></div>
-              <div class="world-spec-row"><span>Spawn Biome</span><strong>Plains / Forest</strong></div>
-              <div class="world-spec-row"><span>Status</span><strong style="color: #4ade80;">Generated Clean</strong></div>
-            </div>
-          </div>
-          <div class="world-card">
-            <div class="world-card-top">
-              <div class="world-type-icon nether">🔥</div>
-              <div class="world-meta">
-                <h3>world_nether</h3>
-                <p>Nether Dimension</p>
-              </div>
-            </div>
-            <div class="world-specs-list">
-              <div class="world-spec-row"><span>Dimension Core</span><strong>minecraft:the_nether</strong></div>
-              <div class="world-spec-row"><span>Status</span><strong style="color: #4ade80;">Ready for First Entry</strong></div>
-            </div>
-          </div>
-          <div class="world-card">
-            <div class="world-card-top">
-              <div class="world-type-icon the-end">🌌</div>
-              <div class="world-meta">
-                <h3>world_the_end</h3>
-                <p>The End Dimension</p>
-              </div>
-            </div>
-            <div class="world-specs-list">
-              <div class="world-spec-row"><span>Ender Dragon</span><strong>Unspawned (Clean)</strong></div>
-              <div class="world-spec-row"><span>Status</span><strong style="color: #4ade80;">Ready for Stronghold</strong></div>
-            </div>
-          </div>
-        </div>
-      `;
-      const resetBtn = container.querySelector("#btn-reset-worlds");
-      if (resetBtn) {
-        resetBtn.addEventListener("click", () => {
-          sfx.playWarning();
-          store.data.worldsGenerated = false;
-          store.save();
-          this.renderWorldsList();
-          this.showToast("Reset world dimensions to zero-boot state.", "info");
-        });
-      }
+    if (badgeWorlds) {
+      badgeWorlds.textContent = netherEndReady ? "3 Dims" : "1 Dim";
     }
+
+    container.innerHTML = `
+      <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; background: ${netherEndReady ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.08)'}; border: 1px solid ${netherEndReady ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.25)'}; border-radius: 14px; padding: 14px 20px; gap: 16px; flex-wrap: wrap;">
+        <div>
+          <div style="font-size: 13.5px; color: #4ade80; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span>✓ ${netherEndReady ? 'All 3 Dimensions Active &amp; Generated' : 'Default Normal Overworld Active'}</span>
+            <span style="font-size: 11px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 2px 8px; border-radius: 999px;">Seed: ${seed}</span>
+          </div>
+          <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
+            ${netherEndReady 
+              ? `Nether and The End generated on 1st player join (<strong>${store.data.netherEndTriggeredBy || 'Player 1'}</strong>${store.data.netherEndGeneratedAt ? ` at ${store.data.netherEndGeneratedAt}` : ''}).`
+              : `Overworld is generated &amp; running. <strong>The Nether</strong> and <strong>The End</strong> will automatically generate when any 1st player joins.`
+            }
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          ${!netherEndReady ? `
+            <button class="btn-primary" id="btn-simulate-first-player" style="padding: 7px 16px; font-size: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <span>⚡ Connect 1st Player (Test Trigger)</span>
+            </button>
+          ` : `
+            <button class="file-act-btn" style="color: #f87171; padding: 7px 14px; font-size: 12px;" id="btn-reset-nether-end">
+              <span>↺ Reset to Overworld Only</span>
+            </button>
+          `}
+          <button class="file-act-btn" id="btn-goto-world-files" style="padding: 7px 14px; font-size: 12px;">
+            <span>📂 Open /world in Files</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="worlds-cards-grid">
+        <!-- 1. OVERWORLD (Always Active Default Normal) -->
+        <div class="world-card">
+          <div class="world-card-top">
+            <div class="world-type-icon overworld">🌍</div>
+            <div class="world-meta">
+              <h3>world</h3>
+              <p>Overworld Dimension (Default Normal)</p>
+            </div>
+          </div>
+          <div class="world-specs-list">
+            <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:overworld</strong></div>
+            <div class="world-spec-row"><span>World Seed</span><strong style="color: #38bdf8;">${seed}</strong></div>
+            <div class="world-spec-row"><span>Terrain Type</span><strong>Default Normal (Biomes &amp; Caves)</strong></div>
+            <div class="world-spec-row"><span>Spawn Area</span><strong style="color: #4ade80;">Plains / Forest • Ready</strong></div>
+            <div class="world-spec-row"><span>Status</span><strong style="color: #4ade80;">● Active &amp; Generated</strong></div>
+          </div>
+          <div class="world-actions-row">
+            <button class="file-act-btn btn-open-dimension-files" data-folder="/world" style="width: 100%; justify-content: center;">
+              📂 Browse Overworld Data (/world)
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. THE NETHER (Deferred until 1st player joins) -->
+        <div class="world-card" style="${!netherEndReady ? 'border-color: rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.6);' : ''}">
+          <div class="world-card-top">
+            <div class="world-type-icon nether">🔥</div>
+            <div class="world-meta">
+              <h3>world_nether</h3>
+              <p>The Nether Dimension</p>
+            </div>
+          </div>
+          <div class="world-specs-list">
+            <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:the_nether</strong></div>
+            <div class="world-spec-row"><span>Environment</span><strong>Wastes, Forests &amp; Fortresses</strong></div>
+            <div class="world-spec-row"><span>Status</span>
+              ${netherEndReady 
+                ? `<strong style="color: #4ade80;">● Active &amp; Generated</strong>` 
+                : `<strong style="color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Pending 1st Player Join</strong>`
+              }
+            </div>
+            <div class="world-spec-row"><span>Generation Trigger</span>
+              ${netherEndReady 
+                ? `<strong style="color: #38bdf8;">Generated via 1st Player Join</strong>` 
+                : `<span style="color: #94a3b8; font-style: italic;">Generates after 1st player joins</span>`
+              }
+            </div>
+          </div>
+          <div class="world-actions-row">
+            ${!netherEndReady 
+              ? `<button class="btn-primary btn-generate-player-now" style="width: 100%; font-size: 11.5px; padding: 8px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; justify-content: center; cursor: pointer;">⚡ Connect 1st Player to Generate</button>`
+              : `<button class="file-act-btn btn-open-dimension-files" data-folder="/world" style="width: 100%; justify-content: center; color: #ef4444;">🔥 Browse Nether Data (DIM-1)</button>`
+            }
+          </div>
+        </div>
+
+        <!-- 3. THE END (Deferred until 1st player joins) -->
+        <div class="world-card" style="${!netherEndReady ? 'border-color: rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.6);' : ''}">
+          <div class="world-card-top">
+            <div class="world-type-icon the-end">🌌</div>
+            <div class="world-meta">
+              <h3>world_the_end</h3>
+              <p>The End Dimension</p>
+            </div>
+          </div>
+          <div class="world-specs-list">
+            <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:the_end</strong></div>
+            <div class="world-spec-row"><span>Environment</span><strong>Central Island &amp; End Cities</strong></div>
+            <div class="world-spec-row"><span>Status</span>
+              ${netherEndReady 
+                ? `<strong style="color: #4ade80;">● Active &amp; Generated</strong>` 
+                : `<strong style="color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Pending 1st Player Join</strong>`
+              }
+            </div>
+            <div class="world-spec-row"><span>Generation Trigger</span>
+              ${netherEndReady 
+                ? `<strong style="color: #38bdf8;">Generated via 1st Player Join</strong>` 
+                : `<span style="color: #94a3b8; font-style: italic;">Generates after 1st player joins</span>`
+              }
+            </div>
+          </div>
+          <div class="world-actions-row">
+            ${!netherEndReady 
+              ? `<button class="btn-primary btn-generate-player-now" style="width: 100%; font-size: 11.5px; padding: 8px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; justify-content: center; cursor: pointer;">⚡ Connect 1st Player to Generate</button>`
+              : `<button class="file-act-btn btn-open-dimension-files" data-folder="/world" style="width: 100%; justify-content: center; color: #a855f7;">🌌 Browse End Data (DIM1)</button>`
+            }
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   // ============================================================================
@@ -4893,7 +4984,8 @@ ${custom}
     // Store virtual files & custom folder map
     store.data.virtualFiles = Object.assign(store.data.virtualFiles || {}, staged.virtualFiles);
     store.data.customFolderFiles = staged.folderMap;
-    store.data.worldsGenerated = staged.hasWorld;
+    store.data.worldsGenerated = true;
+    store.data.netherEndGenerated = staged.hasWorld;
 
     // Update icons if server-icon.png was provided
     if (staged.iconDataUrl) {
