@@ -183,17 +183,26 @@
   }
   
   .navbar {
-    background: rgba(7, 9, 14, 0.85);
-    backdrop-filter: blur(12px);
+    background: rgba(7, 9, 14, 0.92);
+    backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border-color);
-    height: 70px;
+    min-height: 70px;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 40px;
+    padding: 10px 40px;
     position: sticky;
     top: 0;
     z-index: 1000;
+    gap: 16px;
+    box-sizing: border-box;
+  }
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
   }
   
   .nav-logo {

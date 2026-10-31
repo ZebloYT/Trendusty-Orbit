@@ -156,7 +156,24 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 72px;
+      min-height: 72px;
+      height: auto;
+      padding: 10px 0;
+      gap: 16px;
+      box-sizing: border-box;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(7, 9, 14, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: all 0.3s ease;
+      box-sizing: border-box;
     }
 
     .brand {
@@ -1095,6 +1112,16 @@
       font-size: 12px;
     }
 
+    /* Responsive Header Protection */
+    @media (max-width: 1300px) {
+      .nav-links { gap: 12px; font-size: 13px; }
+      .btn-primary { padding: 8px 16px; font-size: 13px; }
+      .btn-ghost { padding: 8px 14px; font-size: 13px; }
+    }
+    @media (max-width: 1024px) {
+      .nav-links { display: none; }
+    }
+
     /* Responsive */
     @media (max-width: 900px) {
       .hero h1 { font-size: 42px; }
@@ -1819,26 +1846,33 @@
 
     .app-rect-media {
       position: relative;
-      background: #030712;
+      background: radial-gradient(circle at center, rgba(0, 245, 184, 0.12) 0%, rgba(3, 7, 18, 0.98) 75%);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      min-height: 240px;
-      border-right: 1px solid rgba(0, 245, 184, 0.12);
+      min-height: 260px;
+      padding: 24px 20px 48px 20px;
+      border-right: 1px solid rgba(0, 245, 184, 0.14);
     }
 
     .app-rect-logo-img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 340px;
+      height: auto;
+      max-height: 250px;
+      object-fit: contain;
       object-position: center;
-      transition: transform 0.4s ease;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       display: block;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 25px rgba(0, 245, 184, 0.35));
     }
 
     .app-rect-card:hover .app-rect-logo-img {
-      transform: scale(1.03);
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 40px rgba(0, 245, 184, 0.65));
     }
 
     .app-rect-status-tag {
@@ -2241,6 +2275,7 @@
         <a href="#architecture" data-i18n="nav_how">How It Works</a>
         <a href="#feeds" data-i18n="nav_feeds">Live Feeds</a>
         <a href="#other-apps">Other Features/Apps</a>
+        <a href="../progress">System Radar</a>
       </nav>
 
       <div class="nav-actions">
@@ -2252,8 +2287,6 @@
         </select>
         <a href="#live-preview" class="btn-ghost" data-i18n="nav_sim">Live Simulation</a>
         <a href="../windows/download" class="btn-primary" target="_blank" data-i18n="nav_download">Download Setup &rarr;</a>
-        <a href="#other-apps" class="btn-primary" style="background: rgba(0, 245, 184, 0.15); border: 1px solid #00f5b8; color: #00f5b8;">Other Features & Apps ⚡</a>
-        <a href="../progress" class="btn-primary" style="background: rgba(0, 180, 216, 0.15); border: 1px solid #00b4d8; color: #00b4d8;">Radar Progress 📡</a>
       </div>
     </div>
   </header>
@@ -2622,6 +2655,7 @@
         <!-- Primary Featured App: EchoNode 24/7 Minecraft Cloud Manager -->
         <div class="app-rect-card">
           <div class="app-rect-media">
+            <div class="cursor-glow-ring" style="width: 180px; height: 180px; border-color: rgba(0, 245, 184, 0.3); box-shadow: 0 0 45px rgba(0, 245, 184, 0.25); position: absolute; pointer-events: none;"></div>
             <img src="../assets/echonode-logo.jpg" alt="EchoNode — 24/7 Minecraft Hosting" class="app-rect-logo-img">
             <div class="app-rect-status-tag">
               <span class="badge-dot-live"></span> 24/7 LIVE CLOUD HOST

@@ -696,16 +696,19 @@ body.mode-3d .spatial-hud-controls {
 
 /* Top Navigation Bar */
 .top-navbar {
-  height: 64px;
   min-height: 64px;
+  height: auto;
   background: var(--bg-header);
   backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 8px 28px;
+  gap: 14px;
+  flex-wrap: wrap;
   z-index: 15;
+  box-sizing: border-box;
 }
 
 .navbar-left {
