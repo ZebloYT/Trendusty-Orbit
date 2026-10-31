@@ -10,6 +10,8 @@ const SKY_HEAVEN_STATE = {
   serverName: "SKY HEAVEN MC",
   serverIp: "play.echonode.net:25565",
   serverVersion: "Purpur 1.26.1.2 (Protocol 775)",
+  installedSoftware: "Purpur",
+  installedVersion: "1.26.1.2",
   status: "online", // 'online', 'offline', 'starting'
   tps: 20.0,
   ramUsage: 2.4,
@@ -1042,6 +1044,147 @@ class Spatial3DEngine {
 }
 
 // ============================================================================
+// ALL MINECRAFT OFFICIAL & LEGACY VERSIONS CATALOG (75+ Versions)
+// ============================================================================
+const MINECRAFT_VERSIONS = [
+  // 1.26 Custom / Dev (Sky-Heaven Protocol 775)
+  { version: "1.26.1.2", tag: "Sky-Heaven Dev", era: "1.21", desc: "Next-gen Protocol 775 Purpur customized runtime build" },
+
+  // 1.21 Tricky Trials
+  { version: "1.21.4", tag: "Latest Release", era: "1.21", desc: "Dec 2024 / Jan 2025 Bugfix, Pale Garden & Trial Chambers" },
+  { version: "1.21.3", tag: "Bundles of Bravery", era: "1.21", desc: "Official Bundles, baby mob sounds & bag storage" },
+  { version: "1.21.2", tag: "Redstone Overhaul", era: "1.21", desc: "Redstone wire logic improvements & performance fixes" },
+  { version: "1.21.1", tag: "Stable Release", era: "1.21", desc: "Server stability & critical bug fixes" },
+  { version: "1.21", tag: "Tricky Trials Debut", era: "1.21", desc: "Trial Chambers, The Mace & The Breeze mob" },
+
+  // 1.20 Trails & Tales
+  { version: "1.20.6", tag: "Armadillo & Wolves", era: "1.20", desc: "Wolf variants & Armadillo scute wolf armor" },
+  { version: "1.20.5", tag: "Armored Paws", era: "1.20", desc: "Java 21 requirement & entity refactors" },
+  { version: "1.20.4", tag: "Popular Stable", era: "1.20", desc: "Widely used production multiplayer build" },
+  { version: "1.20.3", tag: "Breeze Prototype", era: "1.20", desc: "Vase pots & decorated ceramic storage" },
+  { version: "1.20.2", tag: "Network Phase", era: "1.20", desc: "Packet configuration phase & villager trading tweaks" },
+  { version: "1.20.1", tag: "Top Modded LTS", era: "1.20", desc: "Leading modern Forge & Fabric modding release" },
+  { version: "1.20", tag: "Trails & Tales", era: "1.20", desc: "Cherry Grove, Camels, Sniffers & Archeology" },
+
+  // 1.19 The Wild Update
+  { version: "1.19.4", tag: "Wild Finale", era: "modern", desc: "Display entities, interaction & vibration fixes" },
+  { version: "1.19.3", tag: "Creative Overhaul", era: "modern", desc: "Redesigned creative tabs & vex remodels" },
+  { version: "1.19.2", tag: "Modded Standard", era: "modern", desc: "High compatibility modpack target" },
+  { version: "1.19.1", tag: "Chat Reporting", era: "modern", desc: "Allay duplication & sculk fixes" },
+  { version: "1.19", tag: "The Deep Dark", era: "modern", desc: "The Warden, Ancient Cities, Allay, Frogs, Mangrove Swamps" },
+
+  // 1.18 Caves & Cliffs Part II
+  { version: "1.18.2", tag: "Caves & Cliffs II", era: "modern", desc: "Custom world generation & Y:-64 to Y:320 world height" },
+  { version: "1.18.1", tag: "Security Patch", era: "modern", desc: "Log4j patch & world gen fixes" },
+  { version: "1.18", tag: "New Terrain Overhaul", era: "modern", desc: "Massive lush caves, dripstone caverns, mountain peaks" },
+
+  // 1.17 Caves & Cliffs Part I
+  { version: "1.17.1", tag: "Copper & Amethyst", era: "modern", desc: "Axolotls, Goats, Glow Squid, Spyglass" },
+  { version: "1.17", tag: "Caves & Cliffs I", era: "modern", desc: "Deepslate, Amethyst Geodes, Copper Ore" },
+
+  // 1.16 Nether Update
+  { version: "1.16.5", tag: "Legendary Netherite", era: "modern", desc: "Top 3 most popular server versions of all time" },
+  { version: "1.16.4", tag: "Multiplayer Fixes", era: "modern", desc: "Player blocking & network improvements" },
+  { version: "1.16.3", tag: "Piglin Barter Fix", era: "modern", desc: "Duplication bugfix update" },
+  { version: "1.16.2", tag: "Piglin Brutes", era: "modern", desc: "Bastion Remnants defense update" },
+  { version: "1.16.1", tag: "Speedrun Benchmark", era: "modern", desc: "Gold standard version for Java speedrunners" },
+  { version: "1.16", tag: "Nether Overhaul", era: "modern", desc: "Netherite, Soul Sand Valley, Crimson & Warped Forests" },
+
+  // 1.15 Buzzy Bees
+  { version: "1.15.2", tag: "Buzzy Bees Stable", era: "aquatic", desc: "Bees, Beehives, Honey Blocks & huge rendering optimizations" },
+  { version: "1.15.1", tag: "Chunk Rendering", era: "aquatic", desc: "Performance fixes for entity lag" },
+  { version: "1.15", tag: "Buzzy Bees Debut", era: "aquatic", desc: "Honey mechanics & sticky redstone interactions" },
+
+  // 1.14 Village & Pillage
+  { version: "1.14.4", tag: "Raids & Pillagers", era: "aquatic", desc: "Crossbows, Pillager Outposts, Village economy, Campfires" },
+  { version: "1.14.3", tag: "Villager Restock", era: "aquatic", desc: "Villager job site & trade rebalancing" },
+  { version: "1.14.2", tag: "Lighting Optimizations", era: "aquatic", desc: "Chunk generation stability" },
+  { version: "1.14.1", tag: "Bugfix", era: "aquatic", desc: "Memory leak resolution" },
+  { version: "1.14", tag: "Village & Pillage", era: "aquatic", desc: "New villages, professions, Ravagers, Fox, Cat types" },
+
+  // 1.13 Update Aquatic
+  { version: "1.13.2", tag: "Aquatic Stable", era: "aquatic", desc: "The Flattening, Coral Reefs, Dolphins, Shipwrecks, Conduits" },
+  { version: "1.13.1", tag: "Dead Coral Fix", era: "aquatic", desc: "Performance & entity collision fixes" },
+  { version: "1.13", tag: "The Flattening", era: "aquatic", desc: "Removal of numerical block IDs, complete ocean revamp" },
+
+  // 1.12 World of Color
+  { version: "1.12.2", tag: "Historic Modding Era", era: "classic", desc: "The greatest Forge modding catalog in Minecraft history" },
+  { version: "1.12.1", tag: "Recipe Book Fix", era: "classic", desc: "Security fixes for custom payload packets" },
+  { version: "1.12", tag: "World of Color", era: "classic", desc: "Concrete, Glazed Terracotta, Parrots, Advancements" },
+
+  // 1.11 Exploration Update
+  { version: "1.11.2", tag: "Woodland Mansions", era: "classic", desc: "Totem of Undying, Shulker Boxes, Llamas, Elytra firework boosts" },
+  { version: "1.11.1", tag: "Iron Nuggets", era: "classic", desc: "Sweeping Edge enchantment" },
+  { version: "1.11", tag: "Exploration Update", era: "classic", desc: "Evokers, Vindicators, Vexes, Cartographer Villagers" },
+
+  // 1.10 Frostburn Update
+  { version: "1.10.2", tag: "Polar Bears & Husks", era: "classic", desc: "Strays, Magma Blocks, Nether Wart Blocks, Red Nether Brick" },
+  { version: "1.10.1", tag: "Crash Fixes", era: "classic", desc: "Structure block fixes" },
+  { version: "1.10", tag: "The Frostburn Update", era: "classic", desc: "Auto-jump, Bone blocks, Fossils" },
+
+  // 1.9 The Combat Update
+  { version: "1.9.4", tag: "Dual Wield & Shields", era: "classic", desc: "Elytra flight, Attack cooldowns, Shulkers, End Islands" },
+  { version: "1.9.3", tag: "End Gateway Fix", era: "classic", desc: "Performance patch" },
+  { version: "1.9.2", tag: "Realms Stability", era: "classic", desc: "Server connection fixes" },
+  { version: "1.9.1", tag: "Elytra Patch", era: "classic", desc: "Flight durability and sound fix" },
+  { version: "1.9", tag: "The Combat Update", era: "classic", desc: "Off-hand slot, lingering potions, spectral arrows, End City" },
+
+  // 1.8 Bountiful Update
+  { version: "1.8.9", tag: "PvP Gold Standard", era: "classic", desc: "The definitive release for competitive PvP, Bedwars & Hypixel" },
+  { version: "1.8.8", tag: "Security Patch", era: "classic", desc: "Security & crash exploit fixes" },
+  { version: "1.8.7", tag: "Multiplayer Fixes", era: "classic", desc: "Player skin & sign formatting fixes" },
+  { version: "1.8.6", tag: "NBT Security", era: "classic", desc: "Exploit prevention patch" },
+  { version: "1.8.5", tag: "Scoreboard Fix", era: "classic", desc: "Scoreboard memory exploit patch" },
+  { version: "1.8.4", tag: "Packet Exploit Fix", era: "classic", desc: "Network security upgrade" },
+  { version: "1.8.3", tag: "Lighting Fix", era: "classic", desc: "Smooth lighting memory fix" },
+  { version: "1.8.2", tag: "Mob AI Fix", era: "classic", desc: "Mob pathfinding fix" },
+  { version: "1.8.1", tag: "Performance Patch", era: "classic", desc: "Chunk render optimization" },
+  { version: "1.8", tag: "Bountiful Update", era: "classic", desc: "Ocean Monuments, Guardians, Armor Stands, Slime block bouncing" },
+
+  // 1.7 The Update that Changed the World
+  { version: "1.7.10", tag: "Classic Modding Icon", era: "legacy", desc: "Historic release for Thaumcraft, IndustrialCraft, BuildCraft" },
+  { version: "1.7.9", tag: "UUID Support", era: "legacy", desc: "Mojang UUID player identity introduction" },
+  { version: "1.7.8", tag: "Skin Server Fix", era: "legacy", desc: "Skin format migration" },
+  { version: "1.7.5", tag: "Realms Mini-games", era: "legacy", desc: "Minecraft Realms expansion" },
+  { version: "1.7.4", tag: "Twitch Integration", era: "legacy", desc: "Chicken jockeys & streaming integration" },
+  { version: "1.7.2", tag: "Double Biomes", era: "legacy", desc: "Mesa, Roofed Forest, Savanna, Ice Spikes, Dark Oak, Acacia" },
+
+  // 1.6 The Horse Update
+  { version: "1.6.4", tag: "Horses & Leads", era: "legacy", desc: "Horses, Donkeys, Mules, Coal blocks, Stained Clay" },
+  { version: "1.6.2", tag: "Horse Health Fix", era: "legacy", desc: "Tamed horse stat fix" },
+  { version: "1.6.1", tag: "Resource Packs Era", era: "legacy", desc: "Replaced texture packs with resource packs" },
+
+  // 1.5 The Redstone Update
+  { version: "1.5.2", tag: "Redstone Golden Era", era: "legacy", desc: "Hoppers, Droppers, Comparators, Daylight Sensors, Nether Quartz" },
+  { version: "1.5.1", tag: "Performance Patch", era: "legacy", desc: "Crash fixes for hopper sorting systems" },
+  { version: "1.5", tag: "The Redstone Update", era: "legacy", desc: "Activator rails, trapped chests, weighted pressure plates" },
+
+  // 1.4 Pretty Scary Update
+  { version: "1.4.7", tag: "Wither & Anvils", era: "legacy", desc: "The Wither boss, Nether Stars, Beacons, Anvils, Command Blocks" },
+  { version: "1.4.6", tag: "Fireworks & Thorns", era: "legacy", desc: "Craftable fireworks & Thorns enchantment" },
+  { version: "1.4.5", tag: "Multiplayer Fixes", era: "legacy", desc: "Render & chat packet fixes" },
+  { version: "1.4.4", tag: "Sound Engine Fix", era: "legacy", desc: "Audio engine patches" },
+  { version: "1.4.2", tag: "Pretty Scary Debut", era: "legacy", desc: "Bats, Witches, Item Frames, Carrots on Sticks, Invisibility" },
+
+  // 1.3 - 1.0 Legacy Releases
+  { version: "1.3.2", tag: "Emeralds & Trading", era: "legacy", desc: "Villager trading, Emeralds, Desert Temples, Jungle Pyramids" },
+  { version: "1.3.1", tag: "Integrated Server", era: "legacy", desc: "Singleplayer merged with local internal server" },
+  { version: "1.2.5", tag: "Tekkit Classic Era", era: "legacy", desc: "Height limit raised to 256, Jungle biomes, Ocelots, Iron Golems" },
+  { version: "1.2.4", tag: "Chat History", era: "legacy", desc: "Sandstone variants & spruce/birch planks" },
+  { version: "1.2.3", tag: "Planks Update", era: "legacy", desc: "Wood variants" },
+  { version: "1.2.2", tag: "Desert Wells", era: "legacy", desc: "New structures" },
+  { version: "1.2.1", tag: "Anvil World Format", era: "legacy", desc: "Replaced McRegion with Anvil format" },
+  { version: "1.1", tag: "Spawn Eggs & Bows", era: "legacy", desc: "Bow enchantments, Sheep eat grass, Golden apples" },
+  { version: "1.0.0", tag: "Official Launch 1.0", era: "legacy", desc: "Official launch of Minecraft! The End dimension & Ender Dragon" },
+
+  // Beta & Alpha Classic
+  { version: "Beta 1.7.3", tag: "Golden Beta Nostalgia", era: "alpha-beta", desc: "Beloved terrain gen, no hunger bar, instant food, punchable TNT" },
+  { version: "Beta 1.8.1", tag: "Adventure Update", era: "alpha-beta", desc: "Hunger bar, sprinting, creative mode, abandoned mineshafts" },
+  { version: "Alpha 1.2.6", tag: "Halloween Alpha", era: "alpha-beta", desc: "The Nether dimension, biomes, Ghasts, Zombie Pigmen" },
+  { version: "Classic 0.30", tag: "Creative Classic", era: "alpha-beta", desc: "Original 2009 creative building blocks sandbox" }
+];
+
+// ============================================================================
 // 6. MAIN APPLICATION CONTROLLER
 // ============================================================================
 class EchoNodeApp {
@@ -1049,6 +1192,8 @@ class EchoNodeApp {
     this.currentTab = "console";
     this.cmdHistory = [];
     this.cmdIndex = -1;
+    this.activeEraFilter = "all";
+    this.versionSearchQuery = "";
   }
 
   init() {
@@ -3402,10 +3547,77 @@ ${custom}
   // ============================================================================
   // SOFTWARE & VERSION CHANGER
   // ============================================================================
+  renderVersionPills() {
+    const container = document.getElementById("version-pills-container");
+    const countBadge = document.getElementById("version-count-badge");
+    const emptyMsg = document.getElementById("version-empty-message");
+    if (!container) return;
+
+    const query = (this.versionSearchQuery || "").trim().toLowerCase();
+    const era = this.activeEraFilter || "all";
+
+    const filtered = MINECRAFT_VERSIONS.filter(item => {
+      // 1. Filter by Era
+      if (era !== "all" && item.era !== era) {
+        return false;
+      }
+      // 2. Filter by search query
+      if (query) {
+        const matchesVer = item.version.toLowerCase().includes(query);
+        const matchesTag = item.tag ? item.tag.toLowerCase().includes(query) : false;
+        const matchesDesc = item.desc ? item.desc.toLowerCase().includes(query) : false;
+        if (!matchesVer && !matchesTag && !matchesDesc) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    if (countBadge) {
+      if (query || era !== "all") {
+        countBadge.textContent = `${filtered.length} of ${MINECRAFT_VERSIONS.length} Versions`;
+      } else {
+        countBadge.textContent = `${MINECRAFT_VERSIONS.length} Versions Available`;
+      }
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = "";
+      if (emptyMsg) emptyMsg.style.display = "block";
+      return;
+    }
+
+    if (emptyMsg) emptyMsg.style.display = "none";
+
+    container.innerHTML = filtered.map(item => {
+      const isSelected = (item.version === (this.selectedVersion || store.data.installedVersion));
+      return `
+        <button type="button" class="version-select-pill ${isSelected ? 'active' : ''}" data-ver="${item.version}" title="${item.version}: ${item.desc || item.tag}">
+          ${item.version}
+          ${item.tag ? `<span class="v-sub">${item.tag}</span>` : ''}
+        </button>
+      `;
+    }).join("");
+
+    // Bind click events to rendered version pills
+    container.querySelectorAll(".version-select-pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        sfx.playClick();
+        container.querySelectorAll(".version-select-pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        this.selectedVersion = pill.getAttribute("data-ver");
+        this.updateVersionInstallSummary();
+      });
+    });
+  }
+
   bindVersionChanger() {
     this.selectedSoftware = store.data.installedSoftware || "Paper";
     this.selectedVersion = store.data.installedVersion || "1.20.4";
+    this.activeEraFilter = "all";
+    this.versionSearchQuery = "";
 
+    // 1. Software Selection Cards
     document.querySelectorAll(".software-card").forEach((card) => {
       card.addEventListener("click", () => {
         sfx.playClick();
@@ -3416,21 +3628,49 @@ ${custom}
       });
     });
 
-    document.querySelectorAll(".version-select-pill").forEach((pill) => {
-      pill.addEventListener("click", () => {
+    // 2. Search Input & Clear Button
+    const searchInput = document.getElementById("input-version-search");
+    const clearBtn = document.getElementById("btn-clear-version-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        this.versionSearchQuery = e.target.value.trim().toLowerCase();
+        if (clearBtn) clearBtn.style.display = this.versionSearchQuery ? "inline-flex" : "none";
+        this.renderVersionPills();
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
         sfx.playClick();
-        document.querySelectorAll(".version-select-pill").forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-        this.selectedVersion = pill.getAttribute("data-ver");
-        this.updateVersionInstallSummary();
+        if (searchInput) searchInput.value = "";
+        this.versionSearchQuery = "";
+        clearBtn.style.display = "none";
+        this.renderVersionPills();
+        if (searchInput) searchInput.focus();
+      });
+    }
+
+    // 3. Era Filter Chips
+    document.querySelectorAll(".era-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        sfx.playClick();
+        document.querySelectorAll(".era-chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        this.activeEraFilter = chip.getAttribute("data-era") || "all";
+        this.renderVersionPills();
       });
     });
 
+    // 4. Initial version pills render
+    this.renderVersionPills();
+
+    // 5. Install Action Button
     const btnInstall = document.getElementById("btn-install-version-action");
     if (btnInstall) {
       btnInstall.addEventListener("click", () => this.installSelectedVersion());
     }
 
+    // 6. Navigation shortcut from Options tab
     const btnFromOptions = document.getElementById("btn-open-version-from-options");
     if (btnFromOptions) {
       btnFromOptions.addEventListener("click", () => {
@@ -3455,22 +3695,24 @@ ${custom}
     const sidebarBadgeAlt = document.getElementById("sidebar-server-badge");
     const iconDisplaySub = document.getElementById("icon-display-sub");
 
-    const currentFull = `${store.data.installedSoftware || "Paper"} ${store.data.installedVersion || "1.20.4"}`;
+    this.selectedSoftware = store.data.installedSoftware || "Paper";
+    this.selectedVersion = store.data.installedVersion || "1.20.4";
+
+    const currentFull = `${this.selectedSoftware} ${this.selectedVersion}`;
     if (heading) heading.textContent = currentFull;
     if (optDisplay) optDisplay.textContent = currentFull;
     if (sidebarBadge) sidebarBadge.textContent = currentFull;
     if (sidebarBadgeAlt) sidebarBadgeAlt.textContent = currentFull;
-    if (iconDisplaySub) iconDisplaySub.textContent = `● ${store.data.status === "online" ? "Online" : "Offline"} • ${store.data.installedVersion || "1.20.4"}`;
+    if (iconDisplaySub) iconDisplaySub.textContent = `● ${store.data.status === "online" ? "Online" : "Offline"} • ${this.selectedVersion}`;
     if (subtext) {
-      subtext.textContent = `Clean zero-boot installation ready for configuration. Active engine: ${store.data.installedSoftware || "Paper"}.`;
+      subtext.textContent = `Active server engine: ${this.selectedSoftware} ${this.selectedVersion}. Ready for configuration and gameplay.`;
     }
 
     document.querySelectorAll(".software-card").forEach((card) => {
       card.classList.toggle("active", card.getAttribute("data-software") === (this.selectedSoftware || store.data.installedSoftware));
     });
-    document.querySelectorAll(".version-select-pill").forEach((pill) => {
-      pill.classList.toggle("active", pill.getAttribute("data-ver") === (this.selectedVersion || store.data.installedVersion));
-    });
+
+    this.renderVersionPills();
     this.updateVersionInstallSummary();
   }
 

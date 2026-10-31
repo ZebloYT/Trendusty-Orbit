@@ -1010,20 +1010,54 @@
             </div>
 
             <!-- Step 2: Select Minecraft Version -->
-            <div class="section-title-row" style="margin: 28px 0 14px 0;">
-              <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin: 0;">2. Select Minecraft Release</h3>
-              <span style="font-size: 12px; color: #94a3b8;">Choose game release</span>
+            <div class="section-title-row" style="margin: 28px 0 14px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin: 0;">2. Select Minecraft Release</h3>
+                <span style="font-size: 12px; color: #94a3b8;">Choose game release from full catalog</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="version-count-badge" class="badge-tag" style="background: rgba(0, 245, 184, 0.12); color: #00f5b8; border: 1px solid rgba(0, 245, 184, 0.3); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-family: var(--font-mono); font-weight: 700;">Loading catalog...</span>
+              </div>
             </div>
 
-            <div class="version-pills-grid" id="version-pills-container">
-              <button class="version-select-pill active" data-ver="1.20.4">1.20.4 <span class="v-sub">Latest Stable</span></button>
-              <button class="version-select-pill" data-ver="1.20.2">1.20.2</button>
-              <button class="version-select-pill" data-ver="1.20.1">1.20.1 <span class="v-sub">Popular Modded</span></button>
-              <button class="version-select-pill" data-ver="1.19.4">1.19.4</button>
-              <button class="version-select-pill" data-ver="1.18.2">1.18.2 <span class="v-sub">Caves &amp; Cliffs</span></button>
-              <button class="version-select-pill" data-ver="1.16.5">1.16.5 <span class="v-sub">Nether Update</span></button>
-              <button class="version-select-pill" data-ver="1.12.2">1.12.2 <span class="v-sub">Classic Forge</span></button>
-              <button class="version-select-pill" data-ver="1.8.9">1.8.9 <span class="v-sub">Legacy PvP</span></button>
+            <!-- Version Search & Era Tabs Toolbar -->
+            <div class="version-filter-toolbar">
+              <div class="version-search-box">
+                <span class="version-search-icon">🔍</span>
+                <input type="text" id="input-version-search" placeholder="Search versions (e.g. 1.21.4, 1.20, 1.16.5, 1.8.9, combat, forge, nether, beta)..." autocomplete="off" spellcheck="false" />
+                <button type="button" id="btn-clear-version-search" title="Clear search" style="display: none;">✕</button>
+              </div>
+
+              <!-- Era Quick Filter Chips -->
+              <div class="version-era-chips" id="version-era-chips">
+                <button type="button" class="era-chip active" data-era="all">All Releases</button>
+                <button type="button" class="era-chip" data-era="1.21">1.21 Tricky Trials</button>
+                <button type="button" class="era-chip" data-era="1.20">1.20 Trails &amp; Tales</button>
+                <button type="button" class="era-chip" data-era="modern">1.19 – 1.16 Modern</button>
+                <button type="button" class="era-chip" data-era="aquatic">1.15 – 1.13 Aquatic</button>
+                <button type="button" class="era-chip" data-era="classic">1.12 – 1.8 Classic / PvP</button>
+                <button type="button" class="era-chip" data-era="legacy">1.7 – 1.0 Legacy</button>
+                <button type="button" class="era-chip" data-era="alpha-beta">Beta / Alpha</button>
+              </div>
+            </div>
+
+            <!-- Version Pills Container (Scrollable) -->
+            <div class="version-pills-scroll-container">
+              <div class="version-pills-grid" id="version-pills-container">
+                <button class="version-select-pill active" data-ver="1.20.4">1.20.4 <span class="v-sub">Latest Stable</span></button>
+                <button class="version-select-pill" data-ver="1.20.2">1.20.2</button>
+                <button class="version-select-pill" data-ver="1.20.1">1.20.1 <span class="v-sub">Popular Modded</span></button>
+                <button class="version-select-pill" data-ver="1.19.4">1.19.4</button>
+                <button class="version-select-pill" data-ver="1.18.2">1.18.2 <span class="v-sub">Caves &amp; Cliffs</span></button>
+                <button class="version-select-pill" data-ver="1.16.5">1.16.5 <span class="v-sub">Nether Update</span></button>
+                <button class="version-select-pill" data-ver="1.12.2">1.12.2 <span class="v-sub">Classic Forge</span></button>
+                <button class="version-select-pill" data-ver="1.8.9">1.8.9 <span class="v-sub">Legacy PvP</span></button>
+              </div>
+              <div id="version-empty-message" style="display: none; padding: 40px 20px; text-align: center; color: #94a3b8;">
+                <div style="font-size: 32px; margin-bottom: 8px;">🔍</div>
+                <div style="font-weight: 700; color: #fff; font-size: 15px;">No matching Minecraft versions found</div>
+                <div style="font-size: 12px; margin-top: 4px;">Try searching for <span style="color:#00f5b8">1.21</span>, <span style="color:#00f5b8">1.20</span>, <span style="color:#00f5b8">1.16.5</span>, or <span style="color:#00f5b8">1.8.9</span></div>
+              </div>
             </div>
 
             <!-- Installation Action Card -->
