@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoNode Cloud - Minecraft Server Manager</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%239333ea'/><path d='M30 50 L50 25 L70 50 L50 75 Z' fill='%23ffffff'/></svg>">
+</head>
+<body>
+
+  <!-- Three.js 3D WebGL Canvas (Background / Foreground floating voxel cubes) -->
+  <canvas id="canvas-3d"></canvas>
+
+  <!-- Interactive 2D Particle Web Canvas (Follows mouse cursor) -->
+  <canvas id="canvas-particles"></canvas>
+
+  <!-- Ambient Dynamic Mouse-Tracking Glow Layer -->
+  <div class="ambient-glow" id="ambient-glow"></div>
+
+  <!-- 3D Spatial Viewport Container -->
+  <div id="app-viewport">
+    
+    <!-- Spatial Transform Stage (Transforms in 3D Mode) -->
+    <div id="spatial-stage">
+
+      <!-- ====================================================================
+           ATERNOS-STYLE LEFT SIDEBAR
+           ==================================================================== -->
+      <aside id="sidebar">
+        
+        <!-- Brand Header -->
+        <div class="sidebar-brand">
+          <div class="brand-wrapper">
+            <div class="brand-logo-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="brand-info">
+              <h1>ECHONODE</h1>
+              <p>CLOUD SERVER SUITE</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Server Selector Dropdown -->
+        <div class="server-selector-card" id="btn-select-server" title="Switch or create servers">
+          <div class="selector-left">
+            <div class="selector-avatar" style="overflow: hidden; padding: 0;"><img id="sidebar-server-avatar-img" src="server-icon.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; image-rendering: pixelated;" onerror="this.onerror=null; this.parentElement.innerHTML='☁️';"></div>
+            <div>
+              <div class="selector-name" id="display-server-name">SKY HEAVEN MC</div>
+              <div class="selector-badge">1.26.1.2 Purpur</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <!-- Aternos Server Status Widget -->
+        <div class="sidebar-status-card">
+          <div class="status-card-glow" id="status-card-glow"></div>
+          
+          <div class="server-state-row">
+            <div class="status-indicator-pill" id="server-status-pill">
+              <span class="status-dot-pulse"></span>
+              <span id="server-status-text">ONLINE</span>
+            </div>
+            <button class="server-ip-copy-btn" id="btn-copy-ip" title="Click to copy IP">
+              <span id="display-server-ip">play.echonode.net:25565</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="status-quick-actions">
+            <button class="btn-quick-act btn-start" id="btn-quick-start" title="Start Server">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Start</span>
+            </button>
+            <button class="btn-quick-act btn-restart" id="btn-quick-restart" title="Restart Server">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span>Restart</span>
+            </button>
+            <button class="btn-quick-act btn-stop" id="btn-quick-stop" title="Stop Server">
+              <svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              <span>Stop</span>
+            </button>
+          </div>
+
+          <!-- Mini Resource Meters -->
+          <div class="status-resources-mini">
+            <div>
+              <div class="res-row">
+                <span>RAM Usage</span>
+                <span class="res-val" id="val-ram-usage">2.4 GB / 8.0 GB</span>
+              </div>
+              <div class="res-bar-track">
+                <div class="res-bar-fill" id="bar-ram-fill" style="width: 30%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="res-row">
+                <span>CPU Load</span>
+                <span class="res-val" id="val-cpu-usage">14%</span>
+              </div>
+              <div class="res-bar-track">
+                <div class="res-bar-fill" id="bar-cpu-fill" style="width: 14%; background: linear-gradient(90deg, #06b6d4, #10b981);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Navigation Items (Aternos Structure) -->
+        <div class="sidebar-nav-container">
+          <div class="nav-category-label">Management</div>
+
+          <button class="nav-item-btn active" data-tab="console">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+              <span>Console</span>
+            </div>
+            <span class="nav-badge-pill" id="badge-tps">20.0 TPS</span>
+          </button>
+
+          <button class="nav-item-btn" data-tab="options">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+              <span>Options</span>
+            </div>
+          </button>
+
+          <button class="nav-item-btn" data-tab="plugins">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span>
+              <span>Plugins</span>
+            </div>
+            <span class="nav-badge-pill highlight" id="badge-plugins-count">33</span>
+          </button>
+
+          <button class="nav-item-btn" data-tab="files">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+              <span>Files</span>
+            </div>
+          </button>
+
+          <button class="nav-item-btn" data-tab="worlds">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+              <span>Worlds</span>
+            </div>
+            <span class="nav-badge-pill">3 Dims</span>
+          </button>
+
+          <button class="nav-item-btn" data-tab="players">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+              <span>Players</span>
+            </div>
+            <span class="nav-badge-pill" id="badge-players-count">3 Online</span>
+          </button>
+
+          <button class="nav-item-btn" data-tab="backups">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>
+              <span>Backups</span>
+            </div>
+          </button>
+
+          <div class="nav-category-label" style="margin-top: 10px;">Automation & AI</div>
+
+          <button class="nav-item-btn" data-tab="uptime">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+              <span>24/7 Hosting</span>
+            </div>
+            <span class="nav-badge-pill highlight">CI/CD</span>
+          </button>
+
+          <button class="nav-item-btn" data-tab="ai">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+              <span>AI Connect</span>
+            </div>
+            <span class="nav-badge-pill ai">Antigravity</span>
+          </button>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+          <button class="sound-toggle-btn" id="btn-toggle-sound" title="Toggle audio feedback">
+            <span id="sound-icon">🔊</span>
+            <span id="sound-label">SFX On</span>
+          </button>
+          <div class="version-chip">v3.2.0 • Web</div>
+        </div>
+
+      </aside>
+
+      <!-- ====================================================================
+           MAIN CONTENT WRAPPER
+           ==================================================================== -->
+      <main id="main-wrapper">
+        
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+          <div class="navbar-left">
+            <div class="breadcrumb-label">
+              <span>EchoNode</span>
+              <span class="breadcrumb-sep">/</span>
+              <span class="breadcrumb-sub" id="current-view-title">Server Console</span>
+            </div>
+          </div>
+
+          <div class="navbar-stats">
+            <div class="stat-chip tps">
+              <span>TPS</span> 20.0
+            </div>
+            <div class="stat-chip ping">
+              <span>PING</span> 24ms
+            </div>
+            <div class="stat-chip">
+              <span>UPTIME</span> 14h 28m
+            </div>
+          </div>
+
+          <div class="navbar-right">
+            <!-- Quick Search Palette Trigger -->
+            <button class="search-palette-trigger" id="btn-trigger-search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>Search Actions...</span>
+              <span class="kbd-badge">Ctrl K</span>
+            </button>
+
+            <!-- 2D / 3D Spatial Switcher -->
+            <div class="mode-switcher-container">
+              <button class="mode-switch-btn active" id="btn-mode-2d">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                <span>2D Standard</span>
+              </button>
+              <button class="mode-switch-btn" id="btn-mode-3d">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span>3D Spatial 🔮</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- View Panels Container -->
+        <div id="view-container">
+
+          <!-- ----------------------------------------------------------------
+               1. CONSOLE TAB
+               ---------------------------------------------------------------- -->
+          <section class="tab-view active" id="view-console">
+            <div class="console-overview-grid">
+              <div class="metric-card">
+                <div class="metric-icon-box ram">⚡</div>
+                <div class="metric-details">
+                  <h4>Memory Allocated</h4>
+                  <div class="metric-number" id="metric-ram-live">2.4 / 8.0 GB</div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-icon-box cpu">⚙️</div>
+                <div class="metric-details">
+                  <h4>Processor Load</h4>
+                  <div class="metric-number" id="metric-cpu-live">14%</div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-icon-box tps">🟢</div>
+                <div class="metric-details">
+                  <h4>Ticks Per Second</h4>
+                  <div class="metric-number">20.0 TPS (12ms)</div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-icon-box players">🎮</div>
+                <div class="metric-details">
+                  <h4>Active Players</h4>
+                  <div class="metric-number" id="metric-players-live">3 / 50 Online</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terminal Window -->
+            <div class="terminal-window">
+              <div class="terminal-header-bar">
+                <div class="terminal-title-group">
+                  <div class="terminal-circle-dots">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                  </div>
+                  <span class="terminal-label">purpur-server@echonode: ~ /terminal</span>
+                </div>
+                <div class="terminal-actions">
+                  <button class="term-btn" id="btn-clear-term">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    <span>Clear</span>
+                  </button>
+                  <button class="term-btn" id="btn-copy-term">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Logs</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Terminal Body Output -->
+              <div class="terminal-body" id="terminal-output">
+                <!-- Log entries dynamically appended here -->
+              </div>
+
+              <!-- Terminal Command Input Bar -->
+              <div class="terminal-input-bar">
+                <span class="prompt-symbol">/</span>
+                <input type="text" class="terminal-input" id="terminal-cmd-input" placeholder="Type a command (e.g. 'help', 'tps', 'say Welcome', 'op username', 'stop')..." autocomplete="off">
+                <button class="term-send-btn" id="btn-terminal-send">
+                  <span>Execute</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               2. OPTIONS TAB (server.properties)
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-options">
+            <div class="view-header">
+              <h2>Server Options & Configuration</h2>
+              <p>Configure gameplay settings, max players, world difficulty, and message of the day (MOTD).</p>
+            </div>
+
+                                    <!-- ==========================================================
+                 SERVER LOGO & ICON STUDIO (64x64 PNG)
+                 ========================================================== -->
+            <div class="content-card server-icon-card" id="server-icon-card">
+              <div class="server-icon-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="server-icon-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                  <div>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0;">Server Logo & Icon Manager</h3>
+                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Upload a custom image (auto-cropped & resized to 64x64 PNG) or pick from built-in Minecraft presets.</p>
+                  </div>
+                </div>
+                <div class="icon-status-badge" id="icon-status-badge">
+                  <span class="status-dot-pulse" style="background: #22c55e;"></span>
+                  <span>server-icon.png Active</span>
+                </div>
+              </div>
+
+              <div class="server-icon-workspace">
+                <!-- Left Column: Previews -->
+                <div class="icon-preview-column">
+                  <div class="icon-preview-display">
+                    <img id="img-server-icon-live" src="server-icon.png" alt="Server Icon" class="pixel-rendered-icon">
+                    <div class="icon-size-tag">64 × 64 px</div>
+                  </div>
+                  <div class="icon-preview-meta">
+                    <span style="font-size: 11.5px; color: #94a3b8;">Multiplayer List Look:</span>
+                    <div class="mini-mc-slot">
+                      <img id="img-server-icon-mini" src="server-icon.png" alt="Mini Icon" style="width: 32px; height: 32px; border-radius: 4px; image-rendering: pixelated; object-fit: cover;">
+                      <div>
+                        <div style="font-size: 12px; font-weight: bold; color: #fff;" id="icon-display-name">SKY HEAVEN MC</div>
+                        <div style="font-size: 10px; color: #55ff55;">● 20.0 TPS • 1.26.1.2</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column: Dropzone & Gallery -->
+                <div class="icon-controls-column">
+                  
+                  <!-- Drag & Drop Zone -->
+                  <div class="icon-dropzone" id="icon-dropzone">
+                    <input type="file" id="input-server-icon-file" accept="image/*" style="display: none;">
+                    <div class="dropzone-content">
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #38bdf8; margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <div style="font-size: 13px; font-weight: 600; color: #fff;">Drop custom logo image here, or <span style="color: #38bdf8; text-decoration: underline; cursor: pointer;" id="btn-browse-icon">browse files</span></div>
+                      <div style="font-size: 11px; color: #64748b; margin-top: 3px;">Supports PNG, JPG, WEBP, GIF, SVG • Auto-cropped square & resized to exact 64x64 PNG</div>
+                    </div>
+                  </div>
+
+                  <!-- Preset Minecraft Icons Gallery -->
+                  <div class="preset-gallery-wrapper">
+                    <div class="preset-gallery-header">
+                      <span>Or pick from 12 Built-in Minecraft Server Logos:</span>
+                    </div>
+                    <div class="preset-icons-grid" id="preset-icons-grid">
+                      <!-- Dynamically populated via app.js -->
+                    </div>
+                  </div>
+
+                  <!-- Action Bar -->
+                  <div class="icon-action-bar">
+                    <button type="button" class="btn-primary" id="btn-save-server-icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                      <span>Save & Apply Server Icon (server-icon.png)</span>
+                    </button>
+                    <button type="button" class="btn-secondary" id="btn-reset-default-icon">Reset to Default</button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+<!-- ==========================================================
+                 ULTRA-MODERN MINECRAFT MOTD STUDIO & DESIGN SUITE
+                 ========================================================== -->
+            <div class="content-card motd-studio-card" id="motd-studio-card">
+              
+              <!-- Studio Header -->
+              <div class="motd-studio-header">
+                <div class="motd-header-left">
+                  <div class="motd-badge-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                  </div>
+                  <div>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0;">Multiplayer MOTD Studio</h3>
+                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Color palette, small caps (ᴇхᴀᴍᴘʟᴇ), formatting, special symbols, gradient text & AI generator.</p>
+                  </div>
+                </div>
+                <div class="motd-char-counter">
+                  <span class="char-pill" id="motd-l1-chars">Line 1: 0/45 chars</span>
+                  <span class="char-pill" id="motd-l2-chars">Line 2: 0/45 chars</span>
+                </div>
+              </div>
+
+              <!-- Live In-Game Multiplayer Server List Preview Box -->
+              <div class="minecraft-server-entry-preview">
+                <div class="mc-ping-icon-col">
+                  <div class="motd-server-icon" id="preview-server-icon">
+                    <img id="motd-preview-icon-img" src="server-icon.png" alt="Server Icon" style="width: 100%; height: 100%; border-radius: 6px; image-rendering: pixelated; object-fit: cover;" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' fill=\'%232e1065\'/><text x=\'50\' y=\'65\' font-size=\'40\' text-anchor=\'middle\' fill=\'%23a855f7\'>✦</text></svg>';">
+                  </div>
+                </div>
+                <div class="mc-entry-middle">
+                  <div class="mc-entry-title-row">
+                    <span class="mc-entry-name" id="preview-server-name">SKY HEAVEN MC</span>
+                    <div class="mc-entry-ping-box">
+                      <span class="mc-ping-players" id="display-preview-players">3/50</span>
+                      <div class="mc-ping-bars" title="5 ms - 5 bars (Fastest Connection)">
+                        <span class="pbar p1"></span>
+                        <span class="pbar p2"></span>
+                        <span class="pbar p3"></span>
+                        <span class="pbar p4"></span>
+                        <span class="pbar p5"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- The 2-line live rendered Minecraft text -->
+                  <div class="motd-text-render" id="motd-live-preview">
+                    <!-- Live Minecraft-rendered text -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Toolbar: 16-Color Palette + Format Modifiers -->
+              <div class="motd-editor-wrapper">
+                <div class="motd-toolbar-top">
+                  
+                  <!-- Color Palette Buttons -->
+                  <div class="motd-palette-strip" id="motd-color-palette" title="Click to insert color or wrap selected text">
+                    <button type="button" class="color-swatch-btn" data-color="&0" style="background: #000000;" title="&0 Black"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&1" style="background: #0000aa;" title="&1 Dark Blue"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&2" style="background: #00aa00;" title="&2 Dark Green"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&3" style="background: #00aaaa;" title="&3 Dark Aqua"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&4" style="background: #aa0000;" title="&4 Dark Red"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&5" style="background: #aa00aa;" title="&5 Dark Purple"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&6" style="background: #ffaa00;" title="&6 Gold"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&7" style="background: #aaaaaa;" title="&7 Gray"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&8" style="background: #555555;" title="&8 Dark Gray"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&9" style="background: #5555ff;" title="&9 Blue"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&a" style="background: #55ff55;" title="&a Green"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&b" style="background: #55ffff;" title="&b Aqua"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&c" style="background: #ff5555;" title="&c Red"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&d" style="background: #ff55ff;" title="&d Light Purple"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&e" style="background: #ffff55;" title="&e Yellow"></button>
+                    <button type="button" class="color-swatch-btn" data-color="&f" style="background: #ffffff;" title="&f White"></button>
+                  </div>
+
+                  <!-- Text Type Modifiers -->
+                  <div class="motd-type-modifiers">
+                    <button type="button" class="type-btn" data-tag="&l" title="Bold (&l)"><b>B</b></button>
+                    <button type="button" class="type-btn" data-tag="&o" title="Italics (&o)"><i>I</i></button>
+                    <button type="button" class="type-btn" data-tag="&n" title="Underline (&n)"><u>U</u></button>
+                    <button type="button" class="type-btn" data-tag="&m" title="Strikethrough (&m)"><s>S</s></button>
+                    <button type="button" class="type-btn" data-tag="&k" title="Magic / Obfuscated (&k)">⚅</button>
+                    <button type="button" class="type-btn" data-tag="&r" title="Reset Formatting (&r)">↺ Reset</button>
+                    
+                    <!-- Small Minecrafted Text (Small Caps) Converter -->
+                    <button type="button" class="type-btn small-caps-btn" id="btn-convert-small-caps" title="Convert selected text or prompt to Small Minecrafted Caps (ᴇхᴀᴍᴘʟᴇ)">
+                      <span>ᴀʙᴄ Small Caps</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Textarea Editor -->
+                <textarea class="motd-textarea" id="motd-input-field" rows="3" placeholder="Enter Line 1&#10;Enter Line 2 (supports & and § codes, hex &#RRGGBB, and symbols)..."></textarea>
+              </div>
+
+              <!-- Interactive MOTD Studio Tools Container (Tabs: Symbols | Gradient | AI Generator) -->
+              <div class="motd-tools-card">
+                <div class="motd-subtabs-nav">
+                  <button type="button" class="motd-subtab-btn active" data-subtab="symbols">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>Special Symbols</span>
+                  </button>
+                  <button type="button" class="motd-subtab-btn" data-subtab="gradient">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+                    <span>Gradient Generator</span>
+                  </button>
+                  <button type="button" class="motd-subtab-btn" data-subtab="ai">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>✦ AI MOTD Generator</span>
+                  </button>
+                </div>
+
+                <!-- Subtab 1: Special Symbols Quick Drawer -->
+                <div class="motd-subtab-panel active" id="motd-panel-symbols">
+                  <div class="symbols-grid-container">
+                    
+                    <div class="symbol-category-row">
+                      <span class="symbol-cat-label">Stars:</span>
+                      <div class="symbol-chips-wrap">
+                        <button type="button" class="symbol-chip" data-sym="✦">✦</button>
+                        <button type="button" class="symbol-chip" data-sym="★">★</button>
+                        <button type="button" class="symbol-chip" data-sym="✪">✪</button>
+                        <button type="button" class="symbol-chip" data-sym="⭐">⭐</button>
+                        <button type="button" class="symbol-chip" data-sym="✧">✧</button>
+                        <button type="button" class="symbol-chip" data-sym="✰">✰</button>
+                        <button type="button" class="symbol-chip" data-sym="✯">✯</button>
+                        <button type="button" class="symbol-chip" data-sym="✬">✬</button>
+                        <button type="button" class="symbol-chip" data-sym="☽">☽</button>
+                        <button type="button" class="symbol-chip" data-sym="☼">☼</button>
+                        <button type="button" class="symbol-chip" data-sym="☄">☄</button>
+                      </div>
+                    </div>
+
+                    <div class="symbol-category-row">
+                      <span class="symbol-cat-label">Sparks:</span>
+                      <div class="symbol-chips-wrap">
+                        <button type="button" class="symbol-chip" data-sym="⚡">⚡</button>
+                        <button type="button" class="symbol-chip" data-sym="✨">✨</button>
+                        <button type="button" class="symbol-chip" data-sym="✹">✹</button>
+                        <button type="button" class="symbol-chip" data-sym="✸">✸</button>
+                        <button type="button" class="symbol-chip" data-sym="✺">✺</button>
+                        <button type="button" class="symbol-chip" data-sym="✴">✴</button>
+                        <button type="button" class="symbol-chip" data-sym="🔥">🔥</button>
+                        <button type="button" class="symbol-chip" data-sym="❄">❄</button>
+                      </div>
+                    </div>
+
+                    <div class="symbol-category-row">
+                      <span class="symbol-cat-label">Bars & Lines:</span>
+                      <div class="symbol-chips-wrap">
+                        <button type="button" class="symbol-chip" data-sym="┃">┃</button>
+                        <button type="button" class="symbol-chip" data-sym="│">│</button>
+                        <button type="button" class="symbol-chip" data-sym="|">|</button>
+                        <button type="button" class="symbol-chip" data-sym="‖">‖</button>
+                        <button type="button" class="symbol-chip" data-sym="¦">¦</button>
+                        <button type="button" class="symbol-chip" data-sym="║">║</button>
+                        <button type="button" class="symbol-chip" data-sym="丨">丨</button>
+                        <button type="button" class="symbol-chip" data-sym="▌">▌</button>
+                        <button type="button" class="symbol-chip" data-sym="▎">▎</button>
+                        <button type="button" class="symbol-chip" data-sym="═">═</button>
+                      </div>
+                    </div>
+
+                    <div class="symbol-category-row">
+                      <span class="symbol-cat-label">Dots & Bullets:</span>
+                      <div class="symbol-chips-wrap">
+                        <button type="button" class="symbol-chip" data-sym="•">•</button>
+                        <button type="button" class="symbol-chip" data-sym="●">●</button>
+                        <button type="button" class="symbol-chip" data-sym="○">○</button>
+                        <button type="button" class="symbol-chip" data-sym="・">・</button>
+                        <button type="button" class="symbol-chip" data-sym="◆">◆</button>
+                        <button type="button" class="symbol-chip" data-sym="◇">◇</button>
+                        <button type="button" class="symbol-chip" data-sym="▪">▪</button>
+                        <button type="button" class="symbol-chip" data-sym="▫">▫</button>
+                        <button type="button" class="symbol-chip" data-sym="■">■</button>
+                        <button type="button" class="symbol-chip" data-sym="□">□</button>
+                        <button type="button" class="symbol-chip" data-sym="▲">▲</button>
+                        <button type="button" class="symbol-chip" data-sym="▼">▼</button>
+                      </div>
+                    </div>
+
+                    <div class="symbol-category-row">
+                      <span class="symbol-cat-label">Arrows & Brackets:</span>
+                      <div class="symbol-chips-wrap">
+                        <button type="button" class="symbol-chip" data-sym="»">»</button>
+                        <button type="button" class="symbol-chip" data-sym="«">«</button>
+                        <button type="button" class="symbol-chip" data-sym="►">►</button>
+                        <button type="button" class="symbol-chip" data-sym="◄">◄</button>
+                        <button type="button" class="symbol-chip" data-sym="➤">➤</button>
+                        <button type="button" class="symbol-chip" data-sym="【">【</button>
+                        <button type="button" class="symbol-chip" data-sym="】">】</button>
+                        <button type="button" class="symbol-chip" data-sym="『">『</button>
+                        <button type="button" class="symbol-chip" data-sym="』">』</button>
+                        <button type="button" class="symbol-chip" data-sym="⟨">⟨</button>
+                        <button type="button" class="symbol-chip" data-sym="⟩">⟩</button>
+                      </div>
+                    </div>
+
+                    <div class="symbol-category-row">
+                      <span class="symbol-cat-label">Badges & Icons:</span>
+                      <div class="symbol-chips-wrap">
+                        <button type="button" class="symbol-chip" data-sym="👑">👑</button>
+                        <button type="button" class="symbol-chip" data-sym="⚔">⚔</button>
+                        <button type="button" class="symbol-chip" data-sym="🛡">🛡</button>
+                        <button type="button" class="symbol-chip" data-sym="⚜">⚜</button>
+                        <button type="button" class="symbol-chip" data-sym="⛏">⛏</button>
+                        <button type="button" class="symbol-chip" data-sym="🎮">🎮</button>
+                        <button type="button" class="symbol-chip" data-sym="💎">💎</button>
+                        <button type="button" class="symbol-chip" data-sym="🏹">🏹</button>
+                        <button type="button" class="symbol-chip" data-sym="☠">☠</button>
+                        <button type="button" class="symbol-chip" data-sym="❤️">❤️</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Subtab 2: Gradient Text Generator -->
+                <div class="motd-subtab-panel" id="motd-panel-gradient">
+                  <div class="gradient-studio-container">
+                    <div class="gradient-input-row">
+                      <div class="form-group" style="flex: 2;">
+                        <label>Text to Gradient</label>
+                        <input type="text" class="form-input" id="grad-text-input" value="SKY HEAVEN MC" placeholder="Enter text for gradient...">
+                      </div>
+                      <div class="form-group" style="flex: 1;">
+                        <label>Start Color</label>
+                        <div class="color-picker-input-wrap">
+                          <input type="color" id="grad-color-start" value="#00f2fe">
+                          <input type="text" class="form-input" id="grad-hex-start" value="#00F2FE">
+                        </div>
+                      </div>
+                      <div class="form-group" style="flex: 1;">
+                        <label>End Color</label>
+                        <div class="color-picker-input-wrap">
+                          <input type="color" id="grad-color-end" value="#4facfe">
+                          <input type="text" class="form-input" id="grad-hex-end" value="#4FACFE">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Presets row -->
+                    <div class="gradient-presets-row">
+                      <span class="preset-label">Color Presets:</span>
+                      <div class="preset-pills-wrap">
+                        <button type="button" class="grad-preset-pill" data-start="#ff416c" data-end="#ff4b2b">Sunset Flame</button>
+                        <button type="button" class="grad-preset-pill" data-start="#00f2fe" data-end="#4facfe">Cyber Neon</button>
+                        <button type="button" class="grad-preset-pill" data-start="#11998e" data-end="#38ef7d">Emerald Horizon</button>
+                        <button type="button" class="grad-preset-pill" data-start="#f7971e" data-end="#ffd200">Golden Sun</button>
+                        <button type="button" class="grad-preset-pill" data-start="#8a2387" data-end="#f27121">Amethyst Sunset</button>
+                        <button type="button" class="grad-preset-pill" data-start="#a5f3fc" data-end="#0284c7">Glacier Frost</button>
+                        <button type="button" class="grad-preset-pill" data-start="#ff0844" data-end="#ffb199">Rose Gold</button>
+                      </div>
+                    </div>
+
+                    <!-- Options: Small Caps & Bold -->
+                    <div class="gradient-options-row">
+                      <label class="form-checkbox-row" style="margin: 0;">
+                        <input type="checkbox" id="chk-grad-small-caps" checked>
+                        <span>Convert to Small Caps (ᴇхᴀᴍᴘʟᴇ)</span>
+                      </label>
+                      <label class="form-checkbox-row" style="margin: 0;">
+                        <input type="checkbox" id="chk-grad-bold" checked>
+                        <span>Bold Formatting (&l)</span>
+                      </label>
+                      <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                        <span style="font-size: 11.5px; color: #94a3b8;">Format:</span>
+                        <select class="option-select" id="grad-format-select" style="padding: 4px 8px; font-size: 11.5px;">
+                          <option value="hex" selected>Standard Hex (&#RRGGBB)</option>
+                          <option value="minimessage">MiniMessage (<#RRGGBB>)</option>
+                          <option value="section">Section Hex (§x§r§r...)</option>
+                          <option value="legacy">Legacy 16-Color Step</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Live Gradient Preview & Insert Action -->
+                    <div class="gradient-preview-banner">
+                      <div class="gradient-preview-render" id="grad-live-preview-box">
+                        <!-- Live rendered gradient text -->
+                      </div>
+                      <div class="gradient-actions-wrap">
+                        <button type="button" class="btn-primary" id="btn-insert-grad-line1">Insert into Line 1</button>
+                        <button type="button" class="btn-secondary" id="btn-insert-grad-line2">Insert into Line 2</button>
+                        <button type="button" class="btn-secondary" id="btn-insert-grad-cursor">Insert at Cursor</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Subtab 3: AI MOTD Generator -->
+                <div class="motd-subtab-panel" id="motd-panel-ai">
+                  <div class="ai-motd-container">
+                    <div class="ai-motd-top-row">
+                      <div class="form-group" style="flex: 2;">
+                        <label>Server Brand / Name</label>
+                        <input type="text" class="form-input" id="ai-motd-name" value="SKY HEAVEN MC" placeholder="e.g. EchoNode SMP">
+                      </div>
+                      <div class="form-group" style="flex: 2;">
+                        <label>Server Theme / Game Mode</label>
+                        <select class="option-select" id="ai-motd-theme" style="width: 100%;">
+                          <option value="survival" selected>🌲 Survival SMP (Claims, Economy, Vanilla+)</option>
+                          <option value="skyblock">🏝️ Skyblock & OneBlock (Minions, Islands)</option>
+                          <option value="lifesteal">⚔️ Lifesteal & Hardcore (Steal Hearts, PvP)</option>
+                          <option value="bedwars">👑 Bedwars & Duels (Competitive Arena)</option>
+                          <option value="rpg">🏰 MMORPG & Dungeons (Quests, Bosses)</option>
+                          <option value="minimalist">✨ Aesthetic Minimalist (Clean & Elegant)</option>
+                        </select>
+                      </div>
+                      <div style="flex: 1; display: flex; align-items: flex-end;">
+                        <button type="button" class="btn-primary" id="btn-generate-ai-motd" style="width: 100%; height: 38px; justify-content: center;">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                          <span>Generate Ideas</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Highlight Features Pills -->
+                    <div class="ai-features-row">
+                      <span class="ai-feat-label">Included Features:</span>
+                      <label class="form-checkbox-row" style="margin: 0;"><input type="checkbox" id="ai-feat-crossplay" checked><span>[Java + Bedrock]</span></label>
+                      <label class="form-checkbox-row" style="margin: 0;"><input type="checkbox" id="ai-feat-version" checked><span>Version 1.20-1.26</span></label>
+                      <label class="form-checkbox-row" style="margin: 0;"><input type="checkbox" id="ai-feat-uptime" checked><span>24/7 Online</span></label>
+                      <label class="form-checkbox-row" style="margin: 0;"><input type="checkbox" id="ai-feat-season"><span>Season Release</span></label>
+                    </div>
+
+                    <!-- AI Results List -->
+                    <div class="ai-results-list" id="ai-motd-results-list">
+                      <!-- 3 Generated Cards injected here -->
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Properties Grid -->
+            <div class="options-grid">
+              
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Default Gamemode</h4>
+                  <p>World game mode for newly connecting players</p>
+                </div>
+                <select class="option-select" id="opt-gamemode">
+                  <option value="survival" selected>Survival</option>
+                  <option value="creative">Creative</option>
+                  <option value="adventure">Adventure</option>
+                  <option value="spectator">Spectator</option>
+                </select>
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Difficulty</h4>
+                  <p>Hostile mobs damage and hunger rate</p>
+                </div>
+                <select class="option-select" id="opt-difficulty">
+                  <option value="peaceful">Peaceful</option>
+                  <option value="easy">Easy</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Player Whitelist</h4>
+                  <p>Only permit whitelisted players to connect</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="opt-whitelist">
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Player vs Player (PvP)</h4>
+                  <p>Allow players to damage each other</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="opt-pvp" checked>
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Allow Nether Dimension</h4>
+                  <p>Generate and load the Nether realm</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="opt-nether" checked>
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Command Blocks</h4>
+                  <p>Allow executing command blocks</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="opt-cmdblocks" checked>
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Allow Flight</h4>
+                  <p>Allow survival flight / jetpacks / mods</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="opt-flight" checked>
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>Max Player Slots</h4>
+                  <p>Maximum simultaneous player connections</p>
+                </div>
+                <input type="number" class="option-input" id="opt-max-players" value="50" min="1" max="500" style="width: 80px;">
+              </div>
+
+              <div class="option-item">
+                <div class="option-text">
+                  <h4>View Distance (Chunks)</h4>
+                  <p>Server-side simulation render radius</p>
+                </div>
+                <input type="number" class="option-input" id="opt-view-dist" value="12" min="4" max="32" style="width: 80px;">
+              </div>
+
+            </div>
+
+            <div style="margin-top: 20px;">
+              <button class="btn-primary" id="btn-save-options">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span>Save All Changes</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               3. PLUGINS TAB (Aternos Marketplace)
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-plugins">
+            <div class="view-header">
+              <h2>Plugin Marketplace & Addons</h2>
+              <p>Browse, install, and manage official Spigot, Paper, and Purpur plugins with 1-click updates.</p>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="plugin-filters-bar">
+              <div class="plugin-search-input-wrap">
+                <svg class="plugin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="plugin-search-input" id="input-search-plugins" placeholder="Search EssentialsX, WorldGuard, LuckPerms...">
+              </div>
+
+              <div class="category-pills-row" id="plugin-category-pills">
+                <button class="category-pill active" data-category="all">All Plugins (33)</button>
+                <button class="category-pill" data-category="admin">Administration</button>
+                <button class="category-pill" data-category="protect">Protection & Claims</button>
+                <button class="category-pill" data-category="economy">Economy & Shops</button>
+                <button class="category-pill" data-category="network">Crossplay & Ports</button>
+                <button class="category-pill" data-category="world">World & Generation</button>
+              </div>
+            </div>
+
+            <!-- Plugin Cards Grid -->
+            <div class="plugins-grid" id="plugins-cards-container">
+              <!-- Dynamically populated via app.js -->
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               4. FILES TAB (Interactive File Explorer & Code Editor)
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-files">
+            <div class="view-header">
+              <h2>Server Files & Configurations</h2>
+              <p>Browse directories, edit configurations, upload custom assets, and inspect server logs.</p>
+            </div>
+
+            <div class="files-explorer-container">
+              <!-- Directory Tree Navigation -->
+              <div class="files-tree-panel">
+                <h4>Folders</h4>
+                <div class="tree-item active" data-path="/">📁 root /</div>
+                <div class="tree-item" data-path="/plugins">🧩 plugins/</div>
+                <div class="tree-item" data-path="/world">🌍 world/</div>
+                <div class="tree-item" data-path="/logs">📜 logs/</div>
+                <div class="tree-item" data-path="/24_7">🔄 24/7 online/</div>
+              </div>
+
+              <!-- File List Table -->
+              <div class="files-list-panel">
+                <div class="files-toolbar">
+                  <div class="files-breadcrumbs" id="files-current-dir">/ (root)</div>
+                  <div class="files-actions-btn-group">
+                    <button class="file-act-btn" id="btn-create-file">+ New File</button>
+                    <button class="file-act-btn" id="btn-upload-file">⬆ Upload</button>
+                  </div>
+                </div>
+
+                <div class="files-table-container">
+                  <table class="files-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Last Modified</th>
+                        <th style="text-align: right;">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="files-table-body">
+                      <!-- Populated via app.js -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               5. WORLDS TAB
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-worlds">
+            <div class="view-header">
+              <h2>World Dimensions & Management</h2>
+              <p>Manage terrain, seeds, spawn coordinates, and dimensional data for Overworld, Nether, and The End.</p>
+            </div>
+
+            <div class="worlds-cards-grid">
+              <!-- Overworld -->
+              <div class="world-card">
+                <div class="world-card-top">
+                  <div class="world-type-icon overworld">🌍</div>
+                  <div class="world-meta">
+                    <h3>world</h3>
+                    <p>Overworld Dimension</p>
+                  </div>
+                </div>
+                <div class="world-specs-list">
+                  <div class="world-spec-row"><span>World Seed</span><strong style="color: #38bdf8;">-3453969471065111142</strong></div>
+                  <div class="world-spec-row"><span>Spawn Location</span><strong>X: -200.5, Y: 68.0, Z: -650.5</strong></div>
+                  <div class="world-spec-row"><span>Region Files (.mca)</span><strong>258 MCA regions</strong></div>
+                  <div class="world-spec-row"><span>Total Size</span><strong>1.42 GB</strong></div>
+                </div>
+                <div class="world-actions-row">
+                  <button class="btn-secondary" style="flex: 1;" onclick="app.downloadWorld('world')">⬇ Download ZIP</button>
+                  <button class="btn-secondary" style="flex: 1;" onclick="app.uploadWorldModal('world')">⬆ Upload</button>
+                </div>
+              </div>
+
+              <!-- Nether -->
+              <div class="world-card">
+                <div class="world-card-top">
+                  <div class="world-type-icon nether">🔥</div>
+                  <div class="world-meta">
+                    <h3>world_nether</h3>
+                    <p>Nether Dimension</p>
+                  </div>
+                </div>
+                <div class="world-specs-list">
+                  <div class="world-spec-row"><span>Dimension Core</span><strong>minecraft:the_nether</strong></div>
+                  <div class="world-spec-row"><span>Structures</span><strong>Fortresses & Bastions Active</strong></div>
+                  <div class="world-spec-row"><span>Region Files (.mca)</span><strong>48 MCA regions</strong></div>
+                  <div class="world-spec-row"><span>Total Size</span><strong>310 MB</strong></div>
+                </div>
+                <div class="world-actions-row">
+                  <button class="btn-secondary" style="flex: 1;" onclick="app.downloadWorld('world_nether')">⬇ Download ZIP</button>
+                  <button class="btn-secondary" style="flex: 1;" onclick="app.uploadWorldModal('world_nether')">⬆ Upload</button>
+                </div>
+              </div>
+
+              <!-- The End -->
+              <div class="world-card">
+                <div class="world-card-top">
+                  <div class="world-type-icon the-end">🌌</div>
+                  <div class="world-meta">
+                    <h3>world_the_end</h3>
+                    <p>The End Dimension</p>
+                  </div>
+                </div>
+                <div class="world-specs-list">
+                  <div class="world-spec-row"><span>Dragon Fight</span><strong>Ready / Respawnable</strong></div>
+                  <div class="world-spec-row"><span>End Cities</span><strong>Elytras & Ships Active</strong></div>
+                  <div class="world-spec-row"><span>Region Files (.mca)</span><strong>77 MCA regions</strong></div>
+                  <div class="world-spec-row"><span>Total Size</span><strong>460 MB</strong></div>
+                </div>
+                <div class="world-actions-row">
+                  <button class="btn-secondary" style="flex: 1;" onclick="app.downloadWorld('world_the_end')">⬇ Download ZIP</button>
+                  <button class="btn-secondary" style="flex: 1;" onclick="app.uploadWorldModal('world_the_end')">⬆ Upload</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               6. PLAYERS TAB
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-players">
+            <div class="view-header">
+              <h2>Player Authority & Access Roster</h2>
+              <p>Manage Server Operators (OP), Whitelisted members, and discipline records (Bans & Mutes).</p>
+            </div>
+
+            <div class="players-subtabs">
+              <button class="player-subtab-btn active" data-sub="ops">Server Operators (OP)</button>
+              <button class="player-subtab-btn" data-sub="whitelist">Whitelist</button>
+              <button class="player-subtab-btn" data-sub="banned">Banned Players</button>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; max-width: 480px;">
+              <input type="text" class="form-input" id="input-add-player" placeholder="Enter Minecraft username...">
+              <button class="btn-primary" id="btn-add-player-submit">+ Add Player</button>
+            </div>
+
+            <div class="players-roster-list" id="players-cards-container">
+              <!-- Dynamically populated via app.js -->
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               7. BACKUPS TAB
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-backups">
+            <div class="backups-header-banner">
+              <div>
+                <h2>Automated & Manual Backups</h2>
+                <p>Full ZIP snapshots of world regions, installed plugins, player data, and configurations.</p>
+              </div>
+              <button class="btn-success" id="btn-create-instant-backup">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                <span>+ Create Instant Backup</span>
+              </button>
+            </div>
+
+            <div id="backup-list-container">
+              <!-- Backups populated via app.js -->
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               8. 24/7 HOSTING TAB
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-uptime">
+            <div class="view-header">
+              <h2>24/7 Server Hosting & GitHub CI/CD Engine</h2>
+              <p>Host your Minecraft server around the clock using GitHub Actions runner workflows, or keep your local PC awake.</p>
+            </div>
+
+            <!-- YouTube Tutorial Video Card -->
+            <div class="video-tutorial-card" id="btn-open-video-tutorial">
+              <div class="video-card-left">
+                <div class="video-play-box">
+                  <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+                <div class="video-card-text">
+                  <h3>▶ Video Tutorial: How to Make Your Minecraft Server 24/7 Online</h3>
+                  <p id="video-card-sub">Click to watch the full tutorial video on connecting GitHub CI/CD and playit.gg tunnels.</p>
+                </div>
+              </div>
+              <button class="btn-secondary" id="btn-edit-video-url" onclick="event.stopPropagation(); app.openEditVideoModal();">Edit Link</button>
+            </div>
+
+                        <!-- Step-by-Step GitHub Setup Guide Box -->
+            <div class="content-card" style="margin-bottom: 20px; border-left: 3px solid var(--accent-cyan); background: rgba(14, 20, 32, 0.7);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <h4 style="color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  Quick Setup Guide: How to Get Your GitHub Access Token & 24/7 Hosting
+                </h4>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+                  <strong style="color: #fff; display: block; margin-bottom: 4px;">1. Create Repo</strong>
+                  Go to <a href="https://github.com/new" target="_blank" style="color: #38bdf8; text-decoration: underline;">github.com/new</a> and create a repository (e.g. <code>SkyHeavenMC-24-7</code>).
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+                  <strong style="color: #fff; display: block; margin-bottom: 4px;">2. Generate Token</strong>
+                  Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #38bdf8; text-decoration: underline;">GitHub Tokens (Classic)</a> &rarr; Generate new token. Check <code style="color: #a855f7;">repo</code> and <code style="color: #a855f7;">workflow</code>.
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+                  <strong style="color: #fff; display: block; margin-bottom: 4px;">3. Set Permissions</strong>
+                  In your repo, go to <strong>Settings &rarr; Actions &rarr; General &rarr; Workflow permissions</strong> and select <strong>'Read and write permissions'</strong>.
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+                  <strong style="color: #fff; display: block; margin-bottom: 4px;">4. Click Connect & Sync</strong>
+                  Paste your Repo URL & Token below, then click Connect. EchoNode will push the server and start the 24/7 runner!
+                </div>
+              </div>
+            </div>
+
+<!-- GitHub Actions Config -->
+            <div class="github-sync-card">
+              <h3 style="font-size: 16px; margin-bottom: 14px; color: #fff;">Connect to GitHub Repository</h3>
+              
+              <div class="form-group">
+                <label>GitHub Repository URL</label>
+                <input type="text" class="form-input" id="input-github-repo" placeholder="https://github.com/your-username/echonode-minecraft-server" value="https://github.com/ZebloYT/Sky-Heaven-MC.git">
+              </div>
+
+              <div class="form-group">
+                <label>Personal Access Token (PAT) with 'repo' scope</label>
+                <input type="password" class="form-input" id="input-github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" value="">
+              </div>
+
+              <label class="form-checkbox-row">
+                <input type="checkbox" id="chk-auto-update-repo" checked>
+                <span>Auto-update repository (Sync server code, plugins, and world updates automatically)</span>
+              </label>
+
+              <!-- Real-time Live 24/7 Cloud Host Runner Card -->
+              <div class="content-card" id="github-runner-live-card" style="margin-top: 14px; margin-bottom: 14px; border: 1px solid rgba(74, 222, 128, 0.35); background: rgba(13, 25, 20, 0.75);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="status-indicator-pill" id="github-runner-badge" style="background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.4);">
+                      <span class="status-dot-pulse" id="github-runner-dot" style="background: #22c55e;"></span>
+                      <span id="github-runner-status-text">CLOUD 24/7 ONLINE</span>
+                    </span>
+                    <span style="font-weight: 700; color: #f8fafc; font-size: 13.5px;">GitHub Actions 24/7 Runner</span>
+                  </div>
+                  <a href="https://github.com/ZebloYT/Sky-Heaven-MC/actions" id="github-runner-link" target="_blank" class="btn-secondary" style="font-size: 12px; padding: 4px 12px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                    <span>View Live Run on GitHub</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+                  </a>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; font-size: 12px;">
+                  <div style="background: rgba(255, 255, 255, 0.04); padding: 8px 12px; border-radius: 8px;">
+                    <div style="color: #94a3b8; font-size: 11px;">Active Step</div>
+                    <div style="font-weight: 600; color: #38bdf8; margin-top: 2px;" id="github-runner-step">Launch 24/7 Cloud Server & Playit Tunnel</div>
+                  </div>
+                  <div style="background: rgba(255, 255, 255, 0.04); padding: 8px 12px; border-radius: 8px;">
+                    <div style="color: #94a3b8; font-size: 11px;">Runner Lifecycle</div>
+                    <div style="font-weight: 600; color: #a78bfa; margin-top: 2px;" id="github-runner-cycle">Auto-Restarting Loop (Continuous)</div>
+                  </div>
+                  <div style="background: rgba(255, 255, 255, 0.04); padding: 8px 12px; border-radius: 8px;">
+                    <div style="color: #94a3b8; font-size: 11px;">Connected GitHub Repo</div>
+                    <div style="font-weight: 600; color: #e2e8f0; margin-top: 2px; word-break: break-all;" id="github-runner-repo">ZebloYT/Sky-Heaven-MC</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Progress bar when syncing -->
+              <div class="sync-progress-box" id="sync-progress-container">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #a855f7;">
+                  <span id="sync-status-msg">Generating 24/7 online configuration...</span>
+                  <span id="sync-percent-text">45%</span>
+                </div>
+                <div class="sync-progress-track">
+                  <div class="sync-progress-bar" id="sync-progress-bar"></div>
+                </div>
+              </div>
+
+              <div style="margin-top: 18px; display: flex; gap: 12px;">
+                <button class="btn-primary" id="btn-start-github-sync">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                  <span>Connect & Sync Repository</span>
+                </button>
+                <button class="btn-secondary" id="btn-generate-local-247">Generate Local 24/7 Scripts</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ----------------------------------------------------------------
+               9. AI CONNECT (Antigravity Suite) TAB
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-ai">
+            <div class="ai-header-banner">
+              <div class="ai-badge">✦ ANTIGRAVITY AI INTEGRATION</div>
+              <h2 style="font-size: 20px; font-weight: 800; color: #fff;">Connect EchoNode to Antigravity AI Agent</h2>
+              <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px;">Automatically survey your server directory, scan all 33 plugins, and generate an actionable AI prompt ready for execution.</p>
+              
+              <div class="live-scan-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Live Server Scan: 33 Plugins Detected • 3 Worlds • Purpur 1.26.1.2 Core • 24/7 Active</span>
+              </div>
+            </div>
+
+            <!-- Custom User Instructions Box -->
+            <div class="content-card">
+              <h3 style="font-size: 14.5px; margin-bottom: 8px; color: #93c5fd;">What changes or features do you want Antigravity to perform?</h3>
+              <input type="text" class="form-input" id="input-ai-user-task" value="Scan the full server folder, check all plugins and configs for errors, optimize performance, and make adjustments as requested." style="margin-bottom: 16px;">
+
+              <h3 style="font-size: 14.5px; margin-bottom: 8px; color: #c084fc;">Generated Markdown Prompt for Antigravity AI:</h3>
+              <textarea class="ai-prompt-preview-box" id="ai-prompt-preview" readonly></textarea>
+
+              <div class="ai-actions-row">
+                <button class="btn-primary" id="btn-ai-copy-prompt">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span>📋 Copy Prompt to Clipboard</span>
+                </button>
+                <button class="btn-secondary" id="btn-ai-save-file">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                  <span>💾 Download antigravity_task.txt</span>
+                </button>
+                <button class="btn-success" id="btn-ai-open-app">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <span>🚀 Open Antigravity App</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- 3D Spatial Mode Floating HUD Controls -->
+  <div class="spatial-hud-controls">
+    <span class="hud-hint">🔮 3D Spatial: Drag to Orbit • Scroll to Zoom • Right-Drag to Pan</span>
+    <button class="hud-btn" id="btn-reset-camera">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      <span>Reset View</span>
+    </button>
+  </div>
+
+  <!-- ====================================================================
+       MODALS & POPUPS
+       ==================================================================== -->
+  
+  <!-- Code Editor Modal -->
+  <div class="modal-overlay" id="modal-code-editor">
+    <div class="modal-content-box" style="max-width: 800px;">
+      <div class="modal-header-row">
+        <div>
+          <h3 id="modal-editor-filename">server.properties</h3>
+          <span style="font-size: 11px; color: #94a3b8;" id="modal-editor-filepath">/server.properties</span>
+        </div>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-code-editor')">&times;</button>
+      </div>
+      <textarea id="modal-editor-content" style="width: 100%; height: 380px; background: #090c12; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px; font-family: var(--font-mono); font-size: 12.5px; color: #fff; line-height: 1.5; resize: vertical; outline: none;"></textarea>
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn-secondary" onclick="app.closeModal('modal-code-editor')">Cancel</button>
+        <button class="btn-primary" id="btn-editor-save">Save File</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Search Palette Modal (Ctrl + K) -->
+  <div class="modal-overlay" id="modal-search-palette">
+    <div class="modal-content-box" style="max-width: 560px; padding: 16px;">
+      <div style="position: relative; margin-bottom: 12px;">
+        <input type="text" class="form-input" id="palette-search-input" placeholder="Type a tab name, setting, or command..." style="padding-left: 38px; font-size: 14px;">
+        <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div id="palette-results-list" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+        <!-- Populated via search -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Tutorial URL Modal -->
+  <div class="modal-overlay" id="modal-edit-video">
+    <div class="modal-content-box" style="max-width: 480px;">
+      <div class="modal-header-row">
+        <h3>Edit Tutorial Video Link</h3>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-edit-video')">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>YouTube / Video URL</label>
+        <input type="text" class="form-input" id="input-new-video-url" value="https://www.youtube.com">
+      </div>
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn-secondary" onclick="app.closeModal('modal-edit-video')">Cancel</button>
+        <button class="btn-primary" id="btn-save-video-url">Update Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Local three.min.js bundle and 3D Loaders -->
+  <script src="three.min.js"></script>
+  <script src="fflate.min.js"></script>
+  <script src="GLTFLoader.js"></script>
+  <script src="OBJLoader.js"></script>
+  <script src="MTLLoader.js"></script>
+  <script src="FBXLoader.js"></script>
+  <!-- Application Core Script -->
+  <script src="app.js"></script>
+
+</body>
+</html>

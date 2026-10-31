@@ -1735,6 +1735,311 @@
       box-shadow: 0 0 6px #00f5b8;
     }
 
+  
+    /* ==========================================================================
+       OTHER FEATURES & ECOSYSTEM APPS SECTION
+       ========================================================================== */
+    .other-apps-section {
+      padding: 90px 0 70px;
+      position: relative;
+    }
+
+    .app-hero-card {
+      background: linear-gradient(145deg, rgba(13, 20, 32, 0.9), rgba(8, 12, 19, 0.96));
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 245, 184, 0.08);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 32px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .app-hero-card:hover {
+      border-color: var(--glass-border-hover);
+      box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 245, 184, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .app-hero-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #9333ea 0%, #00f5b8 50%, #00b4d8 100%);
+    }
+
+    .app-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .app-card-identity {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .app-icon-box {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(0, 245, 184, 0.25));
+      border: 1.5px solid rgba(168, 85, 247, 0.5);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4), inset 0 0 15px rgba(0, 245, 184, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .app-icon-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+
+    .app-title-group h3 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .app-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .app-badge-webgl {
+      background: rgba(147, 51, 234, 0.18);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #c084fc;
+    }
+
+    .app-badge-status {
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid rgba(0, 245, 184, 0.45);
+      color: var(--accent);
+    }
+
+    .badge-dot-live {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+      animation: blip 1.8s infinite ease-in-out;
+    }
+
+    .app-launch-btn {
+      padding: 13px 26px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #00f5b8 0%, #00b4d8 100%);
+      color: #030712 !important;
+      box-shadow: 0 0 25px rgba(0, 245, 184, 0.35);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .app-launch-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0, 245, 184, 0.6);
+      filter: brightness(1.12);
+    }
+
+    .app-summary-text {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      max-width: 980px;
+    }
+
+    /* Live Telemetry Bar inside Card */
+    .app-telemetry-banner {
+      background: rgba(6, 10, 16, 0.95);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .telemetry-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .telemetry-tag {
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    .telemetry-value {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .telemetry-value-purple {
+      color: #c084fc;
+      font-weight: 700;
+    }
+
+    /* 12 Tabs & Features Grid */
+    .features-tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .tab-feature-card {
+      background: rgba(10, 15, 24, 0.75);
+      border: 1px solid rgba(0, 245, 184, 0.12);
+      border-radius: 14px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tab-feature-card:hover {
+      border-color: rgba(0, 245, 184, 0.35);
+      transform: translateY(-3px);
+      background: rgba(14, 21, 34, 0.9);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 245, 184, 0.08);
+    }
+
+    .tab-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .tab-icon-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tab-icon {
+      font-size: 18px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 245, 184, 0.08);
+      border: 1px solid rgba(0, 245, 184, 0.22);
+      border-radius: 8px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .tab-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .tab-route {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(240, 253, 244, 0.5);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .tab-feature-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 12px;
+      flex-grow: 1;
+    }
+
+    .tab-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--accent);
+      background: rgba(0, 245, 184, 0.06);
+      border: 1px solid rgba(0, 245, 184, 0.18);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    /* Secondary Companion App Card (Custom Cursors) */
+    .app-secondary-card {
+      background: rgba(13, 18, 28, 0.75);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .app-secondary-card:hover {
+      border-color: var(--glass-border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(0,245,184,0.1);
+    }
+
   </style>
 
     
@@ -1854,7 +2159,312 @@
       transition: opacity 0.4s ease, transform 0.4s ease;
       box-shadow: 0 0 6px #00f5b8;
     }
-</style>
+
+    /* ==========================================================================
+       OTHER FEATURES & ECOSYSTEM APPS SECTION
+       ========================================================================== */
+    .other-apps-section {
+      padding: 90px 0 70px;
+      position: relative;
+    }
+
+    .app-hero-card {
+      background: linear-gradient(145deg, rgba(13, 20, 32, 0.9), rgba(8, 12, 19, 0.96));
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 245, 184, 0.08);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 32px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .app-hero-card:hover {
+      border-color: var(--glass-border-hover);
+      box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 245, 184, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .app-hero-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #9333ea 0%, #00f5b8 50%, #00b4d8 100%);
+    }
+
+    .app-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .app-card-identity {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .app-icon-box {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(0, 245, 184, 0.25));
+      border: 1.5px solid rgba(168, 85, 247, 0.5);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4), inset 0 0 15px rgba(0, 245, 184, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .app-icon-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+
+    .app-title-group h3 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .app-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .app-badge-webgl {
+      background: rgba(147, 51, 234, 0.18);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #c084fc;
+    }
+
+    .app-badge-status {
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid rgba(0, 245, 184, 0.45);
+      color: var(--accent);
+    }
+
+    .badge-dot-live {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+      animation: blip 1.8s infinite ease-in-out;
+    }
+
+    .app-launch-btn {
+      padding: 13px 26px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #00f5b8 0%, #00b4d8 100%);
+      color: #030712 !important;
+      box-shadow: 0 0 25px rgba(0, 245, 184, 0.35);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .app-launch-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0, 245, 184, 0.6);
+      filter: brightness(1.12);
+    }
+
+    .app-summary-text {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      max-width: 980px;
+    }
+
+    /* Live Telemetry Bar inside Card */
+    .app-telemetry-banner {
+      background: rgba(6, 10, 16, 0.95);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .telemetry-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .telemetry-tag {
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    .telemetry-value {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .telemetry-value-purple {
+      color: #c084fc;
+      font-weight: 700;
+    }
+
+    /* 12 Tabs & Features Grid */
+    .features-tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .tab-feature-card {
+      background: rgba(10, 15, 24, 0.75);
+      border: 1px solid rgba(0, 245, 184, 0.12);
+      border-radius: 14px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tab-feature-card:hover {
+      border-color: rgba(0, 245, 184, 0.35);
+      transform: translateY(-3px);
+      background: rgba(14, 21, 34, 0.9);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 245, 184, 0.08);
+    }
+
+    .tab-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .tab-icon-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tab-icon {
+      font-size: 18px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 245, 184, 0.08);
+      border: 1px solid rgba(0, 245, 184, 0.22);
+      border-radius: 8px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .tab-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .tab-route {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(240, 253, 244, 0.5);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .tab-feature-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 12px;
+      flex-grow: 1;
+    }
+
+    .tab-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--accent);
+      background: rgba(0, 245, 184, 0.06);
+      border: 1px solid rgba(0, 245, 184, 0.18);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    /* Secondary Companion App Card (Custom Cursors) */
+    .app-secondary-card {
+      background: rgba(13, 18, 28, 0.75);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .app-secondary-card:hover {
+      border-color: var(--glass-border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(0,245,184,0.1);
+    }
+
+  </style>
 </head>
 <body>
 
@@ -1866,6 +2476,17 @@
     </div>
 
     <div class="tcm-section-label">PRIMARY ACTIONS</div>
+    <a href="../echonode/" class="tcm-item" target="_blank" rel="noopener noreferrer" onclick="closeContextMenu()">
+      <span class="tcm-icon">⛏</span>
+      <span class="tcm-text">EchoNode Minecraft Cloud</span>
+      <span class="tcm-key">APP ↗</span>
+    </a>
+    <a href="../windows/cursor-download.html" class="tcm-item" onclick="closeContextMenu()">
+      <span class="tcm-icon">🖱</span>
+      <span class="tcm-text">Tactical Cursor Suite</span>
+      <span class="tcm-key">UI</span>
+    </a>
+
     
     <a href="../windows/download.html" class="tcm-item" target="_blank" onclick="closeContextMenu()">
       <span class="tcm-icon">⬇</span>
@@ -1969,6 +2590,7 @@
         <a href="#capabilities" data-i18n="nav_capabilities">Capabilities</a>
         <a href="#architecture" data-i18n="nav_how">How It Works</a>
         <a href="#feeds" data-i18n="nav_feeds">Live Feeds</a>
+        <a href="#other-apps">Other Features/Apps</a>
       </nav>
 
       <div class="nav-actions">
@@ -1980,7 +2602,7 @@
         </select>
         <a href="#live-preview" class="btn-ghost" data-i18n="nav_sim">Live Simulation</a>
         <a href="../windows/download.html" class="btn-primary" target="_blank" data-i18n="nav_download">Download Setup &rarr;</a>
-        <a href="../windows/cursor-download.html" class="btn-primary" style="background: rgba(0, 245, 184, 0.15); border: 1px solid #00f5b8; color: #00f5b8;">Other Services ⚙️</a>
+        <a href="#other-apps" class="btn-primary" style="background: rgba(0, 245, 184, 0.15); border: 1px solid #00f5b8; color: #00f5b8;">Other Features & Apps ⚡</a>
       </div>
     </div>
   </header>
@@ -2333,6 +2955,320 @@
     </div>
   </section>
 
+  
+  <!-- Other Features & Ecosystem Applications -->
+  <section class="other-apps-section reveal-on-scroll" id="other-apps">
+    <div class="container">
+      <span class="section-tag">// Sovereign Cloud Ecosystem</span>
+      <h2 class="section-title">Other Features & Cloud Applications</h2>
+      <p class="section-desc">Explore sovereign cloud infrastructure suites, specialized dedicated servers, and custom desktop toolchains developed for seamless operational deployments.</p>
+
+      <!-- Primary Featured Card: EchoNode Web -->
+      <div class="app-hero-card">
+        <div class="app-card-top">
+          <div class="app-card-identity">
+            <div class="app-icon-box">
+              <img src="../echonode/server-icon.png" alt="EchoNode Icon" onerror="this.onerror=null; this.parentElement.innerHTML='⛏️';">
+            </div>
+            <div class="app-title-group">
+              <h3>
+                EchoNode Web &mdash; 24/7 Minecraft Cloud Manager
+              </h3>
+              <div class="app-badges">
+                <span class="app-badge app-badge-status"><span class="badge-dot-live"></span> 3D WebGL &bull; 24/7 CI/CD Host</span>
+                <span class="app-badge app-badge-webgl">Sky Heaven MC &bull; Paper 1.20+</span>
+                <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">playit.gg Tunnel Ready</span>
+              </div>
+            </div>
+          </div>
+          <a href="../echonode/" target="_blank" rel="noopener noreferrer" class="btn app-launch-btn">
+            <span>Launch EchoNode Web ↗</span>
+          </a>
+        </div>
+
+        <p class="app-summary-text">
+          A custom-engineered, sovereign Minecraft Cloud Server Management Suite featuring live terminal log streaming, interactive 3D WebGL background models, automated continuous 24/7 GitHub Actions CI/CD hosting with playit.gg tunneling, advanced MOTD typography designer, full multi-dimensional management, and native Antigravity AI server diagnostics.
+        </p>
+
+        <!-- Live Telemetry Bar -->
+        <div class="app-telemetry-banner">
+          <div class="telemetry-item">
+            <span class="telemetry-tag">Engine:</span>
+            <span class="telemetry-value">3D WebGL / Three.js</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-tag">Host Pipeline:</span>
+            <span class="telemetry-value">GitHub Actions 24/7 CI/CD</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-tag">Live TPS:</span>
+            <span class="telemetry-value">20.0 (100% Stability)</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-tag">Active Models:</span>
+            <span class="telemetry-value-purple">5 Voxel Models (Parallax Float)</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-tag">Access:</span>
+            <span class="telemetry-value" style="color: #60a5fa;">Direct Web Console</span>
+          </div>
+        </div>
+
+        <!-- 12 Tabs & Features Grid -->
+        <div class="features-tabs-grid">
+          
+          <!-- Tab 1: Server Console -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">💻</div>
+                  <div class="tab-name">Server Console</div>
+                </div>
+                <span class="tab-route">/console</span>
+              </div>
+              <p class="tab-feature-desc">Real-time Minecraft terminal with color-coded log streaming, interactive command input (/help, /op, /tps), live gauges, and Start / Restart / Stop controls.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Color Logs</span>
+              <span class="tab-chip">Interactive CLI</span>
+              <span class="tab-chip">Start/Stop/Restart</span>
+            </div>
+          </div>
+
+          <!-- Tab 2: Server Options & MOTD -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">⚙️</div>
+                  <div class="tab-name">Server Options & MOTD</div>
+                </div>
+                <span class="tab-route">/options</span>
+              </div>
+              <p class="tab-feature-desc">Gamemode, PvP, Whitelist & Flight switches with an Advanced MOTD Designer supporting §/& codes, small caps (ᴇхᴀᴍᴘʟᴇ), custom symbols (✦ ⚔ ⛏), and AI gradients.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Property Toggles</span>
+              <span class="tab-chip">MOTD Designer</span>
+              <span class="tab-chip">Color Codes</span>
+            </div>
+          </div>
+
+          <!-- Tab 3: Plugins & Mods Hub -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">🧩</div>
+                  <div class="tab-name">Plugins & Mods Hub</div>
+                </div>
+                <span class="tab-route">/plugins</span>
+              </div>
+              <p class="tab-feature-desc">Comprehensive management of all 33 active plugins (SkyHeavenCapes, SkinsRestorer, Geyser Bedrock cross-play, Floodgate, LuckPerms, EssentialsX) with live search.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">33 Active Plugins</span>
+              <span class="tab-chip">Geyser / Bedrock</span>
+              <span class="tab-chip">One-Click Toggles</span>
+            </div>
+          </div>
+
+          <!-- Tab 4: File Manager -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">📁</div>
+                  <div class="tab-name">File Manager</div>
+                </div>
+                <span class="tab-route">/files</span>
+              </div>
+              <p class="tab-feature-desc">In-browser root filesystem tree and integrated code editor to view and modify server.properties, spigot.yml, and paper-global.yml with instant saving.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Directory Tree</span>
+              <span class="tab-chip">Code Editor</span>
+              <span class="tab-chip">Instant Save</span>
+            </div>
+          </div>
+
+          <!-- Tab 5: Worlds & Dimensions -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">🌍</div>
+                  <div class="tab-name">Worlds & Dimensions</div>
+                </div>
+                <span class="tab-route">/worlds</span>
+              </div>
+              <p class="tab-feature-desc">Tri-dimensional management across Overworld (world), The Nether (world_nether), and The End (world_the_end) with seed viewer, difficulty switcher, and reset tools.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Overworld</span>
+              <span class="tab-chip">The Nether</span>
+              <span class="tab-chip">The End</span>
+            </div>
+          </div>
+
+          <!-- Tab 6: Player & Cape Manager -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">👥</div>
+                  <div class="tab-name">Player & Cape Manager</div>
+                </div>
+                <span class="tab-route">/players</span>
+              </div>
+              <p class="tab-feature-desc">Live player list with active avatar heads, UUIDs, ping, and OP/Kick/Ban management, plus the exclusive SkyHeaven Custom Cape Manager with preview & assignment.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Avatar Heads</span>
+              <span class="tab-chip">OP / Whitelist</span>
+              <span class="tab-chip">Custom Capes</span>
+            </div>
+          </div>
+
+          <!-- Tab 7: Snapshots & Backups -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">💾</div>
+                  <div class="tab-name">Snapshots & Backups</div>
+                </div>
+                <span class="tab-route">/backups</span>
+              </div>
+              <p class="tab-feature-desc">One-click server snapshots, automated backup schedules, storage usage metrics, and instant restore points for zero data loss during server operations.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Instant Snapshot</span>
+              <span class="tab-chip">Auto Schedule</span>
+              <span class="tab-chip">Restore Points</span>
+            </div>
+          </div>
+
+          <!-- Tab 8: 24/7 Hosting & CI/CD -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">⚡</div>
+                  <div class="tab-name">24/7 Hosting & CI/CD</div>
+                </div>
+                <span class="tab-route">/uptime</span>
+              </div>
+              <p class="tab-feature-desc">Synchronized with GitHub (ZebloYT/Sky-Heaven-MC) with continuous 24/7 hosting loop via GitHub Actions and playit.gg tunnel with live runner status card.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">GitHub Actions</span>
+              <span class="tab-chip">playit.gg Tunnel</span>
+              <span class="tab-chip">Runner Telemetry</span>
+            </div>
+          </div>
+
+          <!-- Tab 9: AI Connect / Antigravity -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">🤖</div>
+                  <div class="tab-name">AI Connect / Antigravity</div>
+                </div>
+                <span class="tab-route">/ai</span>
+              </div>
+              <p class="tab-feature-desc">Automated server inspector analyzing plugins, world configurations, and error logs to generate tailored debugging prompts for Antigravity AI engineering.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Log Analyzer</span>
+              <span class="tab-chip">Antigravity Prompts</span>
+              <span class="tab-chip">Auto Debug</span>
+            </div>
+          </div>
+
+          <!-- Tab 10: 3D WebGL Spatial Switcher -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">🧊</div>
+                  <div class="tab-name">3D WebGL Background</div>
+                </div>
+                <span class="tab-route">3D Viewport</span>
+              </div>
+              <p class="tab-feature-desc">Live Three.js background with 5 authentic floating 3D voxel models (Grass Block, Crying Obsidian, Smithing Table, Amethyst Crystal, Netherite Sword) + 2D/3D Spatial Switcher.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Three.js Engine</span>
+              <span class="tab-chip">5 Voxel Models</span>
+              <span class="tab-chip">3D Spatial Stage</span>
+            </div>
+          </div>
+
+          <!-- Tab 11: Logo & Icon Studio -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">🎨</div>
+                  <div class="tab-name">Server Logo Studio</div>
+                </div>
+                <span class="tab-route">Icon Studio</span>
+              </div>
+              <p class="tab-feature-desc">Built-in 64x64 PNG server icon generator with Minecraft presets (Amethyst Void, Royal Crown, Netherite Helm, Emerald Glow) with one-click server-icon.png export.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">64x64 Canvas</span>
+              <span class="tab-chip">Minecraft Presets</span>
+              <span class="tab-chip">Direct Export</span>
+            </div>
+          </div>
+
+          <!-- Tab 12: Tactile Web Audio SFX -->
+          <div class="tab-feature-card">
+            <div>
+              <div class="tab-card-header">
+                <div class="tab-icon-title">
+                  <div class="tab-icon">🔊</div>
+                  <div class="tab-name">Tactile Web Audio SFX</div>
+                </div>
+                <span class="tab-route">Audio Engine</span>
+              </div>
+              <p class="tab-feature-desc">Interactive Web Audio API synthesizer providing tactile haptic sound feedback for button clicks, switches, console commands, and status chimes with mute control.</p>
+            </div>
+            <div class="tab-chips">
+              <span class="tab-chip">Web Audio API</span>
+              <span class="tab-chip">Tactile Feedback</span>
+              <span class="tab-chip">Mute Toggle</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Secondary Card: Custom Cursors Suite -->
+      <div class="app-secondary-card">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="app-icon-box" style="background: rgba(0, 245, 184, 0.15); border-color: rgba(0, 245, 184, 0.4); font-size: 28px; width: 60px; height: 60px;">
+            🖱️
+          </div>
+          <div>
+            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 6px; color: var(--text);">Tactical & Custom Cursors Gallery</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 0; max-width: 650px;">
+              SmartScreen-safe dual-cursor preview gallery (Arrow & Pointer), custom JSZip builder, and the authentic Tactical Orbit mouse follower engine.
+            </p>
+          </div>
+        </div>
+        <a href="../windows/cursor-download.html" class="btn btn-outline" style="padding: 12px 24px; font-size: 13px; border-color: #00f5b8; color: #00f5b8; white-space: nowrap;">
+          Open Cursor Gallery ↗
+        </a>
+      </div>
+
+    </div>
+  </section>
+
   <!-- Bottom Mission Operations Status Banner -->
   <section class="bottom-mission-banner reveal-on-scroll" style="margin: 60px 0 110px;">
     <div class="container" style="text-align: center; max-width: 860px; margin: 0 auto; background: rgba(7, 14, 24, 0.7); border: 1px solid rgba(0, 245, 184, 0.18); border-radius: 20px; padding: 50px 36px; backdrop-filter: blur(16px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);">
@@ -2344,7 +3280,7 @@
       <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
         <a href="#interface" class="btn btn-primary" style="padding: 13px 30px; font-size: 13px;" data-i18n="btn_explore_cop">Explore Live Operations Center ↑</a>
         <a href="../windows/download.html" class="btn btn-outline" style="padding: 13px 30px; font-size: 13px;" target="_blank" data-i18n="btn_download_setup">Download Trendusty Orbit Setup ⬇</a>
-        <a href="../windows/cursor-download.html" class="btn btn-outline" style="padding: 13px 30px; font-size: 13px; border-color: #00f5b8; color: #00f5b8;">Other Services ⚙️</a>
+        <a href="#other-apps" class="btn btn-outline" style="padding: 13px 30px; font-size: 13px; border-color: #00f5b8; color: #00f5b8;">Other Features & Apps ⚡</a>
       </div>
     </div>
   </section>
@@ -2367,6 +3303,8 @@
           <h4 data-i18n="footer_prod">PRODUCT</h4>
           <ul>
             <li><a href="../windows/download.html" target="_blank">Download Setup (.exe)</a></li>
+            <li><a href="../echonode/" target="_blank" rel="noopener noreferrer">EchoNode Cloud Suite ↗</a></li>
+            <li><a href="../windows/cursor-download.html">Custom Cursors Suite</a></li>
             <li><a href="#live-preview">Common Operating Picture</a></li>
             <li><a href="#capabilities">Sensor Capabilities</a></li>
             <li><a href="#feeds">Integrated Feeds</a></li>
