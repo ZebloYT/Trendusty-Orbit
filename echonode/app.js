@@ -941,11 +941,25 @@ class Spatial3DEngine {
     // Mouse drag controls on stage when in 3D
     window.addEventListener("mousedown", (e) => {
       if (!this.is3D) return;
-      // Ignore clicks on inputs/buttons
-      if (["INPUT", "BUTTON", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
+
+      const isInsideWindow = e.target.closest("#spatial-stage") || e.target.closest(".modal-overlay") || e.target.closest(".modal-content-box");
+      const isHeaderTitlebar = e.target.closest(".main-header") && !e.target.closest("button, input, select, textarea, a, .search-palette-trigger, .mode-switcher-container");
+
+      // In 3D mode:
+      // Allow 3D orbit only when:
+      // 1. Dragging the outer background/space (outside #spatial-stage)
+      // 2. Dragging by the top window titlebar (.main-header)
+      // 3. Right-clicking anywhere (e.button === 2)
+      // 4. Holding Alt or Ctrl key while dragging
+      const canOrbit = !isInsideWindow || isHeaderTitlebar || e.button === 2 || e.altKey;
+
+      if (!canOrbit) return;
+
       this.isDragging = true;
+      this.dragButton = e.button;
       this.startX = e.clientX;
       this.startY = e.clientY;
+      document.body.classList.add("is-orbiting-3d");
     });
 
     window.addEventListener("mousemove", (e) => {
@@ -953,12 +967,12 @@ class Spatial3DEngine {
       const dx = e.clientX - this.startX;
       const dy = e.clientY - this.startY;
 
-      if (e.buttons === 2 || e.shiftKey) {
+      if (this.dragButton === 2 || e.buttons === 2 || e.shiftKey) {
         // Pan
         this.targetPanX += dx * 0.8;
         this.targetPanY += dy * 0.8;
       } else {
-        // Rotate (clamp X pitch between -45 and 45 deg)
+        // Rotate (clamp X pitch between -40 and 40 deg)
         this.targetRotY += dx * 0.18;
         this.targetRotX -= dy * 0.18;
         this.targetRotX = Math.max(-40, Math.min(40, this.targetRotX));
@@ -970,18 +984,35 @@ class Spatial3DEngine {
 
     window.addEventListener("mouseup", () => {
       this.isDragging = false;
+      document.body.classList.remove("is-orbiting-3d");
     });
 
-    // Zoom on wheel in 3D
+    // Zoom on wheel in 3D:
+    // When hovering over the window/view-container, let the mouse wheel scroll the content
+    // naturally without zooming the 3D window!
+    // Only zoom the 3D window when scrolling on the outer background or when holding Alt/Ctrl.
     window.addEventListener("wheel", (e) => {
       if (!this.is3D) return;
-      this.targetZoomZ -= e.deltaY * 0.5;
+
+      const isInsideWindow = e.target.closest("#spatial-stage") || e.target.closest(".modal-overlay") || e.target.closest(".modal-content-box");
+
+      // If hovering inside the window and neither Alt nor Ctrl is pressed,
+      // allow normal window content scrolling without zooming the 3D stage!
+      if (isInsideWindow && !e.altKey && !e.ctrlKey) {
+        return;
+      }
+
+      this.targetZoomZ -= e.deltaY * 0.45;
       this.targetZoomZ = Math.max(-450, Math.min(250, this.targetZoomZ));
     }, { passive: true });
 
-    // Prevent context menu on 3D drag
+    // Prevent context menu only when right-dragging 3D camera
     window.addEventListener("contextmenu", (e) => {
-      if (this.is3D) e.preventDefault();
+      if (!this.is3D) return;
+      if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+      if (!e.target.closest("#view-container")) {
+        e.preventDefault();
+      }
     });
 
     this.renderLoop();
@@ -1001,7 +1032,7 @@ class Spatial3DEngine {
       this.targetRotX = 7;
       this.targetRotY = -12;
       this.targetZoomZ = -60;
-      app.showToast("🔮 3D Spatial Mode Active: Drag to rotate, scroll to zoom!", "info");
+      app.showToast("🔮 3D Spatial Mode Active: Drag background to orbit • Scroll background (or Alt+Scroll) to zoom!", "info");
     } else {
       document.body.classList.remove("mode-3d");
       this.btn2d.classList.add("active");
