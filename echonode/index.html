@@ -82,8 +82,8 @@
           <div class="selector-left">
             <div class="selector-avatar" style="overflow: hidden; padding: 0;"><img id="sidebar-server-avatar-img" src="server-icon.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; image-rendering: pixelated;" onerror="this.onerror=null; this.parentElement.innerHTML='☁️';"></div>
             <div>
-              <div class="selector-name" id="display-server-name">SKY HEAVEN MC</div>
-              <div class="selector-badge">1.26.1.2 Purpur</div>
+              <div class="selector-name" id="display-server-name">MY MINECRAFT SERVER</div>
+              <div class="selector-badge" id="sidebar-server-badge">Paper 1.20.4</div>
             </div>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
@@ -94,9 +94,9 @@
           <div class="status-card-glow" id="status-card-glow"></div>
           
           <div class="server-state-row">
-            <div class="status-indicator-pill" id="server-status-pill">
+            <div class="status-indicator-pill offline" id="server-status-pill">
               <span class="status-dot-pulse"></span>
-              <span id="server-status-text">ONLINE</span>
+              <span id="server-status-text">OFFLINE</span>
             </div>
             <button class="server-ip-copy-btn" id="btn-copy-ip" title="Click to copy IP">
               <span id="display-server-ip">play.echonode.net:25565</span>
@@ -125,19 +125,19 @@
             <div>
               <div class="res-row">
                 <span>RAM Usage</span>
-                <span class="res-val" id="val-ram-usage">2.4 GB / 8.0 GB</span>
+                <span class="res-val" id="val-ram-usage">0.0 GB / 4.0 GB</span>
               </div>
               <div class="res-bar-track">
-                <div class="res-bar-fill" id="bar-ram-fill" style="width: 30%;"></div>
+                <div class="res-bar-fill" id="bar-ram-fill" style="width: 0%;"></div>
               </div>
             </div>
             <div>
               <div class="res-row">
                 <span>CPU Load</span>
-                <span class="res-val" id="val-cpu-usage">14%</span>
+                <span class="res-val" id="val-cpu-usage">0%</span>
               </div>
               <div class="res-bar-track">
-                <div class="res-bar-fill" id="bar-cpu-fill" style="width: 14%; background: linear-gradient(90deg, #06b6d4, #10b981);"></div>
+                <div class="res-bar-fill" id="bar-cpu-fill" style="width: 0%;"></div>
               </div>
             </div>
           </div>
@@ -152,7 +152,7 @@
               <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <span>Console</span>
             </div>
-            <span class="nav-badge-pill" id="badge-tps">20.0 TPS</span>
+            <span class="nav-badge-pill" id="badge-tps">Offline</span>
           </button>
 
           <button class="nav-item-btn" data-tab="options">
@@ -162,12 +162,20 @@
             </div>
           </button>
 
+          <button class="nav-item-btn" data-tab="version">
+            <div class="nav-item-left">
+              <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+              <span>Software &amp; Version</span>
+            </div>
+            <span class="nav-badge-pill highlight" id="badge-server-version">Paper 1.20.4</span>
+          </button>
+
           <button class="nav-item-btn" data-tab="plugins">
             <div class="nav-item-left">
               <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span>
               <span>Plugins</span>
             </div>
-            <span class="nav-badge-pill highlight" id="badge-plugins-count">33</span>
+            <span class="nav-badge-pill highlight" id="badge-plugins-count">0</span>
           </button>
 
           <button class="nav-item-btn" data-tab="files">
@@ -182,7 +190,7 @@
               <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
               <span>Worlds</span>
             </div>
-            <span class="nav-badge-pill">3 Dims</span>
+            <span class="nav-badge-pill" id="badge-worlds-count">0 Dims</span>
           </button>
 
           <button class="nav-item-btn" data-tab="players">
@@ -190,7 +198,7 @@
               <span class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
               <span>Players</span>
             </div>
-            <span class="nav-badge-pill" id="badge-players-count">3 Online</span>
+            <span class="nav-badge-pill" id="badge-players-count">0 Online</span>
           </button>
 
           <button class="nav-item-btn" data-tab="backups">
@@ -246,15 +254,9 @@
           </div>
 
           <div class="navbar-stats">
-            <div class="stat-chip tps">
-              <span>TPS</span> 20.0
-            </div>
-            <div class="stat-chip ping">
-              <span>PING</span> 24ms
-            </div>
-            <div class="stat-chip">
-              <span>UPTIME</span> 14h 28m
-            </div>
+            <div class="stat-chip tps" id="top-stat-tps"><span>TPS</span> --</div>
+            <div class="stat-chip ping" id="top-stat-ping"><span>PING</span> --</div>
+            <div class="stat-chip" id="top-stat-uptime"><span>UPTIME</span> 0h 0m (Offline)</div>
           </div>
 
           <div class="navbar-right">
@@ -291,28 +293,28 @@
                 <div class="metric-icon-box ram">⚡</div>
                 <div class="metric-details">
                   <h4>Memory Allocated</h4>
-                  <div class="metric-number" id="metric-ram-live">2.4 / 8.0 GB</div>
+                  <div class="metric-number" id="metric-ram-live">0.0 / 4.0 GB</div>
                 </div>
               </div>
               <div class="metric-card">
                 <div class="metric-icon-box cpu">⚙️</div>
                 <div class="metric-details">
                   <h4>Processor Load</h4>
-                  <div class="metric-number" id="metric-cpu-live">14%</div>
+                  <div class="metric-number" id="metric-cpu-live">0%</div>
                 </div>
               </div>
               <div class="metric-card">
                 <div class="metric-icon-box tps">🟢</div>
                 <div class="metric-details">
                   <h4>Ticks Per Second</h4>
-                  <div class="metric-number">20.0 TPS (12ms)</div>
+                  <div class="metric-number" id="metric-tps-live">-- (Offline)</div>
                 </div>
               </div>
               <div class="metric-card">
                 <div class="metric-icon-box players">🎮</div>
                 <div class="metric-details">
                   <h4>Active Players</h4>
-                  <div class="metric-number" id="metric-players-live">3 / 50 Online</div>
+                  <div class="metric-number" id="metric-players-live">0 / 20 Online</div>
                 </div>
               </div>
             </div>
@@ -326,7 +328,7 @@
                     <span class="dot yellow"></span>
                     <span class="dot green"></span>
                   </div>
-                  <span class="terminal-label">purpur-server@echonode: ~ /terminal</span>
+                  <span class="terminal-label">paper-server@echonode: ~ /terminal</span>
                 </div>
                 <div class="terminal-actions">
                   <button class="term-btn" id="btn-clear-term">
@@ -366,6 +368,25 @@
               <p>Configure gameplay settings, max players, world difficulty, and message of the day (MOTD).</p>
             </div>
 
+            <!-- Software & Version Quick Banner -->
+            <div class="content-card software-quick-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                  <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                    📦
+                  </div>
+                  <div>
+                    <div style="font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); color: #38bdf8; font-weight: 700;">Active Software &amp; Version</div>
+                    <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 2px 0 0 0;" id="options-active-version-display">Paper 1.20.4</h3>
+                    <p style="font-size: 12px; color: #94a3b8; margin: 2px 0 0 0;">Zero worlds or player saves generated. Switch software or target release anytime.</p>
+                  </div>
+                </div>
+                <button class="btn-primary" id="btn-open-version-from-options" style="padding: 9px 18px; font-size: 13px;">
+                  <span>Change Software / Version 🔄</span>
+                </button>
+              </div>
+            </div>
+
                                     <!-- ==========================================================
                  SERVER LOGO & ICON STUDIO (64x64 PNG)
                  ========================================================== -->
@@ -398,8 +419,8 @@
                     <div class="mini-mc-slot">
                       <img id="img-server-icon-mini" src="server-icon.png" alt="Mini Icon" style="width: 32px; height: 32px; border-radius: 4px; image-rendering: pixelated; object-fit: cover;">
                       <div>
-                        <div style="font-size: 12px; font-weight: bold; color: #fff;" id="icon-display-name">SKY HEAVEN MC</div>
-                        <div style="font-size: 10px; color: #55ff55;">● 20.0 TPS • 1.26.1.2</div>
+                        <div style="font-size: 12px; font-weight: bold; color: #fff;" id="icon-display-name">MY MINECRAFT SERVER</div>
+                        <div style="font-size: 10px; color: #94a3b8;" id="icon-display-sub">● Offline • 1.20.4</div>
                       </div>
                     </div>
                   </div>
@@ -472,9 +493,9 @@
                 </div>
                 <div class="mc-entry-middle">
                   <div class="mc-entry-title-row">
-                    <span class="mc-entry-name" id="preview-server-name">SKY HEAVEN MC</span>
+                    <span class="mc-entry-name" id="preview-server-name">MY MINECRAFT SERVER</span>
                     <div class="mc-entry-ping-box">
-                      <span class="mc-ping-players" id="display-preview-players">3/50</span>
+                      <span class="mc-ping-players" id="display-preview-players">0/20</span>
                       <div class="mc-ping-bars" title="5 ms - 5 bars (Fastest Connection)">
                         <span class="pbar p1"></span>
                         <span class="pbar p2"></span>
@@ -663,7 +684,7 @@
                     <div class="gradient-input-row">
                       <div class="form-group" style="flex: 2;">
                         <label>Text to Gradient</label>
-                        <input type="text" class="form-input" id="grad-text-input" value="SKY HEAVEN MC" placeholder="Enter text for gradient...">
+                        <input type="text" class="form-input" id="grad-text-input" value="MY MINECRAFT SERVER" placeholder="Enter text for gradient...">
                       </div>
                       <div class="form-group" style="flex: 1;">
                         <label>Start Color</label>
@@ -737,7 +758,7 @@
                     <div class="ai-motd-top-row">
                       <div class="form-group" style="flex: 2;">
                         <label>Server Brand / Name</label>
-                        <input type="text" class="form-input" id="ai-motd-name" value="SKY HEAVEN MC" placeholder="e.g. EchoNode SMP">
+                        <input type="text" class="form-input" id="ai-motd-name" value="MY MINECRAFT SERVER" placeholder="e.g. EchoNode SMP">
                       </div>
                       <div class="form-group" style="flex: 2;">
                         <label>Server Theme / Game Mode</label>
@@ -889,6 +910,142 @@
           </section>
 
           <!-- ----------------------------------------------------------------
+               SOFTWARE & VERSION CHANGER TAB
+               ---------------------------------------------------------------- -->
+          <section class="tab-view" id="view-version">
+            <div class="view-header">
+              <h2>Software &amp; Version Changer</h2>
+              <p>Select your preferred Minecraft server engine (Paper, Purpur, Spigot, Vanilla, Fabric, Forge) and target game version.</p>
+            </div>
+
+            <!-- Active Version Overview Card -->
+            <div class="content-card version-active-card">
+              <div class="version-active-glow"></div>
+              <div class="version-active-inner">
+                <div class="version-active-meta">
+                  <div class="version-active-badge">CURRENT ACTIVE ENGINE</div>
+                  <h3 id="active-version-heading">Paper 1.20.4</h3>
+                  <p id="active-version-subtext">Optimized Bukkit/Spigot runtime with lag reduction and exploit patches.</p>
+                </div>
+                <div class="version-status-pills">
+                  <span class="v-pill success">● Clean Installation</span>
+                  <span class="v-pill">Zero Worlds Generated</span>
+                  <span class="v-pill">Java 21 / 25 LTS</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 1: Select Software Engine -->
+            <div class="section-title-row" style="margin: 28px 0 14px 0;">
+              <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin: 0;">1. Choose Server Software</h3>
+              <span style="font-size: 12px; color: #94a3b8;">Click to select engine</span>
+            </div>
+
+            <div class="software-cards-grid" id="software-cards-container">
+              <div class="software-card active" data-software="Paper">
+                <div class="software-card-top">
+                  <span class="software-icon">📄</span>
+                  <span class="software-tag rec">RECOMMENDED</span>
+                </div>
+                <h4>Paper</h4>
+                <p>High-performance Minecraft server with full Bukkit &amp; Spigot plugin support. Fixes vanilla exploits and optimizes tick loop.</p>
+                <div class="software-type-chip">Plugins (Bukkit/Spigot)</div>
+              </div>
+
+              <div class="software-card" data-software="Purpur">
+                <div class="software-card-top">
+                  <span class="software-icon">🟣</span>
+                  <span class="software-tag">EXTREME SPEED</span>
+                </div>
+                <h4>Purpur</h4>
+                <p>High-performance drop-in replacement for Paper with customizable gameplay mechanics, mob riding, and extensive performance settings.</p>
+                <div class="software-type-chip">Plugins &amp; Extra Toggles</div>
+              </div>
+
+              <div class="software-card" data-software="Spigot">
+                <div class="software-card-top">
+                  <span class="software-icon">🚰</span>
+                  <span class="software-tag">CLASSIC</span>
+                </div>
+                <h4>Spigot</h4>
+                <p>The standard, classic Minecraft plugin software powering thousands of community servers with broad compatibility.</p>
+                <div class="software-type-chip">Classic Plugin Engine</div>
+              </div>
+
+              <div class="software-card" data-software="Vanilla">
+                <div class="software-card-top">
+                  <span class="software-icon">🧊</span>
+                  <span class="software-tag">OFFICIAL</span>
+                </div>
+                <h4>Vanilla</h4>
+                <p>Pure, unmodified official Mojang Minecraft server. Standard Minecraft mechanics exactly as designed.</p>
+                <div class="software-type-chip">Pure Minecraft</div>
+              </div>
+
+              <div class="software-card" data-software="Fabric">
+                <div class="software-card-top">
+                  <span class="software-icon">🧵</span>
+                  <span class="software-tag">MODS</span>
+                </div>
+                <h4>Fabric</h4>
+                <p>Modern, lightweight mod loader with fast snapshot updates, high performance, and client-server mod parity.</p>
+                <div class="software-type-chip">Modern Mod Loader</div>
+              </div>
+
+              <div class="software-card" data-software="Forge">
+                <div class="software-card-top">
+                  <span class="software-icon">🔨</span>
+                  <span class="software-tag">HEAVY MODS</span>
+                </div>
+                <h4>Forge</h4>
+                <p>The definitive framework for massive modpacks, custom dimensions, machines, and extensive gameplay overhauls.</p>
+                <div class="software-type-chip">Heavy Modpacks</div>
+              </div>
+            </div>
+
+            <!-- Step 2: Select Minecraft Version -->
+            <div class="section-title-row" style="margin: 28px 0 14px 0;">
+              <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin: 0;">2. Select Minecraft Release</h3>
+              <span style="font-size: 12px; color: #94a3b8;">Choose game release</span>
+            </div>
+
+            <div class="version-pills-grid" id="version-pills-container">
+              <button class="version-select-pill active" data-ver="1.20.4">1.20.4 <span class="v-sub">Latest Stable</span></button>
+              <button class="version-select-pill" data-ver="1.20.2">1.20.2</button>
+              <button class="version-select-pill" data-ver="1.20.1">1.20.1 <span class="v-sub">Popular Modded</span></button>
+              <button class="version-select-pill" data-ver="1.19.4">1.19.4</button>
+              <button class="version-select-pill" data-ver="1.18.2">1.18.2 <span class="v-sub">Caves &amp; Cliffs</span></button>
+              <button class="version-select-pill" data-ver="1.16.5">1.16.5 <span class="v-sub">Nether Update</span></button>
+              <button class="version-select-pill" data-ver="1.12.2">1.12.2 <span class="v-sub">Classic Forge</span></button>
+              <button class="version-select-pill" data-ver="1.8.9">1.8.9 <span class="v-sub">Legacy PvP</span></button>
+            </div>
+
+            <!-- Installation Action Card -->
+            <div class="version-installer-card">
+              <div class="install-info-row">
+                <div>
+                  <div style="font-size: 11px; font-family: var(--font-mono); color: #38bdf8; text-transform: uppercase; font-weight: 700;">Target Configuration</div>
+                  <div style="font-size: 16px; font-weight: 700; color: #fff; margin-top: 3px;" id="install-target-summary">Paper 1.20.4</div>
+                  <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0 0;">Zero worlds or player saves exist yet. Installation will prepare a clean server instance.</p>
+                </div>
+                <button class="btn-primary" id="btn-install-version-action" style="padding: 12px 28px; font-size: 14px;">
+                  <span>⬇ Install Version</span>
+                </button>
+              </div>
+
+              <!-- Animated Install Progress Bar -->
+              <div id="install-progress-wrapper" style="display: none; margin-top: 18px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-family: var(--font-mono); color: #38bdf8; margin-bottom: 6px;">
+                  <span id="install-status-step">Downloading runtime jar...</span>
+                  <span id="install-percent">0%</span>
+                </div>
+                <div class="install-bar-track">
+                  <div class="install-bar-fill" id="install-bar-fill"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- ----------------------------------------------------------------
                3. PLUGINS TAB (Aternos Marketplace)
                ---------------------------------------------------------------- -->
           <section class="tab-view" id="view-plugins">
@@ -972,76 +1129,13 @@
           <!-- ----------------------------------------------------------------
                5. WORLDS TAB
                ---------------------------------------------------------------- -->
-          <section class="tab-view" id="view-worlds">
+                    <section class="tab-view" id="view-worlds">
             <div class="view-header">
               <h2>World Dimensions & Management</h2>
               <p>Manage terrain, seeds, spawn coordinates, and dimensional data for Overworld, Nether, and The End.</p>
             </div>
 
-            <div class="worlds-cards-grid">
-              <!-- Overworld -->
-              <div class="world-card">
-                <div class="world-card-top">
-                  <div class="world-type-icon overworld">🌍</div>
-                  <div class="world-meta">
-                    <h3>world</h3>
-                    <p>Overworld Dimension</p>
-                  </div>
-                </div>
-                <div class="world-specs-list">
-                  <div class="world-spec-row"><span>World Seed</span><strong style="color: #38bdf8;">-3453969471065111142</strong></div>
-                  <div class="world-spec-row"><span>Spawn Location</span><strong>X: -200.5, Y: 68.0, Z: -650.5</strong></div>
-                  <div class="world-spec-row"><span>Region Files (.mca)</span><strong>258 MCA regions</strong></div>
-                  <div class="world-spec-row"><span>Total Size</span><strong>1.42 GB</strong></div>
-                </div>
-                <div class="world-actions-row">
-                  <button class="btn-secondary" style="flex: 1;" onclick="app.downloadWorld('world')">⬇ Download ZIP</button>
-                  <button class="btn-secondary" style="flex: 1;" onclick="app.uploadWorldModal('world')">⬆ Upload</button>
-                </div>
-              </div>
-
-              <!-- Nether -->
-              <div class="world-card">
-                <div class="world-card-top">
-                  <div class="world-type-icon nether">🔥</div>
-                  <div class="world-meta">
-                    <h3>world_nether</h3>
-                    <p>Nether Dimension</p>
-                  </div>
-                </div>
-                <div class="world-specs-list">
-                  <div class="world-spec-row"><span>Dimension Core</span><strong>minecraft:the_nether</strong></div>
-                  <div class="world-spec-row"><span>Structures</span><strong>Fortresses & Bastions Active</strong></div>
-                  <div class="world-spec-row"><span>Region Files (.mca)</span><strong>48 MCA regions</strong></div>
-                  <div class="world-spec-row"><span>Total Size</span><strong>310 MB</strong></div>
-                </div>
-                <div class="world-actions-row">
-                  <button class="btn-secondary" style="flex: 1;" onclick="app.downloadWorld('world_nether')">⬇ Download ZIP</button>
-                  <button class="btn-secondary" style="flex: 1;" onclick="app.uploadWorldModal('world_nether')">⬆ Upload</button>
-                </div>
-              </div>
-
-              <!-- The End -->
-              <div class="world-card">
-                <div class="world-card-top">
-                  <div class="world-type-icon the-end">🌌</div>
-                  <div class="world-meta">
-                    <h3>world_the_end</h3>
-                    <p>The End Dimension</p>
-                  </div>
-                </div>
-                <div class="world-specs-list">
-                  <div class="world-spec-row"><span>Dragon Fight</span><strong>Ready / Respawnable</strong></div>
-                  <div class="world-spec-row"><span>End Cities</span><strong>Elytras & Ships Active</strong></div>
-                  <div class="world-spec-row"><span>Region Files (.mca)</span><strong>77 MCA regions</strong></div>
-                  <div class="world-spec-row"><span>Total Size</span><strong>460 MB</strong></div>
-                </div>
-                <div class="world-actions-row">
-                  <button class="btn-secondary" style="flex: 1;" onclick="app.downloadWorld('world_the_end')">⬇ Download ZIP</button>
-                  <button class="btn-secondary" style="flex: 1;" onclick="app.uploadWorldModal('world_the_end')">⬆ Upload</button>
-                </div>
-              </div>
-            </div>
+            <div id="worlds-view-container"></div>
           </section>
 
           <!-- ----------------------------------------------------------------
@@ -1222,7 +1316,7 @@
               
               <div class="live-scan-badge">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <span>Live Server Scan: 33 Plugins Detected • 3 Worlds • Purpur 1.26.1.2 Core • 24/7 Active</span>
+                <span>Live Server Scan: Clean Zero-Boot State • Paper 1.20.4 • Ready to Configure & Launch</span>
               </div>
             </div>
 
