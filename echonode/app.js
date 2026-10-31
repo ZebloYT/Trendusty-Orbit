@@ -288,6 +288,24 @@ class StateStore {
       if (this.data.worldsGenerated === undefined) this.data.worldsGenerated = true;
       if (this.data.netherEndGenerated === undefined) this.data.netherEndGenerated = true;
     }
+
+    if (!this.data.worldSettings) {
+      this.data.worldSettings = {
+        name: "world",
+        seed: "-376302731",
+        generator: "{}",
+        worldtype: "minecraft:normal",
+        generateStructures: true,
+        datapacks: "initial-enabled-packs=vanilla",
+        hardcore: false,
+        difficulty: "normal",
+        enabledFeatures: "minecraft:vanilla",
+        enabledDatapacks: "vanilla,file/bukkit,paper",
+        disabledDatapacks: "minecart_improvements,redstone_experiments,trade_rebalance",
+        bonusChest: false,
+        gamerules: {}
+      };
+    }
   }
 
   save() {
@@ -1240,6 +1258,9 @@ const MINECRAFT_VERSIONS = [
 class EchoNodeApp {
   constructor() {
     this.currentTab = "console";
+    this.currentWorldsView = "overview"; // 'overview', 'options', 'files'
+    this.gameruleFilter = "all";
+    this.gameruleSearch = "";
     this.cmdHistory = [];
     this.cmdIndex = -1;
     this.activeEraFilter = "all";
@@ -1249,6 +1270,15 @@ class EchoNodeApp {
   }
 
   init() {
+    // 0. Ensure gamerules defaults
+    if (!store.data.worldSettings) store.data.worldSettings = {};
+    if (!store.data.worldSettings.gamerules) store.data.worldSettings.gamerules = {};
+    EchoNodeApp.ATERNOS_GAMERULES.forEach(r => {
+      if (store.data.worldSettings.gamerules[r.id] === undefined) {
+        store.data.worldSettings.gamerules[r.id] = r.default;
+      }
+    });
+
     // 1. Setup UI bindings
     this.bindNavigation();
     this.bindConsole();
@@ -4114,13 +4144,169 @@ ${custom}
   }
 
   // ============================================================================
-  // DEFAULT NORMAL OVERWORLD & DEFERRED NETHER / END DIMENSIONS
+  // 58 OFFICIAL ATERNOS GAMERULES REGISTRY
+  // ============================================================================
+  static get ATERNOS_GAMERULES() {
+    return [
+      { id: "advance_time", tag: "minecraft:advance_time", type: "boolean", default: true, category: "world" },
+      { id: "advance_weather", tag: "minecraft:advance_weather", type: "boolean", default: true, category: "world" },
+      { id: "allow_entering_nether_using_portals", tag: "minecraft:allow_entering_nether_using_portals", type: "boolean", default: true, category: "world" },
+      { id: "block_drops", tag: "minecraft:block_drops", type: "boolean", default: true, category: "drops" },
+      { id: "block_explosion_drop_decay", tag: "minecraft:block_explosion_drop_decay", type: "boolean", default: true, category: "drops" },
+      { id: "command_block_output", tag: "minecraft:command_block_output", type: "boolean", default: true, category: "commands" },
+      { id: "command_blocks_work", tag: "minecraft:command_blocks_work", type: "boolean", default: true, category: "commands" },
+      { id: "drowning_damage", tag: "minecraft:drowning_damage", type: "boolean", default: true, category: "damage" },
+      { id: "elytra_movement_check", tag: "minecraft:elytra_movement_check", type: "boolean", default: true, category: "movement" },
+      { id: "ender_pearls_vanish_on_death", tag: "minecraft:ender_pearls_vanish_on_death", type: "boolean", default: true, category: "damage" },
+      { id: "entity_drops", tag: "minecraft:entity_drops", type: "boolean", default: true, category: "drops" },
+      { id: "fall_damage", tag: "minecraft:fall_damage", type: "boolean", default: true, category: "damage" },
+      { id: "fire_damage", tag: "minecraft:fire_damage", type: "boolean", default: true, category: "damage" },
+      { id: "fire_spread_radius_around_player", tag: "minecraft:fire_spread_radius_around_player", type: "number", default: 128, category: "world" },
+      { id: "forgive_dead_players", tag: "minecraft:forgive_dead_players", type: "boolean", default: true, category: "mobs" },
+      { id: "freeze_damage", tag: "minecraft:freeze_damage", type: "boolean", default: true, category: "damage" },
+      { id: "global_sound_events", tag: "minecraft:global_sound_events", type: "boolean", default: true, category: "world" },
+      { id: "immediate_respawn", tag: "minecraft:immediate_respawn", type: "boolean", default: false, category: "player" },
+      { id: "keep_inventory", tag: "minecraft:keep_inventory", type: "boolean", default: false, category: "player" },
+      { id: "lava_source_conversion", tag: "minecraft:lava_source_conversion", type: "boolean", default: false, category: "world" },
+      { id: "limited_crafting", tag: "minecraft:limited_crafting", type: "boolean", default: false, category: "player" },
+      { id: "locator_bar", tag: "minecraft:locator_bar", type: "boolean", default: true, category: "player" },
+      { id: "log_admin_commands", tag: "minecraft:log_admin_commands", type: "boolean", default: true, category: "commands" },
+      { id: "max_block_modifications", tag: "minecraft:max_block_modifications", type: "number", default: 32768, category: "commands" },
+      { id: "max_command_forks", tag: "minecraft:max_command_forks", type: "number", default: 65536, category: "commands" },
+      { id: "max_command_sequence_length", tag: "minecraft:max_command_sequence_length", type: "number", default: 65536, category: "commands" },
+      { id: "max_entity_cramming", tag: "minecraft:max_entity_cramming", type: "number", default: 24, category: "mobs" },
+      { id: "max_snow_accumulation_height", tag: "minecraft:max_snow_accumulation_height", type: "number", default: 1, category: "world" },
+      { id: "mob_drops", tag: "minecraft:mob_drops", type: "boolean", default: true, category: "drops" },
+      { id: "mob_explosion_drop_decay", tag: "minecraft:mob_explosion_drop_decay", type: "boolean", default: true, category: "drops" },
+      { id: "mob_griefing", tag: "minecraft:mob_griefing", type: "boolean", default: true, category: "mobs" },
+      { id: "natural_health_regeneration", tag: "minecraft:natural_health_regeneration", type: "boolean", default: true, category: "player" },
+      { id: "player_movement_check", tag: "minecraft:player_movement_check", type: "boolean", default: true, category: "movement" },
+      { id: "players_nether_portal_creative_delay", tag: "minecraft:players_nether_portal_creative_delay", type: "number", default: 0, category: "world" },
+      { id: "players_nether_portal_default_delay", tag: "minecraft:players_nether_portal_default_delay", type: "number", default: 80, category: "world" },
+      { id: "players_sleeping_percentage", tag: "minecraft:players_sleeping_percentage", type: "number", default: 100, category: "player" },
+      { id: "projectiles_can_break_blocks", tag: "minecraft:projectiles_can_break_blocks", type: "boolean", default: true, category: "world" },
+      { id: "pvp", tag: "minecraft:pvp", type: "boolean", default: true, category: "player" },
+      { id: "raids", tag: "minecraft:raids", type: "boolean", default: true, category: "mobs" },
+      { id: "random_tick_speed", tag: "minecraft:random_tick_speed", type: "number", default: 3, category: "world" },
+      { id: "reduced_debug_info", tag: "minecraft:reduced_debug_info", type: "boolean", default: false, category: "player" },
+      { id: "respawn_radius", tag: "minecraft:respawn_radius", type: "number", default: 10, category: "player" },
+      { id: "send_command_feedback", tag: "minecraft:send_command_feedback", type: "boolean", default: true, category: "commands" },
+      { id: "show_advancement_messages", tag: "minecraft:show_advancement_messages", type: "boolean", default: true, category: "player" },
+      { id: "show_death_messages", tag: "minecraft:show_death_messages", type: "boolean", default: true, category: "player" },
+      { id: "spawn_mobs", tag: "minecraft:spawn_mobs", type: "boolean", default: true, category: "mobs" },
+      { id: "spawn_monsters", tag: "minecraft:spawn_monsters", type: "boolean", default: true, category: "mobs" },
+      { id: "spawn_patrols", tag: "minecraft:spawn_patrols", type: "boolean", default: true, category: "mobs" },
+      { id: "spawn_phantoms", tag: "minecraft:spawn_phantoms", type: "boolean", default: true, category: "mobs" },
+      { id: "spawn_wandering_traders", tag: "minecraft:spawn_wandering_traders", type: "boolean", default: true, category: "mobs" },
+      { id: "spawn_wardens", tag: "minecraft:spawn_wardens", type: "boolean", default: true, category: "mobs" },
+      { id: "spawner_blocks_work", tag: "minecraft:spawner_blocks_work", type: "boolean", default: true, category: "mobs" },
+      { id: "spectators_generate_chunks", tag: "minecraft:spectators_generate_chunks", type: "boolean", default: true, category: "world" },
+      { id: "spread_vines", tag: "minecraft:spread_vines", type: "boolean", default: true, category: "world" },
+      { id: "tnt_explodes", tag: "minecraft:tnt_explodes", type: "boolean", default: true, category: "world" },
+      { id: "tnt_explosion_drop_decay", tag: "minecraft:tnt_explosion_drop_decay", type: "boolean", default: false, category: "drops" },
+      { id: "universal_anger", tag: "minecraft:universal_anger", type: "boolean", default: false, category: "mobs" },
+      { id: "water_source_conversion", tag: "minecraft:water_source_conversion", type: "boolean", default: true, category: "world" }
+    ];
+  }
+
+  // ============================================================================
+  // ATERNOS-STYLE WORLDS SUITE • WORLD OPTIONS • FILES & 58 GAMERULES
   // ============================================================================
   bindWorlds() {
     const container = document.getElementById("worlds-view-container");
     if (!container) return;
 
+    // View navigation & action buttons
     container.addEventListener("click", (e) => {
+      // 1. Navigation to Options
+      const gotoOptions = e.target.closest("#btn-world-goto-options, .btn-goto-world-options");
+      if (gotoOptions) {
+        sfx.playClick();
+        this.currentWorldsView = "options";
+        this.renderWorldsList();
+        return;
+      }
+
+      // 2. Navigation to Files
+      const gotoFiles = e.target.closest("#btn-world-goto-files, .btn-goto-world-files");
+      if (gotoFiles) {
+        sfx.playClick();
+        this.currentWorldsView = "files";
+        this.renderWorldsList();
+        return;
+      }
+
+      // 3. Navigation Back to Worlds Overview
+      const backMain = e.target.closest("#btn-worlds-back-main");
+      if (backMain) {
+        sfx.playClick();
+        this.currentWorldsView = "overview";
+        this.renderWorldsList();
+        return;
+      }
+
+      // 4. Force Upgrade action
+      const forceUpgrade = e.target.closest("#btn-world-force-upgrade");
+      if (forceUpgrade) {
+        sfx.playClick();
+        this.appendLog("system", "[World Upgrader] ⚡ Executing --forceUpgrade --eraseCache on dimension 'world'...");
+        this.appendLog("info", "[World Upgrader] Converting chunk data from legacy format to current chunk format...");
+        this.appendLog("info", "[World Upgrader] Converted 100% of region chunks. Chunk cache purged.");
+        this.appendLog("success", "[World Upgrader] ✓ World force upgrade completed in 840ms!");
+        sfx.playSuccess();
+        this.showToast("Force upgrade completed for world!", "success");
+        return;
+      }
+
+      // 5. Optimize action
+      const optimize = e.target.closest("#btn-world-optimize");
+      if (optimize) {
+        sfx.playClick();
+        this.appendLog("system", "[World Optimizer] 🧹 Analyzing chunk cache and entity tables for dimension 'world'...");
+        this.appendLog("info", "[World Optimizer] Defragmented 64 chunk files; removed 18 inactive entity records.");
+        this.appendLog("success", "[World Optimizer] ✓ World chunk storage footprint reduced by 14.2%!");
+        sfx.playSuccess();
+        this.showToast("World 'world' optimized successfully!", "success");
+        return;
+      }
+
+      // 6. Download action
+      const download = e.target.closest("#btn-world-download");
+      if (download) {
+        sfx.playClick();
+        this.downloadWorld(store.data.worldSettings?.name || "world");
+        return;
+      }
+
+      // 7. Upload action
+      const upload = e.target.closest("#btn-world-upload");
+      if (upload) {
+        sfx.playClick();
+        this.openModal("modal-upload-world");
+        return;
+      }
+
+      // 8. Open Generate Modal
+      const openGen = e.target.closest("#btn-world-open-generate");
+      if (openGen) {
+        sfx.playClick();
+        this.openModal("modal-generate-world");
+        return;
+      }
+
+      // 9. Files Select / Checkbox toggle
+      const btnSelectAll = e.target.closest("#btn-world-files-select");
+      if (btnSelectAll) {
+        sfx.playClick();
+        const chks = container.querySelectorAll(".chk-world-file-item");
+        const anyUnchecked = Array.from(chks).some(c => !c.checked);
+        chks.forEach(c => c.checked = anyUnchecked);
+        const allChk = container.querySelector("#chk-world-files-all");
+        if (allChk) allChk.checked = anyUnchecked;
+        return;
+      }
+
+      // 10. Simulate 1st player connect for deferred dimensions
       const simBtn = e.target.closest("#btn-simulate-first-player, .btn-generate-player-now");
       if (simBtn) {
         sfx.playClick();
@@ -4128,14 +4314,7 @@ ${custom}
         return;
       }
 
-      const filesBtn = e.target.closest("#btn-goto-world-files, .btn-open-dimension-files");
-      if (filesBtn) {
-        sfx.playClick();
-        this.switchTab("files");
-        this.renderFilesList("/world");
-        return;
-      }
-
+      // 11. Reset deferred dimensions
       const resetBtn = e.target.closest("#btn-reset-nether-end");
       if (resetBtn) {
         sfx.playWarning();
@@ -4144,12 +4323,191 @@ ${custom}
         delete store.data.netherEndGeneratedAt;
         store.save();
         this.renderWorldsList();
-        this.renderFilesList("/");
         this.appendLog("system", "[World Engine] Reset Nether & The End to deferred ungenerated state (Pending 1st player join).");
         this.showToast("Reset Nether & The End dimensions (Waiting for 1st player)", "info");
         return;
       }
     });
+
+    // Form inputs change delegation in Options subview
+    container.addEventListener("change", (e) => {
+      // A. Gamerules change
+      const grInput = e.target.closest("[data-gamerule-id]");
+      if (grInput) {
+        const ruleId = grInput.getAttribute("data-gamerule-id");
+        const isCheckbox = grInput.type === "checkbox";
+        const val = isCheckbox ? grInput.checked : parseInt(grInput.value, 10);
+        
+        if (!store.data.worldSettings) store.data.worldSettings = {};
+        if (!store.data.worldSettings.gamerules) store.data.worldSettings.gamerules = {};
+        store.data.worldSettings.gamerules[ruleId] = val;
+        store.save();
+
+        const tagEl = document.getElementById(`tag-${ruleId}`);
+        if (tagEl) tagEl.textContent = `minecraft:${ruleId}: ${val}`;
+
+        this.appendLog("system", `[Gamerule] Set '${ruleId}' to ${val} (minecraft:${ruleId}: ${val})`);
+        this.showToast(`Updated gamerule ${ruleId} = ${val}`, "info");
+        return;
+      }
+
+      // B. Hardcore toggle
+      if (e.target.id === "opt-world-hardcore") {
+        const val = e.target.checked;
+        if (!store.data.worldSettings) store.data.worldSettings = {};
+        store.data.worldSettings.hardcore = val;
+        store.save();
+        const lbl = document.getElementById("lbl-hardcore");
+        if (lbl) lbl.textContent = `hardcore: ${val}`;
+        this.showToast(`Hardcore mode ${val ? 'enabled' : 'disabled'}`, "info");
+        return;
+      }
+
+      // C. Difficulty select
+      if (e.target.id === "opt-world-difficulty") {
+        const val = e.target.value;
+        if (!store.data.worldSettings) store.data.worldSettings = {};
+        store.data.worldSettings.difficulty = val;
+        store.save();
+        const lbl = document.getElementById("lbl-difficulty");
+        if (lbl) lbl.textContent = `difficulty: ${val}`;
+        this.showToast(`Difficulty set to ${val}`, "info");
+        return;
+      }
+
+      // D. Bonus chest toggle
+      if (e.target.id === "opt-world-bonus-chest") {
+        const val = e.target.checked;
+        if (!store.data.worldSettings) store.data.worldSettings = {};
+        store.data.worldSettings.bonusChest = val;
+        store.save();
+        const lbl = document.getElementById("lbl-bonus-chest");
+        if (lbl) lbl.textContent = `bonus_chest: ${val}`;
+        this.showToast(`Bonus chest ${val ? 'enabled' : 'disabled'}`, "info");
+        return;
+      }
+
+      // E. Generate structures toggle
+      if (e.target.id === "opt-world-structures") {
+        const val = e.target.checked;
+        if (!store.data.worldSettings) store.data.worldSettings = {};
+        store.data.worldSettings.generateStructures = val;
+        store.save();
+        const lbl = document.getElementById("lbl-structures");
+        if (lbl) lbl.textContent = `generate_structures: ${val}`;
+        this.showToast(`Generate structures ${val ? 'enabled' : 'disabled'}`, "info");
+        return;
+      }
+
+      // F. World seed input
+      if (e.target.id === "opt-world-seed") {
+        const val = e.target.value.trim();
+        if (!store.data.worldSettings) store.data.worldSettings = {};
+        store.data.worldSettings.seed = val;
+        store.data.customSeed = val;
+        store.save();
+        const lbl = document.getElementById("lbl-seed");
+        if (lbl) lbl.textContent = `seed: ${val}`;
+        this.showToast(`World seed updated to ${val}`, "info");
+        return;
+      }
+
+      // G. Files table header master checkbox
+      if (e.target.id === "chk-world-files-all") {
+        const checked = e.target.checked;
+        container.querySelectorAll(".chk-world-file-item").forEach(c => c.checked = checked);
+      }
+    });
+
+    // Gamerules live search filtering
+    container.addEventListener("input", (e) => {
+      if (e.target.id === "input-search-gamerules") {
+        const q = e.target.value.trim().toLowerCase();
+        const cards = container.querySelectorAll(".gamerule-card");
+        cards.forEach(c => {
+          const id = (c.getAttribute("data-rule-id") || "").toLowerCase();
+          c.style.display = (!q || id.includes(q)) ? "flex" : "none";
+        });
+      }
+    });
+
+    // Generate World modal submit binding
+    const btnSubmitGen = document.getElementById("btn-submit-generate-world");
+    if (btnSubmitGen) {
+      btnSubmitGen.addEventListener("click", () => {
+        sfx.playSuccess();
+        const name = (document.getElementById("gen-world-name")?.value || "world").trim();
+        const seedRaw = (document.getElementById("gen-world-seed")?.value || "Random").trim();
+        const generator = (document.getElementById("gen-world-generator")?.value || "{}").trim();
+        const worldtype = document.getElementById("gen-world-type")?.value || "minecraft:normal";
+        const structures = !!document.getElementById("gen-world-structures")?.checked;
+        const datapacks = (document.getElementById("gen-world-datapacks")?.value || "initial-enabled-packs=vanilla").trim();
+        const hardcore = !!document.getElementById("gen-world-hardcore")?.checked;
+
+        const seed = (!seedRaw || seedRaw.toLowerCase() === "random") 
+          ? `${Math.floor(Math.random() * 8999999999999999) + 1000000000000000}` 
+          : seedRaw;
+
+        if (!store.data.worldSettings) store.data.worldSettings = {};
+        store.data.worldSettings.name = name;
+        store.data.worldSettings.seed = seed;
+        store.data.worldSettings.generator = generator;
+        store.data.worldSettings.worldtype = worldtype;
+        store.data.worldSettings.generateStructures = structures;
+        store.data.worldSettings.datapacks = datapacks;
+        store.data.worldSettings.hardcore = hardcore;
+        store.data.customSeed = seed;
+        store.data.levelType = worldtype;
+        store.data.worldsGenerated = true;
+        store.save();
+
+        this.closeModal("modal-generate-world");
+        this.appendLog("system", `[World Generator] Deleting previous world terrain... Done.`);
+        this.appendLog("info", `[World Generator] Generated new world '${name}' (Seed: ${seed}, Type: ${worldtype}, Structures: ${structures}, Hardcore: ${hardcore})`);
+        this.appendLog("success", `[World Generator] World '${name}' ready.`);
+        this.showToast(`Generated new world '${name}'!`, "success");
+        this.currentWorldsView = "overview";
+        this.renderWorldsList();
+      });
+    }
+
+    // Upload World modal inputs
+    const btnPickZip = document.getElementById("btn-pick-world-zip");
+    const inputZip = document.getElementById("input-upload-world-zip");
+    if (btnPickZip && inputZip) {
+      btnPickZip.addEventListener("click", () => inputZip.click());
+      inputZip.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          sfx.playSuccess();
+          this.closeModal("modal-upload-world");
+          this.appendLog("system", `[World Upload] Received archive '${file.name}' (${this.formatBytes(file.size)}).`);
+          this.appendLog("info", `[World Upload] Extracted level.dat and region chunks into world directory.`);
+          this.appendLog("success", `[World Upload] World uploaded and reloaded successfully.`);
+          this.showToast(`Uploaded '${file.name}' successfully!`, "success");
+          inputZip.value = "";
+          this.renderWorldsList();
+        }
+      });
+    }
+
+    const btnPickDir = document.getElementById("btn-pick-world-dir");
+    const inputDir = document.getElementById("input-upload-world-dir");
+    if (btnPickDir && inputDir) {
+      btnPickDir.addEventListener("click", () => inputDir.click());
+      inputDir.addEventListener("change", (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+          sfx.playSuccess();
+          this.closeModal("modal-upload-world");
+          this.appendLog("system", `[World Upload] Imported folder containing ${files.length} chunk and world files.`);
+          this.appendLog("success", `[World Upload] World folder loaded into dimension 'world'.`);
+          this.showToast(`Imported world folder (${files.length} files)!`, "success");
+          inputDir.value = "";
+          this.renderWorldsList();
+        }
+      });
+    }
   }
 
   generateNetherAndEndDimensions(playerName = "Player 1") {
@@ -4177,132 +4535,504 @@ ${custom}
     const badgeWorlds = document.getElementById("badge-worlds-count");
     if (!container) return;
 
-    const seed = store.data.customSeed || "782194018249102";
-    const netherEndReady = !!store.data.netherEndGenerated;
-
     if (badgeWorlds) {
-      badgeWorlds.textContent = netherEndReady ? "3 Dims" : "1 Dim";
+      badgeWorlds.textContent = store.data.netherEndGenerated ? "3 Dims" : "1 Dim";
     }
 
+    if (this.currentWorldsView === "options") {
+      this.renderWorldsOptionsView(container);
+    } else if (this.currentWorldsView === "files") {
+      this.renderWorldsFilesView(container);
+    } else {
+      this.renderWorldsOverviewView(container);
+    }
+  }
+
+  renderWorldsOverviewView(container) {
+    const ws = store.data.worldSettings || {};
+    const worldName = ws.name || "world";
+    const seed = ws.seed || store.data.customSeed || "-376302731";
+    const netherEndReady = !!store.data.netherEndGenerated;
+
     container.innerHTML = `
-      <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; background: ${netherEndReady ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.08)'}; border: 1px solid ${netherEndReady ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.25)'}; border-radius: 14px; padding: 14px 20px; gap: 16px; flex-wrap: wrap;">
-        <div>
-          <div style="font-size: 13.5px; color: #4ade80; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-            <span>✓ ${netherEndReady ? 'All 3 Dimensions Active &amp; Generated' : 'Default Normal Overworld Active'}</span>
-            <span style="font-size: 11px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 2px 8px; border-radius: 999px;">Seed: ${seed}</span>
+      <div class="worlds-hero-card">
+        <div class="worlds-hero-top">
+          <div class="worlds-hero-meta">
+            <div class="world-type-icon overworld" style="width: 52px; height: 52px; font-size: 26px;">🌍</div>
+            <div>
+              <div style="font-size: 11px; font-family: var(--font-mono); color: var(--accent); text-transform: uppercase; font-weight: 700;">Active Primary Dimension</div>
+              <h3>${worldName}</h3>
+            </div>
           </div>
-          <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
-            ${netherEndReady 
-              ? `Nether and The End generated on 1st player join (<strong>${store.data.netherEndTriggeredBy || 'Player 1'}</strong>${store.data.netherEndGeneratedAt ? ` at ${store.data.netherEndGeneratedAt}` : ''}).`
-              : `Overworld is generated &amp; running. <strong>The Nether</strong> and <strong>The End</strong> will automatically generate when any 1st player joins.`
-            }
+          <div class="worlds-action-bar">
+            <button class="btn-world-action warning" id="btn-world-force-upgrade" title="Force upgrade chunk format (--forceUpgrade --eraseCache)">
+              <span>⚡ Force upgrade</span>
+            </button>
+            <button class="btn-world-action primary" id="btn-world-optimize" title="Optimize chunk cache and remove unused entities">
+              <span>🧹 Optimize</span>
+            </button>
+            <button class="btn-world-action" id="btn-world-download" title="Download world zip archive">
+              <span>⬇ Download</span>
+            </button>
+            <button class="btn-world-action" id="btn-world-upload" title="Upload world zip or folder">
+              <span>⬆ Upload</span>
+            </button>
+            <button class="btn-world-action" id="btn-world-goto-options" title="Configure world options & gamerules">
+              <span>⚙ Options</span>
+            </button>
+            <button class="btn-world-action" id="btn-world-goto-files" title="Browse world directory files">
+              <span>📁 Files</span>
+            </button>
+            <button class="btn-world-action danger" id="btn-world-open-generate" title="Generate new world (replaces current)">
+              <span>⚡ Generate</span>
+            </button>
           </div>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-          ${!netherEndReady ? `
-            <button class="btn-primary" id="btn-simulate-first-player" style="padding: 7px 16px; font-size: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-              <span>⚡ Connect 1st Player (Test Trigger)</span>
-            </button>
-          ` : `
-            <button class="file-act-btn" style="color: #f87171; padding: 7px 14px; font-size: 12px;" id="btn-reset-nether-end">
-              <span>↺ Reset to Overworld Only</span>
-            </button>
-          `}
-          <button class="file-act-btn" id="btn-goto-world-files" style="padding: 7px 14px; font-size: 12px;">
-            <span>📂 Open /world in Files</span>
-          </button>
+
+        <div class="world-specs-list" style="margin-top: 4px;">
+          <div class="world-spec-row"><span>Dimension Identifier</span><strong>minecraft:overworld</strong></div>
+          <div class="world-spec-row"><span>World Seed</span><strong style="color: #38bdf8;">${seed}</strong></div>
+          <div class="world-spec-row"><span>Difficulty</span><strong style="text-transform: capitalize;">${ws.difficulty || 'normal'}</strong></div>
+          <div class="world-spec-row"><span>Hardcore Mode</span><strong style="color: ${ws.hardcore ? '#f87171' : '#94a3b8'};">${ws.hardcore ? 'Enabled (One Life)' : 'Disabled'}</strong></div>
+          <div class="world-spec-row"><span>Generate Structures</span><strong style="color: #4ade80;">${ws.generateStructures !== false ? 'Enabled' : 'Disabled'}</strong></div>
+          <div class="world-spec-row"><span>Spawn Biome Area</span><strong style="color: #4ade80;">Plains / Forest • Ready</strong></div>
+          <div class="world-spec-row"><span>Dimension Status</span><strong style="color: #4ade80;">● Active &amp; Generated</strong></div>
         </div>
       </div>
 
-      <div class="worlds-cards-grid">
-        <!-- 1. OVERWORLD (Always Active Default Normal) -->
-        <div class="world-card">
-          <div class="world-card-top">
-            <div class="world-type-icon overworld">🌍</div>
-            <div class="world-meta">
-              <h3>world</h3>
-              <p>Overworld Dimension (Default Normal)</p>
+      <!-- Deferred Nether & End Dimensions -->
+      <div style="margin-top: 24px;">
+        <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <span>Sub-Dimensions &amp; Linked Realms</span>
+          <span style="font-size: 12px; color: #94a3b8; font-weight: 500;">
+            ${netherEndReady ? 'All dimensions generated &amp; loaded' : 'Nether &amp; End generate upon 1st player connection'}
+          </span>
+        </div>
+        <div class="worlds-cards-grid">
+          <!-- 2. THE NETHER -->
+          <div class="world-card" style="${!netherEndReady ? 'border-color: rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.6);' : ''}">
+            <div class="world-card-top">
+              <div class="world-type-icon nether">🔥</div>
+              <div class="world-meta">
+                <h3>world_nether</h3>
+                <p>The Nether Dimension</p>
+              </div>
+            </div>
+            <div class="world-specs-list">
+              <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:the_nether</strong></div>
+              <div class="world-spec-row"><span>Environment</span><strong>Wastes, Forests &amp; Fortresses</strong></div>
+              <div class="world-spec-row"><span>Status</span>
+                ${netherEndReady 
+                  ? `<strong style="color: #4ade80;">● Active &amp; Generated</strong>` 
+                  : `<strong style="color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Pending 1st Player Join</strong>`
+                }
+              </div>
+              <div class="world-spec-row"><span>Generation Trigger</span>
+                ${netherEndReady 
+                  ? `<strong style="color: #38bdf8;">Generated via 1st Player Join</strong>` 
+                  : `<span style="color: #94a3b8; font-style: italic;">Generates after 1st player joins</span>`
+                }
+              </div>
+            </div>
+            <div class="world-actions-row">
+              ${!netherEndReady 
+                ? `<button class="btn-primary btn-generate-player-now" style="width: 100%; font-size: 11.5px; padding: 8px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; justify-content: center; cursor: pointer;">⚡ Connect 1st Player to Generate</button>`
+                : `<button class="file-act-btn" style="width: 100%; justify-content: center; color: #ef4444;" disabled>✓ Nether Dimension Active</button>`
+              }
             </div>
           </div>
-          <div class="world-specs-list">
-            <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:overworld</strong></div>
-            <div class="world-spec-row"><span>World Seed</span><strong style="color: #38bdf8;">${seed}</strong></div>
-            <div class="world-spec-row"><span>Terrain Type</span><strong>Default Normal (Biomes &amp; Caves)</strong></div>
-            <div class="world-spec-row"><span>Spawn Area</span><strong style="color: #4ade80;">Plains / Forest • Ready</strong></div>
-            <div class="world-spec-row"><span>Status</span><strong style="color: #4ade80;">● Active &amp; Generated</strong></div>
+
+          <!-- 3. THE END -->
+          <div class="world-card" style="${!netherEndReady ? 'border-color: rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.6);' : ''}">
+            <div class="world-card-top">
+              <div class="world-type-icon the-end">🌌</div>
+              <div class="world-meta">
+                <h3>world_the_end</h3>
+                <p>The End Dimension</p>
+              </div>
+            </div>
+            <div class="world-specs-list">
+              <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:the_end</strong></div>
+              <div class="world-spec-row"><span>Environment</span><strong>Central Island &amp; End Cities</strong></div>
+              <div class="world-spec-row"><span>Status</span>
+                ${netherEndReady 
+                  ? `<strong style="color: #4ade80;">● Active &amp; Generated</strong>` 
+                  : `<strong style="color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Pending 1st Player Join</strong>`
+                }
+              </div>
+              <div class="world-spec-row"><span>Generation Trigger</span>
+                ${netherEndReady 
+                  ? `<strong style="color: #38bdf8;">Generated via 1st Player Join</strong>` 
+                  : `<span style="color: #94a3b8; font-style: italic;">Generates after 1st player joins</span>`
+                }
+              </div>
+            </div>
+            <div class="world-actions-row">
+              ${!netherEndReady 
+                ? `<button class="btn-primary btn-generate-player-now" style="width: 100%; font-size: 11.5px; padding: 8px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; justify-content: center; cursor: pointer;">⚡ Connect 1st Player to Generate</button>`
+                : `<button class="file-act-btn" style="width: 100%; justify-content: center; color: #a855f7;" disabled>✓ The End Dimension Active</button>`
+              }
+            </div>
           </div>
-          <div class="world-actions-row">
-            <button class="file-act-btn btn-open-dimension-files" data-folder="/world" style="width: 100%; justify-content: center;">
-              📂 Browse Overworld Data (/world)
-            </button>
+        </div>
+      </div>
+    `;
+  }
+
+  renderWorldsOptionsView(container) {
+    const ws = store.data.worldSettings || {};
+    const gamerules = ws.gamerules || {};
+    const seed = ws.seed || store.data.customSeed || "-376302731";
+
+    container.innerHTML = `
+      <div class="worlds-breadcrumb-bar">
+        <div class="worlds-breadcrumb-title">
+          <button class="btn-secondary" id="btn-worlds-back-main" style="padding: 6px 14px; font-size: 12px;">← Worlds</button>
+          <span>Worlds</span>
+          <span class="worlds-breadcrumb-crumb">&gt;</span>
+          <span style="color: #38bdf8;">world</span>
+          <span class="worlds-breadcrumb-crumb">&gt;</span>
+          <span style="color: #fff;">Options</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-world-action" id="btn-world-goto-files" style="padding: 6px 14px; font-size: 12px;">📁 Files</button>
+          <button class="btn-world-action danger" id="btn-world-open-generate" style="padding: 6px 14px; font-size: 12px;">⚡ Generate</button>
+        </div>
+      </div>
+
+      <!-- World Configuration Card -->
+      <div class="worlds-hero-card" style="margin-bottom: 24px;">
+        <div style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+          <span>⚙️ World Settings</span>
+          <span style="font-size: 11px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 999px;">server.properties</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+          <!-- Hardcore -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #fff;">Hardcore</div>
+              <code style="font-size: 11px; color: #94a3b8; font-family: var(--font-mono);" id="lbl-hardcore">hardcore: ${ws.hardcore ? 'true' : 'false'}</code>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" id="opt-world-hardcore" ${ws.hardcore ? 'checked' : ''}>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Difficulty -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #fff;">Difficulty</div>
+              <code style="font-size: 11px; color: #94a3b8; font-family: var(--font-mono);" id="lbl-difficulty">difficulty: ${ws.difficulty || 'normal'}</code>
+            </div>
+            <select id="opt-world-difficulty" class="form-input" style="width: 120px; padding: 6px 10px; font-size: 12px;">
+              <option value="peaceful" ${ws.difficulty === 'peaceful' ? 'selected' : ''}>Peaceful</option>
+              <option value="easy" ${ws.difficulty === 'easy' ? 'selected' : ''}>Easy</option>
+              <option value="normal" ${(!ws.difficulty || ws.difficulty === 'normal') ? 'selected' : ''}>Normal</option>
+              <option value="hard" ${ws.difficulty === 'hard' ? 'selected' : ''}>Hard</option>
+            </select>
+          </div>
+
+          <!-- Enabled features -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px;">
+            <div style="font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 4px;">Enabled features</div>
+            <code style="font-size: 11.5px; color: #38bdf8; font-family: var(--font-mono);">enabled_features: ${ws.enabledFeatures || 'minecraft:vanilla'}</code>
+          </div>
+
+          <!-- Enabled datapacks -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px;">
+            <div style="font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 4px;">Enabled datapacks</div>
+            <code style="font-size: 11.5px; color: #4ade80; font-family: var(--font-mono);">Enabled: ${ws.enabledDatapacks || 'vanilla,file/bukkit,paper'}</code>
+          </div>
+
+          <!-- Disabled datapacks -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px;">
+            <div style="font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 4px;">Disabled datapacks</div>
+            <code style="font-size: 11.5px; color: #f87171; font-family: var(--font-mono);">Disabled: ${ws.disabledDatapacks || 'minecart_improvements,redstone_experiments,trade_rebalance'}</code>
+          </div>
+
+          <!-- Seed -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+              <div style="font-size: 13.5px; font-weight: 700; color: #fff;">Seed</div>
+              <code style="font-size: 11px; color: #94a3b8; font-family: var(--font-mono);" id="lbl-seed">seed: ${seed}</code>
+            </div>
+            <input type="text" id="opt-world-seed" class="form-input" value="${seed}" style="padding: 6px 10px; font-size: 12.5px;">
+          </div>
+
+          <!-- Bonus chest -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #fff;">Bonus chest</div>
+              <code style="font-size: 11px; color: #94a3b8; font-family: var(--font-mono);" id="lbl-bonus-chest">bonus_chest: ${ws.bonusChest ? 'true' : 'false'}</code>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" id="opt-world-bonus-chest" ${ws.bonusChest ? 'checked' : ''}>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Generate structures -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #fff;">Generate structures</div>
+              <code style="font-size: 11px; color: #94a3b8; font-family: var(--font-mono);" id="lbl-structures">generate_structures: ${ws.generateStructures !== false ? 'true' : 'false'}</code>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" id="opt-world-structures" ${ws.generateStructures !== false ? 'checked' : ''}>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gamerules Section (All 58 Gamerules) -->
+      <div class="worlds-hero-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 8px;">
+          <div>
+            <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 0;">🎮 Gamerules</h3>
+            <p style="font-size: 12.5px; color: #94a3b8; margin: 2px 0 0 0;">Configure dynamic world rules and runtime gameplay behaviors.</p>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="input-search-gamerules" class="form-input" placeholder="🔍 Search gamerules..." style="width: 240px; font-size: 12px; padding: 7px 12px;">
           </div>
         </div>
 
-        <!-- 2. THE NETHER (Deferred until 1st player joins) -->
-        <div class="world-card" style="${!netherEndReady ? 'border-color: rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.6);' : ''}">
-          <div class="world-card-top">
-            <div class="world-type-icon nether">🔥</div>
-            <div class="world-meta">
-              <h3>world_nether</h3>
-              <p>The Nether Dimension</p>
-            </div>
-          </div>
-          <div class="world-specs-list">
-            <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:the_nether</strong></div>
-            <div class="world-spec-row"><span>Environment</span><strong>Wastes, Forests &amp; Fortresses</strong></div>
-            <div class="world-spec-row"><span>Status</span>
-              ${netherEndReady 
-                ? `<strong style="color: #4ade80;">● Active &amp; Generated</strong>` 
-                : `<strong style="color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Pending 1st Player Join</strong>`
-              }
-            </div>
-            <div class="world-spec-row"><span>Generation Trigger</span>
-              ${netherEndReady 
-                ? `<strong style="color: #38bdf8;">Generated via 1st Player Join</strong>` 
-                : `<span style="color: #94a3b8; font-style: italic;">Generates after 1st player joins</span>`
-              }
-            </div>
-          </div>
-          <div class="world-actions-row">
-            ${!netherEndReady 
-              ? `<button class="btn-primary btn-generate-player-now" style="width: 100%; font-size: 11.5px; padding: 8px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; justify-content: center; cursor: pointer;">⚡ Connect 1st Player to Generate</button>`
-              : `<button class="file-act-btn btn-open-dimension-files" data-folder="/world" style="width: 100%; justify-content: center; color: #ef4444;">🔥 Browse Nether Data (DIM-1)</button>`
-            }
-          </div>
+        <div class="gamerules-grid" id="gamerules-grid-container">
+          ${EchoNodeApp.ATERNOS_GAMERULES.map(rule => {
+            const currentVal = (gamerules[rule.id] !== undefined) ? gamerules[rule.id] : rule.default;
+            return `
+              <div class="gamerule-card" data-rule-id="${rule.id}" data-category="${rule.category}">
+                <div class="gamerule-info">
+                  <div class="gamerule-name">${rule.id}</div>
+                  <div class="gamerule-tag" id="tag-${rule.id}">minecraft:${rule.id}: ${currentVal}</div>
+                </div>
+                <div class="gamerule-control">
+                  ${rule.type === 'boolean' ? `
+                    <label class="switch-toggle">
+                      <input type="checkbox" data-gamerule-id="${rule.id}" ${currentVal ? 'checked' : ''}>
+                      <span class="switch-slider"></span>
+                    </label>
+                  ` : `
+                    <input type="number" data-gamerule-id="${rule.id}" class="form-input" value="${currentVal}" style="width: 85px; padding: 4px 8px; font-size: 12px; text-align: right;">
+                  `}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  renderWorldsFilesView(container) {
+    container.innerHTML = `
+      <div class="worlds-breadcrumb-bar">
+        <div class="worlds-breadcrumb-title">
+          <button class="btn-secondary" id="btn-worlds-back-main" style="padding: 6px 14px; font-size: 12px;">← Worlds</button>
+          <a href="https://aternos.org/files/world" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: none; font-weight: 800;">world</a>
+          <span class="nav-badge-pill" style="font-size: 11px;">8</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-secondary" id="btn-world-files-select" style="padding: 7px 14px; font-size: 12px;">Select</button>
+          <button class="btn-primary" id="btn-world-upload" style="padding: 7px 18px; font-size: 12px;">Upload</button>
+          <button class="btn-world-action" id="btn-world-goto-options" style="padding: 7px 14px; font-size: 12px;">⚙ Options</button>
+        </div>
+      </div>
+
+      <!-- File Browser Table -->
+      <table class="aternos-file-table">
+        <thead>
+          <tr>
+            <th style="width: 40px;"><input type="checkbox" id="chk-world-files-all"></th>
+            <th>Name</th>
+            <th style="width: 140px;">Type</th>
+            <th style="width: 120px; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Folders -->
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/data/" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">📁</span>
+                <span>data</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">Folder</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #38bdf8;">Open</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/datapacks/" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">📁</span>
+                <span>datapacks</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">Folder</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #38bdf8;">Open</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/dimensions/" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">📁</span>
+                <span>dimensions</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">Folder</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #38bdf8;">Open</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/players/" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">📁</span>
+                <span>players</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">Folder</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #38bdf8;">Open</button></td>
+          </tr>
+
+          <!-- Files -->
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/#" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">🖼️</span>
+                <span>icon.png</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">PNG Image</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #38bdf8;">View</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/level.dat" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">📄</span>
+                <span>level.dat</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">NBT File</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #38bdf8;">Inspect</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/#" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">📄</span>
+                <span>level.dat_old</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">Backup NBT</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #38bdf8;">Inspect</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="chk-world-file-item"></td>
+            <td>
+              <a href="https://aternos.org/files/world/#" target="_blank" rel="noopener noreferrer" class="aternos-file-row-link">
+                <span style="font-size: 17px;">🔒</span>
+                <span>session.lock</span>
+              </a>
+            </td>
+            <td style="color: #94a3b8;">Lock File</td>
+            <td style="text-align: right;"><button class="file-act-btn" style="color: #94a3b8;">Locked</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- News Ticker -->
+      <div class="aternos-news-card">
+        <span style="font-size: 18px;">📰</span>
+        <span>Legendary Game Developer John Romero Announces New Shooter With Zelda Inspirations After Finding Publisher And Rehiring Team</span>
+      </div>
+
+      <!-- Knowledgebase Guides -->
+      <div style="margin-top: 24px;">
+        <!-- Guide 1: Installing Datapacks (Minecraft: Java Edition) -->
+        <div class="aternos-guide-card">
+          <h3>
+            <a href="https://support.aternos.org/hc/en-us/articles/360044777411-Installing-Datapacks-Minecraft-Java-Edition" target="_blank" rel="noopener noreferrer">
+              Installing Datapacks (Minecraft: Java Edition) ↗
+            </a>
+          </h3>
+          <p>
+            Datapacks are small add-ons that run without mods or plugins in the Vanilla version of Minecraft. In this article, we'll show you how to easily install a Datapack on your Aternos Minecraft: Java Edition server.
+          </p>
+          <h4>Upload the datapack</h4>
+          <p>
+            To install your datapack on your Aternos server, simply upload it to the <a href="https://aternos.org/worlds/files/datapacks/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8;">datapacks</a> folder of your world. You can click the Upload button or simply use drag and drop.
+          </p>
+          <h4>Check if the datapack is running</h4>
+          <p>
+            After uploading, you should check if the datapack is recognized by the server. Start the server and check the console/log for any errors. You can also type the command <code>/datapack list</code> to see all available datapacks on your server.
+          </p>
+          <a href="https://support.aternos.org/hc/en-us/articles/360044777411-Installing-Datapacks-Minecraft-Java-Edition" target="_blank" rel="noopener noreferrer" style="font-size: 12.5px; color: #38bdf8; font-weight: 700; text-decoration: none;">
+            Read more &rarr;
+          </a>
         </div>
 
-        <!-- 3. THE END (Deferred until 1st player joins) -->
-        <div class="world-card" style="${!netherEndReady ? 'border-color: rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.6);' : ''}">
-          <div class="world-card-top">
-            <div class="world-type-icon the-end">🌌</div>
-            <div class="world-meta">
-              <h3>world_the_end</h3>
-              <p>The End Dimension</p>
-            </div>
-          </div>
-          <div class="world-specs-list">
-            <div class="world-spec-row"><span>Dimension ID</span><strong>minecraft:the_end</strong></div>
-            <div class="world-spec-row"><span>Environment</span><strong>Central Island &amp; End Cities</strong></div>
-            <div class="world-spec-row"><span>Status</span>
-              ${netherEndReady 
-                ? `<strong style="color: #4ade80;">● Active &amp; Generated</strong>` 
-                : `<strong style="color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Pending 1st Player Join</strong>`
-              }
-            </div>
-            <div class="world-spec-row"><span>Generation Trigger</span>
-              ${netherEndReady 
-                ? `<strong style="color: #38bdf8;">Generated via 1st Player Join</strong>` 
-                : `<span style="color: #94a3b8; font-style: italic;">Generates after 1st player joins</span>`
-              }
-            </div>
-          </div>
-          <div class="world-actions-row">
-            ${!netherEndReady 
-              ? `<button class="btn-primary btn-generate-player-now" style="width: 100%; font-size: 11.5px; padding: 8px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; justify-content: center; cursor: pointer;">⚡ Connect 1st Player to Generate</button>`
-              : `<button class="file-act-btn btn-open-dimension-files" data-folder="/world" style="width: 100%; justify-content: center; color: #a855f7;">🌌 Browse End Data (DIM1)</button>`
-            }
-          </div>
+        <!-- Guide 2: Installing addons (Minecraft: Bedrock Edition) -->
+        <div class="aternos-guide-card">
+          <h3>
+            <a href="https://support.aternos.org/hc/en-us/articles/360042095232-Installing-addons-Minecraft-Bedrock-Edition" target="_blank" rel="noopener noreferrer">
+              Installing addons (Minecraft: Bedrock Edition) ↗
+            </a>
+          </h3>
+          <p>
+            Add-ons allow you to enhance your Minecraft: Bedrock Edition gameplay with new features, commands, and functionalities. In this article, we will explain how to easily install add-ons on your Aternos Minecraft: Bedrock Edition server. With addons, Minecraft bedrock edition introduces a new way of expanding your Minecraft experience.
+          </p>
+          <h4>Upload an addon</h4>
+          <p>
+            If you have ever looked at how to install such packs on a server, you will probably have noticed how very complicated and incomprehensible it all is. On Aternos, the installation of addons is as easy as moving a folder into another one. All addons, no matter if it is a behavior pack or a resource pack, can be uploaded directly to the <a href="https://aternos.org/files/packs" target="_blank" rel="noopener noreferrer" style="color: #38bdf8;">packs folder</a> of your server. Just navigate to the <a href="https://aternos.org/files/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8;">files page, ...</a>
+          </p>
+          <a href="https://support.aternos.org/hc/en-us/articles/360042095232-Installing-addons-Minecraft-Bedrock-Edition" target="_blank" rel="noopener noreferrer" style="font-size: 12.5px; color: #38bdf8; font-weight: 700; text-decoration: none;">
+            Read more &rarr;
+          </a>
         </div>
+
+        <!-- Guide 3: Uploading files and FTP access -->
+        <div class="aternos-guide-card">
+          <h3>
+            <a href="https://support.aternos.org/hc/en-us/articles/360027235831-Uploading-files-and-FTP-access" target="_blank" rel="noopener noreferrer">
+              Uploading files and FTP access ↗
+            </a>
+          </h3>
+          <p>
+            Due to various reasons, we can't provide you with FTP access and full file upload capabilities for plugins and mods at Aternos. In this article, we'll offer more insights and present you with alternatives.
+          </p>
+          <h4>Why can't you upload custom plugins/mods/modpacks?</h4>
+          <p>
+            Aternos is a free hosting service that powers servers for millions of users worldwide. To keep this possible, your server only runs when someone is actively using it. If we allowed custom plugin and mod uploads, users could potentially bypass our automatic shutdown system and keep their servers running <a href="https://support.aternos.org/hc/en-us/articles/31771896948253" target="_blank" rel="noopener noreferrer" style="color: #38bdf8;">24/7.</a> This would go against our concept of keeping servers free for everyone and could eventually make that impossible.
+          </p>
+          <p>
+            There's another important reason: Custom mods and plugins could contain malicious ...
+          </p>
+          <a href="https://support.aternos.org/hc/en-us/articles/360027235831-Uploading-files-and-FTP-access" target="_blank" rel="noopener noreferrer" style="font-size: 12.5px; color: #38bdf8; font-weight: 700; text-decoration: none;">
+            Read more &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Aternos Footer -->
+      <div class="aternos-footer-links">
+        <div class="aternos-footer-nav">
+          <a href="https://aternos.gmbh/en/" target="_blank" rel="noopener noreferrer">Company</a>
+          <span>•</span>
+          <a href="https://aternos.gmbh/en/imprint" target="_blank" rel="noopener noreferrer">Imprint</a>
+          <span>•</span>
+          <a href="https://aternos.gmbh/en/aternos/terms" target="_blank" rel="noopener noreferrer">Terms of service</a>
+          <span>•</span>
+          <a href="https://aternos.gmbh/en/aternos/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <span>•</span>
+          <a href="https://aternos.org/files/world/#" target="_blank" rel="noopener noreferrer">Privacy Preferences</a>
+        </div>
+        <div>&copy; 2013-2026 Aternos GmbH</div>
       </div>
     `;
   }
