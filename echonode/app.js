@@ -1294,6 +1294,7 @@ class EchoNodeApp {
       worlds: "World Dimensions",
       players: "Player Management",
       backups: "Snapshots & Backups",
+      access: "Access & User Permissions",
       uptime: "24/7 Hosting & GitHub CI/CD",
       ai: "Antigravity AI Integration"
     };
@@ -3683,6 +3684,7 @@ ${custom}
       { name: "Restart Server", type: "Action", action: () => this.restartServer() },
       { name: "Stop Server", type: "Action", action: () => this.stopServer() },
       { name: "Create Instant Backup", type: "Action", action: () => this.switchTab("backups") },
+      { name: "Go to Access (User Permissions)", type: "Navigation", action: () => this.switchTab("access") },
       { name: "Switch to 3D Spatial Mode", type: "Display", action: () => spatialEngine.setMode("3d") },
       { name: "Switch to 2D Standard Mode", type: "Display", action: () => spatialEngine.setMode("2d") }
     ];
