@@ -6,7 +6,94 @@
 // ============================================================================
 // 1. DATA STORE & STATE MANAGEMENT
 // ============================================================================
-const DEFAULT_STATE = {
+const SKY_HEAVEN_STATE = {
+  serverName: "SKY HEAVEN MC",
+  serverIp: "play.echonode.net:25565",
+  serverVersion: "Purpur 1.26.1.2 (Protocol 775)",
+  status: "online", // 'online', 'offline', 'starting'
+  tps: 20.0,
+  ramUsage: 2.4,
+  ramMax: 8.0,
+  cpuUsage: 14,
+  onlinePlayersCount: 3,
+  maxPlayers: 50,
+  soundEnabled: true,
+  currentMode: "2d", // '2d' or '3d'
+  
+  options: {
+    gamemode: "survival",
+    difficulty: "normal",
+    whitelist: false,
+    pvp: true,
+    nether: true,
+    cmdblocks: true,
+    flight: true,
+    maxPlayers: 50,
+    viewDist: 12,
+    motd: "§b§l✦ §b§lSKY§6§lHEAVEN§a§lMC §8┃ §a§lSURVIVAL SMP\n§eSurvive §8• §bBuild §8• §dExplore §8• §aPlay Together!"
+  },
+
+  plugins: [
+    { id: "essentialsx", name: "EssentialsX", author: "EssentialsX Team", category: "admin", version: "2.22.0", desc: "Essential server commands, teleportation, kits, spawns, and economy engine.", installed: true, icon: "⚡" },
+    { id: "worldguard", name: "WorldGuard", author: "EngineHub", category: "protect", version: "7.0.18", desc: "Protect land areas from griefing, fire, creeper explosions, and unauthorized edits.", installed: true, icon: "🛡️" },
+    { id: "luckperms", name: "LuckPerms", author: "Luck", category: "admin", version: "5.5.71", desc: "Industry-standard permissions manager with web editor and fast rank hierarchy.", installed: true, icon: "👑" },
+    { id: "geyser", name: "Geyser-Spigot", author: "GeyserMC", category: "network", version: "2.12.0", desc: "Enables Bedrock Edition players (mobile, console, Windows 10) to join Java server.", installed: true, icon: "📱" },
+    { id: "floodgate", name: "Floodgate", author: "GeyserMC", category: "network", version: "2.2.5", desc: "Allows Bedrock players to join without needing an official Java Edition account.", installed: true, icon: "🚪" },
+    { id: "viaversion", name: "ViaVersion", author: "ViaVersion", category: "network", version: "5.12.1", desc: "Allows clients running newer Minecraft versions to join older servers.", installed: true, icon: "🔄" },
+    { id: "viabackwards", name: "ViaBackwards", author: "ViaVersion", category: "network", version: "5.12.1", desc: "Allows older Minecraft client versions (down to 1.9) to connect seamlessly.", installed: true, icon: "⏪" },
+    { id: "playit", name: "playit-minecraft-plugin", author: "playit.gg", category: "network", version: "1.1.2", desc: "Zero-port-forwarding public server tunnel with DDoS protection.", installed: true, icon: "🌐" },
+    { id: "worldedit", name: "WorldEdit", author: "EngineHub", category: "world", version: "7.4.2", desc: "Fast in-game voxel building, terraforming, copying, pasting, and brush tools.", installed: true, icon: "🪓" },
+    { id: "coreprotect", name: "CoreProtect", author: "Intelli", category: "protect", version: "24.1", desc: "Fast block logging, inventory inspection, chest audit, and grief rollback.", installed: true, icon: "🔍" },
+    { id: "griefprev", name: "GriefPrevention", author: "RoboMWM", category: "protect", version: "16.18.2", desc: "Self-service land claiming with a golden shovel. Simple for survival players.", installed: true, icon: "🚩" },
+    { id: "vault", name: "Vault", author: "MilkBowl", category: "economy", version: "1.7.3", desc: "Standard permissions, chat, and economy hook bridge for all Minecraft plugins.", installed: true, icon: "🪙" },
+    { id: "economyshop", name: "EconomyShopGUI", author: "Gypopo", category: "economy", version: "7.3.3", desc: "Clean GUI server shop with categorized menus, dynamic prices, and quick buy/sell.", installed: true, icon: "🛒" },
+    { id: "crazyauctions", name: "CrazyAuctions", author: "BadBones", category: "economy", version: "1.3.2", desc: "Player-to-player global auction house and direct player sales market.", installed: true, icon: "⚖️" },
+    { id: "skinsrestorer", name: "SkinsRestorer", author: "xknifer", category: "admin", version: "15.0.1", desc: "Restores custom skins for offline-mode and Bedrock players in multiplayer.", installed: true, icon: "🎭" },
+    { id: "tab", name: "TAB", author: "NEZNAMY", category: "admin", version: "6.1.3", desc: "Configurable player tablist, custom nametag prefixes, suffixes, and scoreboard.", installed: true, icon: "📋" },
+    { id: "decentholo", name: "DecentHolograms", author: "DecentSoft", category: "world", version: "2.10.2", desc: "Lightweight floating text holograms with animations and page cycling.", installed: true, icon: "✨" },
+    { id: "betterrtp", name: "BetterRTP", author: "SuperSniper", category: "world", version: "3.6.13", desc: "Random wilderness teleportation with smart biome and ocean checking.", installed: true, icon: "🎲" },
+    { id: "chunky", name: "Chunky", author: "pop4959", category: "world", version: "1.4.10", desc: "High-performance asynchronous chunk pre-generator to eliminate terrain lag.", installed: true, icon: "🗺️" },
+    { id: "citizens", name: "Citizens", author: "fullwall", category: "world", version: "2.0.35", desc: "Interactive NPC characters, quest givers, shopkeepers, and guards.", installed: true, icon: "🤖" },
+    { id: "papi", name: "PlaceholderAPI", author: "ExtendedClip", category: "admin", version: "2.12.3", desc: "String replacement placeholder expansion library for scoreboard and chat.", installed: true, icon: "🧩" },
+    { id: "eshulkerbox", name: "eShulkerBox", author: "EchoDev", category: "admin", version: "2.1.0", desc: "Open shulker boxes directly from inventory with right-click without placing.", installed: true, icon: "📦" },
+    { id: "viarewind", name: "ViaRewind", author: "Gerrygames", category: "network", version: "4.2.0", desc: "Enables legacy 1.7.2 - 1.8.9 PvP clients to connect to 1.26.1.2 servers.", installed: true, icon: "⏮️" },
+    { id: "skyadmin", name: "SkyHeavenAdmin", author: "EchoNode Custom", category: "admin", version: "1.0.0", desc: "Custom 54-slot GUI admin panel with instant freeze, ban, mute, and smite.", installed: true, icon: "👑" },
+    { id: "skycapes", name: "SkyHeavenCapes", author: "EchoNode Custom", category: "admin", version: "1.2.0", desc: "Custom Mojang cape injector supporting 14 official Minecon & anniversary capes.", installed: true, icon: "🧣" },
+    { id: "skyspawn", name: "SkyHeavenSpawn", author: "EchoNode Custom", category: "world", version: "1.0.0", desc: "Ocean spawn plaza management and monument protection controller.", installed: true, icon: "🌊" },
+    { id: "skysit", name: "SkyHeavenSit", author: "EchoNode Custom", category: "world", version: "1.0.0", desc: "Allows players to sit on stairs, slabs, carpets, and other player heads.", installed: true, icon: "🪑" },
+    { id: "itemedit", name: "ItemEdit", author: "EchoDev", category: "admin", version: "2.4.0", desc: "In-game lore, custom names, unbreakable tags, and enchantment editor.", installed: true, icon: "🗡️" },
+    { id: "openinv", name: "OpenInv", author: "lishid", category: "admin", version: "4.4.2", desc: "Live real-time player inventory and ender chest inspection with armor slots.", installed: true, icon: "🧰" },
+    { id: "axiom", name: "AxiomPaperPlugin", author: "Moulberry", category: "world", version: "1.0.8", desc: "Server bridge for Axiom client building mod with realtime 60 FPS editing.", installed: true, icon: "🏛️" },
+    { id: "echoranks", name: "EchoRanks", author: "EchoNode", category: "admin", version: "1.0.0", desc: "Preconfigured SMP rank ladder: Member, VIP, MVP, Moderator, Admin, Owner.", installed: true, icon: "🎖️" },
+    { id: "esschat", name: "EssentialsXChat", author: "EssentialsX", category: "admin", version: "2.22.0", desc: "Custom chat formatting with LuckPerms prefix/suffix and local chat radius.", installed: true, icon: "💬" },
+    { id: "essspawn", name: "EssentialsXSpawn", author: "EssentialsX", category: "world", version: "2.22.0", desc: "First-join spawn teleportation and custom respawn handling.", installed: true, icon: "📍" }
+  ],
+
+  players: [
+    { name: "amoghpro7473", role: "Owner", type: "op", ping: "18ms", joined: "2026-10-24" },
+    { name: "1", role: "Admin", type: "op", ping: "22ms", joined: "2026-10-25" },
+    { name: "SkyWalker99", role: "Member", type: "whitelist", ping: "38ms", joined: "2026-10-28" }
+  ],
+
+  backups: [
+    { name: "Auto_20261029_1120.zip", date: "Today at 11:20 AM", size: "1.84 GB", type: "Scheduled Auto" },
+    { name: "Manual_PreSetup_Purpur.zip", date: "Oct 28, 2026", size: "1.79 GB", type: "Manual Snapshot" },
+    { name: "Sr_World_Archive_Sync.zip", date: "Oct 27, 2026", size: "1.42 GB", type: "World Archive" }
+  ],
+
+  virtualFiles: {
+    "/server.properties": `# Minecraft server properties\n# Synchronized via EchoNode Web\nserver-port=25565\ngamemode=survival\ndifficulty=normal\npvp=true\nenable-command-block=true\nallow-flight=true\nallow-nether=true\nmax-players=50\nview-distance=12\nsimulation-distance=8\nmotd=\\u00A7b\\u00A7l✦ \\u00A7b\\u00A7lSKY\\u00A76\\u00A7lHEAVEN\\u00A7a\\u00A7lMC \\u00A78\\u2503 \\u00A7a\\u00A7lSURVIVAL SMP\\n\\u00A7eSurvive \\u00A78\\u2022 \\u00A7bBuild \\u00A78\\u2022 \\u00A7dExplore \\u00A78\\u2022 \\u00A7aPlay Together!\nwhite-list=false\nonline-mode=false\nlevel-seed=-3453969471065111142`,
+    "/bukkit.yml": `settings:\n  allow-end: true\n  warn-on-overload: false\n  permissions-file: permissions.yml\n  update-folder: update\n  plugin-profiling: false\n  connection-throttle: 4000\nspawn-limits:\n  monsters: 70\n  animals: 10\n  water-animals: 5\n  water-ambient: 20\n  water-underground-creature: 5\n  axolotls: 5\n  ambient: 15`,
+    "/paper.yml": `# Paper & Purpur High Performance Configuration\ntimings:\n  enabled: true\n  verbose: true\nworld-settings:\n  default:\n    max-auto-save-chunks-per-tick: 24\n    optimize-explosions: true\n    mob-spawner-tick-rate: 2\n    despawn-ranges:\n      soft: 32\n      hard: 96`,
+    "/eula.txt": `# By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\neula=true`
+  },
+
+  videoTutorialUrl: "https://www.youtube.com"
+};
+
+// Load saved state or default
+
+const GUEST_DEFAULT_STATE = {
   serverName: "MY MINECRAFT SERVER",
   serverIp: "play.echonode.net:25565",
   serverVersion: "Paper 1.20.4",
@@ -80,32 +167,129 @@ eula=true`
 };
 
 // Load saved state or default
+
+// Load saved state or default
 class StateStore {
   constructor() {
-    const saved = localStorage.getItem("echonode_state");
-    let parsed = null;
+    this.checkUrlAuth();
+    this.init();
+  }
+
+  checkUrlAuth() {
     try {
-      parsed = saved ? JSON.parse(saved) : null;
+      const params = new URLSearchParams(window.location.search);
+      // Secret owner unlock triggers: ?owner=true, ?owner=7473, ?server=skyheaven, ?admin=amoghpro7473, etc.
+      const ownerParam = params.get("owner");
+      const adminParam = params.get("admin");
+      const userParam = params.get("user");
+      const serverParam = params.get("server");
+
+      if (
+        ownerParam === "true" || ownerParam === "7473" ||
+        adminParam === "7473" || adminParam === "amoghpro7473" ||
+        userParam === "amoghpro7473" || userParam === "ZebloYT" ||
+        serverParam === "skyheaven"
+      ) {
+        localStorage.setItem("echonode_auth_role", "owner");
+        localStorage.setItem("echonode_active_server_id", "skyheaven");
+      }
+
+      // Localhost / local dev auto-recognition
+      if ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") && !localStorage.getItem("echonode_auth_role")) {
+        localStorage.setItem("echonode_auth_role", "owner");
+        localStorage.setItem("echonode_active_server_id", "skyheaven");
+      }
     } catch(e) {}
-    // Reset if it holds old fake data or outdated purpur version
-    if (!parsed || parsed.serverVersion === "Purpur 1.26.1.2 (Protocol 775)" || (parsed.players && parsed.players.some(p => p.name === "amoghpro7473")) || parsed.worldsGenerated === undefined) {
-      parsed = JSON.parse(JSON.stringify(DEFAULT_STATE));
-      localStorage.setItem("echonode_state", JSON.stringify(parsed));
+  }
+
+  isOwner() {
+    return localStorage.getItem("echonode_auth_role") === "owner";
+  }
+
+  setOwner(val) {
+    if (val) {
+      localStorage.setItem("echonode_auth_role", "owner");
+      localStorage.setItem("echonode_active_server_id", "skyheaven");
+    } else {
+      localStorage.setItem("echonode_auth_role", "guest");
+      localStorage.setItem("echonode_active_server_id", "guest_server");
     }
-    this.data = parsed;
-    if (!this.data.plugins) this.data.plugins = DEFAULT_STATE.plugins;
-    if (!this.data.options) this.data.options = DEFAULT_STATE.options;
-    if (this.data.worldsGenerated === undefined) this.data.worldsGenerated = false;
-    if (!this.data.installedSoftware) this.data.installedSoftware = "Paper";
-    if (!this.data.installedVersion) this.data.installedVersion = "1.20.4";
+    this.init();
+  }
+
+  getActiveServerId() {
+    const isOwner = this.isOwner();
+    const stored = localStorage.getItem("echonode_active_server_id");
+    if (!stored) {
+      return isOwner ? "skyheaven" : "guest_server";
+    }
+    // If not owner, never allow active ID to be skyheaven
+    if (!isOwner && stored === "skyheaven") {
+      return "guest_server";
+    }
+    return stored;
+  }
+
+  init() {
+    const isOwner = this.isOwner();
+    const activeId = this.getActiveServerId();
+
+    if (activeId === "skyheaven" && isOwner) {
+      // 👑 OWNER PROFILE: SKY HEAVEN MC
+      let saved = null;
+      try {
+        const s = localStorage.getItem("echonode_skyheaven_state");
+        saved = s ? JSON.parse(s) : null;
+      } catch(e) {}
+      if (!saved) {
+        saved = JSON.parse(JSON.stringify(SKY_HEAVEN_STATE));
+        localStorage.setItem("echonode_skyheaven_state", JSON.stringify(saved));
+      }
+      this.data = saved;
+      this.currentProfile = "skyheaven";
+    } else {
+      // 🌐 GUEST / VISITOR PROFILE: PERSONAL SERVER (Clean Sandbox)
+      let saved = null;
+      try {
+        const s = localStorage.getItem("echonode_guest_state");
+        saved = s ? JSON.parse(s) : null;
+      } catch(e) {}
+      if (!saved) {
+        saved = JSON.parse(JSON.stringify(GUEST_DEFAULT_STATE));
+        localStorage.setItem("echonode_guest_state", JSON.stringify(saved));
+      }
+      this.data = saved;
+      this.currentProfile = "guest_server";
+    }
+
+    if (!this.data.plugins) this.data.plugins = (this.currentProfile === "skyheaven" ? SKY_HEAVEN_STATE.plugins : GUEST_DEFAULT_STATE.plugins);
+    if (!this.data.options) this.data.options = (this.currentProfile === "skyheaven" ? SKY_HEAVEN_STATE.options : GUEST_DEFAULT_STATE.options);
+    if (this.currentProfile === "guest_server" && this.data.worldsGenerated === undefined) {
+      this.data.worldsGenerated = false;
+    }
   }
 
   save() {
     try {
-      localStorage.setItem("echonode_state", JSON.stringify(this.data));
+      if (this.currentProfile === "skyheaven") {
+        localStorage.setItem("echonode_skyheaven_state", JSON.stringify(this.data));
+      } else {
+        localStorage.setItem("echonode_guest_state", JSON.stringify(this.data));
+      }
     } catch (e) {
       console.warn("Storage quota exceeded", e);
     }
+  }
+
+  switchServer(serverId) {
+    if (serverId === "skyheaven") {
+      if (!this.isOwner()) return false;
+      localStorage.setItem("echonode_active_server_id", "skyheaven");
+    } else {
+      localStorage.setItem("echonode_active_server_id", "guest_server");
+    }
+    this.init();
+    return true;
   }
 }
 
@@ -1627,16 +1811,72 @@ class EchoNodeApp {
       });
     }
 
-    // 5. Clicking sidebar server selector navigates to Options tab & scrolls to icon studio
+    // 5. Clicking sidebar server selector opens Multi-Server Switcher Modal!
     const sidebarSelector = document.getElementById("btn-select-server");
     if (sidebarSelector) {
       sidebarSelector.addEventListener("click", () => {
         sfx.playClick();
-        this.switchTab("options");
-        const iconCard = document.getElementById("server-icon-card");
-        if (iconCard) {
-          iconCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        this.openServerSwitcherModal();
+      });
+    }
+
+    // Modal action bindings
+    const btnGuest = document.getElementById("btn-activate-guest");
+    if (btnGuest) {
+      btnGuest.addEventListener("click", (e) => {
+        e.stopPropagation();
+        sfx.playClick();
+        store.switchServer("guest_server");
+        this.reloadServerData();
+        this.showToast("Switched to My Minecraft Server (Personal Workspace)", "success");
+        this.closeModal("modal-server-switcher");
+      });
+    }
+
+    const btnSky = document.getElementById("btn-activate-skyheaven");
+    if (btnSky) {
+      btnSky.addEventListener("click", (e) => {
+        e.stopPropagation();
+        sfx.playClick();
+        if (store.isOwner()) {
+          store.switchServer("skyheaven");
+          this.reloadServerData();
+          this.showToast("Switched to Sky Heaven MC (Owner)", "success");
+          this.closeModal("modal-server-switcher");
+        } else {
+          const passInput = document.getElementById("input-owner-passkey");
+          if (passInput) {
+            passInput.focus();
+            passInput.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
         }
+      });
+    }
+
+    const btnUnlockOwner = document.getElementById("btn-submit-owner-key");
+    const inputPasskey = document.getElementById("input-owner-passkey");
+    if (btnUnlockOwner && inputPasskey) {
+      const submitUnlock = () => {
+        const val = inputPasskey.value.trim().toLowerCase();
+        if (val === "7473" || val === "amoghpro7473" || val === "zebloyt" || val === "admin" || val === "skyheaven") {
+          sfx.playServerChime();
+          store.setOwner(true);
+          store.switchServer("skyheaven");
+          this.reloadServerData();
+          this.showToast("Owner authenticated! Welcome to Sky Heaven MC 👑", "success");
+          inputPasskey.value = "";
+          this.closeModal("modal-server-switcher");
+        } else {
+          sfx.playWarning();
+          this.showToast("Incorrect Owner PIN. Sky Heaven MC is restricted to the owner.", "error");
+          inputPasskey.style.borderColor = "#ef4444";
+          setTimeout(() => { inputPasskey.style.borderColor = ""; }, 1500);
+        }
+      };
+
+      btnUnlockOwner.addEventListener("click", submitUnlock);
+      inputPasskey.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") submitUnlock();
       });
     }
   }
@@ -3061,6 +3301,83 @@ ${custom}
   openModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.add("active");
+  }
+
+  openServerSwitcherModal() {
+    const modal = document.getElementById("modal-server-switcher");
+    if (!modal) return;
+    
+    const isOwner = store.isOwner();
+    const activeId = store.getActiveServerId();
+
+    const guestCard = document.getElementById("switch-item-guest");
+    const skyCard = document.getElementById("switch-item-skyheaven");
+    const btnGuest = document.getElementById("btn-activate-guest");
+    const btnSky = document.getElementById("btn-activate-skyheaven");
+    const authBox = document.getElementById("owner-auth-box");
+
+    if (activeId === "skyheaven") {
+      if (guestCard) guestCard.style.borderColor = "rgba(255, 255, 255, 0.1)";
+      if (skyCard) skyCard.style.borderColor = "#00f5b8";
+      if (btnGuest) { btnGuest.textContent = "Switch"; btnGuest.className = "btn-secondary"; }
+      if (btnSky) { btnSky.textContent = "Active ✓"; btnSky.className = "btn-primary"; }
+      if (authBox) authBox.style.display = "none";
+    } else {
+      if (guestCard) guestCard.style.borderColor = "#38bdf8";
+      if (skyCard) skyCard.style.borderColor = isOwner ? "rgba(0, 245, 184, 0.3)" : "rgba(255, 255, 255, 0.08)";
+      if (btnGuest) { btnGuest.textContent = "Active ✓"; btnGuest.className = "btn-primary"; }
+      if (btnSky) {
+        btnSky.textContent = isOwner ? "Switch" : "Unlock 🔒";
+        btnSky.className = isOwner ? "btn-primary" : "btn-secondary";
+      }
+      if (authBox) authBox.style.display = isOwner ? "none" : "block";
+    }
+
+    this.openModal("modal-server-switcher");
+  }
+
+  reloadServerData() {
+    const nameEl = document.getElementById("display-server-name");
+    if (nameEl) nameEl.textContent = store.data.serverName;
+    const badgeEl = document.getElementById("sidebar-server-badge");
+    if (badgeEl) {
+      if (store.currentProfile === "skyheaven") {
+        badgeEl.innerHTML = '<span style="color: #00f5b8; font-weight: 700;">👑 OWNER</span> • ' + store.data.serverVersion;
+      } else {
+        badgeEl.textContent = store.data.serverVersion;
+      }
+    }
+    const ipEl = document.getElementById("display-server-ip");
+    if (ipEl) ipEl.textContent = store.data.serverIp;
+
+    const motdInput = document.getElementById("input-motd-editor");
+    if (motdInput && store.data.options) motdInput.value = store.data.options.motd || "";
+    
+    const repoInput = document.getElementById("input-github-repo");
+    if (repoInput) repoInput.value = store.data.githubRepo || "";
+    const runnerCard = document.getElementById("github-runner-live-card");
+    if (runnerCard) {
+      if (store.data.githubRepo) {
+        runnerCard.style.display = "block";
+        const link = document.getElementById("github-runner-link");
+        const repoEl = document.getElementById("github-runner-repo");
+        if (link) link.href = store.data.githubRepo.replace(/\.git$/, '') + "/actions";
+        if (repoEl) repoEl.textContent = store.data.githubRepo.replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '');
+      } else {
+        runnerCard.style.display = "none";
+      }
+    }
+
+    this.updateServerStatusUI(store.data.status || "offline");
+    this.renderInitialConsole();
+    this.renderVersionUI();
+    this.renderWorldsList();
+    this.renderPluginsList();
+    this.renderFilesList("/");
+    this.renderPlayersList("ops");
+    this.renderBackupsList();
+    this.updateAiPrompt();
+    this.renderMotdLive();
   }
 
   closeModal(id) {
