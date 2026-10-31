@@ -3739,6 +3739,12 @@ ${custom}
     const ipEl = document.getElementById("display-server-ip");
     if (ipEl) ipEl.textContent = store.data.serverIp;
 
+    if (store.currentProfile === "skyheaven") {
+      this.updateAllUiIcons("assets/software/skyheaven.png");
+    } else {
+      this.updateAllUiIcons("server-icon.png");
+    }
+
     const motdInput = document.getElementById("input-motd-editor");
     if (motdInput && store.data.options) motdInput.value = store.data.options.motd || "";
     
@@ -3869,6 +3875,11 @@ ${custom}
         card.classList.add("active");
         this.selectedSoftware = card.getAttribute("data-software");
         this.updateVersionInstallSummary();
+        const bannerImg = document.getElementById("opt-banner-software-img");
+        if (bannerImg) {
+          bannerImg.src = `assets/software/${(this.selectedSoftware || 'paper').toLowerCase()}.png`;
+          bannerImg.alt = `${this.selectedSoftware} Logo`;
+        }
       });
     });
 
@@ -3955,6 +3966,12 @@ ${custom}
     document.querySelectorAll(".software-card").forEach((card) => {
       card.classList.toggle("active", card.getAttribute("data-software") === (this.selectedSoftware || store.data.installedSoftware));
     });
+
+    const bannerImg = document.getElementById("opt-banner-software-img");
+    if (bannerImg) {
+      bannerImg.src = `assets/software/${(this.selectedSoftware || 'paper').toLowerCase()}.png`;
+      bannerImg.alt = `${this.selectedSoftware} Logo`;
+    }
 
     this.renderVersionPills();
     this.updateVersionInstallSummary();
