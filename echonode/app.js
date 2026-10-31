@@ -1216,6 +1216,7 @@ class EchoNodeApp {
     this.bindSearchPalette();
     this.bindServerControls();
     this.bindNetworkManager();
+    this.bindImportServer();
 
     // 2. Initial renders
     this.updateServerStatusUI(store.data.status || "offline");
@@ -3140,22 +3141,31 @@ class EchoNodeApp {
       ];
     }
 
-    const files = sampleFiles[dirPath] || sampleFiles["/"];
+    // Merge custom imported folder files if present
+    let files = [];
+    if (store.data.customFolderFiles && store.data.customFolderFiles[dirPath] && store.data.customFolderFiles[dirPath].length > 0) {
+      files = store.data.customFolderFiles[dirPath];
+    } else {
+      files = sampleFiles[dirPath] || sampleFiles["/"];
+    }
+
     files.forEach((f) => {
+      const isConfigEditable = f.isEditable || /\.(yml|yaml|json|txt|cfg|toml|properties)$/i.test(f.name);
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><div class="file-name-cell">${f.name.endsWith('.jar') ? '📦' : f.name.endsWith('/') ? '📁' : '📄'} ${f.name}</div></td>
         <td>${f.size}</td>
         <td>${f.date}</td>
         <td style="text-align: right;">
-          ${f.isEditable ? '<button class="file-act-btn btn-edit-file" style="display:inline-flex;">Edit</button>' : '<span style="color:#64748b;">Read-only</span>'}
+          ${isConfigEditable ? '<button class="file-act-btn btn-edit-file" style="display:inline-flex;">Edit</button>' : '<span style="color:#64748b;">Read-only</span>'}
         </td>
       `;
 
-      if (f.isEditable) {
+      if (isConfigEditable) {
         tr.querySelector(".btn-edit-file").addEventListener("click", (e) => {
           e.stopPropagation();
-          this.openCodeEditor(f.name);
+          const cleanPath = (dirPath === "/" ? `/${f.name}` : `${dirPath}/${f.name}`);
+          this.openCodeEditor(cleanPath);
         });
       }
 
@@ -3163,11 +3173,20 @@ class EchoNodeApp {
     });
   }
 
+  formatBytes(bytes) {
+    if (!bytes || bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+  }
+
   openCodeEditor(filename) {
     sfx.playClick();
-    const filePath = `/${filename}`;
-    const content = store.data.virtualFiles[filePath] || `# Configuration for ${filename}\n`;
-    document.getElementById("modal-editor-filename").textContent = filename;
+    const filePath = filename.startsWith("/") ? filename : `/${filename}`;
+    const baseName = filePath.split("/").pop();
+    const content = store.data.virtualFiles[filePath] || store.data.virtualFiles[`/${baseName}`] || `# Configuration for ${baseName}\n`;
+    document.getElementById("modal-editor-filename").textContent = baseName;
     document.getElementById("modal-editor-filepath").textContent = filePath;
     document.getElementById("modal-editor-content").value = content;
     this.openModal("modal-code-editor");
@@ -4162,6 +4181,724 @@ ${custom}
         });
       }
     }
+  }
+
+  // ============================================================================
+  // MINECRAFT SERVER FOLDER & ZIP IMPORT SUITE
+  // ============================================================================
+  bindImportServer() {
+    this.stagedImportData = null;
+
+    // Trigger buttons
+    const btnOpenModal = document.getElementById("btn-open-import-server-modal");
+    if (btnOpenModal) {
+      btnOpenModal.addEventListener("click", () => {
+        sfx.playClick();
+        this.openModal("modal-import-server");
+      });
+    }
+
+    const btnSwitcherImport = document.getElementById("btn-switcher-import-server");
+    if (btnSwitcherImport) {
+      btnSwitcherImport.addEventListener("click", () => {
+        sfx.playClick();
+        this.closeModal("modal-server-switcher");
+        this.openModal("modal-import-server");
+      });
+    }
+
+    const dropZone = document.getElementById("import-server-drop-zone");
+    const folderInput = document.getElementById("input-server-folder-picker");
+    const zipInput = document.getElementById("input-server-zip-picker");
+    const btnBrowseFolder = document.getElementById("btn-browse-server-folder");
+    const btnBrowseZip = document.getElementById("btn-browse-server-zip");
+
+    if (btnBrowseFolder && folderInput) {
+      btnBrowseFolder.addEventListener("click", (e) => {
+        e.stopPropagation();
+        folderInput.click();
+      });
+    }
+
+    if (btnBrowseZip && zipInput) {
+      btnBrowseZip.addEventListener("click", (e) => {
+        e.stopPropagation();
+        zipInput.click();
+      });
+    }
+
+    if (dropZone && folderInput) {
+      dropZone.addEventListener("click", (e) => {
+        if (e.target.closest("button") || e.target.closest("input")) return;
+        folderInput.click();
+      });
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          const files = Array.from(e.dataTransfer.files);
+          if (files.length === 1 && (files[0].name.endsWith(".zip") || files[0].name.endsWith(".tar.gz"))) {
+            this.handleServerZipSelection(files[0]);
+          } else {
+            this.handleServerFolderSelection(files);
+          }
+        }
+      });
+    }
+
+    if (folderInput) {
+      folderInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          this.handleServerFolderSelection(Array.from(e.target.files));
+        }
+      });
+    }
+
+    if (zipInput) {
+      zipInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          this.handleServerZipSelection(e.target.files[0]);
+        }
+      });
+    }
+
+    // Copy Fix Prompt Button
+    const btnCopyPrompt = document.getElementById("btn-copy-import-fix-prompt");
+    if (btnCopyPrompt) {
+      btnCopyPrompt.addEventListener("click", () => {
+        const text = document.getElementById("import-prompt-text")?.textContent || "";
+        if (text) {
+          navigator.clipboard.writeText(text).then(() => {
+            sfx.playServerChime();
+            this.showToast("Server diagnostic fix prompt copied to clipboard!", "success");
+          }).catch(() => {
+            this.showToast("Failed to copy to clipboard", "error");
+          });
+        }
+      });
+    }
+
+    // Confirm & Apply Button
+    const btnConfirm = document.getElementById("btn-confirm-import-server");
+    if (btnConfirm) {
+      btnConfirm.addEventListener("click", () => {
+        this.applyImportedServer();
+      });
+    }
+  }
+
+  async handleServerFolderSelection(files) {
+    if (!files || files.length === 0) return;
+    sfx.playClick();
+
+    const progressCard = document.getElementById("import-progress-card");
+    const progressStatus = document.getElementById("import-progress-status");
+    const progressPct = document.getElementById("import-progress-pct");
+    const progressBar = document.getElementById("import-progress-bar");
+    const progressDetails = document.getElementById("import-progress-details");
+    const resultPanel = document.getElementById("import-result-panel");
+    const btnConfirm = document.getElementById("btn-confirm-import-server");
+
+    if (progressCard) progressCard.style.display = "block";
+    if (resultPanel) resultPanel.style.display = "none";
+    if (btnConfirm) {
+      btnConfirm.disabled = true;
+      btnConfirm.style.opacity = "0.5";
+      btnConfirm.style.cursor = "not-allowed";
+    }
+
+    // Deduce folder name
+    let rootFolderName = "Imported Minecraft Server";
+    if (files[0].webkitRelativePath) {
+      const parts = files[0].webkitRelativePath.split("/");
+      if (parts.length > 1 && parts[0]) {
+        rootFolderName = parts[0];
+      }
+    }
+
+    if (progressStatus) progressStatus.textContent = `Analyzing "${rootFolderName}"...`;
+    if (progressDetails) progressDetails.textContent = `Scanning ${files.length} files...`;
+
+    // Process all files
+    const virtualFiles = {};
+    const apiFiles = [];
+    const plugins = [];
+    let serverPropsText = "";
+    let eulaText = "";
+    let serverJarFile = null;
+    let iconDataUrl = null;
+    let hasWorld = false;
+    let worldFilesCount = 0;
+    const folderMap = { "/": [], "/plugins": [], "/world": [], "/logs": [], "/24_7": [] };
+
+    const total = files.length;
+    for (let i = 0; i < total; i++) {
+      const file = files[i];
+      let relPath = file.webkitRelativePath || file.name;
+      // Strip root folder segment if present
+      if (relPath.includes("/")) {
+        const segs = relPath.split("/");
+        if (segs[0] === rootFolderName) {
+          relPath = segs.slice(1).join("/");
+        }
+      }
+
+      // Progress update every 10 files
+      if (i % 10 === 0 || i === total - 1) {
+        const pct = Math.round(((i + 1) / total) * 100);
+        if (progressPct) progressPct.textContent = `${pct}%`;
+        if (progressBar) progressBar.style.width = `${pct}%`;
+        if (progressDetails) progressDetails.textContent = `Processing: ${relPath}`;
+        await new Promise(r => setTimeout(r, 2));
+      }
+
+      const lower = relPath.toLowerCase();
+
+      // Check root server.properties
+      if (lower === "server.properties") {
+        try {
+          serverPropsText = await file.text();
+          virtualFiles["/server.properties"] = serverPropsText;
+          apiFiles.push({ path: "server.properties", content: serverPropsText });
+        } catch(e) {}
+      }
+      // Check eula.txt
+      else if (lower === "eula.txt") {
+        try {
+          eulaText = await file.text();
+          virtualFiles["/eula.txt"] = eulaText;
+          apiFiles.push({ path: "eula.txt", content: eulaText });
+        } catch(e) {}
+      }
+      // Check server icon
+      else if (lower === "server-icon.png") {
+        try {
+          iconDataUrl = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+          });
+          apiFiles.push({ path: "server-icon.png", content_b64: iconDataUrl.split(",")[1] || "" });
+        } catch(e) {}
+      }
+      // Check root server jars
+      else if (!relPath.includes("/") && lower.endsWith(".jar")) {
+        serverJarFile = file;
+      }
+      // Check plugins
+      else if (lower.startsWith("plugins/") && lower.endsWith(".jar")) {
+        const pName = relPath.split("/").pop().replace(/\.jar$/i, "");
+        plugins.push({
+          id: pName.toLowerCase().replace(/[^a-z0-9]/g, ""),
+          name: pName,
+          author: "Imported Plugin",
+          category: "addon",
+          version: "1.0",
+          desc: `Imported Minecraft plugin (${relPath.split("/").pop()})`,
+          installed: true,
+          icon: "🧩"
+        });
+      }
+      // Check world data
+      else if (lower.startsWith("world/") || lower.startsWith("world_nether/") || lower.startsWith("world_the_end/")) {
+        hasWorld = true;
+        worldFilesCount++;
+      }
+      // Editable config files (.yml, .yaml, .json, .txt, .cfg, .toml)
+      else if (/\.(yml|yaml|json|txt|cfg|toml|properties)$/i.test(relPath) && file.size < 500000) {
+        try {
+          const txt = await file.text();
+          virtualFiles[`/${relPath}`] = txt;
+          apiFiles.push({ path: relPath, content: txt });
+        } catch(e) {}
+      }
+
+      // Add to folder explorer map
+      const dirKey = relPath.includes("/") ? `/${relPath.split("/")[0]}` : "/";
+      if (!folderMap[dirKey]) folderMap[dirKey] = [];
+      folderMap[dirKey].push({
+        name: relPath.split("/").pop(),
+        size: this.formatBytes(file.size),
+        date: "Imported",
+        isEditable: /\.(yml|yaml|json|txt|cfg|toml|properties)$/i.test(relPath)
+      });
+    }
+
+    if (progressStatus) progressStatus.textContent = "Running configuration & health diagnostics...";
+    await new Promise(r => setTimeout(r, 300));
+    if (progressCard) progressCard.style.display = "none";
+
+    // Build staged data object
+    this.stagedImportData = {
+      rootFolderName,
+      serverName: rootFolderName.toUpperCase(),
+      filesCount: files.length,
+      serverPropsText,
+      eulaText,
+      serverJarFile,
+      iconDataUrl,
+      plugins,
+      hasWorld,
+      worldFilesCount,
+      virtualFiles,
+      apiFiles,
+      folderMap
+    };
+
+    // Run Health Analysis & Diagnostics
+    this.analyzeImportedServerHealth();
+  }
+
+  async handleServerZipSelection(zipFile) {
+    if (!zipFile) return;
+    sfx.playClick();
+
+    const progressCard = document.getElementById("import-progress-card");
+    const progressStatus = document.getElementById("import-progress-status");
+    const progressPct = document.getElementById("import-progress-pct");
+    const progressBar = document.getElementById("import-progress-bar");
+    const progressDetails = document.getElementById("import-progress-details");
+
+    if (progressCard) progressCard.style.display = "block";
+    if (progressStatus) progressStatus.textContent = `Extracting ${zipFile.name}...`;
+    if (progressPct) progressPct.textContent = "15%";
+    if (progressBar) progressBar.style.width = "15%";
+
+    try {
+      const buffer = await zipFile.arrayBuffer();
+      if (typeof fflate !== "undefined" && fflate.unzipSync) {
+        if (progressDetails) progressDetails.textContent = "Unzipping archive contents...";
+        const unzipped = fflate.unzipSync(new Uint8Array(buffer));
+        const simulatedFiles = [];
+
+        for (const [filename, uint8] of Object.entries(unzipped)) {
+          if (filename.endsWith("/")) continue;
+          const blob = new Blob([uint8]);
+          const fileObj = new File([blob], filename.split("/").pop());
+          Object.defineProperty(fileObj, "webkitRelativePath", {
+            value: filename
+          });
+          simulatedFiles.push(fileObj);
+        }
+
+        this.handleServerFolderSelection(simulatedFiles);
+      } else {
+        this.handleServerFolderSelection([zipFile]);
+      }
+    } catch(err) {
+      if (progressCard) progressCard.style.display = "none";
+      this.showToast(`Failed to unzip server archive: ${err.message}`, "error");
+    }
+  }
+
+  analyzeImportedServerHealth() {
+    if (!this.stagedImportData) return;
+    const staged = this.stagedImportData;
+
+    const resultPanel = document.getElementById("import-result-panel");
+    const resultTitle = document.getElementById("import-result-title");
+    const resultSub = document.getElementById("import-result-sub");
+    const resultImg = document.getElementById("import-result-software-img");
+    const healthBadge = document.getElementById("import-health-badge");
+    const diagList = document.getElementById("import-diagnostics-list");
+    const promptBox = document.getElementById("import-prompt-box");
+    const promptExplanation = document.getElementById("import-prompt-explanation");
+    const promptText = document.getElementById("import-prompt-text");
+    const quickFixesContainer = document.getElementById("import-quick-fixes-container");
+    const btnConfirm = document.getElementById("btn-confirm-import-server");
+
+    if (resultPanel) resultPanel.style.display = "flex";
+    if (diagList) diagList.innerHTML = "";
+    if (quickFixesContainer) quickFixesContainer.innerHTML = "";
+
+    const diagnostics = [];
+    const errorsList = [];
+    const fixPrompts = [];
+    const quickFixActions = [];
+
+    // 1. Detect Software & Version
+    let detectedSoftware = "Paper";
+    let detectedVersion = "1.20.4";
+
+    if (staged.serverJarFile) {
+      const jarName = staged.serverJarFile.name.toLowerCase();
+      if (jarName.includes("purpur")) detectedSoftware = "Purpur";
+      else if (jarName.includes("spigot")) detectedSoftware = "Spigot";
+      else if (jarName.includes("fabric")) detectedSoftware = "Fabric";
+      else if (jarName.includes("forge")) detectedSoftware = "Forge";
+      else if (jarName.includes("vanilla") || jarName === "server.jar") detectedSoftware = "Vanilla";
+      else detectedSoftware = "Paper";
+
+      const verMatch = jarName.match(/(\d+\.\d+(\.\d+)?)/);
+      if (verMatch) {
+        detectedVersion = verMatch[1];
+      }
+
+      diagnostics.push({
+        type: "ok",
+        title: "Server Executable (.jar)",
+        desc: `Found ${detectedSoftware} ${detectedVersion} (${staged.serverJarFile.name})`,
+        badge: "VERIFIED"
+      });
+    } else {
+      diagnostics.push({
+        type: "error",
+        title: "Missing Server Executable (.jar)",
+        desc: "No Minecraft server engine JAR was found in the root directory.",
+        badge: "ERROR"
+      });
+      errorsList.push("Missing server executable (.jar)");
+      fixPrompts.push("- Server Executable: The server root is missing a server.jar (e.g. paper-1.20.4.jar). Install or link Paper 1.20.4.");
+      quickFixActions.push({
+        id: "fix-install-paper",
+        label: "⚡ Select Paper 1.20.4 Engine",
+        action: () => {
+          staged.serverJarFile = { name: "paper-1.20.4.jar" };
+          this.showToast("Set server engine to Paper 1.20.4!", "success");
+          this.analyzeImportedServerHealth();
+        }
+      });
+    }
+
+    staged.detectedSoftware = detectedSoftware;
+    staged.detectedVersion = detectedVersion;
+    if (resultImg) resultImg.src = `assets/software/${detectedSoftware.toLowerCase()}.png`;
+
+    // 2. Inspect EULA Agreement
+    let eulaAccepted = false;
+    if (staged.eulaText) {
+      if (/eula\s*=\s*true/i.test(staged.eulaText)) {
+        eulaAccepted = true;
+        diagnostics.push({
+          type: "ok",
+          title: "Mojang EULA Agreement",
+          desc: "Accepted in eula.txt (eula=true). Ready for immediate boot.",
+          badge: "ACCEPTED"
+        });
+      } else {
+        diagnostics.push({
+          type: "error",
+          title: "Mojang EULA Not Accepted",
+          desc: "eula.txt contains eula=false. The Minecraft server will refuse to start until accepted.",
+          badge: "ACTION REQUIRED"
+        });
+        errorsList.push("Mojang EULA not accepted (eula=false)");
+        fixPrompts.push("- EULA Agreement: Set 'eula=true' in eula.txt to indicate agreement with Mojang EULA.");
+        quickFixActions.push({
+          id: "fix-accept-eula",
+          label: "✅ Accept EULA (Set eula=true)",
+          action: () => {
+            staged.eulaText = "# By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\neula=true";
+            staged.virtualFiles["/eula.txt"] = staged.eulaText;
+            this.showToast("EULA accepted (eula=true)!", "success");
+            this.analyzeImportedServerHealth();
+          }
+        });
+      }
+    } else {
+      diagnostics.push({
+        type: "warn",
+        title: "Missing eula.txt",
+        desc: "eula.txt is missing. Server will abort boot and create a blank eula.txt on first run.",
+        badge: "MISSING"
+      });
+      errorsList.push("Missing eula.txt");
+      fixPrompts.push("- Missing eula.txt: Create eula.txt with 'eula=true'.");
+      quickFixActions.push({
+        id: "fix-create-eula",
+        label: "✅ Create eula.txt (eula=true)",
+        action: () => {
+          staged.eulaText = "# By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\neula=true";
+          staged.virtualFiles["/eula.txt"] = staged.eulaText;
+          this.showToast("Created eula.txt with eula=true!", "success");
+          this.analyzeImportedServerHealth();
+        }
+      });
+    }
+
+    // 3. Inspect server.properties
+    const parsedOptions = {
+      gamemode: "survival",
+      difficulty: "normal",
+      whitelist: false,
+      pvp: true,
+      nether: true,
+      cmdblocks: true,
+      flight: false,
+      maxPlayers: 20,
+      viewDist: 10,
+      motd: "A Minecraft Server"
+    };
+
+    if (staged.serverPropsText) {
+      const lines = staged.serverPropsText.split("\n");
+      lines.forEach((l) => {
+        const trim = l.trim();
+        if (trim && !trim.startsWith("#")) {
+          const eq = trim.indexOf("=");
+          if (eq > 0) {
+            const k = trim.slice(0, eq).trim();
+            const v = trim.slice(eq + 1).trim();
+            if (k === "server-port") staged.serverPort = parseInt(v) || 25565;
+            if (k === "motd") parsedOptions.motd = v.replace(/\\u00A7/g, "§");
+            if (k === "gamemode") parsedOptions.gamemode = v.toLowerCase();
+            if (k === "difficulty") parsedOptions.difficulty = v.toLowerCase();
+            if (k === "white-list") parsedOptions.whitelist = (v.toLowerCase() === "true");
+            if (k === "pvp") parsedOptions.pvp = (v.toLowerCase() === "true");
+            if (k === "allow-nether") parsedOptions.nether = (v.toLowerCase() === "true");
+            if (k === "enable-command-block") parsedOptions.cmdblocks = (v.toLowerCase() === "true");
+            if (k === "allow-flight") parsedOptions.flight = (v.toLowerCase() === "true");
+            if (k === "max-players") parsedOptions.maxPlayers = parseInt(v) || 20;
+            if (k === "view-distance") parsedOptions.viewDist = parseInt(v) || 10;
+            if (k === "online-mode") staged.onlineMode = (v.toLowerCase() === "true");
+          }
+        }
+      });
+
+      diagnostics.push({
+        type: "ok",
+        title: "server.properties",
+        desc: `Configured on port ${staged.serverPort || 25565} • Max players: ${parsedOptions.maxPlayers} • Gamemode: ${parsedOptions.gamemode}`,
+        badge: "PARSED"
+      });
+
+      // Check online-mode
+      if (staged.onlineMode === true) {
+        diagnostics.push({
+          type: "info",
+          title: "Online Mode Enabled (online-mode=true)",
+          desc: "Requires official Mojang accounts. Offline/Cracked accounts and Bedrock clients without Java accounts cannot join.",
+          badge: "INFO"
+        });
+        quickFixActions.push({
+          id: "fix-offline-mode",
+          label: "🔓 Set online-mode=false (Allow All Players)",
+          action: () => {
+            staged.serverPropsText = staged.serverPropsText.replace(/online-mode\s*=\s*true/gi, "online-mode=false");
+            staged.virtualFiles["/server.properties"] = staged.serverPropsText;
+            staged.onlineMode = false;
+            this.showToast("Set online-mode=false!", "success");
+            this.analyzeImportedServerHealth();
+          }
+        });
+      }
+    } else {
+      diagnostics.push({
+        type: "warn",
+        title: "Missing server.properties",
+        desc: "server.properties not found. Standard defaults will be created.",
+        badge: "DEFAULTED"
+      });
+      quickFixActions.push({
+        id: "fix-create-props",
+        label: "⚙️ Generate Clean server.properties",
+        action: () => {
+          staged.serverPropsText = `server-port=25565\ngamemode=survival\ndifficulty=normal\npvp=true\nenable-command-block=true\nallow-flight=false\nallow-nether=true\nmax-players=20\nview-distance=10\nmotd=§a§l${staged.serverName}\\n§7Imported via EchoNode Web\nwhite-list=false\nonline-mode=false`;
+          staged.virtualFiles["/server.properties"] = staged.serverPropsText;
+          this.showToast("Generated clean server.properties!", "success");
+          this.analyzeImportedServerHealth();
+        }
+      });
+    }
+
+    staged.options = parsedOptions;
+
+    // 4. World & Plugins Summary
+    if (staged.hasWorld) {
+      diagnostics.push({
+        type: "ok",
+        title: "World Terrain & Data",
+        desc: `World directory detected with ${staged.worldFilesCount} chunk/region files.`,
+        badge: "SAVED CHUNKS"
+      });
+    } else {
+      diagnostics.push({
+        type: "info",
+        title: "World Generation",
+        desc: "No existing world folder found. Server will generate a fresh world on first start.",
+        badge: "FRESH SEED"
+      });
+    }
+
+    if (staged.plugins && staged.plugins.length > 0) {
+      diagnostics.push({
+        type: "ok",
+        title: "Plugins / Addons",
+        desc: `Found ${staged.plugins.length} plugin JARs ready in plugins/`,
+        badge: `${staged.plugins.length} PLUGINS`
+      });
+    }
+
+    if (staged.iconDataUrl) {
+      diagnostics.push({
+        type: "ok",
+        title: "Server Logo Icon",
+        desc: "Found server-icon.png. Will set as server logo and favicon.",
+        badge: "64x64 PNG"
+      });
+    }
+
+    // Render diagnostic cards
+    diagnostics.forEach((d) => {
+      const item = document.createElement("div");
+      item.className = `diagnostic-item ${d.type}`;
+      item.innerHTML = `
+        <div>
+          <div style="font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+            <span>${d.type === 'ok' ? '✓' : d.type === 'error' ? '❌' : d.type === 'warn' ? '⚠️' : 'ℹ️'}</span>
+            <span>${d.title}</span>
+          </div>
+          <div style="font-size: 11.5px; color: #94a3b8; margin-top: 3px;">${d.desc}</div>
+        </div>
+        <span class="diagnostic-badge ${d.type}">${d.badge}</span>
+      `;
+      diagList.appendChild(item);
+    });
+
+    // Populate Prompt Box & Quick Fixes
+    if (errorsList.length > 0 || fixPrompts.length > 0) {
+      if (promptBox) promptBox.style.display = "block";
+      if (promptExplanation) {
+        promptExplanation.innerHTML = `Detected <strong>${errorsList.length} issue(s)</strong> that should be resolved before starting the server. Use the 1-click fixes below or copy this AI prompt to resolve:`;
+      }
+
+      const generatedPrompt = [
+        `### Minecraft Server Import Health Report & Diagnostic Fix Prompt`,
+        `Server Name: ${staged.serverName}`,
+        `Detected Engine: ${detectedSoftware} ${detectedVersion}`,
+        ``,
+        `Issues Found:`,
+        ...fixPrompts,
+        ``,
+        `Instructions:`,
+        `Please provide the necessary Minecraft configuration settings and file changes to make this server 100% production ready.`
+      ].join("\n");
+
+      if (promptText) promptText.textContent = generatedPrompt;
+
+      // Render 1-click quick-fix buttons
+      quickFixActions.forEach((fix) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn-fix-chip";
+        btn.textContent = fix.label;
+        btn.addEventListener("click", () => {
+          sfx.playClick();
+          fix.action();
+        });
+        quickFixesContainer.appendChild(btn);
+      });
+
+      if (healthBadge) {
+        healthBadge.textContent = "⚠️ FIXES RECOMMENDED";
+        healthBadge.style.color = "#eab308";
+        healthBadge.style.borderColor = "rgba(234, 179, 8, 0.4)";
+        healthBadge.style.background = "rgba(234, 179, 8, 0.15)";
+      }
+    } else {
+      if (promptBox) promptBox.style.display = "none";
+      if (healthBadge) {
+        healthBadge.textContent = "● 100% HEALTHY & READY";
+        healthBadge.style.color = "#22c55e";
+        healthBadge.style.borderColor = "rgba(34, 197, 94, 0.4)";
+        healthBadge.style.background = "rgba(34, 197, 94, 0.15)";
+      }
+    }
+
+    if (resultTitle) resultTitle.textContent = staged.serverName;
+    if (resultSub) {
+      resultSub.textContent = `${detectedSoftware} ${detectedVersion} • ${staged.plugins.length} Plugins • ${staged.filesCount} Files Scanned`;
+    }
+
+    // Enable Apply button
+    if (btnConfirm) {
+      btnConfirm.disabled = false;
+      btnConfirm.style.opacity = "1";
+      btnConfirm.style.cursor = "pointer";
+    }
+  }
+
+  async applyImportedServer() {
+    if (!this.stagedImportData) return;
+    const staged = this.stagedImportData;
+    sfx.playServerChime();
+
+    // 1. Update store.data
+    store.data.serverName = staged.serverName;
+    store.data.installedSoftware = staged.detectedSoftware;
+    store.data.installedVersion = staged.detectedVersion;
+    store.data.serverVersion = `${staged.detectedSoftware} ${staged.detectedVersion}`;
+    if (staged.serverPort) {
+      store.data.serverIp = `play.echonode.net:${staged.serverPort}`;
+    }
+    store.data.options = Object.assign(store.data.options || {}, staged.options);
+
+    // Merge or set plugins
+    if (staged.plugins && staged.plugins.length > 0) {
+      const existing = store.data.plugins || [];
+      const newPlugins = [...staged.plugins];
+      existing.forEach((ep) => {
+        const found = newPlugins.find(p => p.name.toLowerCase() === ep.name.toLowerCase() || p.id === ep.id);
+        if (found) {
+          ep.installed = true;
+          newPlugins.splice(newPlugins.indexOf(found), 1);
+        }
+      });
+      store.data.plugins = [...existing, ...newPlugins];
+    }
+
+    // Store virtual files & custom folder map
+    store.data.virtualFiles = Object.assign(store.data.virtualFiles || {}, staged.virtualFiles);
+    store.data.customFolderFiles = staged.folderMap;
+    store.data.worldsGenerated = staged.hasWorld;
+
+    // Update icons if server-icon.png was provided
+    if (staged.iconDataUrl) {
+      this.updateAllUiIcons(staged.iconDataUrl);
+    }
+
+    // Save state
+    store.save();
+
+    // Asynchronously push to backend server_data directory
+    if (staged.apiFiles && staged.apiFiles.length > 0) {
+      fetch("/api/server/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          serverName: staged.serverName,
+          files: staged.apiFiles
+        })
+      }).then(r => r.json()).then(data => {
+        if (data.success) {
+          console.log("[EchoNode Import]", data.message);
+        }
+      }).catch(err => {
+        console.warn("[EchoNode Import] Backend offline or skipped:", err);
+      });
+    }
+
+    // Update entire UI in real time
+    this.reloadServerData();
+    this.renderVersionUI();
+    this.renderFilesList("/");
+    this.renderPluginsList();
+    this.renderWorldsList();
+    this.renderMotdLive();
+
+    this.closeModal("modal-import-server");
+    this.showToast(`Successfully imported ${staged.serverName}!`, "success");
+    this.appendLog("system", `[EchoNode Import] Fully imported server "${staged.serverName}" (${staged.detectedSoftware} ${staged.detectedVersion}) with ${staged.filesCount} files.`);
   }
 }
 

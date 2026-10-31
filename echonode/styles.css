@@ -3441,3 +3441,136 @@ input:checked + .slider-round:before {
   border-color: #38bdf8 !important;
   box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
 }
+
+/* ==========================================================================
+   Server Folder Import & Health Diagnostic Suite
+   ========================================================================== */
+.import-drop-zone {
+  border: 2px dashed rgba(56, 189, 248, 0.4);
+  border-radius: 14px;
+  background: rgba(56, 189, 248, 0.03);
+  padding: 26px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.import-drop-zone:hover,
+.import-drop-zone.dragover {
+  border-color: #00f5b8;
+  background: rgba(0, 245, 184, 0.08);
+  box-shadow: 0 0 25px rgba(0, 245, 184, 0.18);
+  transform: translateY(-2px);
+}
+
+.import-drop-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.import-drop-zone:hover .import-drop-icon,
+.import-drop-zone.dragover .import-drop-icon {
+  transform: scale(1.1);
+  border-color: #00f5b8;
+  box-shadow: 0 0 15px rgba(0, 245, 184, 0.3);
+}
+
+.diagnostic-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.diagnostic-item.ok {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.diagnostic-item.warn {
+  border-color: rgba(234, 179, 8, 0.35);
+  background: rgba(234, 179, 8, 0.06);
+}
+
+.diagnostic-item.error {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.diagnostic-item.info {
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.diagnostic-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.diagnostic-badge.ok {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.diagnostic-badge.warn {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.35);
+}
+
+.diagnostic-badge.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.diagnostic-badge.info {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.btn-fix-chip {
+  background: rgba(0, 245, 184, 0.15);
+  border: 1px solid rgba(0, 245, 184, 0.4);
+  color: #00f5b8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-fix-chip:hover {
+  background: rgba(0, 245, 184, 0.25);
+  box-shadow: 0 0 10px rgba(0, 245, 184, 0.3);
+  transform: translateY(-1px);
+}

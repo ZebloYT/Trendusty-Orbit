@@ -10,6 +10,7 @@ import webbrowser
 import ctypes
 import re
 import base64
+import shutil
 import urllib.request
 import urllib.error
 from ctypes import wintypes
@@ -1129,6 +1130,47 @@ class RobustHandler(SimpleHTTPRequestHandler):
             except Exception as e:
                 self.send_json({"success": False, "message": f"Failed to save icon: {str(e)}"}, 500)
                 return
+
+        # --- REST API: Full Server Directory Import ---
+        if path == "/api/server/import":
+            files = body_data.get("files", [])
+            server_name = body_data.get("serverName", "Imported Server")
+            imported_count = 0
+            errors = []
+
+            for item in files:
+                rel_path = item.get("path", "").replace("\\", "/").lstrip("/")
+                if not rel_path or ".." in rel_path:
+                    continue
+                full_path = os.path.join(SERVER_DIR, rel_path)
+                try:
+                    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                    if "content_b64" in item and item["content_b64"]:
+                        raw_data = base64.b64decode(item["content_b64"])
+                        with open(full_path, "wb") as f:
+                            f.write(raw_data)
+                    elif "content" in item and item["content"] is not None:
+                        with open(full_path, "w", encoding="utf-8", errors="replace") as f:
+                            f.write(item["content"])
+                    imported_count += 1
+                except Exception as e:
+                    errors.append(f"{rel_path}: {str(e)}")
+
+            # If server-icon.png was imported, sync to web directory as well
+            src_icon = os.path.join(SERVER_DIR, "server-icon.png")
+            if os.path.exists(src_icon):
+                try:
+                    shutil.copyfile(src_icon, os.path.join(WEB_DIR, "server-icon.png"))
+                except Exception:
+                    pass
+
+            self.send_json({
+                "success": True,
+                "message": f"Successfully imported {imported_count} files into server directory.",
+                "importedCount": imported_count,
+                "errors": errors
+            })
+            return
 
         self.send_json({"error": "Unknown endpoint"}, 404)
 
