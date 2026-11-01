@@ -1461,6 +1461,214 @@ class EchoNodeApp {
     if (store.data.currentMode === "3d") {
       spatialEngine.setMode("3d");
     }
+
+    // 5. Initialize Tactical Orbit Cursor & Retrosmart Equip Engine
+    this.initOrbitCursor();
+  }
+
+  // Tactical Orbit Custom Cursor & Retrosmart Equip Engine
+  initOrbitCursor() {
+    if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
+      return;
+    }
+
+    const dot = document.getElementById("orbit-cursor-dot");
+    const ring = document.getElementById("orbit-cursor-ring");
+    const customImg = document.getElementById("custom-img-cursor");
+
+    if (!dot || !ring || !customImg) return;
+
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+    let isVisible = false;
+    let isMouseDown = false;
+    let useCustom = false;
+    let currentIconUrl = "";
+    let currentPointerUrl = "";
+
+    const resolveCursorPath = (url) => {
+      if (!url) return "";
+      if (url.startsWith("retrosmart/")) {
+        return "../windows/" + url;
+      }
+      return url;
+    };
+
+    // Trailing neon particles
+    const trails = [];
+    const MAX_TRAILS = 12;
+    let trailIndex = 0;
+    for (let i = 0; i < MAX_TRAILS; i++) {
+      const t = document.createElement("div");
+      t.className = "mouse-trail-dot";
+      t.style.opacity = "0";
+      document.body.appendChild(t);
+      trails.push(t);
+    }
+
+    const updateDomCursorImage = (url) => {
+      if (url) {
+        useCustom = true;
+        dot.style.display = "none";
+        ring.style.display = "none";
+        trails.forEach(t => (t.style.display = "none"));
+        customImg.style.display = "block";
+        customImg.style.backgroundImage = `url('${resolveCursorPath(url)}')`;
+      } else {
+        useCustom = false;
+        dot.style.display = "block";
+        ring.style.display = "block";
+        customImg.style.display = "none";
+        trails.forEach(t => (t.style.display = "block"));
+      }
+    };
+
+    const applyEquippedCursor = () => {
+      try {
+        currentIconUrl = localStorage.getItem("orbit_equipped_cursor") || "";
+        currentPointerUrl = localStorage.getItem("orbit_equipped_pointer") || "";
+      } catch (e) {
+        currentIconUrl = "";
+        currentPointerUrl = "";
+      }
+
+      if (currentIconUrl) {
+        updateDomCursorImage(currentIconUrl);
+      } else {
+        updateDomCursorImage("");
+      }
+    };
+
+    this.refreshCursor = applyEquippedCursor;
+    applyEquippedCursor();
+
+    // Cross-tab synchronization when cursor is equipped or reset in cursors gallery
+    window.addEventListener("storage", (e) => {
+      if (e.key === "orbit_equipped_cursor" || e.key === "orbit_equipped_pointer") {
+        applyEquippedCursor();
+      }
+    });
+
+    // Mouse movement
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!isVisible) {
+        isVisible = true;
+        if (!useCustom) {
+          dot.style.opacity = "1";
+          ring.style.opacity = "1";
+        }
+        customImg.style.opacity = "1";
+      }
+
+      if (useCustom) {
+        customImg.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      } else {
+        dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+
+        const t = trails[trailIndex];
+        if (t) {
+          t.style.left = mouseX + "px";
+          t.style.top = mouseY + "px";
+          t.style.opacity = "0.6";
+          t.style.transform = "translate(-50%, -50%) scale(1)";
+          setTimeout(() => {
+            t.style.opacity = "0";
+            t.style.transform = "translate(-50%, -50%) scale(0.2)";
+          }, 50);
+        }
+        trailIndex = (trailIndex + 1) % MAX_TRAILS;
+      }
+    }, { passive: true });
+
+    // Smooth follower easing ring
+    const renderFollower = () => {
+      if (isVisible && !useCustom) {
+        const ease = 0.18;
+        ringX += (mouseX - ringX) * ease;
+        ringY += (mouseY - ringY) * ease;
+        ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+      }
+      requestAnimationFrame(renderFollower);
+    };
+    requestAnimationFrame(renderFollower);
+
+    // Interactive states detection
+    const interactiveSelector = "button, a, input, select, textarea, .nav-item-btn, .server-selector-card, .sidebar-user-card, .topbar-user-pill, .server-switch-item, .btn-quick-act, .search-palette-trigger, .mode-switcher-container, .tab-btn, .action-btn, .option-card, .table-row, [role='button'], label.switch, .badge-status, .mc-quick-btn, .file-table tr, .plugin-card, .player-item, .backup-card, .stat-card, .server-card-selector";
+
+    // Mouse down & up
+    document.addEventListener("mousedown", (e) => {
+      isMouseDown = true;
+      ring.classList.add("is-active");
+      dot.classList.add("is-active");
+
+      if (useCustom && currentPointerUrl) {
+        customImg.style.backgroundImage = `url('${resolveCursorPath(currentPointerUrl)}')`;
+      }
+    });
+
+    document.addEventListener("mouseup", (e) => {
+      isMouseDown = false;
+      ring.classList.remove("is-active");
+      dot.classList.remove("is-active");
+
+      if (useCustom) {
+        const isHoveringClickable = e.target && e.target.closest && e.target.closest(interactiveSelector);
+        if (isHoveringClickable && currentPointerUrl) {
+          customImg.style.backgroundImage = `url('${resolveCursorPath(currentPointerUrl)}')`;
+        } else if (currentIconUrl) {
+          customImg.style.backgroundImage = `url('${resolveCursorPath(currentIconUrl)}')`;
+        }
+      }
+    });
+
+    // Window boundaries
+    document.addEventListener("mouseleave", () => {
+      isVisible = false;
+      dot.style.opacity = "0";
+      ring.style.opacity = "0";
+      customImg.style.opacity = "0";
+    });
+
+    document.addEventListener("mouseenter", () => {
+      isVisible = true;
+      if (!useCustom) {
+        dot.style.opacity = "1";
+        ring.style.opacity = "1";
+      }
+      customImg.style.opacity = "1";
+    });
+
+    document.addEventListener("mouseover", (e) => {
+      const el = e.target;
+      if (!el || !el.closest) return;
+
+      const isClickable = el.closest(interactiveSelector) !== null;
+      const isText = !isClickable && el.closest("p, h1, h2, h3, h4, h5, h6, .code-snippet, .log-line, pre, code, .terminal-window, .doc-body") !== null;
+
+      ring.classList.remove("is-hovering", "is-text");
+      dot.classList.remove("is-hovering", "is-text");
+
+      if (isClickable) {
+        ring.classList.add("is-hovering");
+        dot.classList.add("is-hovering");
+        if (useCustom && currentPointerUrl) {
+          customImg.style.backgroundImage = `url('${resolveCursorPath(currentPointerUrl)}')`;
+        }
+      } else if (isText) {
+        ring.classList.add("is-text");
+        dot.classList.add("is-text");
+        if (useCustom && currentIconUrl) {
+          customImg.style.backgroundImage = `url('${resolveCursorPath(currentIconUrl)}')`;
+        }
+      } else {
+        if (useCustom && currentIconUrl) {
+          customImg.style.backgroundImage = `url('${resolveCursorPath(currentIconUrl)}')`;
+        }
+      }
+    });
   }
 
   // Toast Notification System

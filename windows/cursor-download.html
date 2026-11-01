@@ -74,7 +74,7 @@
     will-change: transform, width, height;
     opacity: 0;
     transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-    transition: width 0.4s cubic-bezier(0.25, 1, 0.25, 1), height 0.4s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.4s ease, border-radius 0.4s ease, opacity 0.3s ease, box-shadow 0.4s ease, transform 0.08s ease;
+    transition: width 0.3s cubic-bezier(0.25, 1, 0.25, 1), height 0.3s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.3s ease, border-radius 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
   }
 
   /* Outer Ring */
@@ -1311,6 +1311,7 @@
         
         currentIconUrl = card.getAttribute('data-icon');
         updateDomCursorImage(currentIconUrl);
+        try { localStorage.setItem('orbit_equipped_cursor', currentIconUrl); } catch(e) {}
     } else {
         document.querySelectorAll('.selected-click').forEach(el => el.classList.remove('selected-click'));
         card.classList.add('selected-click');
@@ -1321,6 +1322,7 @@
         document.getElementById('lbl-click').innerText = truncated;
         
         currentPointerUrl = card.getAttribute('data-pointer');
+        try { localStorage.setItem('orbit_equipped_pointer', currentPointerUrl); } catch(e) {}
     }
     
     if (selectedIdlePath !== "" && selectedClickPath !== "") {
@@ -1335,6 +1337,10 @@
     selectedClickPath = "";
     currentIconUrl = "";
     currentPointerUrl = "";
+    try {
+      localStorage.removeItem('orbit_equipped_cursor');
+      localStorage.removeItem('orbit_equipped_pointer');
+    } catch(e) {}
     document.querySelectorAll('.selected-idle').forEach(el => el.classList.remove('selected-idle'));
     document.querySelectorAll('.selected-click').forEach(el => el.classList.remove('selected-click'));
     document.getElementById('lbl-idle').innerText = "None";
@@ -1430,6 +1436,7 @@ pause
     t.className = 'mouse-trail-dot';
     t.style.opacity = '0';
     document.body.appendChild(t);
+    trails.push(t);
   }
 
   window.addEventListener('mousemove', (e) => {
@@ -1451,14 +1458,16 @@ pause
       dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)';
       
       const t = trails[trailIndex];
-      t.style.left = mouseX + 'px';
-      t.style.top = mouseY + 'px';
-      t.style.opacity = '0.6';
-      t.style.transform = 'translate(-50%, -50%) scale(1)';
-      setTimeout(() => {
-        t.style.opacity = '0';
-        t.style.transform = 'translate(-50%, -50%) scale(0.2)';
-      }, 50);
+      if (t) {
+        t.style.left = mouseX + 'px';
+        t.style.top = mouseY + 'px';
+        t.style.opacity = '0.6';
+        t.style.transform = 'translate(-50%, -50%) scale(1)';
+        setTimeout(() => {
+          t.style.opacity = '0';
+          t.style.transform = 'translate(-50%, -50%) scale(0.2)';
+        }, 50);
+      }
       trailIndex = (trailIndex + 1) % MAX_TRAILS;
     }
   }, { passive: true });
@@ -1527,13 +1536,13 @@ pause
   }
   requestAnimationFrame(renderFollower);
 
-  const interactiveSelector = 'button, a, .swz-btn, .page-btn, .btn-install, .swz-card';
+  const interactiveSelector = 'button, a, input, select, .swz-btn, .page-btn, .btn-install, .swz-card, label, [role="button"]';
   document.addEventListener('mouseover', (e) => {
     const el = e.target;
     if (!el || !el.closest) return;
     
     let isClickable = el.closest(interactiveSelector) !== null;
-    let isText = el.closest('p, h1, span') !== null && !isClickable;
+    let isText = el.closest('p, h1, h2, h3, h4, span') !== null && !isClickable;
     
     ring.classList.remove('is-hovering', 'is-text');
     dot.classList.remove('is-hovering', 'is-text');
@@ -1556,7 +1565,7 @@ pause
            updateDomCursorImage(hoverIconUrl);
         }
     } else {
-        if (e.target.closest('.btn-install, .page-btn') && currentPointerUrl) {
+        if (isClickable && currentPointerUrl) {
            updateDomCursorImage(currentPointerUrl);
         } else if (currentIconUrl) {
            updateDomCursorImage(currentIconUrl);
@@ -1566,8 +1575,23 @@ pause
     }
   });
 
-  // Initial Grid Render
+  // Initial Grid Render & Restore Equipped Cursor
   renderGrid();
+  try {
+    const savedIdle = localStorage.getItem('orbit_equipped_cursor');
+    const savedPointer = localStorage.getItem('orbit_equipped_pointer');
+    if (savedIdle) {
+      currentIconUrl = savedIdle;
+      updateDomCursorImage(currentIconUrl);
+      const card = document.querySelector(`.swz-card[data-icon="${savedIdle}"]`);
+      if (card) card.classList.add("selected-idle");
+    }
+    if (savedPointer) {
+      currentPointerUrl = savedPointer;
+      const card = document.querySelector(`.swz-card[data-pointer="${savedPointer}"]`);
+      if (card) card.classList.add("selected-click");
+    }
+  } catch(e) {}
 </script>
 </body>
 </html>
