@@ -679,6 +679,104 @@ class SoundEffects {
       osc.stop(noteTime + 0.10);
     });
   }
+
+  // Authentic Minecraft Book Page Turn (YouTube https://youtu.be/0KdtpvZDU7g = open_flip3.ogg)
+  playPageTurn() {
+    if (!store.data.soundEnabled) return;
+    this.init();
+
+    try {
+      const flips = [
+        "sounds/mc_book_flip3.ogg",
+        "sounds/mc_book_flip1.ogg",
+        "sounds/mc_book_flip2.ogg"
+      ];
+      // 75% probability for flip3 (exact sound from YouTube URL)
+      const picked = Math.random() < 0.75 ? "sounds/mc_book_flip3.ogg" : flips[Math.floor(Math.random() * flips.length)];
+      const audio = new Audio(picked);
+      audio.volume = 0.85;
+      const playPromise = audio.play();
+      if (playPromise && playPromise.catch) {
+        playPromise.catch(() => this.playSynthesizedPageTurn());
+      }
+    } catch (_) {
+      this.playSynthesizedPageTurn();
+    }
+  }
+
+  // Authentic Minecraft Book Close
+  playBookClose() {
+    if (!store.data.soundEnabled) return;
+    this.init();
+    try {
+      const audio = new Audio("sounds/mc_book_close.ogg");
+      audio.volume = 0.8;
+      const playPromise = audio.play();
+      if (playPromise && playPromise.catch) {
+        playPromise.catch(() => {});
+      }
+    } catch (_) {}
+  }
+
+  // Pure Web Audio procedural synthesis of Minecraft paper flip (dual-stroke rustle)
+  playSynthesizedPageTurn() {
+    if (!store.data.soundEnabled) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    try {
+      // Stroke 1: Sharp crisp high-frequency paper scrape (32ms)
+      const bufSize1 = Math.floor(this.ctx.sampleRate * 0.032);
+      const buf1 = this.ctx.createBuffer(1, bufSize1, this.ctx.sampleRate);
+      const d1 = buf1.getChannelData(0);
+      for (let i = 0; i < bufSize1; i++) {
+        d1[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize1 * 0.38));
+      }
+      const noise1 = this.ctx.createBufferSource();
+      noise1.buffer = buf1;
+
+      const f1 = this.ctx.createBiquadFilter();
+      f1.type = "bandpass";
+      f1.frequency.setValueAtTime(3200, now);
+      f1.Q.setValueAtTime(2.8, now);
+
+      const g1 = this.ctx.createGain();
+      g1.gain.setValueAtTime(0.085, now);
+      g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.032);
+
+      noise1.connect(f1);
+      f1.connect(g1);
+      g1.connect(this.ctx.destination);
+      noise1.start(now);
+
+      // Stroke 2: Soft warm paper flutter (120ms, delayed by 16ms)
+      const t2 = now + 0.016;
+      const bufSize2 = Math.floor(this.ctx.sampleRate * 0.12);
+      const buf2 = this.ctx.createBuffer(1, bufSize2, this.ctx.sampleRate);
+      const d2 = buf2.getChannelData(0);
+      for (let i = 0; i < bufSize2; i++) {
+        d2[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize2 * 0.42));
+      }
+      const noise2 = this.ctx.createBufferSource();
+      noise2.buffer = buf2;
+
+      const f2 = this.ctx.createBiquadFilter();
+      f2.type = "bandpass";
+      f2.frequency.setValueAtTime(1400, t2);
+      f2.frequency.exponentialRampToValueAtTime(620, t2 + 0.11);
+      f2.Q.setValueAtTime(1.8, t2);
+
+      const g2 = this.ctx.createGain();
+      g2.gain.setValueAtTime(0.09, t2);
+      g2.gain.exponentialRampToValueAtTime(0.0001, t2 + 0.12);
+
+      noise2.connect(f2);
+      f2.connect(g2);
+      g2.connect(this.ctx.destination);
+      noise2.start(t2);
+    } catch (_) {}
+  }
 }
 
 const sfx = new SoundEffects();
@@ -903,6 +1001,37 @@ class ThreeJsEngine {
             }, undefined, reject);
           });
         }
+      },
+      {
+        id: "minecraft_book",
+        name: "Minecraft 24/7 Guide Book",
+        pos: [-270, 240, 50],
+        dim: 115,
+        rotSpeed: [0.007, 0.012, 0.005],
+        fallbackColor: 0x854d0e,
+        load: () => {
+          return new Promise((resolve, reject) => {
+            if (typeof THREE.GLTFLoader === "undefined") {
+              return reject(new Error("GLTF Loader unavailable"));
+            }
+            const gltfLoader = new THREE.GLTFLoader();
+            gltfLoader.load("models/book/source/model.gltf", (gltf) => {
+              if (gltf.animations && gltf.animations.length > 0) {
+                const mixer = new THREE.AnimationMixer(gltf.scene);
+                const clip = THREE.AnimationClip.findByName(gltf.animations, "open book") || gltf.animations[0];
+                if (clip) {
+                  const action = mixer.clipAction(clip);
+                  action.setLoop(THREE.LoopPingPong);
+                  action.play();
+                }
+                gltf.scene.userData.mixer = mixer;
+                if (!this.mixers) this.mixers = [];
+                this.mixers.push(mixer);
+              }
+              resolve(gltf.scene);
+            }, undefined, reject);
+          });
+        }
       }
     ];
 
@@ -1007,6 +1136,10 @@ class ThreeJsEngine {
       if (mesh.userData.rotSpeed[2]) mesh.rotation.z += mesh.userData.rotSpeed[2];
       mesh.position.y = mesh.userData.origY + Math.sin(time + mesh.userData.floatOffset) * 16;
     });
+
+    if (this.mixers && this.mixers.length > 0) {
+      this.mixers.forEach(m => m.update(0.016));
+    }
 
     if (this.particles) {
       this.particles.rotation.y = time * 0.04;
@@ -1428,6 +1561,195 @@ const MINECRAFT_VERSIONS = [
 ];
 
 // ============================================================================
+// MINECRAFT 3D BLOCKBENCH BOOK VIEWER (Interactive Modal 3D View)
+// ============================================================================
+class Book3DViewer {
+  constructor() {
+    this.canvas = null;
+    this.renderer = null;
+    this.scene = null;
+    this.camera = null;
+    this.mixer = null;
+    this.bookGroup = null;
+    this.animAction = null;
+    this.isAnimPlaying = true;
+    this.isDragging = false;
+    this.previousMousePosition = { x: 0, y: 0 };
+    this.rotation = { x: 0.35, y: -0.6 };
+    this.zoom = 180;
+    this.isInitialized = false;
+    this.clock = typeof THREE !== "undefined" ? new THREE.Clock() : null;
+  }
+
+  init() {
+    this.canvas = document.getElementById("canvas-mc-book-3d");
+    if (!this.canvas || typeof THREE === "undefined" || typeof THREE.GLTFLoader === "undefined") return;
+
+    const width = this.canvas.parentElement.clientWidth || 600;
+    const height = this.canvas.parentElement.clientHeight || 420;
+
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    this.camera.position.set(0, 40, this.zoom);
+
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true });
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xfff1dc, 1.4);
+    this.scene.add(ambientLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight1.position.set(60, 100, 80);
+    this.scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0xd97706, 0.8);
+    dirLight2.position.set(-60, -40, -50);
+    this.scene.add(dirLight2);
+
+    // Book Container Group
+    this.bookGroup = new THREE.Group();
+    this.bookGroup.rotation.x = this.rotation.x;
+    this.bookGroup.rotation.y = this.rotation.y;
+    this.scene.add(this.bookGroup);
+
+    // Load Blockbench Book Model
+    const gltfLoader = new THREE.GLTFLoader();
+    gltfLoader.load("models/book/source/model.gltf", (gltf) => {
+      const model = gltf.scene;
+
+      // Auto-center and normalize scale
+      const box = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      const maxAxis = Math.max(size.x, size.y, size.z) || 1;
+      const targetScale = 90 / maxAxis;
+      model.scale.set(targetScale, targetScale, targetScale);
+
+      const center = new THREE.Vector3();
+      box.getCenter(center);
+      model.position.x = -center.x * targetScale;
+      model.position.y = -center.y * targetScale;
+      model.position.z = -center.z * targetScale;
+
+      this.bookGroup.add(model);
+
+      // Play Open Book skeletal animation
+      if (gltf.animations && gltf.animations.length > 0) {
+        this.mixer = new THREE.AnimationMixer(model);
+        const clip = THREE.AnimationClip.findByName(gltf.animations, "open book") || gltf.animations[0];
+        if (clip) {
+          this.animAction = this.mixer.clipAction(clip);
+          this.animAction.setLoop(THREE.LoopPingPong);
+          this.animAction.play();
+        }
+      }
+    });
+
+    this.bindEvents();
+    this.isInitialized = true;
+    this.animate();
+  }
+
+  bindEvents() {
+    if (!this.canvas) return;
+
+    this.canvas.addEventListener("mousedown", (e) => {
+      this.isDragging = true;
+      this.previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener("mouseup", () => {
+      this.isDragging = false;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!this.isDragging || !this.bookGroup) return;
+      const deltaX = e.clientX - this.previousMousePosition.x;
+      const deltaY = e.clientY - this.previousMousePosition.y;
+
+      this.rotation.y += deltaX * 0.01;
+      this.rotation.x += deltaY * 0.01;
+      this.bookGroup.rotation.x = this.rotation.x;
+      this.bookGroup.rotation.y = this.rotation.y;
+
+      this.previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    this.canvas.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      this.zoom = Math.max(80, Math.min(320, this.zoom + e.deltaY * 0.2));
+      if (this.camera) this.camera.position.z = this.zoom;
+    }, { passive: false });
+
+    // Touch support for mobile
+    let touchStart = { x: 0, y: 0 };
+    this.canvas.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) {
+        touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    }, { passive: true });
+
+    this.canvas.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 1 && this.bookGroup) {
+        const deltaX = e.touches[0].clientX - touchStart.x;
+        const deltaY = e.touches[0].clientY - touchStart.y;
+        this.rotation.y += deltaX * 0.012;
+        this.rotation.x += deltaY * 0.012;
+        this.bookGroup.rotation.x = this.rotation.x;
+        this.bookGroup.rotation.y = this.rotation.y;
+        touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    }, { passive: true });
+  }
+
+  toggleAnimation() {
+    if (!this.animAction) return;
+    this.isAnimPlaying = !this.isAnimPlaying;
+    this.animAction.paused = !this.isAnimPlaying;
+    const btn = document.getElementById("btn-mc-3d-toggle-anim");
+    if (btn) {
+      btn.innerHTML = this.isAnimPlaying ? "<span>⏸ Pause Animation</span>" : "<span>▶ Play Animation</span>";
+    }
+  }
+
+  resetCamera() {
+    this.rotation = { x: 0.35, y: -0.6 };
+    this.zoom = 180;
+    if (this.bookGroup) {
+      this.bookGroup.rotation.x = this.rotation.x;
+      this.bookGroup.rotation.y = this.rotation.y;
+    }
+    if (this.camera) {
+      this.camera.position.set(0, 40, this.zoom);
+    }
+  }
+
+  resize() {
+    if (!this.canvas || !this.renderer || !this.camera) return;
+    const parent = this.canvas.parentElement;
+    if (!parent) return;
+    const width = parent.clientWidth || 600;
+    const height = parent.clientHeight || 420;
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
+  }
+
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    const delta = this.clock ? this.clock.getDelta() : 0.016;
+    if (this.mixer && this.isAnimPlaying) {
+      this.mixer.update(delta);
+    }
+    if (this.renderer && this.scene && this.camera) {
+      this.renderer.render(this.scene, this.camera);
+    }
+  }
+}
+
+// ============================================================================
 // 6. MAIN APPLICATION CONTROLLER
 // ============================================================================
 class EchoNodeApp {
@@ -1442,6 +1764,9 @@ class EchoNodeApp {
     this.versionSearchQuery = "";
     this.realPublicIp = null;
     this.realLanIp = null;
+    this.currentBookPage = 1;
+    this.book3dViewer = null;
+    this.obfuscatedTimer = null;
   }
 
   init() {
@@ -1501,6 +1826,9 @@ class EchoNodeApp {
 
     // 6. Initialize Cyberpunk Floating Context Menu (Right-Click)
     this.initContextMenu();
+
+    // 7. Initialize Minecraft Guide Codex Book & SFX
+    this.initMinecraftBook();
   }
 
   // Tactical Orbit Custom Cursor & Retrosmart Equip Engine
@@ -1958,6 +2286,16 @@ class EchoNodeApp {
         </div>
       </div>
 
+      <div class="ctx-item" onclick="app.openMinecraftBookModal(); app.hideContextMenu();" style="color: #fbbf24;">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">📖</span>
+          <span style="font-weight: 700;">Full 24/7 Setup Guide</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-badge-pill" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">MC BOOK</span>
+        </div>
+      </div>
+
       <div class="ctx-divider"></div>
       <div class="ctx-section-label">Server Options & Config</div>
 
@@ -2145,6 +2483,10 @@ class EchoNodeApp {
           <div class="ctx-subitem" onclick="window.location.href = '../progress/'">
             <div><span class="ctx-subitem-icon">📊</span>Development Progress</div>
             <span style="font-size: 10px; color: #64748b;">Live Log ↗</span>
+          </div>
+          <div class="ctx-subitem" onclick="app.openMinecraftBookModal(); app.hideContextMenu();">
+            <div><span class="ctx-subitem-icon">📖</span>Minecraft Guide Codex</div>
+            <span style="font-size: 10px; color: #fbbf24;">Book ◀ ▶</span>
           </div>
           <div class="ctx-divider"></div>
           <div class="ctx-subitem" onclick="spatialEngine.setMode(store.data.currentMode === '3d' ? '2d' : '3d'); app.hideContextMenu();">
@@ -7511,6 +7853,473 @@ ${custom}
     this.closeModal("modal-import-server");
     this.showToast(`Successfully imported ${staged.serverName}!`, "success");
     this.appendLog("system", `[EchoNode Import] Fully imported server "${staged.serverName}" (${staged.detectedSoftware} ${staged.detectedVersion}) with ${staged.filesCount} files.`);
+  }
+
+  // ============================================================================
+  // MINECRAFT 24/7 SETUP GUIDE BOOK ENGINE & CODEX
+  // ============================================================================
+  initMinecraftBook() {
+    // 1. Trigger button bindings
+    const topbarBtn = document.getElementById("btn-topbar-guide");
+    if (topbarBtn) {
+      topbarBtn.addEventListener("click", () => this.openMinecraftBookModal(1));
+    }
+
+    const sidebarBtn = document.getElementById("btn-sidebar-guide");
+    if (sidebarBtn) {
+      sidebarBtn.addEventListener("click", () => this.openMinecraftBookModal(1));
+    }
+
+    const uptimeBanner = document.getElementById("banner-open-mc-guide");
+    if (uptimeBanner) {
+      uptimeBanner.addEventListener("click", () => this.openMinecraftBookModal(1));
+    }
+
+    const accessBanner = document.getElementById("banner-access-mc-guide");
+    if (accessBanner) {
+      accessBanner.addEventListener("click", () => this.openMinecraftBookModal(4));
+    }
+
+    // 2. Navigation corner arrows
+    const prevBtn = document.getElementById("mc-book-btn-prev");
+    if (prevBtn) {
+      prevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.prevBookPage();
+      });
+    }
+
+    const nextBtn = document.getElementById("mc-book-btn-next");
+    if (nextBtn) {
+      nextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.nextBookPage();
+      });
+    }
+
+    // 3. Modal close and Done buttons
+    const doneBtn = document.getElementById("mc-book-btn-done");
+    if (doneBtn) {
+      doneBtn.addEventListener("click", () => this.closeMinecraftBookModal());
+    }
+
+    const closeBtn = document.getElementById("mc-book-btn-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => this.closeMinecraftBookModal());
+    }
+
+    // Close when clicking modal backdrop
+    const modalOverlay = document.getElementById("modal-minecraft-book");
+    if (modalOverlay) {
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) {
+          this.closeMinecraftBookModal();
+        }
+      });
+    }
+
+    // 4. View Mode Switcher: 2D Pages vs 3D Blockbench
+    const modePagesBtn = document.getElementById("btn-book-mode-pages");
+    if (modePagesBtn) {
+      modePagesBtn.addEventListener("click", () => this.switchBookMode("pages"));
+    }
+
+    const mode3dBtn = document.getElementById("btn-book-mode-3d");
+    if (mode3dBtn) {
+      mode3dBtn.addEventListener("click", () => this.switchBookMode("3d"));
+    }
+
+    const backPagesBtn = document.getElementById("btn-mc-3d-back-pages");
+    if (backPagesBtn) {
+      backPagesBtn.addEventListener("click", () => this.switchBookMode("pages"));
+    }
+
+    const toggleAnimBtn = document.getElementById("btn-mc-3d-toggle-anim");
+    if (toggleAnimBtn) {
+      toggleAnimBtn.addEventListener("click", () => {
+        if (this.book3dViewer) this.book3dViewer.toggleAnimation();
+      });
+    }
+
+    const resetCamBtn = document.getElementById("btn-mc-3d-reset-cam");
+    if (resetCamBtn) {
+      resetCamBtn.addEventListener("click", () => {
+        if (this.book3dViewer) this.book3dViewer.resetCamera();
+      });
+    }
+
+    // 5. Global Keyboard Navigation (Arrows / A / D / Escape)
+    window.addEventListener("keydown", (e) => {
+      const modal = document.getElementById("modal-minecraft-book");
+      if (!modal || !modal.classList.contains("active")) return;
+
+      // Don't intercept typing in inputs or textareas
+      if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+
+      if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+        e.preventDefault();
+        this.prevBookPage();
+      } else if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+        e.preventDefault();
+        this.nextBookPage();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        this.closeMinecraftBookModal();
+      }
+    });
+
+    // 6. Check URL parameters for direct link to guide (#guide, ?guide=1, ?book=1)
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("guide") || urlParams.has("book") || window.location.hash.includes("guide")) {
+        const pageFromParam = parseInt(urlParams.get("guide") || urlParams.get("book") || "1", 10);
+        setTimeout(() => this.openMinecraftBookModal(isNaN(pageFromParam) ? 1 : pageFromParam), 400);
+      }
+    } catch (_) {}
+  }
+
+  openMinecraftBookModal(pageNum = 1) {
+    this.currentBookPage = Math.max(1, Math.min(6, pageNum));
+    this.renderMinecraftBookPage();
+    sfx.playPageTurn();
+    this.openModal("modal-minecraft-book");
+    this.startObfuscatedJiggler();
+  }
+
+  closeMinecraftBookModal() {
+    sfx.playBookClose();
+    this.closeModal("modal-minecraft-book");
+    this.stopObfuscatedJiggler();
+  }
+
+  prevBookPage() {
+    if (this.currentBookPage > 1) {
+      this.currentBookPage--;
+      sfx.playPageTurn();
+      this.renderMinecraftBookPage();
+    }
+  }
+
+  nextBookPage() {
+    if (this.currentBookPage < 6) {
+      this.currentBookPage++;
+      sfx.playPageTurn();
+      this.renderMinecraftBookPage();
+    }
+  }
+
+  setBookPage(pageNum) {
+    this.currentBookPage = Math.max(1, Math.min(6, pageNum));
+    sfx.playPageTurn();
+    this.renderMinecraftBookPage();
+  }
+
+  switchBookMode(mode) {
+    const pagesView = document.getElementById("mc-book-pages-view");
+    const view3d = document.getElementById("mc-book-3d-view");
+    const btnPages = document.getElementById("btn-book-mode-pages");
+    const btn3d = document.getElementById("btn-book-mode-3d");
+
+    if (mode === "3d") {
+      if (pagesView) pagesView.style.display = "none";
+      if (view3d) view3d.style.display = "flex";
+      if (btnPages) btnPages.classList.remove("active");
+      if (btn3d) btn3d.classList.add("active");
+      sfx.playTabSwitch();
+
+      if (!this.book3dViewer) {
+        this.book3dViewer = new Book3DViewer();
+        this.book3dViewer.init();
+      } else {
+        setTimeout(() => this.book3dViewer.resize(), 50);
+      }
+    } else {
+      if (view3d) view3d.style.display = "none";
+      if (pagesView) pagesView.style.display = "block";
+      if (btn3d) btn3d.classList.remove("active");
+      if (btnPages) btnPages.classList.add("active");
+      sfx.playTabSwitch();
+    }
+  }
+
+  startObfuscatedJiggler() {
+    if (this.obfuscatedTimer) clearInterval(this.obfuscatedTimer);
+    const chars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]:;<>,.?/~";
+    this.obfuscatedTimer = setInterval(() => {
+      const els = document.querySelectorAll(".mc-obfuscated-char");
+      if (!els || els.length === 0) return;
+      els.forEach(el => {
+        el.textContent = chars[Math.floor(Math.random() * chars.length)];
+      });
+    }, 65);
+  }
+
+  stopObfuscatedJiggler() {
+    if (this.obfuscatedTimer) {
+      clearInterval(this.obfuscatedTimer);
+      this.obfuscatedTimer = null;
+    }
+  }
+
+  // Renders the active page of the Minecraft Book with full § formatting
+  renderMinecraftBookPage() {
+    const pageNumEl = document.getElementById("mc-book-page-num");
+    if (pageNumEl) pageNumEl.textContent = this.currentBookPage;
+
+    const prevBtn = document.getElementById("mc-book-btn-prev");
+    if (prevBtn) prevBtn.disabled = this.currentBookPage <= 1;
+
+    const nextBtn = document.getElementById("mc-book-btn-next");
+    if (nextBtn) nextBtn.disabled = this.currentBookPage >= 6;
+
+    const bodyEl = document.getElementById("mc-book-page-body");
+    if (!bodyEl) return;
+
+    let content = "";
+
+    if (this.currentBookPage === 1) {
+      content = `
+        <div style="text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 20px; font-weight: 800; color: #1e3a8a;">${this.parseMinecraftToHtml("§0§lEchoNode 24/7 Manual§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Official Sovereign Server Codex *</div>
+        </div>
+
+        <p style="margin-bottom: 10px;">
+          ${this.parseMinecraftToHtml("§0Welcome, Operator!§r This handbook will teach you how to run a §2§l24/7 Minecraft server§r for §1§l100% FREE§r with zero downtime, unlimited slots, and continuous cloud runners.")}
+        </p>
+
+        <div class="mc-guide-box" style="border-left: 3px solid #2563eb;">
+          <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 4px;">✦ 24/7 CLOUD ARCHITECTURE:</div>
+          <div style="font-size: 13.5px; color: #2b2218; line-height: 1.55;">
+            • <b>GitHub Actions:</b> Free high-performance cloud runners (2-Core Xeon, 7 GB RAM, SSD).<br>
+            • <b>Auto-Restart Loop:</b> Workflows refresh every 5.5 hours before the 6-hour limit, syncing your world to Git without losing player data.<br>
+            • <b>Playit.gg Tunnel:</b> Permanent, DDoS-protected domain (e.g. <code class="mc-code-chip">myserver.gl.joinmc.link</code>) for Java &amp; Bedrock players!
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+          <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
+            <span>Next: Step 1 (Get Key) ▶</span>
+          </button>
+        </div>
+      `;
+    } else if (this.currentBookPage === 2) {
+      content = `
+        <div style="text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 18px; font-weight: 800; color: #991b1b;">${this.parseMinecraftToHtml("§4§lStep 1: Get GitHub Key§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Personal Access Token (PAT) *</div>
+        </div>
+
+        <p style="margin-bottom: 8px;">
+          ${this.parseMinecraftToHtml("To allow EchoNode to launch and sync your 24/7 runner, generate a secret Personal Access Token:")}
+        </p>
+
+        <div class="mc-guide-box">
+          <div style="font-size: 12px; font-weight: 700; color: #785233; margin-bottom: 6px;">DIRECT SETTINGS LINK:</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
+            <button type="button" class="mc-copy-chip" onclick="window.open('https://github.com/settings/tokens', '_blank');" style="background: #1e3a8a; color: #fff;">
+              <span>🔗 Open github.com/settings/tokens ↗</span>
+            </button>
+            <button type="button" class="mc-copy-chip" onclick="navigator.clipboard.writeText('https://github.com/settings/tokens'); app.showToast('Copied Tokens URL!', 'success');">
+              <span>📋 Copy URL</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="font-size: 13.5px; line-height: 1.55;">
+          <b>1.</b> Visit the token URL above.<br>
+          <b>2.</b> Click <b>Generate new token</b> ➔ select <b>Generate new token (classic)</b>.<br>
+          <b>3.</b> Set Note: <code class="mc-code-chip">EchoNode-24-7</code>. Expiration: <b>No expiration</b>.<br>
+          <b>4. Select Scopes:</b><br>
+          &nbsp;&nbsp;${this.parseMinecraftToHtml("§2[✓] repo§r")} (Full repository control to sync world saves)<br>
+          &nbsp;&nbsp;${this.parseMinecraftToHtml("§2[✓] workflow§r")} (Update &amp; trigger GitHub Action workflows)<br>
+          <b>5.</b> Click <b>Generate token</b> at bottom, and copy your <code class="mc-code-chip">ghp_...</code> key!
+        </div>
+
+        <div class="mc-guide-box" style="margin-top: 10px; font-size: 12px; border-left: 3px solid #f59e0b;">
+          <b>🔒 Privacy Note:</b> Never share your key publicly. EchoNode stores it only inside your browser's private local storage.
+        </div>
+      `;
+    } else if (this.currentBookPage === 3) {
+      content = `
+        <div style="text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 18px; font-weight: 800; color: #166534;">${this.parseMinecraftToHtml("§2§lStep 2: Auto-Deploy§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Connect Repo &amp; Playit.gg *</div>
+        </div>
+
+        <div style="font-size: 13.5px; line-height: 1.55;">
+          <b>1. Create a Repository:</b><br>
+          Go to <a href="https://github.com/new" target="_blank" style="color: #1e3a8a; text-decoration: underline; font-weight: bold;">github.com/new</a> and name your repository (e.g. <code class="mc-code-chip">my-minecraft-24-7</code>). Can be Public or Private.<br><br>
+
+          <b>2. Open EchoNode 24/7 Tab:</b><br>
+          Click the <b>24/7 Hosting</b> tab in the sidebar.<br><br>
+
+          <b>3. Paste Repo URL &amp; Token:</b><br>
+          Paste your GitHub repository link and your <code class="mc-code-chip">ghp_...</code> key.<br><br>
+
+          <b>4. Crucial Actions Permission:</b><br>
+          In your GitHub Repo: <b>Settings ➔ Actions ➔ General ➔ Workflow permissions</b> &rarr; Choose <b>'Read and write permissions'</b>.<br><br>
+
+          <b>5. Click Connect &amp; Sync:</b><br>
+          EchoNode commits <code class="mc-code-chip">server.jar</code>, <code class="mc-code-chip">eula=true</code>, and the 24/7 continuous runner loop automatically! Runner boots in ~30 seconds.
+        </div>
+      `;
+    } else if (this.currentBookPage === 4) {
+      content = `
+        <div style="text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 18px; font-weight: 800; color: #6b21a8;">${this.parseMinecraftToHtml("§5§lStep 3: Server Access &amp; Ops§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Operator Privileges, Whitelist &amp; Collaborators *</div>
+        </div>
+
+        <div style="font-size: 13.5px; line-height: 1.5;">
+          <div style="font-weight: 700; color: #b45309; margin-bottom: 4px;">👑 OPERATOR COMMANDS (/op):</div>
+          In EchoNode Console or in-game chat, type:<br>
+          <button type="button" class="mc-copy-chip" onclick="navigator.clipboard.writeText('/op '); app.showToast('Copied /op command!', 'success');">
+            <span>📋 /op &lt;player_name&gt;</span>
+          </button>
+          <span style="font-size: 12px; color: #785233;">Grants Level 4 OP (full admin power).</span><br>
+          <button type="button" class="mc-copy-chip" onclick="navigator.clipboard.writeText('/deop '); app.showToast('Copied /deop command!', 'success');">
+            <span>📋 /deop &lt;player_name&gt;</span>
+          </button>
+          <span style="font-size: 12px; color: #785233;">Revokes OP status.</span>
+
+          <div style="font-weight: 700; color: #0284c7; margin: 10px 0 4px 0;">🛡️ WHITELIST ACCESS CONTROL:</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="mc-copy-chip" onclick="navigator.clipboard.writeText('/whitelist on'); app.showToast('Copied /whitelist on!', 'success');">
+              <span>📋 /whitelist on</span>
+            </button>
+            <button type="button" class="mc-copy-chip" onclick="navigator.clipboard.writeText('/whitelist add '); app.showToast('Copied /whitelist add!', 'success');">
+              <span>📋 /whitelist add &lt;name&gt;</span>
+            </button>
+          </div>
+
+          <div style="font-weight: 700; color: #6b21a8; margin: 10px 0 4px 0;">🤝 GIVING FRIENDS CLOUD MANAGEMENT:</div>
+          In GitHub: Go to your Server Repo ➔ <b>Settings ➔ Collaborators ➔ "Add people"</b>.<br>
+          Invite your friends! They can now manage the server directly from EchoNode or view live logs!
+        </div>
+      `;
+    } else if (this.currentBookPage === 5) {
+      content = `
+        <div style="text-align: center; margin-bottom: 8px;">
+          <div style="font-size: 18px; font-weight: 800; color: #b45309;">${this.parseMinecraftToHtml("§6§lStep 4: Minecraft Color Codes§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Section Sign (§) &amp; Formatting Codex *</div>
+        </div>
+
+        <div class="mc-color-table">
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§0')"><span class="mc-color-swatch" style="background: #000000;"></span><span>§0 &amp;0 Black</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§1')"><span class="mc-color-swatch" style="background: #0000AA;"></span><span>§1 &amp;1 Dark Blue</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§2')"><span class="mc-color-swatch" style="background: #00AA00;"></span><span>§2 &amp;2 Dark Green</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§3')"><span class="mc-color-swatch" style="background: #00AAAA;"></span><span>§3 &amp;3 Dark Aqua</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§4')"><span class="mc-color-swatch" style="background: #AA0000;"></span><span>§4 &amp;4 Dark Red</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§5')"><span class="mc-color-swatch" style="background: #AA00AA;"></span><span>§5 &amp;5 Dark Purple</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§6')"><span class="mc-color-swatch" style="background: #FFAA00;"></span><span>§6 &amp;6 Gold</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§7')"><span class="mc-color-swatch" style="background: #AAAAAA;"></span><span>§7 &amp;7 Gray</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§8')"><span class="mc-color-swatch" style="background: #555555;"></span><span>§8 &amp;8 Dark Gray</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§9')"><span class="mc-color-swatch" style="background: #5555FF;"></span><span>§9 &amp;9 Blue</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§a')"><span class="mc-color-swatch" style="background: #55FF55;"></span><span>§a &amp;a Green</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§b')"><span class="mc-color-swatch" style="background: #55FFFF;"></span><span>§b &amp;b Aqua</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§c')"><span class="mc-color-swatch" style="background: #FF5555;"></span><span>§c &amp;c Red</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§d')"><span class="mc-color-swatch" style="background: #FF55FF;"></span><span>§d &amp;d Light Purple</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§e')"><span class="mc-color-swatch" style="background: #FFFF55;"></span><span>§e &amp;e Yellow</span></div>
+          <div class="mc-color-row" onclick="app.insertColorCodeToTester('§f')"><span class="mc-color-swatch" style="background: #FFFFFF;"></span><span>§f &amp;f White</span></div>
+        </div>
+
+        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px;">
+          <button type="button" class="mc-mini-chip" onclick="app.insertColorCodeToTester('§l')"><b>§l Bold</b></button>
+          <button type="button" class="mc-mini-chip" onclick="app.insertColorCodeToTester('§o')"><i>§o Italic</i></button>
+          <button type="button" class="mc-mini-chip" onclick="app.insertColorCodeToTester('§n')"><u>§n Underline</u></button>
+          <button type="button" class="mc-mini-chip" onclick="app.insertColorCodeToTester('§m')"><s>§m Strike</s></button>
+          <button type="button" class="mc-mini-chip" onclick="app.insertColorCodeToTester('§k')"><span class="mc-obfuscated-char">§k</span> Magic</button>
+          <button type="button" class="mc-mini-chip" onclick="app.insertColorCodeToTester('§r')">§r Reset</button>
+        </div>
+
+        <!-- Real-Time Interactive Color Tester -->
+        <div class="mc-tester-container">
+          <div class="mc-tester-header">⚡ LIVE MINECRAFT TEXT TESTER:</div>
+          <input type="text" class="mc-tester-input" id="mc-tester-input" value="§6✦ §aHello §bOrbit §e24/7! §d§lJoin Now! §r§7» §fplay.server.net">
+          <div class="mc-tester-preview-box" id="mc-tester-preview"></div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+            <button type="button" class="mc-copy-chip" id="btn-copy-tester-text" style="font-size: 11px;">
+              <span>📋 Copy Text with Codes</span>
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (this.currentBookPage === 6) {
+      content = `
+        <div style="text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 18px; font-weight: 800; color: #0284c7;">${this.parseMinecraftToHtml("§3§lStep 5: Connect &amp; Troubleshoot§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Joining Server &amp; Fixing Common Issues *</div>
+        </div>
+
+        <div style="font-size: 13.5px; line-height: 1.55;">
+          <div style="font-weight: 700; color: #0284c7; margin-bottom: 4px;">🌐 HOW TO CONNECT IN MINECRAFT:</div>
+          • Open Minecraft (Java Edition or Bedrock Edition).<br>
+          • Go to <b>Multiplayer ➔ Add Server</b>.<br>
+          • Paste your Playit domain from the 24/7 tab (e.g. <code class="mc-code-chip">orbit.gl.joinmc.link</code>).<br>
+          • Java Port: <code class="mc-code-chip">25565</code> (standard). Bedrock Port: Use your assigned Geyser port.<br><br>
+
+          <div style="font-weight: 700; color: #b91c1c; margin-bottom: 4px;">🔧 COMMON ISSUES &amp; SOLUTIONS:</div>
+          • <b>"EULA not accepted":</b> Ensure <code class="mc-code-chip">eula=true</code> inside <code class="mc-code-chip">eula.txt</code>.<br>
+          • <b>"GitHub Action 403 / Permission Denied":</b> In Repo Settings ➔ Actions ➔ General ➔ Workflow permissions, select <b>Read and write permissions</b>.<br>
+          • <b>"Playit Tunnel Offline":</b> In Console type <code class="mc-code-chip">/playit-setup</code> or click "Sync Repository" in EchoNode.<br>
+          • <b>Auto-Restart Cycle:</b> The server smoothly restarts every 5.5 hours to refresh runners without losing world data!
+        </div>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <button type="button" class="mc-book-done-btn" onclick="app.closeMinecraftBookModal()">
+            <span>Ready to Play! (Done)</span>
+          </button>
+        </div>
+      `;
+    }
+
+    bodyEl.innerHTML = content;
+
+    // If on page 5, bind real-time tester
+    if (this.currentBookPage === 5) {
+      this.bindMinecraftColorTester();
+    }
+  }
+
+  // Real-time Interactive Color Code Tester (Page 5)
+  bindMinecraftColorTester() {
+    const input = document.getElementById("mc-tester-input");
+    const preview = document.getElementById("mc-tester-preview");
+    const copyBtn = document.getElementById("btn-copy-tester-text");
+
+    const updatePreview = () => {
+      if (input && preview) {
+        preview.innerHTML = this.parseMinecraftToHtml(input.value || "");
+      }
+    };
+
+    if (input) {
+      input.addEventListener("input", updatePreview);
+      updatePreview();
+    }
+
+    if (copyBtn && input) {
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(input.value);
+        sfx.playClick();
+        this.showToast("Copied formatted Minecraft text!", "success");
+      });
+    }
+  }
+
+  insertColorCodeToTester(code) {
+    const input = document.getElementById("mc-tester-input");
+    if (!input) return;
+    input.focus();
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    input.setRangeText(code, start, end, "end");
+    sfx.playClick();
+    const preview = document.getElementById("mc-tester-preview");
+    if (preview) {
+      preview.innerHTML = this.parseMinecraftToHtml(input.value);
+    }
   }
 }
 

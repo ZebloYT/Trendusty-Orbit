@@ -47,6 +47,9 @@
   <title>EchoNode Cloud - Minecraft Server Manager</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="echonode-cube.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
   <!-- Google Identity Services (GIS) Client SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -263,6 +266,14 @@
             </div>
             <span class="nav-badge-pill ai">Antigravity</span>
           </button>
+
+          <button class="nav-item-btn" id="btn-sidebar-guide" style="border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.08);">
+            <div class="nav-item-left">
+              <span class="nav-item-icon" style="font-size: 15px;">📖</span>
+              <span style="font-weight: 700; color: #fde68a;">Full Setup Guide</span>
+            </div>
+            <span class="nav-badge-pill" style="color: #fbbf24; border-color: rgba(251, 191, 36, 0.5); background: rgba(245, 158, 11, 0.2);">BOOK</span>
+          </button>
         </div>
 
         <!-- Sidebar Footer -->
@@ -307,6 +318,13 @@
               </div>
               <span class="user-status-dot"></span>
             </div>
+
+            <!-- Minecraft 24/7 Setup Guide Book Trigger -->
+            <button class="topbar-guide-btn" id="btn-topbar-guide" title="Open Minecraft 24/7 Setup Guide Book (Key, Tunnel, OP &amp; Color Codes)">
+              <span class="guide-book-icon">📖</span>
+              <span>Full Guide</span>
+              <span class="guide-badge-pill">MC Book</span>
+            </button>
 
             <!-- Quick Search Palette Trigger -->
             <button class="search-palette-trigger" id="btn-trigger-search">
@@ -1293,38 +1311,107 @@
           </section>
 
           <!-- ----------------------------------------------------------------
-               ACCESS TAB (COMMING SOON)
+               ACCESS TAB (Operator Privileges & Shared Access)
                ---------------------------------------------------------------- -->
           <section class="tab-view" id="view-access">
             <div class="view-header">
-              <h2>Access Control &amp; Permissions</h2>
-              <p>Manage shared access, delegate server administration, and configure operator privileges.</p>
+              <h2>Access Control &amp; Operator Permissions</h2>
+              <p>Manage shared access, grant operator privileges (/op), configure whitelists, and invite GitHub collaborators.</p>
             </div>
 
-            <div class="content-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 440px; text-align: center; padding: 48px 24px; background: radial-gradient(circle at center, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.6) 75%); border: 1.5px dashed rgba(56, 189, 248, 0.35); border-radius: 16px;">
-              <div style="width: 84px; height: 84px; border-radius: 22px; background: rgba(56, 189, 248, 0.12); border: 1.5px solid rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; box-shadow: 0 0 35px rgba(56, 189, 248, 0.22);">
-                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3-3m0 0l-3 3m3-3v6"/></svg>
+            <!-- Access Quick CTA Banner to Minecraft Book -->
+            <div class="minecraft-book-banner" id="banner-access-mc-guide" onclick="app.openMinecraftBookModal(4)">
+              <div class="mc-banner-left">
+                <div class="mc-banner-icon-box">
+                  <span class="mc-banner-icon">👥</span>
+                </div>
+                <div class="mc-banner-text">
+                  <div class="mc-banner-tag">✦ STEP 3 GUIDE IN CODEX</div>
+                  <h3>How to Give Access &amp; Operator Permissions</h3>
+                  <p>Read Page 4 of the official Minecraft Book for in-depth command breakdowns (/op, /whitelist), permission levels 1–4, and adding GitHub collaborators.</p>
+                </div>
+              </div>
+              <button class="btn-mc-open-book" type="button">
+                <span>Open Access Page ◀ ▶</span>
+              </button>
+            </div>
+
+            <!-- Access Sections Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+              <!-- 1. Operator Control Card -->
+              <div class="content-card">
+                <h3 style="font-size: 15px; color: #f59e0b; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                  <span>👑</span> Server Operator (/op) Privileges
+                </h3>
+                <p style="font-size: 12.5px; color: #94a3b8; line-height: 1.5; margin-bottom: 12px;">
+                  Operators have full administrative powers over the server. Use the console or type these in-game with admin credentials:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <div style="font-size: 11px; color: #38bdf8; font-weight: 700;">Grant Full Operator (Level 4)</div>
+                      <code style="color: #4ade80; font-size: 12px;">/op &lt;player_name&gt;</code>
+                    </div>
+                    <button class="btn-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="navigator.clipboard.writeText('/op '); app.showToast('Copied /op command!', 'success');">Copy</button>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <div style="font-size: 11px; color: #f87171; font-weight: 700;">Revoke Operator Privileges</div>
+                      <code style="color: #fca5a5; font-size: 12px;">/deop &lt;player_name&gt;</code>
+                    </div>
+                    <button class="btn-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="navigator.clipboard.writeText('/deop '); app.showToast('Copied /deop command!', 'success');">Copy</button>
+                  </div>
+                </div>
               </div>
 
-              <div style="display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 16px; border-radius: 999px; margin-bottom: 16px; letter-spacing: 2px;">
-                FEATURE UNDER CONSTRUCTION
+              <!-- 2. Whitelist Access Card -->
+              <div class="content-card">
+                <h3 style="font-size: 15px; color: #38bdf8; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                  <span>🛡️</span> Whitelist Private Access
+                </h3>
+                <p style="font-size: 12.5px; color: #94a3b8; line-height: 1.5; margin-bottom: 12px;">
+                  Keep griefers out by only permitting explicitly approved players to join:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <div style="font-size: 11px; color: #38bdf8; font-weight: 700;">Enable Server Whitelist</div>
+                      <code style="color: #4ade80; font-size: 12px;">/whitelist on</code>
+                    </div>
+                    <button class="btn-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="navigator.clipboard.writeText('/whitelist on'); app.showToast('Copied /whitelist on!', 'success');">Copy</button>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <div style="font-size: 11px; color: #38bdf8; font-weight: 700;">Add Player to Whitelist</div>
+                      <code style="color: #4ade80; font-size: 12px;">/whitelist add &lt;player_name&gt;</code>
+                    </div>
+                    <button class="btn-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="navigator.clipboard.writeText('/whitelist add '); app.showToast('Copied /whitelist add!', 'success');">Copy</button>
+                  </div>
+                </div>
               </div>
 
-              <h1 style="font-size: 42px; font-weight: 900; letter-spacing: 3px; color: #f8fafc; margin: 0 0 12px 0; text-shadow: 0 0 25px rgba(56, 189, 248, 0.3);">
-                COMMING SOON
-              </h1>
-
-              <p style="font-size: 14.5px; color: #94a3b8; max-width: 500px; margin: 0 0 26px 0; line-height: 1.6;">
-                The Access manager is currently in development. Soon you will be able to invite friends, share sub-user server management, and configure role-based permissions directly from this window.
-              </p>
-
-              <div style="display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap;">
-                <button type="button" class="btn-secondary" onclick="app.switchTab('console')" style="font-size: 13px; padding: 10px 20px;">
-                  <span>&larr; Back to Console</span>
-                </button>
-                <button type="button" class="btn-primary" onclick="app.showToast('Access feature is coming soon!', 'info')" style="font-size: 13px; padding: 10px 20px;">
-                  <span>🔔 Notify When Available</span>
-                </button>
+              <!-- 3. GitHub Cloud Management Sharing Card -->
+              <div class="content-card" style="grid-column: 1 / -1;">
+                <h3 style="font-size: 15px; color: #a78bfa; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                  <span>🤝</span> Give Friends Cloud 24/7 Management Access (GitHub Collaborators)
+                </h3>
+                <p style="font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 14px;">
+                  Because your 24/7 server runs as code in GitHub Actions, you can easily delegate co-ownership to your trusted friends:
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 12px;">
+                  <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                    <strong style="color: #fff; display: block; margin-bottom: 4px;">1. Open Repo Settings</strong>
+                    Go to your connected GitHub repository and click on <strong>Settings</strong>.
+                  </div>
+                  <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                    <strong style="color: #fff; display: block; margin-bottom: 4px;">2. Add Collaborators</strong>
+                    Click <strong>Collaborators</strong> on the left sidebar &rarr; <strong>Add people</strong>.
+                  </div>
+                  <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                    <strong style="color: #fff; display: block; margin-bottom: 4px;">3. Full Management</strong>
+                    Friends can now view server logs, trigger restart workflows, and download world backups directly!
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -1334,7 +1421,26 @@
                ---------------------------------------------------------------- -->
           <section class="tab-view" id="view-uptime">
             <div class="view-header">
-              <h2>24/7 Server Hosting & GitHub CI/CD Engine</h2>
+              <h2>24/7 Server Hosting &amp; GitHub CI/CD Engine</h2>
+              <p>Host your Minecraft server around the clock using GitHub Actions runner workflows, or keep your local PC awake.</p>
+            </div>
+
+            <!-- Minecraft Interactive Guide Book Banner -->
+            <div class="minecraft-book-banner" id="banner-open-mc-guide" onclick="app.openMinecraftBookModal(1)">
+              <div class="mc-banner-left">
+                <div class="mc-banner-icon-box">
+                  <span class="mc-banner-icon">📖</span>
+                </div>
+                <div class="mc-banner-text">
+                  <div class="mc-banner-tag">✦ OFFICIAL MINECRAFT 24/7 HANDBOOK</div>
+                  <h3>Interactive Minecraft Setup Guide &amp; Codex</h3>
+                  <p>Step-by-step interactive book: Get your GitHub PAT key, auto-sync 24/7 cloud runner loops, grant OP access, and full Minecraft color codes table.</p>
+                </div>
+              </div>
+              <button class="btn-mc-open-book" type="button">
+                <span>Open Guide Book ◀ ▶</span>
+              </button>
+            </div>
               <p>Host your Minecraft server around the clock using GitHub Actions runner workflows, or keep your local PC awake.</p>
             </div>
 
@@ -1509,6 +1615,96 @@
   <!-- ====================================================================
        MODALS & POPUPS
        ==================================================================== -->
+
+  <!-- Authentic Minecraft Book & Quill Setup Guide Modal -->
+  <div class="modal-overlay mc-book-overlay" id="modal-minecraft-book" role="dialog" aria-modal="true" aria-label="Minecraft 24/7 Setup Guide Book">
+    <div class="mc-book-wrapper">
+      
+      <!-- Authentic Minecraft Parchment Book Container -->
+      <div class="mc-book-container">
+        
+        <!-- Book Top Bar -->
+        <div class="mc-book-header">
+          <div class="mc-book-header-left">
+            <span class="mc-book-title-icon">📖</span>
+            <div class="mc-book-title-group">
+              <h3 class="mc-book-title">EchoNode 24/7 Handbook</h3>
+              <span class="mc-book-author">by Orbit &amp; Antigravity</span>
+            </div>
+          </div>
+          
+          <div class="mc-book-header-right">
+            <!-- View Mode Switcher: 2D Book vs 3D Blockbench -->
+            <div class="mc-book-mode-toggle">
+              <button type="button" class="mc-mode-btn active" id="btn-book-mode-pages" title="2D Book &amp; Quill Pages">📖 Pages</button>
+              <button type="button" class="mc-mode-btn" id="btn-book-mode-3d" title="Interactive 3D Blockbench Book Model">🔮 3D View</button>
+            </div>
+            <!-- Close Button -->
+            <button type="button" class="mc-book-close-btn" id="mc-book-btn-close" title="Close Book (Esc)">&times;</button>
+          </div>
+        </div>
+
+        <!-- Mode 1: 2D Parchment Page Content -->
+        <div class="mc-book-pages-wrapper" id="mc-book-pages-view">
+          
+          <!-- Page Number Indicator Bar -->
+          <div class="mc-book-page-meta">
+            <span class="mc-page-stamp">SOVEREIGN SERVER CODEX</span>
+            <div class="mc-page-counter">
+              Page <span id="mc-book-page-num" class="mc-counter-num">1</span> of <span class="mc-counter-total">6</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Page Body (Filled by app.renderMinecraftBookPage) -->
+          <div class="mc-book-page-body" id="mc-book-page-body">
+            <!-- Rendered in JS with parseMinecraftToHtml() -->
+          </div>
+
+          <!-- Minecraft Book Bottom Controls with Classic Corner Arrows -->
+          <div class="mc-book-footer">
+            <!-- Corner Left Arrow: Previous Page -->
+            <button type="button" class="mc-book-corner-arrow prev" id="mc-book-btn-prev" title="Previous Page (◀ / Arrow Left)">
+              <span class="mc-arrow-glyph">◀</span>
+            </button>
+
+            <!-- Center Done Button -->
+            <div class="mc-book-footer-center">
+              <button type="button" class="mc-book-done-btn" id="mc-book-btn-done">
+                <span>Done</span>
+              </button>
+            </div>
+
+            <!-- Corner Right Arrow: Next Page -->
+            <button type="button" class="mc-book-corner-arrow next" id="mc-book-btn-next" title="Next Page (▶ / Arrow Right)">
+              <span class="mc-arrow-glyph">▶</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode 2: 3D Blockbench Book Viewport -->
+        <div class="mc-book-3d-wrapper" id="mc-book-3d-view" style="display: none;">
+          <div class="mc-3d-canvas-box">
+            <canvas id="canvas-mc-book-3d"></canvas>
+            <div class="mc-3d-hint">
+              <span>🖱️ Drag to rotate • Scroll to zoom • Blockbench 4.12.5 GLTF</span>
+            </div>
+          </div>
+          <div class="mc-3d-controls-bar">
+            <button type="button" class="mc-book-mini-btn" id="btn-mc-3d-toggle-anim">
+              <span>⏸ Pause Animation</span>
+            </button>
+            <button type="button" class="mc-book-mini-btn" id="btn-mc-3d-reset-cam">
+              <span>🔄 Reset View</span>
+            </button>
+            <button type="button" class="mc-book-mini-btn highlight" id="btn-mc-3d-back-pages">
+              <span>📖 Back to Guide Pages</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
   
   <!-- Code Editor Modal -->
   <div class="modal-overlay" id="modal-code-editor">
