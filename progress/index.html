@@ -638,6 +638,12 @@
 
       <div class="log-line">
         <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[OFFLINE_FIRST_SYNC]</span>
+        <span>Fixed false-positive "ONLINE" server state bug: defaulted all server profiles (Sky Heaven MC, visitor sandbox, and custom servers) to clean OFFLINE state with 0.0 TPS, 0.0 GB RAM, and 0 active players. Wired real-time sync with backend status API (/api/server/status) and implemented setMetricsOffline() handler to ensure the server UI never reports ONLINE unless actually booted and running.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
         <span class="log-ok">[USER_SESSION_QUOTA]</span>
         <span>Integrated authenticated login user profile (amoghpro7473 / dynamic session) into EchoNode: added topbar user profile pill, sidebar account card, and unified multi-server manager with strict 3-server slot quota enforcement (Slot 1, 2, 3 indicators, dynamic instance list, + Create New Server workflow, 3/3 maximum limit lock, and server slot deletion to free capacity).</span>
       </div>

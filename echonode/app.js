@@ -12,12 +12,12 @@ const SKY_HEAVEN_STATE = {
   serverVersion: "Purpur 1.26.1.2 (Protocol 775)",
   installedSoftware: "Purpur",
   installedVersion: "1.26.1.2",
-  status: "online", // 'online', 'offline', 'starting'
-  tps: 20.0,
-  ramUsage: 2.4,
+  status: "offline", // Default is clean OFFLINE until started!
+  tps: 0.0,
+  ramUsage: 0.0,
   ramMax: 8.0,
-  cpuUsage: 14,
-  onlinePlayersCount: 3,
+  cpuUsage: 0,
+  onlinePlayersCount: 0,
   maxPlayers: 50,
   soundEnabled: true,
   currentMode: "2d", // '2d' or '3d'
@@ -365,6 +365,12 @@ class StateStore {
         saved = JSON.parse(JSON.stringify(SKY_HEAVEN_STATE));
         localStorage.setItem("echonode_skyheaven_state", JSON.stringify(saved));
       }
+      // Ensure clean offline default on page load until user starts the server
+      saved.status = "offline";
+      saved.tps = 0.0;
+      saved.ramUsage = 0.0;
+      saved.cpuUsage = 0;
+      saved.onlinePlayersCount = 0;
       this.data = saved;
       this.currentProfile = "skyheaven";
     } else if (activeId === "guest_server") {
@@ -378,6 +384,11 @@ class StateStore {
         saved = JSON.parse(JSON.stringify(GUEST_DEFAULT_STATE));
         localStorage.setItem("echonode_guest_state", JSON.stringify(saved));
       }
+      saved.status = "offline";
+      saved.tps = 0.0;
+      saved.ramUsage = 0.0;
+      saved.cpuUsage = 0;
+      saved.onlinePlayersCount = 0;
       this.data = saved;
       this.currentProfile = "guest_server";
     } else {
@@ -399,6 +410,11 @@ class StateStore {
         }
         localStorage.setItem("echonode_server_state_" + activeId, JSON.stringify(saved));
       }
+      saved.status = "offline";
+      saved.tps = 0.0;
+      saved.ramUsage = 0.0;
+      saved.cpuUsage = 0;
+      saved.onlinePlayersCount = 0;
       this.data = saved;
       this.currentProfile = activeId;
     }
@@ -1995,25 +2011,68 @@ class EchoNodeApp {
     if (modalTun) modalTun.textContent = "play.echonode.net:25565";
   }
 
+  setMetricsOffline() {
+    const ramVal = document.getElementById("val-ram-usage");
+    if (ramVal) ramVal.textContent = "0.0 GB / 8.0 GB";
+    const ramBar = document.getElementById("bar-ram-fill");
+    if (ramBar) ramBar.style.width = "0%";
+    const cpuVal = document.getElementById("val-cpu-usage");
+    if (cpuVal) cpuVal.textContent = "0%";
+    const cpuBar = document.getElementById("bar-cpu-fill");
+    if (cpuBar) cpuBar.style.width = "0%";
+    const ramLive = document.getElementById("metric-ram-live");
+    if (ramLive) ramLive.textContent = "Offline";
+    const cpuLive = document.getElementById("metric-cpu-live");
+    if (cpuLive) cpuLive.textContent = "0%";
+    const tpsLive = document.getElementById("metric-tps-live");
+    if (tpsLive) tpsLive.textContent = "0.0 TPS (Offline)";
+    const topTps = document.getElementById("top-stat-tps");
+    if (topTps) topTps.innerHTML = '<span>TPS</span> --';
+    const topPing = document.getElementById("top-stat-ping");
+    if (topPing) topPing.innerHTML = '<span>PING</span> --';
+    const topUptime = document.getElementById("top-stat-uptime");
+    if (topUptime) topUptime.innerHTML = '<span>UPTIME</span> 0h 0m (Offline)';
+    const badgePlayers = document.getElementById("badge-players-count");
+    if (badgePlayers) badgePlayers.textContent = "0 Online";
+    const metricPlayers = document.getElementById("metric-players-live");
+    if (metricPlayers) metricPlayers.textContent = "0 / 50 Online";
+  }
+
   updateServerStatusUI(status) {
     store.data.status = status;
     store.save();
     const pill = document.getElementById("server-status-pill");
     const text = document.getElementById("server-status-text");
     const glow = document.getElementById("status-card-glow");
+    const badgeTps = document.getElementById("badge-tps");
 
-    pill.className = "status-indicator-pill";
-    if (status === "online") {
-      text.textContent = "ONLINE";
-      glow.style.background = "linear-gradient(90deg, transparent, #10b981, transparent)";
-    } else if (status === "offline") {
-      pill.classList.add("offline");
-      text.textContent = "OFFLINE";
-      glow.style.background = "linear-gradient(90deg, transparent, #f43f5e, transparent)";
-    } else if (status === "starting") {
-      pill.classList.add("starting");
-      text.textContent = "STARTING...";
-      glow.style.background = "linear-gradient(90deg, transparent, #f59e0b, transparent)";
+    if (pill) {
+      pill.className = "status-indicator-pill";
+      if (status === "online") {
+        text.textContent = "ONLINE";
+        if (glow) glow.style.background = "linear-gradient(90deg, transparent, #10b981, transparent)";
+        if (badgeTps) {
+          badgeTps.textContent = "20.0 TPS";
+          badgeTps.className = "nav-badge-pill highlight";
+        }
+      } else if (status === "offline") {
+        pill.classList.add("offline");
+        text.textContent = "OFFLINE";
+        if (glow) glow.style.background = "linear-gradient(90deg, transparent, #f43f5e, transparent)";
+        if (badgeTps) {
+          badgeTps.textContent = "Offline";
+          badgeTps.className = "nav-badge-pill";
+        }
+        this.setMetricsOffline();
+      } else if (status === "starting") {
+        pill.classList.add("starting");
+        text.textContent = "STARTING...";
+        if (glow) glow.style.background = "linear-gradient(90deg, transparent, #f59e0b, transparent)";
+        if (badgeTps) {
+          badgeTps.textContent = "Starting...";
+          badgeTps.className = "nav-badge-pill";
+        }
+      }
     }
   }
 
@@ -2057,10 +2116,14 @@ class EchoNodeApp {
       const res = await fetch("/api/server/start", { method: "POST" });
       const data = await res.json();
       if (!data.success) {
+        this.isSimulatedOnline = false;
         this.updateServerStatusUI("offline");
+        this.setMetricsOffline();
         this.appendLog("error", `[EchoNode] Launch failed: ${data.message || 'Unknown error'}`);
         this.showToast(`Launch failed: ${data.message}`, "warning");
       } else {
+        this.isSimulatedOnline = true;
+        this.updateServerStatusUI("online");
         if (data.network) {
           this.realPublicIp = data.network.publicIp;
           this.realLanIp = data.network.lanIp;
@@ -2077,6 +2140,7 @@ class EchoNodeApp {
     } catch (err) {
       // Standalone simulation mode
       setTimeout(() => {
+        this.isSimulatedOnline = true;
         this.updateServerStatusUI("online");
         store.data.status = "online";
         store.data.ramUsage = 1.8;
@@ -2087,19 +2151,31 @@ class EchoNodeApp {
         this.appendLog("info", `[EchoNode Network] Direct Connection Ready! Share this IP with your friends!`);
         this.showToast(`Server online! Real IP: ${currentIp}`, "success");
 
-        document.getElementById("val-ram-usage").textContent = "1.8 GB / 4.0 GB";
-        document.getElementById("bar-ram-fill").style.width = "45%";
-        document.getElementById("metric-ram-live").textContent = "1.8 / 4.0 GB";
-        document.getElementById("metric-cpu-live").textContent = "12%";
+        const ramVal = document.getElementById("val-ram-usage");
+        if (ramVal) ramVal.textContent = "1.8 GB / 4.0 GB";
+        const ramBar = document.getElementById("bar-ram-fill");
+        if (ramBar) ramBar.style.width = "45%";
+        const ramLive = document.getElementById("metric-ram-live");
+        if (ramLive) ramLive.textContent = "1.8 / 4.0 GB";
+        const cpuLive = document.getElementById("metric-cpu-live");
+        if (cpuLive) cpuLive.textContent = "12%";
         const tpsLive = document.getElementById("metric-tps-live");
         if (tpsLive) tpsLive.textContent = "20.0 TPS (11ms)";
         const topTps = document.getElementById("top-stat-tps");
         if (topTps) topTps.innerHTML = '<span>TPS</span> 20.0';
+        const topPing = document.getElementById("top-stat-ping");
+        if (topPing) topPing.innerHTML = '<span>PING</span> 12ms';
+        const badgeTps = document.getElementById("badge-tps");
+        if (badgeTps) {
+          badgeTps.textContent = "20.0 TPS";
+          badgeTps.className = "nav-badge-pill highlight";
+        }
       }, 1400);
     }
   }
 
   async stopServer() {
+    this.isSimulatedOnline = false;
     if (store.data.status === "offline") {
       this.showToast("Server is already offline.", "warning");
       return;
@@ -2110,8 +2186,13 @@ class EchoNodeApp {
     try {
       await fetch("/api/server/stop", { method: "POST" });
       this.showToast("Stopping server...", "info");
+      this.updateServerStatusUI("offline");
+      this.setMetricsOffline();
     } catch (err) {
       this.updateServerStatusUI("offline");
+      this.setMetricsOffline();
+      this.appendLog("info", "[EchoNode] Server stopped.");
+      this.showToast("Server stopped.", "info");
     }
   }
 
@@ -2320,14 +2401,22 @@ class EchoNodeApp {
           this.updateServerStatusUI(sData.status);
 
           if (sData.status === "online") {
-            document.getElementById("val-ram-usage").textContent = `${sData.ram} GB / ${sData.ramMax} GB`;
-            document.getElementById("bar-ram-fill").style.width = `${(sData.ram / sData.ramMax) * 100}%`;
-            document.getElementById("val-cpu-usage").textContent = `${sData.cpu}%`;
-            document.getElementById("bar-cpu-fill").style.width = `${sData.cpu}%`;
-            document.getElementById("metric-ram-live").textContent = `${sData.ram} / ${sData.ramMax} GB`;
-            document.getElementById("metric-cpu-live").textContent = `${sData.cpu}%`;
-            document.getElementById("metric-players-live").textContent = `${sData.players} / 50 Online`;
-            document.getElementById("badge-players-count").textContent = `${sData.players} Online`;
+            const ramVal = document.getElementById("val-ram-usage");
+            if (ramVal) ramVal.textContent = `${sData.ram} GB / ${sData.ramMax} GB`;
+            const ramBar = document.getElementById("bar-ram-fill");
+            if (ramBar) ramBar.style.width = `${(sData.ram / sData.ramMax) * 100}%`;
+            const cpuVal = document.getElementById("val-cpu-usage");
+            if (cpuVal) cpuVal.textContent = `${sData.cpu}%`;
+            const cpuBar = document.getElementById("bar-cpu-fill");
+            if (cpuBar) cpuBar.style.width = `${sData.cpu}%`;
+            const ramLive = document.getElementById("metric-ram-live");
+            if (ramLive) ramLive.textContent = `${sData.ram} / ${sData.ramMax} GB`;
+            const cpuLive = document.getElementById("metric-cpu-live");
+            if (cpuLive) cpuLive.textContent = `${sData.cpu}%`;
+            const pLive = document.getElementById("metric-players-live");
+            if (pLive) pLive.textContent = `${sData.players} / 50 Online`;
+            const bPlayers = document.getElementById("badge-players-count");
+            if (bPlayers) bPlayers.textContent = `${sData.players} Online`;
 
             // Auto-trigger Nether & End generation when 1st player joins
             if (!store.data.netherEndGenerated && sData.players > 0) {
@@ -2335,15 +2424,18 @@ class EchoNodeApp {
               this.generateNetherAndEndDimensions(firstPlayer);
             }
           } else if (sData.status === "starting") {
-            document.getElementById("metric-ram-live").textContent = "Allocating...";
-            document.getElementById("metric-cpu-live").textContent = "Loading";
+            const ramLive = document.getElementById("metric-ram-live");
+            if (ramLive) ramLive.textContent = "Allocating...";
+            const cpuLive = document.getElementById("metric-cpu-live");
+            if (cpuLive) cpuLive.textContent = "Loading";
           } else {
-            document.getElementById("val-ram-usage").textContent = "0.0 GB / 8.0 GB";
-            document.getElementById("bar-ram-fill").style.width = "0%";
-            document.getElementById("val-cpu-usage").textContent = "0%";
-            document.getElementById("bar-cpu-fill").style.width = "0%";
-            document.getElementById("metric-ram-live").textContent = "Offline";
-            document.getElementById("metric-cpu-live").textContent = "0%";
+            this.setMetricsOffline();
+          }
+        } else {
+          // Status API returned non-200 (e.g. 404 or backend stopped)
+          if (!this.isSimulatedOnline) {
+            this.updateServerStatusUI("offline");
+            this.setMetricsOffline();
           }
         }
 
@@ -2370,7 +2462,11 @@ class EchoNodeApp {
           }
         }
       } catch (err) {
-        // Offline / standalone file mode fallback
+        // Offline / standalone mode fallback (server.py backend unreachable)
+        if (!this.isSimulatedOnline) {
+          this.updateServerStatusUI("offline");
+          this.setMetricsOffline();
+        }
       }
     }, 750);
   }
