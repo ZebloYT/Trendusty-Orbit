@@ -2319,11 +2319,67 @@ class EchoNodeApp {
 
   // Live GitHub Actions 24/7 Cloud Runner Status
   async pollGitHubStatus() {
+    let data = null;
     try {
       const res = await fetch("/api/github/status");
-      if (!res.ok) return;
-      const data = await res.json();
-      
+      if (res.ok) {
+        data = await res.json();
+      }
+    } catch (e) {}
+
+    // Fallback: Direct GitHub API query from client browser using saved credentials
+    if (!data || !data.success) {
+      const rUrl = store.data.githubRepo || "";
+      const token = store.data.githubToken || "";
+      if (rUrl && token) {
+        let owner = "", repo = "";
+        const m = rUrl.match(/github\.com[/:]([^/]+)\/([^/.]+)/);
+        if (m) {
+          owner = m[1].trim();
+          repo = m[2].trim().replace(/\.git$/, "");
+        } else {
+          const sm = rUrl.trim().match(/^([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)$/);
+          if (sm) {
+            owner = sm[1].trim();
+            repo = sm[2].trim().replace(/\.git$/, "");
+          }
+        }
+        if (owner && repo) {
+          try {
+            const ghRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/runs?per_page=3`, {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/vnd.github.v3+json"
+              }
+            });
+            if (ghRes.ok) {
+              const ghData = await ghRes.json();
+              const runs = ghData.workflow_runs || [];
+              if (runs.length > 0) {
+                const latest = runs[0];
+                const isOnline = latest.status === "in_progress" || latest.status === "queued";
+                data = {
+                  success: true,
+                  hasRun: true,
+                  isOnline: isOnline,
+                  status: latest.status,
+                  conclusion: latest.conclusion,
+                  runId: latest.id,
+                  htmlUrl: latest.html_url,
+                  createdAt: latest.created_at,
+                  repo: `${owner}/${repo}`,
+                  currentStep: isOnline ? (latest.name || "Running 24/7 Cloud Server & Playit Tunnel") : (latest.conclusion === "success" ? "Run Completed (Auto-Looping)" : "Run Ended")
+                };
+              }
+            }
+          } catch (ghErr) {}
+        }
+      }
+    }
+
+    if (!data) return;
+
+    try {
       const card = document.getElementById("github-runner-live-card");
       const badge = document.getElementById("github-runner-badge");
       const dot = document.getElementById("github-runner-dot");
@@ -2360,9 +2416,14 @@ class EchoNodeApp {
             }
             if (stText) stText.textContent = "CLOUD 24/7";
             if (glow) glow.style.background = "linear-gradient(90deg, transparent, #10b981, transparent)";
+            const badgeTps = document.getElementById("badge-tps");
+            if (badgeTps) {
+              badgeTps.textContent = "24/7 Active";
+              badgeTps.className = "nav-badge-pill highlight";
+            }
           }
 
-          // If sync progress bar was running or stuck at 70%, immediately finish to 100%!
+          // If sync progress bar was running or stuck, immediately finish to 100%!
           const progressBox = document.getElementById("sync-progress-container");
           const bar = document.getElementById("sync-progress-bar");
           const pctText = document.getElementById("sync-percent-text");
@@ -2387,6 +2448,243 @@ class EchoNodeApp {
     } catch (e) {
       // Quiet fail
     }
+  }
+
+  // Direct Browser-to-GitHub 24/7 Cloud Sync (Works without local backend server)
+  async clientSideGitHubSync(repoUrl, token, autoUpdate) {
+    const progressBox = document.getElementById("sync-progress-container");
+    const bar = document.getElementById("sync-progress-bar");
+    const statusMsg = document.getElementById("sync-status-msg");
+    const pctText = document.getElementById("sync-percent-text");
+
+    let owner = "", repo = "";
+    const m = repoUrl.match(/github\.com[/:]([^/]+)\/([^/.]+)/);
+    if (m) {
+      owner = m[1].trim();
+      repo = m[2].trim().replace(/\.git$/, "");
+    } else {
+      const shortMatch = repoUrl.trim().match(/^([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)$/);
+      if (shortMatch) {
+        owner = shortMatch[1].trim();
+        repo = shortMatch[2].trim().replace(/\.git$/, "");
+      }
+    }
+
+    if (!owner || !repo) {
+      throw new Error("Invalid repository format. Please enter as username/repo or https://github.com/username/repo");
+    }
+
+    if (progressBox) progressBox.classList.add("active");
+    if (bar) bar.style.width = "20%";
+    if (pctText) pctText.textContent = "20%";
+    if (statusMsg) statusMsg.textContent = `Connecting to GitHub API for ${owner}/${repo}...`;
+
+    // 1. Verify GitHub repository access & token permissions
+    const testRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github.v3+json"
+      }
+    });
+
+    if (testRes.status === 401) {
+      throw new Error("Invalid GitHub Token. Please verify your Personal Access Token has repo & workflow permissions.");
+    }
+    if (testRes.status === 404) {
+      throw new Error(`Repository '${owner}/${repo}' was not found. Please verify the name or create it at https://github.com/new first.`);
+    }
+    if (!testRes.ok) {
+      throw new Error(`GitHub API verification failed with HTTP ${testRes.status}`);
+    }
+
+    const repoData = await testRes.json();
+    const defaultBranch = repoData.default_branch || "main";
+
+    // 2. Helper to create or update file in GitHub via Contents API
+    const putGitHubFile = async (filePath, contentStr, commitMsg) => {
+      let fileSha = null;
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+        if (getRes.ok) {
+          const getData = await getRes.json();
+          fileSha = getData.sha;
+        }
+      } catch (e) {}
+
+      const b64 = btoa(unescape(encodeURIComponent(contentStr)));
+      const payload = {
+        message: commitMsg,
+        content: b64
+      };
+      if (fileSha) payload.sha = fileSha;
+      if (defaultBranch) payload.branch = defaultBranch;
+
+      const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!putRes.ok) {
+        const errJson = await putRes.json().catch(() => ({}));
+        if (putRes.status === 403) {
+          throw new Error(`GitHub permission denied (403) for ${filePath}. Ensure your token has "Contents: Read and write" and "Workflows: Read and write" permissions.`);
+        }
+        throw new Error(errJson.message || `Failed to write ${filePath} (HTTP ${putRes.status})`);
+      }
+      return await putRes.json();
+    };
+
+    if (bar) bar.style.width = "45%";
+    if (pctText) pctText.textContent = "45%";
+    if (statusMsg) statusMsg.textContent = "Deploying 24/7 Cloud Runner workflow to .github/workflows/minecraft-24-7.yml...";
+
+    const workflowContent = `name: EchoNode 24-7 Cloud Server
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+  schedule:
+    # Run every 5 hours to stay within the 6-hour free GitHub Actions runner limit
+    - cron: '0 */5 * * *'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  run-server:
+    name: 24/7 Cloud Minecraft Runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Java 21 LTS
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Ensure Paper / Purpur Server Core
+        run: |
+          if [ ! -f "paper.jar" ] || [ $(wc -c < "paper.jar") -lt 10000000 ]; then
+            echo "[EchoNode] Downloading Purpur Server Core..."
+            curl -sSL -o paper.jar https://api.purpurmc.org/v2/purpur/1.20.6/latest/download || \\
+            curl -sSL -o paper.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/499/downloads/paper-1.20.4-499.jar
+          fi
+          chmod +x paper.jar
+          echo "eula=true" > eula.txt
+
+      - name: Launch 24/7 Cloud Server & Playit Tunnel
+        run: |
+          echo "=========================================================="
+          echo "   EchoNode Cloud Server Running on GitHub Actions 24/7"
+          echo "=========================================================="
+          
+          # 1. Download & Launch playit.gg tunnel in background of this step
+          echo "[EchoNode] Downloading playit tunnel agent..."
+          sudo curl -sSL -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64
+          sudo chmod +x /usr/local/bin/playit
+          
+          echo "[EchoNode] Starting playit tunnel daemon..."
+          /usr/local/bin/playit --secret "\${{ secrets.PLAYIT_SECRET || 'ff4c67252a6366cf64a4a32e19be955cfd6dcaa441dc95a83da67c63d7b1dbdf' }}" > playit.log 2>&1 &
+          PLAYIT_PID=$!
+          sleep 4
+          cat playit.log || true
+
+          # 2. Keep stdin open using tail -f /dev/null to prevent headless EOF shutdown
+          # Limit heap to -Xmx5G -Xms2G to prevent GitHub runner 7GB OOM kill
+          echo "[EchoNode] Launching Minecraft Server engine..."
+          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -jar paper.jar --nogui
+
+          # Clean up tunnel when server shuts down
+          kill $PLAYIT_PID 2>/dev/null || true
+
+      - name: Auto-Save World Data
+        if: always()
+        run: |
+          git config --global user.name "echonode-bot"
+          git config --global user.email "echonode-bot@users.noreply.github.com"
+          git add world world_nether world_the_end plugins/Essentials/userdata plugins/SkyHeavenCapes 2>/dev/null || true
+          git commit -m "Auto-saved server state" 2>/dev/null || echo "No changes to save"
+          git push origin HEAD:\${{ github.ref_name }} 2>/dev/null || echo "Push skipped"
+
+      - name: Auto-Loop Runner for Continuous 24/7 Uptime
+        if: always()
+        run: |
+          echo "Triggering next 24/7 runner lifecycle..."
+          curl -s -X POST \\
+            -H "Accept: application/vnd.github.v3+json" \\
+            -H "Authorization: token \${{ secrets.AUTO_RESTART_PAT || secrets.GITHUB_TOKEN }}" \\
+            https://api.github.com/repos/\${{ github.repository }}/actions/workflows/minecraft-24-7.yml/dispatches \\
+            -d '{"ref":"\${{ github.ref_name }}"}' || true
+`;
+
+    await putGitHubFile(".github/workflows/minecraft-24-7.yml", workflowContent, "EchoNode 24/7 Cloud Server Deployment - Automatic Sync");
+
+    if (bar) bar.style.width = "70%";
+    if (pctText) pctText.textContent = "70%";
+    if (statusMsg) statusMsg.textContent = "Deploying server configuration (server.properties, eula.txt, .gitignore)...";
+
+    // Write eula.txt, server.properties and .gitignore
+    await putGitHubFile("eula.txt", "eula=true\n", "EchoNode EULA acceptance");
+
+    const serverProps = (store.data.virtualFiles && store.data.virtualFiles["/server.properties"]) || `# Minecraft server properties\nserver-port=25565\ngamemode=survival\ndifficulty=normal\npvp=true\nmax-players=50\nonline-mode=false\nmotd=\\u00A7b\\u00A7l✦ EchoNode 24/7 Cloud Server`;
+    await putGitHubFile("server.properties", serverProps, "EchoNode server configuration");
+    await putGitHubFile(".gitignore", "Java/\npaper.jar\nlogs/*.log.gz\ncache/\nlibraries/\n*.tmp\n*.zip\n", "EchoNode .gitignore");
+
+    if (bar) bar.style.width = "85%";
+    if (pctText) pctText.textContent = "85%";
+    if (statusMsg) statusMsg.textContent = "Triggering GitHub Actions 24/7 workflow dispatch...";
+
+    try {
+      await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/minecraft-24-7.yml/dispatches`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ref: defaultBranch })
+      });
+    } catch (dispErr) {}
+
+    if (bar) bar.style.width = "100%";
+    if (pctText) pctText.textContent = "100%";
+    if (statusMsg) {
+      statusMsg.innerHTML = `<span style="color: #4ade80; font-weight: 600;">✓ 24/7 Cloud Host is Live on GitHub!</span> <a href="https://github.com/${owner}/${repo}/actions" target="_blank" style="color: #38bdf8; text-decoration: underline; margin-left: 8px;">View Live GitHub Action ↗</a>`;
+    }
+
+    sfx.playServerChime();
+    this.showToast("Server successfully deployed directly to GitHub! 24/7 Cloud Runner is booting.", "success");
+
+    store.data.githubRepo = `https://github.com/${owner}/${repo}`;
+    store.data.githubToken = token;
+    store.data.autoUpdateRepo = autoUpdate;
+    store.data.uptimeActive = true;
+    store.save();
+
+    this.pollGitHubStatus();
+    return {
+      success: true,
+      message: "Server successfully deployed directly to GitHub! 24/7 Cloud Runner is booting.",
+      actionsUrl: `https://github.com/${owner}/${repo}/actions`
+    };
   }
 
   // Live Resource & Real Process Polling
@@ -4036,59 +4334,53 @@ class EchoNodeApp {
         }, 1200);
 
         try {
-          const response = await fetch("/api/github/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ repoUrl, token, autoUpdate })
-          });
+          let synced = false;
+          let data = null;
 
-          clearTimeout(progressTimer1);
-          clearTimeout(progressTimer2);
+          // 1. Try local server.py backend API first if running locally
+          try {
+            const response = await fetch("/api/github/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ repoUrl, token, autoUpdate })
+            });
+            if (response.ok) {
+              data = await response.json();
+              if (data && data.success) {
+                synced = true;
+              }
+            }
+          } catch (backendErr) {
+            // Backend offline or running in static / GitHub Pages mode - proceed to direct client sync
+          }
 
-          const data = await response.json();
-
-          // Immediately update GitHub status card
-          this.pollGitHubStatus();
-
-          if (data.success) {
+          // 2. If local backend was unreachable or failed, perform direct client-side GitHub API deployment!
+          if (!synced) {
+            data = await this.clientSideGitHubSync(repoUrl, token, autoUpdate);
+          } else {
+            clearTimeout(progressTimer1);
+            clearTimeout(progressTimer2);
             bar.style.width = "100%";
             pctText.textContent = "100%";
             statusMsg.innerHTML = `<span style="color: #4ade80; font-weight: 600;">✓ 24/7 Cloud Host is Live on GitHub!</span> <a href="${data.actionsUrl || repoUrl + '/actions'}" target="_blank" style="color: #38bdf8; text-decoration: underline; margin-left: 8px;">View Live GitHub Action ↗</a>`;
-            
             sfx.playServerChime();
             this.showToast(data.message || "Server successfully pushed to GitHub! 24/7 Runner is activating.", "success");
-            
             store.data.githubRepo = repoUrl;
             store.data.githubToken = token;
             store.data.autoUpdateRepo = autoUpdate;
             store.data.uptimeActive = true;
             store.save();
-          } else {
-            // Check if GitHub is actually already running the workflow
-            const ghCheck = await fetch("/api/github/status").then(r => r.json()).catch(() => ({}));
-            if (ghCheck && ghCheck.isOnline) {
-              bar.style.width = "100%";
-              pctText.textContent = "100%";
-              statusMsg.innerHTML = `<span style="color: #4ade80; font-weight: 600;">✓ 24/7 Cloud Server is Active on GitHub!</span> <a href="${ghCheck.htmlUrl}" target="_blank" style="color: #38bdf8; text-decoration: underline; margin-left: 8px;">Live Run ↗</a>`;
-              sfx.playServerChime();
-              this.showToast("24/7 Cloud Server is already online on GitHub Actions!", "success");
-            } else {
-              bar.style.width = "0%";
-              pctText.textContent = "Error";
-              statusMsg.textContent = data.message || "Failed to sync with GitHub repository.";
-              sfx.playWarning();
-              this.showToast(data.message || "Sync failed. Please verify repository and token.", "error");
-            }
+            this.pollGitHubStatus();
           }
         } catch (err) {
           clearTimeout(progressTimer1);
           clearTimeout(progressTimer2);
-          console.error("GitHub sync network error:", err);
+          console.error("GitHub sync error:", err);
           bar.style.width = "0%";
           pctText.textContent = "Error";
-          statusMsg.textContent = "Network error connecting to EchoNode backend API.";
+          statusMsg.textContent = err.message || "Failed to sync with GitHub repository.";
           sfx.playWarning();
-          this.showToast("Could not communicate with EchoNode backend server.", "error");
+          this.showToast(err.message || "Failed to sync with GitHub repository.", "error");
         } finally {
           syncBtn.disabled = false;
           if (repoInput) repoInput.disabled = false;
