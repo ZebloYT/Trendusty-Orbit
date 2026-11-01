@@ -1041,6 +1041,149 @@
       margin: 5px 0;
     }
 
+    /* ==========================================================================
+       LOGIN / SIGN UP SCREEN (EMPTY WINDOW / MODAL)
+       ========================================================================== */
+    .auth-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+      padding: 20px;
+    }
+
+    .auth-modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .auth-modal-window {
+      background: linear-gradient(160deg, rgba(14, 22, 36, 0.96) 0%, rgba(6, 10, 18, 0.98) 100%);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 245, 184, 0.15);
+      overflow: hidden;
+      position: relative;
+      transform: scale(0.94) translateY(12px);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .auth-modal-window::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00f5b8 0%, #38bdf8 50%, #a855f7 100%);
+    }
+
+    .auth-modal-backdrop.is-open .auth-modal-window {
+      transform: scale(1) translateY(0);
+    }
+
+    .auth-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(0, 245, 184, 0.15);
+      background: rgba(3, 7, 18, 0.5);
+    }
+
+    .auth-modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .auth-modal-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00f5b8;
+      box-shadow: 0 0 10px #00f5b8;
+    }
+
+    .auth-modal-title {
+      font-family: var(--font-mono, monospace);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .auth-modal-close {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-dim, #94a3b8);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+    }
+
+    .auth-modal-close:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      transform: rotate(90deg);
+    }
+
+    .auth-modal-body {
+      min-height: 360px;
+      background: transparent;
+      /* Completely empty as requested ("make nothing in it") */
+    }
+
+    /* Corner Sign Up / Login Button */
+    .btn-auth-corner {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(0, 245, 184, 0.08);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      color: #00f5b8;
+      font-family: var(--font-mono, monospace);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .btn-auth-corner:hover {
+      background: #00f5b8;
+      color: #030508;
+      box-shadow: 0 0 20px rgba(0, 245, 184, 0.4);
+      transform: translateY(-1px);
+    }
+
 </style>
 
     
@@ -1242,6 +1385,10 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Back to Overview
         </a>
+        <button type="button" class="btn-auth-corner" onclick="openAuthModal(event)" title="Sign Up / Login">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Sign Up / Login</span>
+        </button>
       </div>
 
     </div>
@@ -1273,7 +1420,7 @@
           </div>
 
           <!-- Primary Executable Download -->
-          <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-download" id="dl-btn">
+          <a href="Trendusty-Orbit-Setup.exe" onclick="openAuthModal(event)" download="Trendusty-Orbit-Setup.exe" class="btn-download" id="dl-btn">
             <span>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               <span data-i18n="btn_dl">Download Trendusty-Orbit-Setup.exe</span>
@@ -1283,7 +1430,7 @@
 
           <!-- Alternative Downloads -->
           <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-            <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-secondary-dl">
+            <a href="Trendusty-Orbit-Setup.exe" onclick="openAuthModal(event)" download="Trendusty-Orbit-Setup.exe" class="btn-secondary-dl">
               <span data-i18n="mirror_link">Mirror Download Link</span>
             </a>
             <a href="../Install%20Trendusty%20Orbit.bat" download class="btn-secondary-dl">
@@ -1754,10 +1901,59 @@
       });
 
       window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeContextMenu();
+        if (e.key === 'Escape') {
+          closeContextMenu();
+          closeAuthModal();
+        }
       });
+
+      // Login / Sign Up Screen Modal Handlers
+      window.openAuthModal = function(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        const modal = document.getElementById('auth-modal-backdrop');
+        if (modal) {
+          modal.classList.add('is-open');
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      };
+
+      window.closeAuthModal = function() {
+        const modal = document.getElementById('auth-modal-backdrop');
+        if (modal) {
+          modal.classList.remove('is-open');
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      };
+
+      window.handleAuthBackdropClick = function(e) {
+        if (e.target && e.target.id === 'auth-modal-backdrop') {
+          window.closeAuthModal();
+        }
+      };
     })();
   </script>
+
+  <!-- Login / Sign Up Screen Modal (Empty Shell) -->
+  <div id="auth-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleAuthBackdropClick(event)">
+    <div class="auth-modal-window" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <div class="auth-modal-header">
+        <div class="auth-modal-title-wrap">
+          <span class="auth-modal-status-dot"></span>
+          <span id="auth-modal-title" class="auth-modal-title">Login / Sign Up</span>
+        </div>
+        <button type="button" class="auth-modal-close" onclick="closeAuthModal()" aria-label="Close Login / Sign Up Screen">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <!-- Completely Empty Body as Requested ("make nothing in it") -->
+      <div class="auth-modal-body"></div>
+    </div>
+  </div>
 
 </body>
 </html>
