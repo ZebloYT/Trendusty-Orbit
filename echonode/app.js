@@ -1153,6 +1153,7 @@ class Spatial3DEngine {
       this.dragButton = e.button;
       this.startX = e.clientX;
       this.startY = e.clientY;
+      this.hasDraggedDistance = 0;
       document.body.classList.add("is-orbiting-3d");
     });
 
@@ -1160,6 +1161,7 @@ class Spatial3DEngine {
       if (!this.is3D || !this.isDragging) return;
       const dx = e.clientX - this.startX;
       const dy = e.clientY - this.startY;
+      this.hasDraggedDistance += Math.abs(dx) + Math.abs(dy);
 
       if (this.dragButton === 2 || e.buttons === 2 || e.shiftKey) {
         // Pan
@@ -1200,11 +1202,9 @@ class Spatial3DEngine {
       this.targetZoomZ = Math.max(-450, Math.min(250, this.targetZoomZ));
     }, { passive: true });
 
-    // Prevent context menu only when right-dragging 3D camera
+    // Prevent context menu only when actively right-dragging 3D camera
     window.addEventListener("contextmenu", (e) => {
-      if (!this.is3D) return;
-      if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
-      if (!e.target.closest("#view-container")) {
+      if (this.is3D && this.hasDraggedDistance > 6) {
         e.preventDefault();
       }
     });
@@ -1480,6 +1480,9 @@ class EchoNodeApp {
 
     // 5. Initialize Tactical Orbit Cursor & Retrosmart Equip Engine
     this.initOrbitCursor();
+
+    // 6. Initialize Cyberpunk Floating Context Menu (Right-Click)
+    this.initContextMenu();
   }
 
   // Tactical Orbit Custom Cursor & Retrosmart Equip Engine
@@ -1612,7 +1615,7 @@ class EchoNodeApp {
     requestAnimationFrame(renderFollower);
 
     // Interactive states detection
-    const interactiveSelector = "button, a, input, select, textarea, .nav-item-btn, .server-selector-card, .sidebar-user-card, .topbar-user-pill, .server-switch-item, .btn-quick-act, .search-palette-trigger, .mode-switcher-container, .tab-btn, .action-btn, .option-card, .table-row, [role='button'], label.switch, .badge-status, .mc-quick-btn, .file-table tr, .plugin-card, .player-item, .backup-card, .stat-card, .server-card-selector";
+    const interactiveSelector = "button, a, input, select, textarea, .nav-item-btn, .server-selector-card, .sidebar-user-card, .topbar-user-pill, .server-switch-item, .btn-quick-act, .search-palette-trigger, .mode-switcher-container, .tab-btn, .action-btn, .option-card, .table-row, [role='button'], label.switch, .badge-status, .mc-quick-btn, .file-table tr, .plugin-card, .player-item, .backup-card, .stat-card, .server-card-selector, .ctx-item, .ctx-subitem";
 
     // Mouse down & up
     document.addEventListener("mousedown", (e) => {
@@ -1685,6 +1688,437 @@ class EchoNodeApp {
         }
       }
     });
+  }
+
+  // ============================================================================
+  // CYBERPUNK CUSTOM CONTEXT MENU (RIGHT-CLICK)
+  // ============================================================================
+  initContextMenu() {
+    const menuEl = document.getElementById("echonode-context-menu");
+    if (!menuEl) return;
+
+    window.addEventListener("contextmenu", (e) => {
+      // Allow default browser context menu for input fields and textareas
+      if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+
+      // In 3D mode, if the user was actively panning/orbiting the camera, don't open menu
+      if (typeof spatialEngine !== "undefined" && spatialEngine.is3D && spatialEngine.hasDraggedDistance > 6) {
+        return;
+      }
+
+      e.preventDefault();
+      this.showContextMenu(e.clientX, e.clientY);
+    });
+
+    // Close on click outside, Escape, or resize/scroll
+    window.addEventListener("click", (e) => {
+      if (menuEl && !menuEl.contains(e.target)) {
+        this.hideContextMenu();
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        this.hideContextMenu();
+      }
+    });
+
+    window.addEventListener("resize", () => this.hideContextMenu());
+    window.addEventListener("scroll", () => this.hideContextMenu(), { passive: true });
+  }
+
+  hideContextMenu() {
+    const menu = document.getElementById("echonode-context-menu");
+    if (menu) menu.style.display = "none";
+  }
+
+  copyServerIpFromMenu() {
+    sfx.playClick();
+    const ip = store.data.serverIp || "play.echonode.net:25565";
+    navigator.clipboard.writeText(ip);
+    this.showToast(`Copied Real Server IP: ${ip}`, "success");
+    this.hideContextMenu();
+  }
+
+  toggleServerPowerFromMenu() {
+    this.hideContextMenu();
+    if (store.data.status === "online") {
+      this.stopServer();
+    } else {
+      this.startServer();
+    }
+  }
+
+  switchServerFromMenu(serverId) {
+    sfx.playClick();
+    this.handleSelectServer(serverId);
+    this.hideContextMenu();
+  }
+
+  setServerOption(key, val) {
+    sfx.playClick();
+    if (!store.data.options) store.data.options = {};
+    store.data.options[key] = val;
+    store.save();
+
+    // Sync corresponding input on Options tab if present
+    const input = document.getElementById("opt-" + key);
+    if (input) {
+      if (input.type === "checkbox") {
+        input.checked = !!val;
+      } else {
+        input.value = val;
+      }
+    }
+
+    const labels = {
+      gamemode: "Game Mode",
+      difficulty: "Difficulty",
+      pvp: "PVP Combat",
+      whitelist: "Player Whitelist",
+      nether: "Nether Dimension",
+      flight: "Flight",
+      cmdblocks: "Command Blocks"
+    };
+    const name = labels[key] || key;
+    const displayVal = typeof val === "boolean" ? (val ? "Enabled ✓" : "Disabled ✗") : String(val).toUpperCase();
+    this.showToast(`${name}: ${displayVal}`, "success");
+    this.hideContextMenu();
+  }
+
+  showContextMenu(x, y) {
+    const menu = document.getElementById("echonode-context-menu");
+    if (!menu) return;
+
+    const sName = store.data.serverName || "Sky Heaven MC";
+    const sIp = store.data.serverIp || "play.echonode.net:25565";
+    const sVer = store.data.installedSoftware && store.data.installedVersion
+      ? `${store.data.installedSoftware} ${store.data.installedVersion}`
+      : (store.data.serverVersion || "Paper 1.20.4");
+    const sStatus = (store.data.status || "offline").toLowerCase();
+    const isOnline = sStatus === "online";
+    const isStarting = sStatus === "starting";
+
+    const opts = store.data.options || {};
+    const gamemode = (opts.gamemode || "survival").toLowerCase();
+    const difficulty = (opts.difficulty || "normal").toLowerCase();
+    const pvp = !!opts.pvp;
+    const whitelist = !!opts.whitelist;
+    const nether = typeof opts.nether !== "undefined" ? !!opts.nether : true;
+    const flight = !!opts.flight;
+    const cmdblocks = typeof opts.cmdblocks !== "undefined" ? !!opts.cmdblocks : true;
+
+    // Server instance list
+    const servers = store.getServersList();
+    const activeServerId = store.getActiveServerId();
+
+    const statusBadgeClass = isOnline ? "online" : (isStarting ? "starting" : "offline");
+    const statusText = isOnline ? "ONLINE" : (isStarting ? "STARTING" : "OFFLINE");
+
+    // Build Server Switcher Submenu
+    let serverItemsHtml = servers.map((srv, idx) => {
+      const isActive = srv.id === activeServerId;
+      const isOwnerOnly = !!srv.ownerOnly;
+      const icon = isOwnerOnly ? "👑" : "🖥️";
+      return `
+        <div class="ctx-subitem ${isActive ? 'active' : ''}" onclick="app.switchServerFromMenu('${srv.id}')">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="ctx-subitem-icon">${icon}</span>
+            <span style="font-weight: ${isActive ? '700' : '500'};">${srv.name}</span>
+          </div>
+          ${isActive ? '<span class="ctx-check-mark">✓</span>' : `<span style="font-size: 10px; color: #64748b; font-family: var(--font-mono);">Slot ${idx + 1}</span>`}
+        </div>
+      `;
+    }).join("");
+
+    if (store.canCreateServer()) {
+      serverItemsHtml += `
+        <div class="ctx-divider"></div>
+        <div class="ctx-subitem" onclick="app.openModal('modal-create-server'); app.hideContextMenu();" style="color: #00f5b8;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="ctx-subitem-icon">➕</span>
+            <span style="font-weight: 600;">Create New Server (${servers.length}/3)</span>
+          </div>
+        </div>
+      `;
+    }
+
+    serverItemsHtml += `
+      <div class="ctx-subitem" onclick="app.openServerSwitcherModal(); app.hideContextMenu();" style="color: #94a3b8; font-size: 11.5px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="ctx-subitem-icon">🗂️</span>
+          <span>Manage All Servers & Slots...</span>
+        </div>
+      </div>
+    `;
+
+    menu.innerHTML = `
+      <!-- Server Header Card -->
+      <div class="ctx-header">
+        <div class="ctx-header-title">
+          <span>${sName}</span>
+          <span class="ctx-badge-pill ${statusBadgeClass}">${statusText}</span>
+        </div>
+        <div class="ctx-header-sub">
+          <span>${sIp}</span>
+          <span>${sVer}</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="ctx-item" onclick="app.copyServerIpFromMenu()">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">📋</span>
+          <span style="font-weight: 600;">Copy Server IP</span>
+        </div>
+        <div class="ctx-item-right">
+          <kbd style="font-size: 10px; background: rgba(255,255,255,0.06); padding: 1px 4px; border-radius: 4px; font-family: var(--font-mono);">Direct</kbd>
+        </div>
+      </div>
+
+      <div class="ctx-item" onclick="app.toggleServerPowerFromMenu()">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">${isOnline ? '🛑' : '⚡'}</span>
+          <span>${isOnline ? 'Stop Server' : 'Start Server'}</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-badge-pill ${statusBadgeClass}">${isOnline ? 'Active' : 'Boot'}</span>
+        </div>
+      </div>
+
+      <div class="ctx-divider"></div>
+      <div class="ctx-section-label">Server Options & Config</div>
+
+      <!-- Game Mode Changer (Submenu) -->
+      <div class="ctx-item" data-has-submenu="true">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">🎮</span>
+          <span>Game Mode</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-toggle-badge active" style="text-transform: capitalize;">${gamemode}</span>
+          <span class="ctx-submenu-arrow">▸</span>
+        </div>
+        <div class="ctx-submenu">
+          <div class="ctx-section-label">Select Game Mode</div>
+          <div class="ctx-subitem ${gamemode === 'survival' ? 'active' : ''}" onclick="app.setServerOption('gamemode', 'survival')">
+            <div><span class="ctx-subitem-icon">⚔️</span>Survival</div>
+            ${gamemode === 'survival' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+          <div class="ctx-subitem ${gamemode === 'creative' ? 'active' : ''}" onclick="app.setServerOption('gamemode', 'creative')">
+            <div><span class="ctx-subitem-icon">🏗️</span>Creative</div>
+            ${gamemode === 'creative' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+          <div class="ctx-subitem ${gamemode === 'adventure' ? 'active' : ''}" onclick="app.setServerOption('gamemode', 'adventure')">
+            <div><span class="ctx-subitem-icon">🗺️</span>Adventure</div>
+            ${gamemode === 'adventure' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+          <div class="ctx-subitem ${gamemode === 'spectator' ? 'active' : ''}" onclick="app.setServerOption('gamemode', 'spectator')">
+            <div><span class="ctx-subitem-icon">👻</span>Spectator</div>
+            ${gamemode === 'spectator' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+        </div>
+      </div>
+
+      <!-- Difficulty Changer (Submenu) -->
+      <div class="ctx-item" data-has-submenu="true">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">💀</span>
+          <span>Difficulty</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-toggle-badge active" style="text-transform: capitalize;">${difficulty}</span>
+          <span class="ctx-submenu-arrow">▸</span>
+        </div>
+        <div class="ctx-submenu">
+          <div class="ctx-section-label">Select Difficulty</div>
+          <div class="ctx-subitem ${difficulty === 'peaceful' ? 'active' : ''}" onclick="app.setServerOption('difficulty', 'peaceful')">
+            <div><span class="ctx-subitem-icon">🕊️</span>Peaceful</div>
+            ${difficulty === 'peaceful' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+          <div class="ctx-subitem ${difficulty === 'easy' ? 'active' : ''}" onclick="app.setServerOption('difficulty', 'easy')">
+            <div><span class="ctx-subitem-icon">🟢</span>Easy</div>
+            ${difficulty === 'easy' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+          <div class="ctx-subitem ${difficulty === 'normal' ? 'active' : ''}" onclick="app.setServerOption('difficulty', 'normal')">
+            <div><span class="ctx-subitem-icon">🟡</span>Normal</div>
+            ${difficulty === 'normal' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+          <div class="ctx-subitem ${difficulty === 'hard' ? 'active' : ''}" onclick="app.setServerOption('difficulty', 'hard')">
+            <div><span class="ctx-subitem-icon">🔴</span>Hard</div>
+            ${difficulty === 'hard' ? '<span class="ctx-check-mark">✓</span>' : ''}
+          </div>
+        </div>
+      </div>
+
+      <!-- Whitelist Toggle -->
+      <div class="ctx-item" onclick="app.setServerOption('whitelist', ${!whitelist})">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">🔒</span>
+          <span>Player Whitelist</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-toggle-badge ${whitelist ? 'active' : ''}">${whitelist ? 'ON' : 'OFF'}</span>
+        </div>
+      </div>
+
+      <!-- PVP Toggle -->
+      <div class="ctx-item" onclick="app.setServerOption('pvp', ${!pvp})">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">⚔️</span>
+          <span>PVP Combat</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-toggle-badge ${pvp ? 'active' : ''}">${pvp ? 'ON' : 'OFF'}</span>
+        </div>
+      </div>
+
+      <!-- Nether Dimension Toggle -->
+      <div class="ctx-item" onclick="app.setServerOption('nether', ${!nether})">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">🔥</span>
+          <span>Allow Nether Dimension</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-toggle-badge ${nether ? 'active' : ''}">${nether ? 'ON' : 'OFF'}</span>
+        </div>
+      </div>
+
+      <!-- Allow Flight Toggle -->
+      <div class="ctx-item" onclick="app.setServerOption('flight', ${!flight})">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">✈️</span>
+          <span>Allow Flight</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-toggle-badge ${flight ? 'active' : ''}">${flight ? 'ON' : 'OFF'}</span>
+        </div>
+      </div>
+
+      <!-- Command Blocks Toggle -->
+      <div class="ctx-item" onclick="app.setServerOption('cmdblocks', ${!cmdblocks})">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">⚙️</span>
+          <span>Command Blocks</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-toggle-badge ${cmdblocks ? 'active' : ''}">${cmdblocks ? 'ON' : 'OFF'}</span>
+        </div>
+      </div>
+
+      <!-- Software & Version Shortcut -->
+      <div class="ctx-item" onclick="app.switchTab('version'); app.hideContextMenu();">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">📦</span>
+          <span>Change Software / Version</span>
+        </div>
+        <div class="ctx-item-right">
+          <span style="font-size: 11px; color: #38bdf8;">${store.data.installedSoftware || 'Paper'} ↗</span>
+        </div>
+      </div>
+
+      <!-- Full Options Tab Shortcut -->
+      <div class="ctx-item" onclick="app.switchTab('options'); app.hideContextMenu();">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">⚙️</span>
+          <span>All Server Options & MOTD</span>
+        </div>
+        <div class="ctx-item-right">
+          <span style="font-size: 11px; color: #94a3b8;">Tab ↗</span>
+        </div>
+      </div>
+
+      <div class="ctx-divider"></div>
+      <div class="ctx-section-label">Server & Ecosystem</div>
+
+      <!-- Change Server (Submenu) -->
+      <div class="ctx-item" data-has-submenu="true">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">🌐</span>
+          <span>Change Server (${servers.length}/3)</span>
+        </div>
+        <div class="ctx-item-right">
+          <span style="font-size: 11px; color: #38bdf8;">Slots</span>
+          <span class="ctx-submenu-arrow">▸</span>
+        </div>
+        <div class="ctx-submenu">
+          <div class="ctx-section-label">Your Cloud Server Slots (Max 3)</div>
+          ${serverItemsHtml}
+        </div>
+      </div>
+
+      <!-- Change App (Submenu) -->
+      <div class="ctx-item" data-has-submenu="true">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">🚀</span>
+          <span>Change App</span>
+        </div>
+        <div class="ctx-item-right">
+          <span class="ctx-submenu-arrow">▸</span>
+        </div>
+        <div class="ctx-submenu">
+          <div class="ctx-section-label">Trendusty Orbit Ecosystem</div>
+          <div class="ctx-subitem" onclick="window.location.href = '../cursor-download.html'">
+            <div><span class="ctx-subitem-icon">🎯</span>Retrosmart Cursors</div>
+            <span style="font-size: 10px; color: #64748b;">Gallery ↗</span>
+          </div>
+          <div class="ctx-subitem" onclick="window.location.href = '../download/'">
+            <div><span class="ctx-subitem-icon">💻</span>Windows Download Setup</div>
+            <span style="font-size: 10px; color: #64748b;">Portal ↗</span>
+          </div>
+          <div class="ctx-subitem" onclick="window.location.href = '../progress/'">
+            <div><span class="ctx-subitem-icon">📊</span>Development Progress</div>
+            <span style="font-size: 10px; color: #64748b;">Live Log ↗</span>
+          </div>
+          <div class="ctx-divider"></div>
+          <div class="ctx-subitem" onclick="spatialEngine.setMode(store.data.currentMode === '3d' ? '2d' : '3d'); app.hideContextMenu();">
+            <div><span class="ctx-subitem-icon">🔮</span>Toggle 2D / 3D Spatial</div>
+            <span class="ctx-toggle-badge ${store.data.currentMode === '3d' ? 'active' : ''}">${store.data.currentMode === '3d' ? '3D' : '2D'}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Go to Home -->
+      <div class="ctx-item" onclick="window.location.href = '../'" style="color: #38bdf8; font-weight: 600;">
+        <div class="ctx-item-left">
+          <span class="ctx-item-icon">🏠</span>
+          <span>Go to Home</span>
+        </div>
+        <div class="ctx-item-right">
+          <span style="font-size: 11px;">Orbit ↗</span>
+        </div>
+      </div>
+    `;
+
+    // Position menu and clamp to screen
+    menu.style.display = "block";
+    const menuWidth = menu.offsetWidth || 275;
+    const menuHeight = menu.offsetHeight || 420;
+
+    let posX = x;
+    let posY = y;
+
+    if (posX + menuWidth > window.innerWidth - 10) {
+      posX = Math.max(10, window.innerWidth - menuWidth - 10);
+    }
+    if (posY + menuHeight > window.innerHeight - 10) {
+      posY = Math.max(10, window.innerHeight - menuHeight - 10);
+    }
+
+    menu.style.left = `${posX}px`;
+    menu.style.top = `${posY}px`;
+
+    // Check if submenus should flip to left side if overflowing right
+    const submenus = menu.querySelectorAll(".ctx-submenu");
+    submenus.forEach(sub => {
+      if (posX + menuWidth + 225 > window.innerWidth) {
+        sub.classList.add("flip-left");
+      } else {
+        sub.classList.remove("flip-left");
+      }
+    });
+
+    sfx.playClick();
   }
 
   // Toast Notification System
