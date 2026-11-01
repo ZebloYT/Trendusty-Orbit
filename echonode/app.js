@@ -4176,6 +4176,7 @@ ${custom}
     const userName = store.getUserName();
     const userEmail = store.getUserEmail();
     const userInitial = (userName[0] || 'A').toUpperCase();
+    const userAvatar = localStorage.getItem("orbit_user_avatar");
     const servers = store.getServersList();
     const count = servers.length;
 
@@ -4183,7 +4184,13 @@ ${custom}
     const topAvatar = document.getElementById("topbar-user-avatar");
     const topName = document.getElementById("topbar-user-name");
     const topSlots = document.getElementById("topbar-server-slots");
-    if (topAvatar) topAvatar.textContent = userInitial;
+    if (topAvatar) {
+      if (userAvatar) {
+        topAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
+      } else {
+        topAvatar.textContent = userInitial;
+      }
+    }
     if (topName) topName.textContent = userName;
     if (topSlots) topSlots.textContent = `${count}/3 Servers`;
 
@@ -4191,7 +4198,13 @@ ${custom}
     const sideAvatar = document.getElementById("sidebar-user-avatar");
     const sideName = document.getElementById("sidebar-user-name");
     const sideSlots = document.getElementById("sidebar-user-slots");
-    if (sideAvatar) sideAvatar.textContent = userInitial;
+    if (sideAvatar) {
+      if (userAvatar) {
+        sideAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
+      } else {
+        sideAvatar.textContent = userInitial;
+      }
+    }
     if (sideName) sideName.textContent = userName;
     if (sideSlots) sideSlots.textContent = `${count}/3 Slots`;
   }
@@ -4205,6 +4218,7 @@ ${custom}
     const userName = store.getUserName();
     const userEmail = store.getUserEmail();
     const userInitial = (userName[0] || 'A').toUpperCase();
+    const userAvatar = localStorage.getItem("orbit_user_avatar");
     const isOwner = store.isOwner();
     const activeId = store.getActiveServerId();
     const servers = store.getServersList();
@@ -4215,7 +4229,13 @@ ${custom}
     const qName = document.getElementById("modal-quota-username");
     const qEmail = document.getElementById("modal-quota-email");
     const qBadge = document.getElementById("modal-quota-badge");
-    if (qAvatar) qAvatar.textContent = userInitial;
+    if (qAvatar) {
+      if (userAvatar) {
+        qAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
+      } else {
+        qAvatar.textContent = userInitial;
+      }
+    }
     if (qName) qName.textContent = userName;
     if (qEmail) qEmail.textContent = userEmail;
     if (qBadge) {
@@ -4317,6 +4337,53 @@ ${custom}
       }
       if (slotIndicator) slotIndicator.textContent = `(Slot ${count + 1}/3)`;
       if (limitBanner) limitBanner.style.display = "none";
+    }
+
+    // Google Identity Services (GIS) Sign-In Button inside EchoNode
+    const gBtn = document.getElementById("echonode-google-btn");
+    if (gBtn && typeof google !== "undefined" && google.accounts && google.accounts.id) {
+      try {
+        google.accounts.id.initialize({
+          client_id: "40423276504-orkfm7vatdnij68b8rpnv49ihbsvr652.apps.googleusercontent.com",
+          callback: (res) => {
+            try {
+              const base64Url = res.credential.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+              const payload = JSON.parse(jsonPayload);
+              const name = payload.name || payload.email.split('@')[0];
+              const email = payload.email || 'amoghpro7473@gmail.com';
+              const pic = payload.picture || '';
+
+              localStorage.setItem("orbit_user_name", name);
+              localStorage.setItem("orbit_user_email", email);
+              if (pic) localStorage.setItem("orbit_user_avatar", pic);
+              localStorage.setItem("orbit_user_session", JSON.stringify({ name, email, avatar: pic, loggedIn: true, time: Date.now() }));
+
+              if (name.toLowerCase() === 'amoghpro7473' || email.toLowerCase().includes('amoghpro7473') || name.toLowerCase() === 'zebloyt') {
+                store.setOwner(true);
+                this.showToast("Logged in with Google as Owner! Sky Heaven MC unlocked. 👑", "success");
+              } else {
+                this.showToast(`Logged in with Google as ${name}`, "success");
+              }
+              this.reloadServerData();
+              this.renderUserSessionUI();
+              this.openServerSwitcherModal();
+            } catch (err) {
+              console.error("[EchoNode Google Auth Error]", err);
+            }
+          }
+        });
+        google.accounts.id.renderButton(gBtn, {
+          theme: "outline",
+          size: "medium",
+          shape: "pill",
+          text: "signin_with",
+          logo_alignment: "left"
+        });
+      } catch (e) {
+        console.warn("[EchoNode GIS Init]", e);
+      }
     }
 
     this.openModal("modal-server-switcher");

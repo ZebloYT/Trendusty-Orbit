@@ -1737,6 +1737,7 @@
       box-shadow: 0 0 6px #00f5b8;
     }
 </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -2420,8 +2421,13 @@
         if (!name) name = localStorage.getItem('orbit_user_name');
         if (!name) return;
         const cornerBtns = document.querySelectorAll('.btn-auth-corner');
+        const userAvatar = localStorage.getItem('orbit_user_avatar');
         cornerBtns.forEach(btn => {
-          btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00f5b8;box-shadow:0 0 8px #00f5b8;margin-right:6px;"></span> ${name}`;
+          if (userAvatar) {
+            btn.innerHTML = `<img src="${userAvatar}" style="width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;" alt="Avatar"> ${name}`;
+          } else {
+            btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00f5b8;box-shadow:0 0 8px #00f5b8;margin-right:6px;"></span> ${name}`;
+          }
           btn.title = `Logged in as ${name} (Click to switch)`;
         });
       };
@@ -2455,6 +2461,53 @@
         window.updateUserAuthUI(userName);
       };
 
+            window.GOOGLE_CLIENT_ID = "40423276504-orkfm7vatdnij68b8rpnv49ihbsvr652.apps.googleusercontent.com";
+
+      window.handleGoogleCredentialResponse = function(response) {
+        try {
+          const loader = document.getElementById('google-loader');
+          if (loader) loader.style.display = 'block';
+
+          // Decode JWT token payload
+          const base64Url = response.credential.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const payload = JSON.parse(jsonPayload);
+
+          const userName = payload.name || payload.email.split('@')[0];
+          const userEmail = payload.email || 'amoghpro7473@gmail.com';
+          const userAvatar = payload.picture || '';
+
+          localStorage.setItem("orbit_user_name", userName);
+          localStorage.setItem("orbit_user_email", userEmail);
+          if (userAvatar) localStorage.setItem("orbit_user_avatar", userAvatar);
+          localStorage.setItem("orbit_user_session", JSON.stringify({
+            name: userName,
+            email: userEmail,
+            avatar: userAvatar,
+            sub: payload.sub,
+            loggedIn: true,
+            time: Date.now()
+          }));
+
+          if (userName.toLowerCase() === 'amoghpro7473' || userEmail.toLowerCase().includes('amoghpro7473') || userName.toLowerCase() === 'zebloyt') {
+            localStorage.setItem("echonode_auth_role", "owner");
+          }
+
+          setTimeout(() => {
+            window.showAuthToast(`Authenticated with Google: ${userEmail}`);
+            window.closeAuthModal();
+            window.updateUserAuthUI(userName);
+          }, 400);
+        } catch(err) {
+          console.error('[Google Credential Error]', err);
+          window.showAuthToast('Google sign-in completed');
+          window.closeAuthModal();
+        }
+      };
+
       window.selectGoogleAccount = function(name, email) {
         const loader = document.getElementById('google-loader');
         if (loader) loader.style.display = 'block';
@@ -2472,6 +2525,19 @@
       };
 
       window.handleOtherGoogleAccount = function() {
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+          try {
+            google.accounts.id.prompt((notification) => {
+              if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                const newEmail = prompt('Enter another Google Account email address:', '');
+                if (newEmail && newEmail.includes('@')) {
+                  window.selectGoogleAccount(newEmail.split('@')[0], newEmail);
+                }
+              }
+            });
+            return;
+          } catch(e) {}
+        }
         const newEmail = prompt('Enter another Google Account email address:', '');
         if (newEmail && newEmail.includes('@')) {
           window.selectGoogleAccount(newEmail.split('@')[0], newEmail);
@@ -2681,6 +2747,26 @@
             <div class="google-account-info">
               <div class="google-account-name" style="font-weight: 500; color: #cbd5e1;">Use another account</div>
             </div>
+          </div>
+                </div>
+
+        <!-- Google Identity Services (GIS) Initializer with Client ID -->
+        <div id="g_id_onload"
+             data-client_id="40423276504-orkfm7vatdnij68b8rpnv49ihbsvr652.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleGoogleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="google-gis-btn-wrap" style="display: flex; justify-content: center; margin: 12px 0 6px 0;">
+          <div class="g_id_signin"
+               data-type="standard"
+               data-shape="pill"
+               data-theme="outline"
+               data-text="continue_with"
+               data-size="large"
+               data-logo_alignment="left"
+               data-width="320">
           </div>
         </div>
 
