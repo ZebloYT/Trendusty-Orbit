@@ -2130,7 +2130,7 @@ class EchoNodeApp {
         </div>
         <div class="ctx-submenu">
           <div class="ctx-section-label">Trendusty Orbit Ecosystem</div>
-          <div class="ctx-subitem" onclick="window.location.href = '../cursor-download.html'">
+          <div class="ctx-subitem" onclick="window.location.href = '../windows/cursor-download/'">
             <div><span class="ctx-subitem-icon">🎯</span>Retrosmart Cursors</div>
             <span style="font-size: 10px; color: #64748b;">Gallery ↗</span>
           </div>

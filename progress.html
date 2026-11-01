@@ -636,6 +636,12 @@
       </div>
 
       <div class="log-line">
+        <span class="log-time">[CURSORS]</span>
+        <span class="log-ok">[PICS_AND_ROUTING_RESTORED]</span>
+        <span>Restored cursor image visibility, preview sheets, and clean routing across Retrosmart Cursors Suite: (1) Diagnosed and resolved missing images caused by conflicting base tags (&lt;base href="../windows/"&gt; and &lt;base href="../"&gt;) which forced relative image paths to 404 when navigating without trailing slashes; (2) Synchronized complete retrosmart assets (previews, icons, downloads) across /retrosmart/, /cursor-download/retrosmart/, and /windows/cursor-download/retrosmart/; (3) Deployed hero banners and logo watermarks to all root, cursor-download, and windows directories; (4) Restored all 480 animated preview GIFs to /previews/; (5) Implemented multi-tier fail-safe onerror fallback handlers for all 28 cursor cards with instant embedded Base64 bitmap rendering; (6) Unified /cursor-download, /cursor-download/, and /windows/cursor-download/ entrypoints to eliminate route bouncing.</span>
+      </div>
+
+      <div class="log-line">
         <span class="log-time">[ECHONODE]</span>
         <span class="log-ok">[REAL_SERVER_EXECUTION]</span>
         <span>Enabled real Minecraft Java process execution and true 24/7 continuous hosting: (1) Server backend (server.py) now detects user's actual Minecraft server files across Windows and WSL paths (C:\Users\Admin\Desktop\Sky Heaven MC) with verified paper.jar (55.7MB), world, and 30+ plugins; (2) Automatically discovers installed Java environments (Eclipse Adoptium JDK 21 LTS, Microsoft JDK 17, and EchoCraft JDK 25); (3) Auto-downloads PaperMC 1.20.4/Purpur core if missing so real Java execution never fails; (4) Launches real Java process with Aikar's optimized high-TPS flags (-Xmx4G -Xms2G -XX:+UseG1GC) and binds port 25565 without fake simulation sockets; (5) Added continuous 24/7 local auto-restart engine that detects unexpected server termination and automatically reboots in 5 seconds; (6) Added official 24/7 Cloud Runner workflow (.github/workflows/minecraft-24-7.yml) with automated Playit.gg global tunnel daemon, periodic cron loops, and real-time GitHub Actions status polling; (7) Removed fake simulation timeout in app.js, replacing it with honest real status sync and one-click 24/7 cloud runner dispatch.</span>

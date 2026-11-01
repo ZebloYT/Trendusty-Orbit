@@ -671,14 +671,14 @@
 <div class="custom-img-cursor" id="custom-img-cursor"></div>
 
 <div class="navbar">
-  <a href="../home/" class="nav-logo">
+  <a href="/home/" class="nav-logo">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00f5b8" /><stop offset="100%" stop-color="#00b4d8" /></linearGradient></defs><path d="M4 4l16 16M4 20L20 4"/></svg>
     <span>Retrosmart &amp; Custom Cursors</span>
   </a>
   <div class="nav-links">
-    <a href="../home/">Orbit Dashboard</a>
-    <a href="../echonode/" target="_blank" rel="noopener noreferrer">EchoNode Cloud ↗</a>
-    <a href="../progress">System Progress</a>
+    <a href="/home/">Orbit Dashboard</a>
+    <a href="/echonode/" target="_blank" rel="noopener noreferrer">EchoNode Cloud ↗</a>
+    <a href="/progress">System Progress</a>
   </div>
 </div>
 
@@ -687,7 +687,7 @@
   <div class="retrosmart-hero-banner">
     <div class="retrosmart-hero-left">
       <div class="retrosmart-logo-box">
-        <img src="retrosmart-banner.png" alt="Retrosmart Xcursor Kits" class="retrosmart-hero-img">
+        <img src="retrosmart-banner.png" onerror="if(!this._r){this._r=1;this.src='/windows/retrosmart-banner.png';}else if(!this._r2){this._r2=1;this.src='retrosmart-banner.png';}" alt="Retrosmart Xcursor Kits" class="retrosmart-hero-img">
       </div>
       <div>
         <div class="retrosmart-pill-tag">
@@ -1235,20 +1235,20 @@
       card.innerHTML = `
         <div class="swz-poster">
           <div class="retrosmart-card-watermark">
-            <img src="retrosmart-logo.png" alt="Retrosmart Logo" class="retrosmart-logo-badge">
+            <img src="retrosmart-logo.png" onerror="if(!this._r){this._r=1;this.src='/windows/retrosmart-logo.png';}else if(!this._r2){this._r2=1;this.src='/assets/retrosmart-logo.png';}" alt="Retrosmart Logo" class="retrosmart-logo-badge">
             <span class="kit-style-chip ${item.style}">${item.styleName}</span>
           </div>
           <div class="swz-default-view">
             <div class="cursor-sample-box">
-              <img src="${item.arrowIcon}" class="swz-big-icon pixelated" alt="Arrow">
+              <img src="${item.arrowIcon}" onerror="if(!this._r){this._r=1;this.src='/windows/'+'${item.arrowIcon}';}else if(!this._r2){this._r2=1;this.src='${item.arrowB64 ? 'data:image/png;base64,' + item.arrowB64 : ''}';}" class="swz-big-icon pixelated" alt="Arrow">
               <span class="sample-label">Arrow</span>
             </div>
             <div class="cursor-sample-box">
-              <img src="${item.pointerIcon}" class="swz-big-icon pixelated" alt="Pointer">
+              <img src="${item.pointerIcon}" onerror="if(!this._r){this._r=1;this.src='/windows/'+'${item.pointerIcon}';}else if(!this._r2){this._r2=1;this.src='${item.pointerB64 ? 'data:image/png;base64,' + item.pointerB64 : ''}';}" class="swz-big-icon pixelated" alt="Pointer">
               <span class="sample-label">Pointer</span>
             </div>
           </div>
-          <img src="${item.preview}" class="swz-hover-gif" alt="${item.name} Preview Sheet" loading="lazy">
+          <img src="${item.preview}" onerror="if(!this._r){this._r=1;this.src='/windows/'+'${item.preview}';}" class="swz-hover-gif" alt="${item.name} Preview Sheet" loading="lazy">
         </div>
         <div class="swz-content">
           <div class="card-palette-row">
