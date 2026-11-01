@@ -30,37 +30,70 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Ensure Paper / Purpur Server Core
+      - name: Ensure Paper / Purpur Server Core & Configs
         run: |
+          mkdir -p server_run
+          cd server_run
+
+          # Copy server.properties and eula if available in repo
+          if [ -f "../website/echonode/server_data/server.properties" ]; then
+            cp ../website/echonode/server_data/server.properties .
+          fi
+          
+          # Auto-configure eula
+          echo "eula=true" > eula.txt
+
+          # Auto-configure server.properties with online-mode=false
+          if [ ! -f "server.properties" ]; then
+            cat << 'PROPS' > server.properties
+server-port=25565
+gamemode=survival
+difficulty=normal
+pvp=true
+online-mode=false
+max-players=50
+motd=\u00A7b\u00A7l✦ EchoNode 24/7 Cloud Server \u00A78┃ \u00A7a\u00A7lONLINE\n\u00A7ePlayit Tunnel Active \u00A78• \u00A7bJoin Now!
+PROPS
+          else
+            sed -i 's/online-mode=true/online-mode=false/g' server.properties
+          fi
+
+          # Ensure Purpur / Paper core exists
           if [ ! -f "paper.jar" ] || [ $(wc -c < "paper.jar") -lt 10000000 ]; then
-            echo "[EchoNode] Downloading Purpur Server Core..."
+            echo "[EchoNode] Downloading Purpur Server Core (1.20.6)..."
             curl -sSL -o paper.jar https://api.purpurmc.org/v2/purpur/1.20.6/latest/download || \
             curl -sSL -o paper.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/499/downloads/paper-1.20.4-499.jar
           fi
           chmod +x paper.jar
-          echo "eula=true" > eula.txt
 
       - name: Launch 24/7 Cloud Server & Playit Tunnel
         run: |
+          cd server_run
           echo "=========================================================="
           echo "   EchoNode Cloud Server Running on GitHub Actions 24/7"
           echo "=========================================================="
           
-          # 1. Download & Launch playit.gg tunnel in background
+          # 1. Download & Launch playit.gg tunnel agent
           echo "[EchoNode] Downloading playit tunnel agent..."
           sudo curl -sSL -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64
           sudo chmod +x /usr/local/bin/playit
           
           echo "[EchoNode] Starting playit tunnel daemon..."
-          /usr/local/bin/playit --secret "${{ secrets.PLAYIT_SECRET || 'ff4c67252a6366cf64a4a32e19be955cfd6dcaa441dc95a83da67c63d7b1dbdf' }}" > playit.log 2>&1 &
+          PLAYIT_KEY="${{ secrets.PLAYIT_SECRET }}"
+          if [ -n "$PLAYIT_KEY" ]; then
+            /usr/local/bin/playit --secret "$PLAYIT_KEY" > playit.log 2>&1 &
+          else
+            /usr/local/bin/playit --secret "ff4c67252a6366cf64a4a32e19be955cfd6dcaa441dc95a83da67c63d7b1dbdf" > playit.log 2>&1 &
+          fi
           PLAYIT_PID=$!
-          sleep 4
+          sleep 5
+          echo "--- Playit Tunnel Status ---"
           cat playit.log || true
+          echo "----------------------------"
 
-          # 2. Keep stdin open using tail -f /dev/null to prevent headless EOF shutdown
-          # Limit heap to -Xmx5G -Xms2G to prevent GitHub runner 7GB OOM kill
+          # 2. Keep stdin open and run Java with headless flags
           echo "[EchoNode] Launching Minecraft Server engine..."
-          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -jar paper.jar --nogui
+          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -Dterminal.jline=false -Dterminal.ansi=true -jar paper.jar --nogui
 
           # Clean up tunnel when server shuts down
           kill $PLAYIT_PID 2>/dev/null || true
@@ -68,10 +101,11 @@ jobs:
       - name: Auto-Save World Data
         if: always()
         run: |
+          cd server_run || true
           git config --global user.name "echonode-bot"
           git config --global user.email "echonode-bot@users.noreply.github.com"
-          git add world world_nether world_the_end plugins/Essentials/userdata plugins/SkyHeavenCapes 2>/dev/null || true
-          git commit -m "Auto-saved server state" 2>/dev/null || echo "No changes to save"
+          git add world world_nether world_the_end plugins/Essentials/userdata 2>/dev/null || true
+          git commit -m "Auto-saved 24/7 server state" 2>/dev/null || echo "No changes to save"
           git push origin HEAD:${{ github.ref_name }} 2>/dev/null || echo "Push skipped"
 
       - name: Auto-Loop Runner for Continuous 24/7 Uptime

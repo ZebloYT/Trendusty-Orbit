@@ -207,30 +207,30 @@ class MinecraftServerController:
         self.is_manual_stop = False
 
     def get_java_path(self):
-        # 1. Environment variable
+        # 1. Prioritize Java 25 (Mandatory for Paper 26.1 / Sky Heaven core)
+        java25_candidates = [
+            r"C:\Users\Admin\Desktop\EchoCraft Server\Java\jdk-25.0.4.1+1\bin\java.exe",
+            "/mnt/c/Users/Admin/Desktop/EchoCraft Server/Java/jdk-25.0.4.1+1/bin/java.exe",
+            os.path.join(self.server_dir, "Java", "jdk-25.0.4.1+1", "bin", "java.exe" if sys.platform == "win32" else "java"),
+            os.path.join(self.server_dir, "Java", "bin", "java.exe" if sys.platform == "win32" else "java"),
+        ]
+        for j25 in java25_candidates:
+            if os.path.exists(j25):
+                return j25
+
+        # 2. Environment variable JAVA_HOME
         j_home = os.environ.get("JAVA_HOME")
         if j_home:
             j_bin = os.path.join(j_home, "bin", "java.exe" if sys.platform == "win32" else "java")
             if os.path.exists(j_bin):
                 return j_bin
 
-        # 2. Bundled Java in server directory
-        local_candidates = [
-            os.path.join(self.server_dir, "Java", "jdk-25.0.4.1+1", "bin", "java.exe" if sys.platform == "win32" else "java"),
-            os.path.join(self.server_dir, "Java", "bin", "java.exe" if sys.platform == "win32" else "java"),
-        ]
-        for lc in local_candidates:
-            if os.path.exists(lc):
-                return lc
-
-        # 3. Check known verified Java installations on Windows / WSL
+        # 3. Check verified Adoptium and Microsoft Java installations
         known_candidates = [
             r"C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot\bin\java.exe",
             "/mnt/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin/java.exe",
             r"C:\Program Files\Microsoft\jdk-17.0.20.8-hotspot\bin\java.exe",
             "/mnt/c/Program Files/Microsoft/jdk-17.0.20.8-hotspot/bin/java.exe",
-            r"C:\Users\Admin\Desktop\EchoCraft Server\Java\jdk-25.0.4.1+1\bin\java.exe",
-            "/mnt/c/Users/Admin/Desktop/EchoCraft Server/Java/jdk-25.0.4.1+1/bin/java.exe",
             "/usr/bin/java"
         ]
         for kc in known_candidates:
@@ -501,12 +501,17 @@ class MinecraftServerController:
 
             args = [
                 java_exe,
-                "-Xmx4G", "-Xms2G",
+                "-Xmx6G", "-Xms2G",
                 "-XX:+UseG1GC",
                 "-XX:+ParallelRefProcEnabled",
                 "-XX:MaxGCPauseMillis=200",
                 "-XX:+UnlockExperimentalVMOptions",
                 "-XX:+DisableExplicitGC",
+                "-Dterminal.jline=false",
+                "-Dterminal.ansi=true",
+                "-Dfile.encoding=UTF-8",
+                "-Dusing.aikars.flags=https://mcflags.emc.gs",
+                "-Daikars.new.flags=true",
                 "-jar", "paper.jar",
                 "--nogui"
             ]
@@ -663,6 +668,9 @@ jobs:
           fi
           chmod +x paper.jar
           echo "eula=true" > eula.txt
+          if [ ! -f "server.properties" ]; then
+            printf "server-port=25565\\ngamemode=survival\\ndifficulty=normal\\npvp=true\\nonline-mode=false\\nmax-players=50\\nmotd=\\\\u00A7b\\\\u00A7l✦ EchoNode 24/7 Cloud Server\\\\n" > server.properties
+          fi
 
       - name: Launch 24/7 Cloud Server & Playit Tunnel
         run: |
@@ -684,7 +692,7 @@ jobs:
           # 2. Keep stdin open using tail -f /dev/null to prevent headless EOF shutdown
           # Limit heap to -Xmx5G -Xms2G to prevent GitHub runner 7GB OOM kill
           echo "[EchoNode] Launching Minecraft Server engine..."
-          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -jar paper.jar --nogui
+          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -Dterminal.jline=false -Dterminal.ansi=true -jar paper.jar --nogui
 
           # Clean up tunnel when server shuts down
           kill $PLAYIT_PID 2>/dev/null || true
@@ -755,6 +763,15 @@ def generate_247_bundle():
         wf_path = os.path.join(workflows_dir, "minecraft-24-7.yml")
         with open(wf_path, "w", encoding="utf-8") as f:
             f.write(WORKFLOW_YML)
+
+        # Also write to website repo root .github/workflows/
+        try:
+            repo_workflows = os.path.join(os.path.dirname(WEB_DIR), ".github", "workflows")
+            os.makedirs(repo_workflows, exist_ok=True)
+            with open(os.path.join(repo_workflows, "minecraft-24-7.yml"), "w", encoding="utf-8") as f:
+                f.write(WORKFLOW_YML)
+        except Exception:
+            pass
 
         # Write workflow file in 24/7 online/
         with open(os.path.join(online_dir, "github-actions-24-7.yml"), "w", encoding="utf-8") as f:

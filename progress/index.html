@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <base href="../">
 <meta charset="UTF-8">
   <!-- Clean URL & Route Normalizer -->
   <script>
@@ -505,6 +504,11 @@
       <span style="color: rgba(240, 253, 244, 0.4); font-size: 11px;">SYNC: GITHUB / MAIN</span>
     </div>
     <div class="terminal-body">
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[REAL_SERVER_247_ENGINE_OPERATIONAL]</span>
+        <span>Made Minecraft server start really with all world/plugin data and 24/7 continuous uptime: (1) Resolved Paper 26.1 core execution by prioritizing verified Java 25 runtime (jdk-25.0.4.1+1) preventing immediate termination, (2) Configured headless JVM flags (-Dterminal.jline=false, -Dterminal.ansi=true, -Dfile.encoding=UTF-8) for stable child process piping, (3) Eliminated fake loading logs so the web console streams real server stdout, (4) Removed persistent localStorage status caching to eliminate false 'already running' blocks on reload, (5) Resolved status oscillation between 24/7 Cloud and Offline by debouncing GitHub polling and preserving confirmed states, (6) Deployed .github/workflows/minecraft-24-7.yml with Playit.gg tunnel agent for genuine 24/7 cloud connectivity.</span>
+      </div>
       <div class="log-line">
         <span class="log-time">[AUTH]</span>
         <span class="log-ok">[GOOGLE_GIS_OAUTH]</span>

@@ -21,6 +21,8 @@ if not defined PYTHON_EXE (
 
 if defined PYTHON_EXE (
     echo [EchoNode] Launching Python backend server (%PYTHON_EXE%)...
+    echo [EchoNode] Opening Web Panel at http://localhost:3000...
+    start "" "http://localhost:3000"
     %PYTHON_EXE% server.py
 ) else (
     echo [WARN] Python was not found in PATH!

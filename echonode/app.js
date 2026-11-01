@@ -1798,9 +1798,9 @@ class EchoNodeApp {
     this.bindNetworkManager();
     this.bindImportServer();
 
-    // 2. Initial renders
+    // 2. Initial renders (Always start verified offline until backend or cloud runner confirms real state)
     this.renderUserSessionUI();
-    this.updateServerStatusUI(store.data.status || "offline");
+    this.updateServerStatusUI("offline");
     this.renderInitialConsole();
     this.renderVersionUI();
     this.renderWorldsList();
@@ -2947,7 +2947,10 @@ class EchoNodeApp {
     }
     this._lastRenderedStatus = status;
     store.data.status = status;
-    store.save();
+    // Don't persist temporary 'starting' state across page reloads
+    if (status !== "starting") {
+      store.save();
+    }
 
     const pill = document.getElementById("server-status-pill");
     const text = document.getElementById("server-status-text");
@@ -2997,8 +3000,9 @@ class EchoNodeApp {
   }
 
   async startServer() {
-    if (store.data.status === "online") {
-      this.showToast("Server is already running!", "warning");
+    // Only block if local backend is verified active AND server process is already running
+    if (this.isLocalBackendOnline && this.lastBackendStatus === "online") {
+      this.showToast("Minecraft Server is already running and online!", "info");
       return;
     }
     sfx.playClick();
@@ -3017,19 +3021,11 @@ class EchoNodeApp {
       this.appendLog("info", `[EchoNode Network] 🏠 LOCAL LAN IP: ${this.realLanIp}:25565 (Wi-Fi / LAN Play)`);
     }
 
-    // Default normal Overworld is active; Nether and End deferred until 1st player joins
     store.data.worldsGenerated = true;
     if (!store.data.customSeed) {
       store.data.customSeed = "782194018249102";
     }
     store.save();
-    this.appendLog("info", `[Server] Loading Overworld spawn region (Dimension: minecraft:overworld, Seed: ${store.data.customSeed})...`);
-    this.appendLog("info", `[Server] Preparing start region for dimension 'minecraft:overworld' [Spawn Area 100%]`);
-    if (!store.data.netherEndGenerated) {
-      this.appendLog("info", `[World Engine] Dimensions 'minecraft:the_nether' and 'minecraft:the_end' deferred (will generate when 1st player joins)`);
-    } else {
-      this.appendLog("info", `[World Engine] Dimensions 'minecraft:the_nether' and 'minecraft:the_end' active.`);
-    }
     this.renderWorldsList();
 
     try {
@@ -3471,7 +3467,7 @@ class EchoNodeApp {
             this.updateServerStatusUI("offline");
           }
         }
-      } else {
+      } else if (data && data.hasRun === false) {
         this.isCloudOnline = false;
         if (!this.isLocalBackendOnline && store.data.status === "cloud_online") {
           this.updateServerStatusUI("offline");
@@ -3742,6 +3738,7 @@ jobs:
         if (sRes && sRes.ok) {
           const sData = await sRes.json();
           this.isLocalBackendOnline = true;
+          this.lastBackendStatus = sData.status;
 
           if (sData.status === "online") {
             this.updateServerStatusUI("online");
@@ -3786,6 +3783,7 @@ jobs:
         } else {
           // Status API returned non-200 or connection failed (e.g. static site or server.py offline)
           this.isLocalBackendOnline = false;
+          this.lastBackendStatus = "offline";
           if (this.isCloudOnline) {
             this.updateServerStatusUI("cloud_online");
           } else if (!this.isSimulatedOnline) {
