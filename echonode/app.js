@@ -5429,8 +5429,173 @@ jobs:
     });
   }
 
+  // 24/7 Vercel Cloud & Port Forwarding Suite
+  switchPortGuideTab(tab) {
+    sfx.playClick();
+    const routerTab = document.getElementById("port-tab-router");
+    const playitTab = document.getElementById("port-tab-playit");
+    const btnRouter = document.getElementById("tab-btn-router");
+    const btnPlayit = document.getElementById("tab-btn-playit");
+
+    if (tab === "router") {
+      if (routerTab) routerTab.style.display = "block";
+      if (playitTab) playitTab.style.display = "none";
+      if (btnRouter) btnRouter.classList.add("active");
+      if (btnPlayit) btnPlayit.classList.remove("active");
+    } else {
+      if (routerTab) routerTab.style.display = "none";
+      if (playitTab) playitTab.style.display = "block";
+      if (btnRouter) btnRouter.classList.remove("active");
+      if (btnPlayit) btnPlayit.classList.add("active");
+    }
+  }
+
+  bindVercelHostingControls() {
+    const vercelUrlInput = document.getElementById("input-vercel-app-url");
+    const vercelIpInput = document.getElementById("input-vercel-server-ip");
+    const saveUrlBtn = document.getElementById("btn-save-vercel-url");
+    const saveIpBtn = document.getElementById("btn-save-vercel-ip");
+    const autofillIpBtn = document.getElementById("btn-autofill-public-ip");
+    const testPortBtn = document.getElementById("btn-test-port-connection");
+    const lanGuideEl = document.getElementById("val-port-guide-lan-ip");
+
+    if (vercelUrlInput && store.data.vercelAppUrl) {
+      vercelUrlInput.value = store.data.vercelAppUrl;
+    }
+    if (vercelIpInput && store.data.serverIp) {
+      vercelIpInput.value = store.data.serverIp;
+    }
+    if (lanGuideEl && this.realLanIp) {
+      lanGuideEl.textContent = `${this.realLanIp} (Your PC)`;
+    }
+
+    if (saveUrlBtn && vercelUrlInput) {
+      saveUrlBtn.addEventListener("click", () => {
+        sfx.playClick();
+        const url = vercelUrlInput.value.trim();
+        if (url) {
+          store.data.vercelAppUrl = url;
+          store.save();
+          this.showToast(`Saved Vercel Cloud URL: ${url}`, "success");
+        } else {
+          this.showToast("Please enter a valid Vercel URL", "warning");
+        }
+      });
+    }
+
+    if (saveIpBtn && vercelIpInput) {
+      saveIpBtn.addEventListener("click", () => {
+        sfx.playClick();
+        const ip = vercelIpInput.value.trim();
+        if (ip) {
+          store.data.serverIp = ip;
+          store.save();
+          this.syncNetworkUI();
+          this.showToast(`Saved Minecraft Connection IP: ${ip}`, "success");
+        } else {
+          this.showToast("Please enter a valid IP or domain", "warning");
+        }
+      });
+    }
+
+    if (autofillIpBtn && vercelIpInput) {
+      autofillIpBtn.addEventListener("click", async () => {
+        sfx.playClick();
+        if (this.realPublicIp) {
+          vercelIpInput.value = `${this.realPublicIp}:25565`;
+          this.showToast(`Auto-filled Public IP: ${this.realPublicIp}:25565`, "info");
+        } else {
+          try {
+            const net = await this.detectRealNetwork();
+            if (net && net.publicIp) {
+              vercelIpInput.value = `${net.publicIp}:25565`;
+              this.showToast(`Auto-filled Public IP: ${net.publicIp}:25565`, "info");
+            } else {
+              vercelIpInput.value = "127.0.0.1:25565";
+            }
+          } catch (e) {
+            vercelIpInput.value = "127.0.0.1:25565";
+          }
+        }
+      });
+    }
+
+    if (testPortBtn && vercelIpInput) {
+      testPortBtn.addEventListener("click", async () => {
+        sfx.playClick();
+        const ip = vercelIpInput.value.trim() || store.data.serverIp || "127.0.0.1:25565";
+        await this.testServerConnection(ip, "box-port-test-result");
+      });
+    }
+  }
+
+  async testServerConnection(targetIp, resultBoxId = "box-port-test-result") {
+    const box = document.getElementById(resultBoxId);
+    if (!box) return;
+
+    box.style.display = "block";
+    box.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; color: #38bdf8;">
+        <span class="status-dot-pulse" style="background: #38bdf8;"></span>
+        <span>Testing connection &amp; pinging <b>${targetIp}</b> via global Minecraft pingers...</span>
+      </div>
+    `;
+
+    // Clean IP: extract hostname and port
+    const clean = targetIp.trim().replace(/^https?:\/\//, "");
+    try {
+      const res = await fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(clean)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.online) {
+          const players = (data.players && data.players.online !== undefined) ? `${data.players.online}/${data.players.max}` : "Active";
+          const version = data.version || "Minecraft Java";
+          const motd = (data.motd && data.motd.clean && data.motd.clean.length) ? data.motd.clean.join(" ") : "A Minecraft Server";
+          
+          box.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+              <span style="display: inline-flex; align-items: center; gap: 6px; color: #4ade80; font-weight: 700;">
+                <span class="status-dot-pulse" style="background: #22c55e;"></span>
+                <span>✓ ONLINE &amp; REACHABLE (PORT 25565 OPEN)</span>
+              </span>
+              <span style="color: #94a3b8; font-size: 11px;">Version: <b style="color: #e2e8f0;">${version}</b></span>
+            </div>
+            <div style="color: #cbd5e1; font-size: 11.5px; margin-bottom: 4px;">
+              <b>Address:</b> <code>${data.ip || clean}:${data.port || 25565}</code> • <b>Players:</b> <span style="color: #38bdf8; font-weight: 600;">${players}</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 4px; font-family: var(--font-minecraft, monospace); font-size: 11px; color: #f8fafc; border: 1px solid rgba(255,255,255,0.08);">
+              ${motd}
+            </div>
+          `;
+          sfx.playServerChime();
+          this.showToast(`Server is ONLINE at ${clean}!`, "success");
+          return;
+        }
+      }
+    } catch (err) {}
+
+    // Fallback or Server Offline/Port blocked report
+    box.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+        <span style="display: inline-flex; align-items: center; gap: 6px; color: #f59e0b; font-weight: 700;">
+          <span style="font-size: 14px;">⚠️</span>
+          <span>COULD NOT REACH SERVER AT ${clean}</span>
+        </span>
+        <span style="color: #fca5a5; font-size: 11px;">Port 25565 Closed or Server Stopped</span>
+      </div>
+      <div style="color: #94a3b8; font-size: 11.5px; line-height: 1.5;">
+        • <b>Check Local Server:</b> Make sure your server is running on your PC (or double-click <code>start_web_server.bat</code>).<br>
+        • <b>Check Port Forwarding:</b> Ensure TCP port <code>25565</code> is forwarded to your LAN IP in your router, or use Playit.gg.<br>
+        • <b>Check Firewall:</b> Allow Java through Windows Firewall with the command in Step 3.
+      </div>
+    `;
+    sfx.playWarning();
+  }
+
   // 24/7 Hosting & Real GitHub Actions CI/CD Engine
   bindUptime() {
+    this.bindVercelHostingControls();
+
     const card = document.getElementById("btn-open-video-tutorial");
     if (card) {
       card.addEventListener("click", () => {
@@ -8137,7 +8302,7 @@ ${custom}
   }
 
   openMinecraftBookModal(pageNum = 1) {
-    this.currentBookPage = Math.max(1, Math.min(6, pageNum));
+    this.currentBookPage = Math.max(1, Math.min(8, pageNum));
     this.renderMinecraftBookPage();
     sfx.playPageTurn();
     this.openModal("modal-minecraft-book");
@@ -8159,7 +8324,7 @@ ${custom}
   }
 
   nextBookPage() {
-    if (this.currentBookPage < 6) {
+    if (this.currentBookPage < 8) {
       this.currentBookPage++;
       sfx.playPageTurn();
       this.renderMinecraftBookPage();
@@ -8167,7 +8332,7 @@ ${custom}
   }
 
   setBookPage(pageNum) {
-    this.currentBookPage = Math.max(1, Math.min(6, pageNum));
+    this.currentBookPage = Math.max(1, Math.min(8, pageNum));
     sfx.playPageTurn();
     this.renderMinecraftBookPage();
   }
@@ -8228,7 +8393,7 @@ ${custom}
     if (prevBtn) prevBtn.disabled = this.currentBookPage <= 1;
 
     const nextBtn = document.getElementById("mc-book-btn-next");
-    if (nextBtn) nextBtn.disabled = this.currentBookPage >= 6;
+    if (nextBtn) nextBtn.disabled = this.currentBookPage >= 8;
 
     const bodyEl = document.getElementById("mc-book-page-body");
     if (!bodyEl) return;
@@ -8243,89 +8408,145 @@ ${custom}
         </div>
 
         <p style="margin-bottom: 10px;">
-          ${this.parseMinecraftToHtml("§0Welcome, Operator!§r This handbook will teach you how to run a §2§l24/7 Minecraft server§r for §1§l100% FREE§r with zero downtime, unlimited slots, and continuous cloud runners.")}
+          ${this.parseMinecraftToHtml("§0Welcome, Operator!§r This handbook will teach you how to run a §2§l24/7 Minecraft server§r for §1§l100% FREE§r with zero downtime, unlimited slots, and continuous edge cloud hosting.")}
         </p>
 
         <div class="mc-guide-box" style="border-left: 3px solid #2563eb;">
-          <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 4px;">✦ 24/7 CLOUD ARCHITECTURE:</div>
+          <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 4px;">✦ 24/7 CLOUD ARCHITECTURES:</div>
           <div style="font-size: 13.5px; color: #2b2218; line-height: 1.55;">
-            • <b>GitHub Actions:</b> Free high-performance cloud runners (2-Core Xeon, 7 GB RAM, SSD).<br>
-            • <b>Auto-Restart Loop:</b> Workflows refresh every 5.5 hours before the 6-hour limit, syncing your world to Git without losing player data.<br>
-            • <b>Playit.gg Tunnel:</b> Permanent, DDoS-protected domain (e.g. <code class="mc-code-chip">myserver.gl.joinmc.link</code>) for Java &amp; Bedrock players!
+            • <b>Vercel Edge Cloud:</b> 100% Free permanent 24/7 cloud host. No 6-hour runner timeouts!<br>
+            • <b>Port Forwarding (Port 25565):</b> Direct worldwide connect through your public IP or Playit.gg tunnel.<br>
+            • <b>GitHub Actions:</b> Cloud runner loops for background tasks and automated world backups.
           </div>
         </div>
 
         <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
           <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
-            <span>Next: Step 1 (Get Key) ▶</span>
+            <span>Next: Step 1 (GitHub vs Vercel) ▶</span>
           </button>
         </div>
       `;
     } else if (this.currentBookPage === 2) {
       content = `
         <div style="text-align: center; margin-bottom: 12px;">
-          <div style="font-size: 18px; font-weight: 800; color: #991b1b;">${this.parseMinecraftToHtml("§4§lStep 1: Get GitHub Key§r")}</div>
-          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Personal Access Token (PAT) *</div>
+          <div style="font-size: 18px; font-weight: 800; color: #991b1b;">${this.parseMinecraftToHtml("§4§lStep 1: GitHub Limits &amp; Vercel§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Overcoming 6-Hour Runner Timeouts *</div>
         </div>
 
-        <p style="margin-bottom: 8px;">
-          ${this.parseMinecraftToHtml("To allow EchoNode to launch and sync your 24/7 runner, generate a secret Personal Access Token:")}
-        </p>
+        <div style="font-size: 13.5px; line-height: 1.55; margin-bottom: 10px;">
+          ${this.parseMinecraftToHtml("<b>Why GitHub Actions Alone Stops:</b><br>• GitHub Actions imposes a strict <b>6-hour maximum job timeout</b> per runner.<br>• Free tier accounts get only 2,000 Action minutes per month.<br>• Actions require PAT tokens with 'workflow' scopes that can fail dispatches.")}
+        </div>
 
-        <div class="mc-guide-box">
-          <div style="font-size: 12px; font-weight: 700; color: #785233; margin-bottom: 6px;">DIRECT SETTINGS LINK:</div>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
-            <button type="button" class="mc-copy-chip" onclick="window.open('https://github.com/settings/tokens', '_blank');" style="background: #1e3a8a; color: #fff;">
-              <span>🔗 Open github.com/settings/tokens ↗</span>
-            </button>
-            <button type="button" class="mc-copy-chip" onclick="navigator.clipboard.writeText('https://github.com/settings/tokens'); app.showToast('Copied Tokens URL!', 'success');">
-              <span>📋 Copy URL</span>
-            </button>
+        <div class="mc-guide-box" style="border-left: 3px solid #16a34a; background: rgba(22, 163, 74, 0.08);">
+          <div style="font-weight: 700; color: #166534; margin-bottom: 4px;">✦ THE 24/7 VERCEL SOLUTION:</div>
+          <div style="font-size: 13px; color: #2b2218; line-height: 1.5;">
+            • <b>Vercel runs 24/7 continuously</b> with NO execution timeouts and zero server sleep.<br>
+            • Your EchoNode web dashboard and keep-alive health pinger stay online 24/7 on global edge CDN.<br>
+            • <b>Players connect directly through your IP</b> (Port Forwarded TCP 25565 or Playit tunnel).
           </div>
         </div>
 
-        <div style="font-size: 13.5px; line-height: 1.55;">
-          <b>1.</b> Visit the token URL above.<br>
-          <b>2.</b> Click <b>Generate new token</b> ➔ select <b>Generate new token (classic)</b>.<br>
-          <b>3.</b> Set Note: <code class="mc-code-chip">EchoNode-24-7</code>. Expiration: <b>No expiration</b>.<br>
-          <b>4. Select Scopes:</b><br>
-          &nbsp;&nbsp;${this.parseMinecraftToHtml("§2[✓] repo§r")} (Full repository control to sync world saves)<br>
-          &nbsp;&nbsp;${this.parseMinecraftToHtml("§2[✓] workflow§r")} (Update &amp; trigger GitHub Action workflows)<br>
-          <b>5.</b> Click <b>Generate token</b> at bottom, and copy your <code class="mc-code-chip">ghp_...</code> key!
-        </div>
-
-        <div class="mc-guide-box" style="margin-top: 10px; font-size: 12px; border-left: 3px solid #f59e0b;">
-          <b>🔒 Privacy Note:</b> Never share your key publicly. EchoNode stores it only inside your browser's private local storage.
+        <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+          <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
+            <span>Next: Step 2 (Deploy to Vercel) ▶</span>
+          </button>
         </div>
       `;
     } else if (this.currentBookPage === 3) {
       content = `
         <div style="text-align: center; margin-bottom: 12px;">
-          <div style="font-size: 18px; font-weight: 800; color: #166534;">${this.parseMinecraftToHtml("§2§lStep 2: Auto-Deploy§r")}</div>
-          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Connect Repo &amp; Playit.gg *</div>
+          <div style="font-size: 18px; font-weight: 800; color: #166534;">${this.parseMinecraftToHtml("§2§lStep 2: Deploy to Vercel§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* 1-Click Permanent Cloud Host *</div>
         </div>
 
         <div style="font-size: 13.5px; line-height: 1.55;">
-          <b>1. Create a Repository:</b><br>
-          Go to <a href="https://github.com/new" target="_blank" style="color: #1e3a8a; text-decoration: underline; font-weight: bold;">github.com/new</a> and name your repository (e.g. <code class="mc-code-chip">my-minecraft-24-7</code>). Can be Public or Private.<br><br>
+          <b>1. One-Click Deploy to Vercel:</b><br>
+          Click the button below to deploy EchoNode directly to Vercel:<br>
+          <div style="margin: 8px 0;">
+            <button type="button" class="mc-copy-chip" onclick="window.open('https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FZebloYT%2FTrendusty-Orbit&project-name=echonode-247', '_blank');" style="background: #000; color: #fff;">
+              <span>▲ Open Vercel 1-Click Deploy ↗</span>
+            </button>
+          </div>
 
-          <b>2. Open EchoNode 24/7 Tab:</b><br>
-          Click the <b>24/7 Hosting</b> tab in the sidebar.<br><br>
+          <b>2. Connect Your GitHub Repo:</b><br>
+          Log in with GitHub, choose your repository, and click <b>Deploy</b>.<br><br>
 
-          <b>3. Paste Repo URL &amp; Token:</b><br>
-          Paste your GitHub repository link and your <code class="mc-code-chip">ghp_...</code> key.<br><br>
+          <b>3. Instant 24/7 Domain:</b><br>
+          Vercel gives you an instant free URL (e.g. <code class="mc-code-chip">my-server.vercel.app</code>) that never turns off!<br><br>
 
-          <b>4. Crucial Actions Permission:</b><br>
-          In your GitHub Repo: <b>Settings ➔ Actions ➔ General ➔ Workflow permissions</b> &rarr; Choose <b>'Read and write permissions'</b>.<br><br>
+          <b>4. Save in EchoNode:</b><br>
+          Paste your Vercel URL into the 24/7 tab to link your cloud dashboard.
+        </div>
 
-          <b>5. Click Connect &amp; Sync:</b><br>
-          EchoNode commits <code class="mc-code-chip">server.jar</code>, <code class="mc-code-chip">eula=true</code>, and the 24/7 continuous runner loop automatically! Runner boots in ~30 seconds.
+        <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+          <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
+            <span>Next: Step 3 (Port Forwarding 25565) ▶</span>
+          </button>
         </div>
       `;
     } else if (this.currentBookPage === 4) {
       content = `
         <div style="text-align: center; margin-bottom: 12px;">
-          <div style="font-size: 18px; font-weight: 800; color: #6b21a8;">${this.parseMinecraftToHtml("§5§lStep 3: Server Access &amp; Ops§r")}</div>
+          <div style="font-size: 18px; font-weight: 800; color: #1e3a8a;">${this.parseMinecraftToHtml("§1§lStep 3: Port Forwarding (25565)§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Opening TCP Port for All Players *</div>
+        </div>
+
+        <div style="font-size: 13px; line-height: 1.55;">
+          <b>Option A: Wi-Fi Router (TCP 25565):</b><br>
+          1. Open browser to <code class="mc-code-chip">192.168.1.1</code> (or <code class="mc-code-chip">192.168.0.1</code>).<br>
+          2. Go to <b>Port Forwarding / NAT Rules &rarr; Add New</b>.<br>
+          3. Set <b>Protocol: TCP</b>, <b>Port: 25565</b>, <b>Target IP: Your PC LAN IP</b>.<br><br>
+
+          <b>Windows Firewall Command (Run in CMD as Admin):</b><br>
+          <button type="button" class="mc-copy-chip" onclick="navigator.clipboard.writeText('netsh advfirewall firewall add rule name=\&quot;Minecraft 25565\&quot; dir=in action=allow protocol=TCP localport=25565'); app.showToast('Copied Firewall Rule!', 'success');" style="margin-top: 4px; font-size: 11.5px;">
+            <span>📋 Copy Firewall Command</span>
+          </button><br><br>
+
+          <b>Option B: Playit.gg Tunnel (No Router Access):</b><br>
+          If you don't have router access, run Playit.gg to get a free permanent domain (<code class="mc-code-chip">myserver.gl.joinmc.link</code>) without touching your router!
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+          <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
+            <span>Next: Step 4 (Connecting via IP) ▶</span>
+          </button>
+        </div>
+      `;
+    } else if (this.currentBookPage === 5) {
+      content = `
+        <div style="text-align: center; margin-bottom: 10px;">
+          <div style="font-size: 18px; font-weight: 800; color: #0284c7;">${this.parseMinecraftToHtml("§3§lStep 4: Connecting Through The IP§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* How Players Join in Minecraft *</div>
+        </div>
+
+        <div style="font-size: 13px; line-height: 1.55; margin-bottom: 10px;">
+          <b>1. In Minecraft:</b> Go to <b>Multiplayer &rarr; Add Server</b>.<br>
+          <b>2. Server Address:</b> Enter your Public IP + <code class="mc-code-chip">:25565</code> or Playit domain (e.g. <code class="mc-code-chip">${store.data.serverIp || '103.14.22.89:25565'}</code>).<br>
+          <b>3. In EchoNode:</b> Set this IP in the 24/7 Hosting tab so Vercel keeps live tabs on player count and MOTD.
+        </div>
+
+        <!-- In-Book Live IP & Port Ping Tester -->
+        <div class="mc-tester-container" style="margin-top: 8px;">
+          <div class="mc-tester-header">⚡ LIVE MINECRAFT IP &amp; PORT TESTER:</div>
+          <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+            <input type="text" class="mc-tester-input" id="mc-book-tester-ip" value="${store.data.serverIp || '127.0.0.1:25565'}" placeholder="e.g. your-ip:25565">
+            <button type="button" class="mc-copy-chip" id="btn-mc-book-test-ip" style="white-space: nowrap; padding: 4px 10px;">
+              <span>⚡ Test Port</span>
+            </button>
+          </div>
+          <div id="mc-book-ip-test-result" style="font-size: 12px; color: #2b2218;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+          <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
+            <span>Next: Step 5 (Server Access &amp; Ops) ▶</span>
+          </button>
+        </div>
+      `;
+    } else if (this.currentBookPage === 6) {
+      content = `
+        <div style="text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 18px; font-weight: 800; color: #6b21a8;">${this.parseMinecraftToHtml("§5§lStep 5: Server Access &amp; Ops§r")}</div>
           <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Operator Privileges, Whitelist &amp; Collaborators *</div>
         </div>
 
@@ -8352,14 +8573,19 @@ ${custom}
           </div>
 
           <div style="font-weight: 700; color: #6b21a8; margin: 10px 0 4px 0;">🤝 GIVING FRIENDS CLOUD MANAGEMENT:</div>
-          In GitHub: Go to your Server Repo ➔ <b>Settings ➔ Collaborators ➔ "Add people"</b>.<br>
-          Invite your friends! They can now manage the server directly from EchoNode or view live logs!
+          In GitHub / Vercel: Add your friends as <b>Collaborators</b> so they can manage the 24/7 server with you!
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+          <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
+            <span>Next: Step 6 (Color Codes) ▶</span>
+          </button>
         </div>
       `;
-    } else if (this.currentBookPage === 5) {
+    } else if (this.currentBookPage === 7) {
       content = `
         <div style="text-align: center; margin-bottom: 8px;">
-          <div style="font-size: 18px; font-weight: 800; color: #b45309;">${this.parseMinecraftToHtml("§6§lStep 4: Minecraft Color Codes§r")}</div>
+          <div style="font-size: 18px; font-weight: 800; color: #b45309;">${this.parseMinecraftToHtml("§6§lStep 6: Minecraft Color Codes§r")}</div>
           <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Section Sign (§) &amp; Formatting Codex *</div>
         </div>
 
@@ -8402,26 +8628,30 @@ ${custom}
             </button>
           </div>
         </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+          <button type="button" class="mc-copy-chip" onclick="app.nextBookPage()" style="font-size: 13px; padding: 6px 14px;">
+            <span>Next: Step 7 (Troubleshooting) ▶</span>
+          </button>
+        </div>
       `;
-    } else if (this.currentBookPage === 6) {
+    } else if (this.currentBookPage === 8) {
       content = `
         <div style="text-align: center; margin-bottom: 12px;">
-          <div style="font-size: 18px; font-weight: 800; color: #0284c7;">${this.parseMinecraftToHtml("§3§lStep 5: Connect &amp; Troubleshoot§r")}</div>
-          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Joining Server &amp; Fixing Common Issues *</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0284c7;">${this.parseMinecraftToHtml("§3§lStep 7: Final Connect &amp; Checklist§r")}</div>
+          <div style="font-size: 11px; color: #785233; margin-top: 2px;">* Verification &amp; Common Issues *</div>
         </div>
 
-        <div style="font-size: 13.5px; line-height: 1.55;">
-          <div style="font-weight: 700; color: #0284c7; margin-bottom: 4px;">🌐 HOW TO CONNECT IN MINECRAFT:</div>
-          • Open Minecraft (Java Edition or Bedrock Edition).<br>
-          • Go to <b>Multiplayer ➔ Add Server</b>.<br>
-          • Paste your Playit domain from the 24/7 tab (e.g. <code class="mc-code-chip">orbit.gl.joinmc.link</code>).<br>
-          • Java Port: <code class="mc-code-chip">25565</code> (standard). Bedrock Port: Use your assigned Geyser port.<br><br>
+        <div style="font-size: 13px; line-height: 1.55;">
+          <div style="font-weight: 700; color: #0284c7; margin-bottom: 4px;">🌐 FINAL CONNECTION CHECKLIST:</div>
+          • <b>server.properties:</b> Ensure <code class="mc-code-chip">server-port=25565</code>.<br>
+          • <b>Cracked / TLauncher Support:</b> Set <code class="mc-code-chip">online-mode=false</code> in server.properties.<br>
+          • <b>EULA Agreement:</b> Set <code class="mc-code-chip">eula=true</code> inside <code class="mc-code-chip">eula.txt</code>.<br>
+          • <b>Multiplayer Address:</b> Give friends your Public IP + <code class="mc-code-chip">:25565</code> or Playit tunnel address.<br><br>
 
-          <div style="font-weight: 700; color: #b91c1c; margin-bottom: 4px;">🔧 COMMON ISSUES &amp; SOLUTIONS:</div>
-          • <b>"EULA not accepted":</b> Ensure <code class="mc-code-chip">eula=true</code> inside <code class="mc-code-chip">eula.txt</code>.<br>
-          • <b>"GitHub Action 403 / Permission Denied":</b> In Repo Settings ➔ Actions ➔ General ➔ Workflow permissions, select <b>Read and write permissions</b>.<br>
-          • <b>"Playit Tunnel Offline":</b> In Console type <code class="mc-code-chip">/playit-setup</code> or click "Sync Repository" in EchoNode.<br>
-          • <b>Auto-Restart Cycle:</b> The server smoothly restarts every 5.5 hours to refresh runners without losing world data!
+          <div style="font-weight: 700; color: #b91c1c; margin-bottom: 4px;">🔧 TROUBLESHOOTING:</div>
+          • <b>"Connection Refused / Can't connect":</b> Check that port 25565 is forwarded to your PC LAN IP in your router and allowed in Windows Firewall.<br>
+          • <b>"Dynamic IP Changed":</b> Use EchoNode's "Auto-Fill Public IP" or Playit.gg for a permanent domain that never changes!
         </div>
 
         <div style="margin-top: 14px; text-align: center;">
@@ -8434,9 +8664,27 @@ ${custom}
 
     bodyEl.innerHTML = content;
 
-    // If on page 5, bind real-time tester
-    if (this.currentBookPage === 5) {
+    // If on page 7, bind real-time color tester
+    if (this.currentBookPage === 7) {
       this.bindMinecraftColorTester();
+    }
+    // If on page 5, bind real-time IP connection tester
+    if (this.currentBookPage === 5) {
+      this.bindBookIpTester();
+    }
+  }
+
+  bindBookIpTester() {
+    const input = document.getElementById("mc-book-tester-ip");
+    const testBtn = document.getElementById("btn-mc-book-test-ip");
+    if (input && store.data.serverIp) {
+      input.value = store.data.serverIp;
+    }
+    if (testBtn && input) {
+      testBtn.addEventListener("click", () => {
+        const ip = input.value.trim() || store.data.serverIp || "127.0.0.1:25565";
+        this.testServerConnection(ip, "mc-book-ip-test-result");
+      });
     }
   }
 

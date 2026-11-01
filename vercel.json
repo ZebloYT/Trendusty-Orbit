@@ -1,0 +1,51 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    {
+      "src": "^/echonode/?$",
+      "dest": "/echonode/index.html"
+    },
+    {
+      "src": "^/echonode/(.*)",
+      "dest": "/echonode/$1"
+    },
+    {
+      "src": "^/$",
+      "dest": "/home/index.html"
+    },
+    {
+      "src": "^/home/?$",
+      "dest": "/home/index.html"
+    },
+    {
+      "src": "^/home/(.*)",
+      "dest": "/home/$1"
+    },
+    {
+      "src": "^/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    }
+  ]
+}

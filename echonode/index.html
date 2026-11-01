@@ -1449,14 +1449,196 @@
                 <div class="mc-banner-text">
                   <div class="mc-banner-tag">✦ OFFICIAL MINECRAFT 24/7 HANDBOOK</div>
                   <h3>Interactive Minecraft Setup Guide &amp; Codex</h3>
-                  <p>Step-by-step interactive book: Get your GitHub PAT key, auto-sync 24/7 cloud runner loops, grant OP access, and full Minecraft color codes table.</p>
+                  <p>Step-by-step interactive book: Vercel 24/7 cloud setup, router port forwarding (Port 25565), GitHub key, OP access, and Minecraft color codes table.</p>
                 </div>
               </div>
               <button class="btn-mc-open-book" type="button">
                 <span>Open Guide Book ◀ ▶</span>
               </button>
             </div>
-              <p>Host your Minecraft server around the clock using GitHub Actions runner workflows, or keep your local PC awake.</p>
+
+            <!-- ==============================================================
+                 VERCEL 24/7 CLOUD HOSTING & PORT FORWARDING ENGINE (RECOMMENDED)
+                 ============================================================== -->
+            <div class="content-card vercel-247-card" id="card-vercel-247">
+              <div class="vercel-card-header">
+                <div class="vercel-badge-row">
+                  <span class="vercel-badge-pill">
+                    <svg width="13" height="13" viewBox="0 0 76 65" fill="currentColor"><path d="M37.5274 0L75.0548 65H0L37.5274 0Z"/></svg>
+                    <span>VERCEL 24/7 CLOUD</span>
+                  </span>
+                  <span class="vercel-status-pill online" id="pill-vercel-status">
+                    <span class="status-dot-pulse" style="background: #00f5b8;"></span>
+                    <span id="text-vercel-status">24/7 EDGE READY</span>
+                  </span>
+                  <span class="vercel-tag-badge">NO 6-HOUR LIMITS • ZERO DOWNTIME</span>
+                </div>
+                <h3>24/7 Vercel Cloud &amp; Port Forwarding Method</h3>
+                <p>
+                  GitHub Actions runners have a hard 6-hour execution timeout and token restrictions. To keep your server online 24/7 with zero interruption, deploy the EchoNode cloud portal to <strong>Vercel (100% Free Forever)</strong> and connect players directly through your <strong>Port-Forwarded IP (Port 25565)</strong> or Playit.gg tunnel.
+                </p>
+              </div>
+
+              <!-- Step-by-Step Vercel & Port Forwarding Workflow Grid -->
+              <div class="vercel-steps-grid">
+                
+                <!-- Step 1: Deploy to Vercel -->
+                <div class="vercel-step-box">
+                  <div class="step-num-badge">STEP 1</div>
+                  <h4>Deploy EchoNode to Vercel</h4>
+                  <p>Deploy your repository to Vercel in 1 click for free 24/7 edge uptime with automated SSL certificates and zero maintenance.</p>
+                  
+                  <div class="vercel-action-row" style="margin-top: 10px;">
+                    <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FZebloYT%2FTrendusty-Orbit&project-name=echonode-247" target="_blank" class="btn-vercel-deploy" id="btn-deploy-to-vercel">
+                      <svg width="14" height="14" viewBox="0 0 76 65" fill="currentColor"><path d="M37.5274 0L75.0548 65H0L37.5274 0Z"/></svg>
+                      <span>Deploy to Vercel (1-Click)</span>
+                    </a>
+                  </div>
+
+                  <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+                    <label style="font-size: 11px; color: #94a3b8;">Your Deployed Vercel URL</label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" class="form-input" id="input-vercel-app-url" placeholder="https://my-server.vercel.app" style="font-size: 12px; padding: 6px 10px;">
+                      <button type="button" class="btn-secondary" id="btn-save-vercel-url" style="padding: 6px 12px; font-size: 11.5px; white-space: nowrap;">Save URL</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 2: Set Connection IP & Port Forwarding -->
+                <div class="vercel-step-box">
+                  <div class="step-num-badge">STEP 2</div>
+                  <h4>Set Server Connection IP &amp; Port</h4>
+                  <p>Set the public IP or tunnel address your players enter in Minecraft. Must have port <strong>25565</strong> forwarded in your router or active via Playit.</p>
+                  
+                  <div class="form-group" style="margin-top: 10px; margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #94a3b8;">Direct Minecraft Server Address (IP:Port)</label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" class="form-input" id="input-vercel-server-ip" placeholder="e.g. 123.45.67.89:25565 or mycraft.gl.joinmc.link" style="font-size: 12px; padding: 6px 10px;">
+                      <button type="button" class="btn-primary" id="btn-save-vercel-ip" style="padding: 6px 14px; font-size: 11.5px; white-space: nowrap;">Set IP</button>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button type="button" class="btn-secondary" id="btn-autofill-public-ip" style="padding: 4px 10px; font-size: 11px;">
+                      <span>🌐 Auto-Fill Public IP (:25565)</span>
+                    </button>
+                    <button type="button" class="btn-secondary" id="btn-test-port-connection" style="padding: 4px 10px; font-size: 11px; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">
+                      <span>⚡ Test IP &amp; Port 25565</span>
+                    </button>
+                  </div>
+
+                  <!-- Live Ping & Status Box for Port Connection -->
+                  <div class="port-test-result-box" id="box-port-test-result" style="display: none; margin-top: 10px;">
+                    <!-- Filled dynamically via app.testServerConnection() -->
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Step 3: Interactive Port Forwarding Guide (Router vs Playit) -->
+              <div class="port-forward-guide-card">
+                <div class="port-guide-header">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 16px;">🔌</span>
+                    <strong style="color: #f8fafc; font-size: 13.5px;">Step 3: Port Forwarding Guide (How Players Connect Through Your IP)</strong>
+                  </div>
+                  <div class="port-guide-tabs">
+                    <button type="button" class="port-tab-btn active" id="tab-btn-router" onclick="app.switchPortGuideTab('router')">Wi-Fi Router (TCP 25565)</button>
+                    <button type="button" class="port-tab-btn" id="tab-btn-playit" onclick="app.switchPortGuideTab('playit')">Playit.gg (No Router Needed)</button>
+                  </div>
+                </div>
+
+                <!-- Tab 1: Router Port Forwarding -->
+                <div class="port-tab-content active" id="port-tab-router">
+                  <div class="port-steps-list">
+                    <div class="port-step-item">
+                      <span class="step-circle">1</span>
+                      <div>
+                        <strong>Open Router Admin Page:</strong>
+                        <span>Open your browser and visit <code class="code-pill">http://192.168.1.1</code> (or <code class="code-pill">http://192.168.0.1</code>) and log in with your router credentials (often on the router sticker).</span>
+                      </div>
+                    </div>
+                    <div class="port-step-item">
+                      <span class="step-circle">2</span>
+                      <div>
+                        <strong>Find Port Forwarding:</strong>
+                        <span>Navigate to <em>Advanced Settings &rarr; Port Forwarding / NAT / Virtual Server &rarr; Add New Rule</em>.</span>
+                      </div>
+                    </div>
+                    <div class="port-step-item">
+                      <span class="step-circle">3</span>
+                      <div>
+                        <strong>Enter Port 25565 Settings:</strong>
+                        <div class="port-settings-table">
+                          <div><span>Protocol:</span> <strong>TCP (or Both)</strong></div>
+                          <div><span>Internal Port:</span> <strong>25565</strong></div>
+                          <div><span>External Port:</span> <strong>25565</strong></div>
+                          <div><span>Target LAN IP:</span> <strong id="val-port-guide-lan-ip">192.168.1.xxx (Your PC)</strong></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="port-step-item">
+                      <span class="step-circle">4</span>
+                      <div>
+                        <strong>Windows Firewall Rule (One-Click Copy):</strong>
+                        <span>Run Command Prompt as Administrator and paste this to allow Minecraft through Windows Firewall:</span>
+                        <div class="code-snippet-box">
+                          <code>netsh advfirewall firewall add rule name="Minecraft 25565" dir=in action=allow protocol=TCP localport=25565</code>
+                          <button type="button" class="btn-copy-code" onclick="navigator.clipboard.writeText('netsh advfirewall firewall add rule name=\&quot;Minecraft 25565\&quot; dir=in action=allow protocol=TCP localport=25565'); app.showToast('Copied Firewall Rule!', 'success');">Copy</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tab 2: Playit.gg Tunnel (No Router Access Required) -->
+                <div class="port-tab-content" id="port-tab-playit" style="display: none;">
+                  <div class="port-steps-list">
+                    <div class="port-step-item">
+                      <span class="step-circle">1</span>
+                      <div>
+                        <strong>No Router Access Needed!</strong>
+                        <span>If you are on school Wi-Fi, apartment broadband, or don't have router access, use <strong>Playit.gg</strong> to get a permanent 24/7 public Minecraft domain.</span>
+                      </div>
+                    </div>
+                    <div class="port-step-item">
+                      <span class="step-circle">2</span>
+                      <div>
+                        <strong>Run Playit on your PC:</strong>
+                        <span>Download and launch Playit from <a href="https://playit.gg/download" target="_blank" style="color: #38bdf8; text-decoration: underline;">playit.gg/download</a>, or let EchoNode auto-launch it with your server.</span>
+                      </div>
+                    </div>
+                    <div class="port-step-item">
+                      <span class="step-circle">3</span>
+                      <div>
+                        <strong>Get Your Free Permanent Domain:</strong>
+                        <span>Playit gives you a custom domain (e.g. <code class="code-pill">orbit.gl.joinmc.link:25565</code>). Paste that domain in the <em>Server Connection IP</em> box above!</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Step 4: 24/7 Keep-Alive Uptime Heartbeat Indicator -->
+              <div class="vercel-keepalive-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="keepalive-icon">⚡</div>
+                    <div>
+                      <strong style="color: #fff; font-size: 13px;">24/7 Cloud Uptime Heartbeat</strong>
+                      <div style="font-size: 11.5px; color: #94a3b8;">Automated continuous keep-alive pingers keep your Vercel edge host active around the clock.</div>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="status-indicator-pill" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35);">
+                      <span class="status-dot-pulse" style="background: #10b981;"></span>
+                      <span>24/7 HOST ACTIVE</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <!-- YouTube Tutorial Video Card -->
@@ -1666,7 +1848,7 @@
           <div class="mc-book-page-meta">
             <span class="mc-page-stamp">SOVEREIGN SERVER CODEX</span>
             <div class="mc-page-counter">
-              Page <span id="mc-book-page-num" class="mc-counter-num">1</span> of <span class="mc-counter-total">6</span>
+              Page <span id="mc-book-page-num" class="mc-counter-num">1</span> of <span class="mc-counter-total">8</span>
             </div>
           </div>
 
