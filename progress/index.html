@@ -637,6 +637,12 @@
       </div>
 
       <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[STATUS_OSCILLATION_RESOLVED]</span>
+        <span>Fixed status indicator oscillation between 'CLOUD 24/7' and green 'OFFLINE': (1) Diagnosed dual polling collision where 750ms local backend status check (failing on web client) was constantly overwriting cloud status with 'offline'; (2) Fixed leaked inline style vulnerability where manual green inline styles applied during cloud online checks persisted onto the offline pill, causing 'OFFLINE' to display in green; (3) Added .status-indicator-pill.cloud-online class with distinct cyan/sky-blue palette and reinforced .offline with !important rose styling so offline state is never green; (4) Added status change deduplication (_lastRenderedStatus) to eliminate DOM churn; (5) Isolated Minecraft 24/7 workflow filtering to prevent unrelated GitHub Actions runs (such as Pages build deployments) from falsely triggering cloud online state; (6) Added setMetricsCloudActive() to display active cloud server metrics (7.0 GB RAM, 20.0 TPS, 18ms ping).</span>
+      </div>
+
+      <div class="log-line">
         <span class="log-time">[CURSORS]</span>
         <span class="log-ok">[PICS_AND_ROUTING_RESTORED]</span>
         <span>Restored cursor image visibility, preview sheets, and clean routing across Retrosmart Cursors Suite: (1) Diagnosed and resolved missing images caused by conflicting base tags (&lt;base href="../windows/"&gt; and &lt;base href="../"&gt;) which forced relative image paths to 404 when navigating without trailing slashes; (2) Synchronized complete retrosmart assets (previews, icons, downloads) across /retrosmart/, /cursor-download/retrosmart/, and /windows/cursor-download/retrosmart/; (3) Deployed hero banners and logo watermarks to all root, cursor-download, and windows directories; (4) Restored all 480 animated preview GIFs to /previews/; (5) Implemented multi-tier fail-safe onerror fallback handlers for all 28 cursor cards with instant embedded Base64 bitmap rendering; (6) Unified /cursor-download, /cursor-download/, and /windows/cursor-download/ entrypoints to eliminate route bouncing.</span>

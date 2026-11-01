@@ -807,13 +807,18 @@ def get_github_runner_status(owner=None, repo=None, token=None):
             if not runs:
                 return {"success": True, "hasRun": False, "status": "no_runs", "isOnline": False, "repo": f"{owner}/{repo}"}
 
+            # Specifically match Minecraft 24/7 cloud runner workflows
+            mc_runs = [r for r in runs if ("24/7" in r.get("name", "") or "minecraft" in r.get("name", "").lower() or "minecraft-24-7" in r.get("path", ""))]
+            if not mc_runs:
+                return {"success": True, "hasRun": False, "status": "no_mc_runs", "isOnline": False, "repo": f"{owner}/{repo}"}
+
             active_run = None
-            for r in runs:
+            for r in mc_runs:
                 if r.get("status") in ["in_progress", "queued"]:
                     active_run = r
                     break
             if not active_run:
-                active_run = runs[0]
+                active_run = mc_runs[0]
 
             run_id = active_run["id"]
             run_num = active_run.get("run_number", 1)

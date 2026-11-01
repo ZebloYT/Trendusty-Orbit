@@ -511,18 +511,25 @@ body.mode-3d .spatial-hud-controls {
   letter-spacing: 0.6px;
   color: var(--accent-emerald-glow);
   text-transform: uppercase;
+  transition: all 0.25s ease;
+}
+
+.status-indicator-pill.cloud-online {
+  background: rgba(56, 189, 248, 0.15) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  color: #38bdf8 !important;
 }
 
 .status-indicator-pill.offline {
-  background: rgba(244, 63, 94, 0.12);
-  border-color: rgba(244, 63, 94, 0.3);
-  color: #fda4af;
+  background: rgba(244, 63, 94, 0.15) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  color: #fda4af !important;
 }
 
 .status-indicator-pill.starting {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #fde68a;
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  color: #fde68a !important;
 }
 
 .status-dot-pulse {
