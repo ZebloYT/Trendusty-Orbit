@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Retrosmart Custom Cursors</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 360px;
+      max-height: 520px;
+      background: #080d16;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+    }
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(8, 13, 22, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-img {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+    }
+    .title {
+      font-weight: 700;
+      font-size: 13px;
+      color: #38bdf8;
+      letter-spacing: 0.3px;
+    }
+    .reset-btn {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: #fda4af;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .reset-btn:hover {
+      background: rgba(244, 63, 94, 0.3);
+      color: #fff;
+    }
+    .section-title {
+      padding: 10px 14px 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding: 6px 14px 14px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.18s ease;
+    }
+    .card:hover {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-1px);
+    }
+    .card.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+    .icon-box {
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      image-rendering: pixelated;
+    }
+    .icon-box img {
+      max-width: 24px;
+      max-height: 24px;
+      image-rendering: pixelated;
+    }
+    .card-info {
+      overflow: hidden;
+    }
+    .card-name {
+      font-weight: 600;
+      font-size: 11.5px;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-theme {
+      font-size: 9.5px;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .footer {
+      padding: 10px 14px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 10.5px;
+      color: #64748b;
+    }
+    .footer a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="Logo" class="logo-img">
+      <div class="title">Retrosmart Cursors</div>
+    </div>
+    <button class="reset-btn" id="btn-reset">Reset to Default</button>
+  </div>
+
+  <div id="catalog-container"></div>
+
+  <div class="footer">
+    Trendusty Orbit Ecosystem &bull; <a href="https://www.trendustyorbit.online/windows/cursor-download/" target="_blank">Full Web Suite ↗</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

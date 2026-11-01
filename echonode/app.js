@@ -2134,6 +2134,10 @@ class EchoNodeApp {
             <div><span class="ctx-subitem-icon">🎯</span>Retrosmart Cursors</div>
             <span style="font-size: 10px; color: #64748b;">Gallery ↗</span>
           </div>
+          <div class="ctx-subitem" onclick="window.open('../retrosmart/downloads/orbit-retrosmart-chrome-extension.zip', '_blank');">
+            <div><span class="ctx-subitem-icon">🌐</span>Chrome Cursor Ext</div>
+            <span style="font-size: 10px; color: #fbbf24;">Download ⬇</span>
+          </div>
           <div class="ctx-subitem" onclick="window.location.href = '../download/'">
             <div><span class="ctx-subitem-icon">💻</span>Windows Download Setup</div>
             <span style="font-size: 10px; color: #64748b;">Portal ↗</span>

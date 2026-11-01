@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Trendusty Orbit & Retrosmart Custom Cursors",
+  "version": "1.0.0",
+  "description": "Authentic retro 8-bit, Win95 3D chrome, Mac System 7, and tactical custom cursors across all websites in Google Chrome.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Trendusty Orbit Custom Cursors"
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "cursors/*",
+        "icons/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

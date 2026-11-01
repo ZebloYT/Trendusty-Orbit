@@ -637,6 +637,12 @@
       </div>
 
       <div class="log-line">
+        <span class="log-time">[ECOSYSTEM]</span>
+        <span class="log-ok">[CHROME_EXTENSION_DEPLOYED]</span>
+        <span>Added 'Download for Google Chrome Extension' across the Orbit Ecosystem: (1) Packaged complete Manifest V3 Google Chrome &amp; Chromium Extension (orbit-retrosmart-chrome-extension.zip) featuring content scripts, popup switcher UI, pixel icon assets, and support for all 28 retro cursor themes; (2) Added golden Chrome Extension action button, badge, and highlight card to Other Features &amp; Apps section on homepage; (3) Built interactive 10-second Chrome extension installation guide modal with 1-click clipboard copy for chrome://extensions/; (4) Added Chrome Ext download option to every cursor card and hero banner across Retrosmart suite (/windows/cursor-download/); (5) Integrated Chrome extension quick-download shortcut into EchoNode context menu.</span>
+      </div>
+
+      <div class="log-line">
         <span class="log-time">[ECHONODE]</span>
         <span class="log-ok">[STATUS_OSCILLATION_RESOLVED]</span>
         <span>Fixed status indicator oscillation between 'CLOUD 24/7' and green 'OFFLINE': (1) Diagnosed dual polling collision where 750ms local backend status check (failing on web client) was constantly overwriting cloud status with 'offline'; (2) Fixed leaked inline style vulnerability where manual green inline styles applied during cloud online checks persisted onto the offline pill, causing 'OFFLINE' to display in green; (3) Added .status-indicator-pill.cloud-online class with distinct cyan/sky-blue palette and reinforced .offline with !important rose styling so offline state is never green; (4) Added status change deduplication (_lastRenderedStatus) to eliminate DOM churn; (5) Isolated Minecraft 24/7 workflow filtering to prevent unrelated GitHub Actions runs (such as Pages build deployments) from falsely triggering cloud online state; (6) Added setMetricsCloudActive() to display active cloud server metrics (7.0 GB RAM, 20.0 TPS, 18ms ping).</span>

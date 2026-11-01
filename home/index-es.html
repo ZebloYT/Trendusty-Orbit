@@ -3642,17 +3642,24 @@
                       <span class="app-badge app-badge-status" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: #38bdf8;">Retrosmart Xcursor</span>
                       <span class="app-badge app-badge-webgl">Win-3D • Mac-ish • Win-ish</span>
                       <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">1-Click .INF Installer</span>
+                      <span class="app-badge" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24;">Google Chrome Extension</span>
                     </div>
                     <h3 class="app-rect-name">Retrosmart &amp; Tactical Cursors Suite</h3>
                     <p class="app-rect-tagline">Authentic 8-Bit Pixel Cursors &bull; Win95 3D Chrome, Mac System 7 &amp; Modern Palettes</p>
                   </div>
-                  <span class="btn btn-outline" style="padding: 12px 22px; font-size: 13px; border-color: #38bdf8; color: #38bdf8; white-space: nowrap;">
-                    <span>Explore 28 Cursor Kits ↗</span>
-                  </span>
+                  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <span class="btn btn-outline" style="padding: 11px 18px; font-size: 13px; border-color: #38bdf8; color: #38bdf8; white-space: nowrap;">
+                      <span>Explore 28 Cursor Kits ↗</span>
+                    </span>
+                    <button type="button" class="btn app-chrome-ext-btn" onclick="event.preventDefault(); event.stopPropagation(); openChromeExtensionModal(event);" style="padding: 11px 18px; font-size: 12.5px; background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(245, 158, 11, 0.25)); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; border-radius: 8px; cursor: pointer; text-decoration: none; transition: all 0.2s ease; white-space: nowrap;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+                      <span>Download for Google Chrome Extension ⬇</span>
+                    </button>
+                  </div>
                 </div>
 
                 <p class="app-rect-desc">
-                  Sovereign desktop cursor suites from Retrosmart Xcursor featuring Win-3D Chrome (Blue/Red/Green/Violet), Mac-ish System 7, Win-ish 95, and Cur-Font across Catppuccin, Gruvbox, Everforest, and Rosé Pine. Complete with .cur &amp; .ani schemes, one-click install.inf scripts, and interactive browser testing.
+                  Sovereign desktop cursor suites from Retrosmart Xcursor featuring Win-3D Chrome (Blue/Red/Green/Violet), Mac-ish System 7, Win-ish 95, and Cur-Font across Catppuccin, Gruvbox, Everforest, and Rosé Pine. Complete with .cur &amp; .ani schemes, one-click install.inf scripts, interactive browser testing, and dedicated Google Chrome extension package.
                 </p>
 
                 <div class="app-rect-highlights">
@@ -3667,6 +3674,10 @@
                   <div class="highlight-chip">
                     <span class="chip-icon">⚡</span>
                     <div class="chip-text"><strong>1-Click Install:</strong> Full 15-role Windows schemes with right-click install.inf</div>
+                  </div>
+                  <div class="highlight-chip" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.35);">
+                    <span class="chip-icon">🌐</span>
+                    <div class="chip-text"><strong style="color: #fbbf24;">Chrome Extension:</strong> Ready-to-install Manifest V3 extension for Chrome &amp; Chromium</div>
                   </div>
                 </div>
               </div>
@@ -6316,6 +6327,126 @@
       </div>
     </div>
   </div>
+
+  <!-- Google Chrome Extension Installation Modal -->
+  <div id="chrome-ext-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleChromeExtBackdropClick(event)">
+    <div class="auth-modal-window" style="max-width: 540px; border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(245, 158, 11, 0.15);" onclick="event.stopPropagation()">
+      <div class="auth-modal-header" style="border-bottom: 1px solid rgba(245, 158, 11, 0.25);">
+        <div class="auth-modal-brand">
+          <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); display: flex; align-items: center; justify-content: center; color: #fbbf24;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 14px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+              <span>Google Chrome Extension</span>
+              <span style="font-size: 10px; font-weight: 700; background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 2px 7px; border-radius: 999px;">MANIFEST V3</span>
+            </div>
+            <div style="font-size: 11px; color: #94a3b8;">Retrosmart &amp; Orbit Custom Cursors for Chrome, Edge, Brave &amp; Opera</div>
+          </div>
+        </div>
+        <button type="button" class="auth-close-btn" onclick="closeChromeExtensionModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="auth-modal-body" style="padding: 24px; color: #e2e8f0; font-size: 13px;">
+        <p style="margin-bottom: 16px; color: #cbd5e1; line-height: 1.5;">
+          Download the official <strong>Retrosmart Cursors Chrome Extension</strong> to replace the standard browser pointer with any of the 28 retro Win95, Mac System 7, Win-3D Chrome, or pixel font cursors on every webpage!
+        </p>
+
+        <!-- Direct Download CTA Button -->
+        <div style="margin-bottom: 22px;">
+          <a href="../retrosmart/downloads/orbit-retrosmart-chrome-extension.zip" download="orbit-retrosmart-chrome-extension.zip" class="btn" style="width: 100%; justify-content: center; padding: 14px 22px; font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; border-radius: 10px; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.4); display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Download Chrome Extension Package (.zip) ⬇</span>
+          </a>
+        </div>
+
+        <!-- 4-Step Quick Install Instructions -->
+        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #fbbf24; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
+            <span>⚡ 10-Second Installation Guide</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="width: 22px; height: 22px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">1</span>
+              <div><strong>Extract the zip file:</strong> Unzip <code>orbit-retrosmart-chrome-extension.zip</code> into a folder on your computer.</div>
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="width: 22px; height: 22px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">2</span>
+              <div>
+                <strong>Open Extensions page in Chrome:</strong>
+                <div style="display: flex; gap: 8px; margin-top: 6px; align-items: center;">
+                  <code style="background: rgba(255, 255, 255, 0.08); padding: 4px 8px; border-radius: 6px; font-size: 12px; color: #38bdf8;">chrome://extensions/</code>
+                  <button type="button" onclick="copyChromeExtUrl(this)" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: 600;">Copy URL</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="width: 22px; height: 22px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">3</span>
+              <div><strong>Turn on Developer mode:</strong> Toggle the switch in the top-right corner of <code>chrome://extensions</code>.</div>
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="width: 22px; height: 22px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">4</span>
+              <div><strong>Click "Load unpacked":</strong> Select the extracted folder. Pin the extension and pick any of the 28 custom cursor styles!</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #94a3b8;">
+          <span>Compatible with Chrome, Edge, Brave, Opera, Vivaldi</span>
+          <a href="../windows/cursor-download/" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">View Cursor Gallery ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.openChromeExtensionModal = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      const modal = document.getElementById("chrome-ext-modal-backdrop");
+      if (modal) {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+    };
+
+    window.closeChromeExtensionModal = function() {
+      const modal = document.getElementById("chrome-ext-modal-backdrop");
+      if (modal) {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+    };
+
+    window.handleChromeExtBackdropClick = function(e) {
+      if (e.target && e.target.id === "chrome-ext-modal-backdrop") {
+        window.closeChromeExtensionModal();
+      }
+    };
+
+    window.copyChromeExtUrl = function(btn) {
+      navigator.clipboard.writeText("chrome://extensions/");
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = "<span>✓ Copied! Paste in Chrome</span>";
+        btn.style.borderColor = "#4ade80";
+        btn.style.color = "#4ade80";
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.style.borderColor = "";
+          btn.style.color = "";
+        }, 2200);
+      }
+    };
+  </script>
 
 </body>
 </html>
