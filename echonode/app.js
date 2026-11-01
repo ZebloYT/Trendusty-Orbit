@@ -478,6 +478,13 @@ class StateStore {
     }
   }
 
+  saveDebounced(ms = 300) {
+    if (this._saveTimer) clearTimeout(this._saveTimer);
+    this._saveTimer = setTimeout(() => {
+      this.save();
+    }, ms);
+  }
+
   switchServer(serverId) {
     const servers = this.getServersList();
     const target = servers.find(s => s.id === serverId);
@@ -1037,21 +1044,32 @@ class MouseTracker {
       });
     }
 
+    let ambientTicking = false;
     window.addEventListener("mousemove", (e) => {
       this.mouse.x = e.clientX;
       this.mouse.y = e.clientY;
 
-      // Update ambient radial gradient position
-      this.ambient.style.setProperty("--mouse-x", `${e.clientX}px`);
-      this.ambient.style.setProperty("--mouse-y", `${e.clientY}px`);
+      if (!ambientTicking) {
+        requestAnimationFrame(() => {
+          if (this.ambient) {
+            this.ambient.style.setProperty("--mouse-x", `${this.mouse.x}px`);
+            this.ambient.style.setProperty("--mouse-y", `${this.mouse.y}px`);
+          }
+          ambientTicking = false;
+        });
+        ambientTicking = true;
+      }
+    }, { passive: true });
 
-      // Update cards spotlight
-      document.querySelectorAll(".content-card, .sidebar-status-card").forEach((card) => {
+    // High-performance single-card spotlight (only computes rect for the single card hovered, zero global reflows)
+    document.addEventListener("mousemove", (e) => {
+      const card = e.target && e.target.closest ? e.target.closest(".content-card, .sidebar-status-card") : null;
+      if (card) {
         const rect = card.getBoundingClientRect();
         card.style.setProperty("--card-mouse-x", `${e.clientX - rect.left}px`);
         card.style.setProperty("--card-mouse-y", `${e.clientY - rect.top}px`);
-      });
-    });
+      }
+    }, { passive: true });
 
     this.loop();
   }
@@ -1568,7 +1586,8 @@ class EchoNodeApp {
       }
     });
 
-    // Mouse movement
+    // Mouse movement with distance threshold for particle trail
+    let lastTrailX = -100, lastTrailY = -100;
     window.addEventListener("mousemove", (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
@@ -1587,18 +1606,23 @@ class EchoNodeApp {
       } else {
         dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
 
-        const t = trails[trailIndex];
-        if (t) {
-          t.style.left = mouseX + "px";
-          t.style.top = mouseY + "px";
-          t.style.opacity = "0.6";
-          t.style.transform = "translate(-50%, -50%) scale(1)";
-          setTimeout(() => {
-            t.style.opacity = "0";
-            t.style.transform = "translate(-50%, -50%) scale(0.2)";
-          }, 50);
+        const distSq = (mouseX - lastTrailX) ** 2 + (mouseY - lastTrailY) ** 2;
+        if (distSq > 144) { // Only drop trail dot after moving > 12px
+          lastTrailX = mouseX;
+          lastTrailY = mouseY;
+          const t = trails[trailIndex];
+          if (t) {
+            t.style.left = mouseX + "px";
+            t.style.top = mouseY + "px";
+            t.style.opacity = "0.5";
+            t.style.transform = "translate(-50%, -50%) scale(1)";
+            setTimeout(() => {
+              t.style.opacity = "0";
+              t.style.transform = "translate(-50%, -50%) scale(0.2)";
+            }, 60);
+          }
+          trailIndex = (trailIndex + 1) % MAX_TRAILS;
         }
-        trailIndex = (trailIndex + 1) % MAX_TRAILS;
       }
     }, { passive: true });
 
@@ -1615,7 +1639,7 @@ class EchoNodeApp {
     requestAnimationFrame(renderFollower);
 
     // Interactive states detection
-    const interactiveSelector = "button, a, input, select, textarea, .nav-item-btn, .server-selector-card, .sidebar-user-card, .topbar-user-pill, .server-switch-item, .btn-quick-act, .search-palette-trigger, .mode-switcher-container, .tab-btn, .action-btn, .option-card, .table-row, [role='button'], label.switch, .badge-status, .mc-quick-btn, .file-table tr, .plugin-card, .player-item, .backup-card, .stat-card, .server-card-selector, .ctx-item, .ctx-subitem";
+    const interactiveSelector = "button, a, input, select, textarea, .nav-item-btn, .server-selector-card, .sidebar-user-card, .topbar-user-pill, .server-switch-item, .btn-quick-act, .search-palette-trigger, .mode-switcher-container, .tab-btn, .action-btn, .option-card, .table-row, [role='button'], label.switch, .badge-status, .mc-quick-btn, .file-table tr, .plugin-card, .player-item, .backup-card, .stat-card, .server-card-selector, .ctx-item, .ctx-subitem, .symbol-chip, .color-swatch-btn";
 
     // Mouse down & up
     document.addEventListener("mousedown", (e) => {
@@ -1660,31 +1684,28 @@ class EchoNodeApp {
       customImg.style.opacity = "1";
     });
 
+    // High performance hover state tracking (avoids class thrashing when moving across spans)
+    let currentHoverState = "default";
     document.addEventListener("mouseover", (e) => {
       const el = e.target;
       if (!el || !el.closest) return;
 
       const isClickable = el.closest(interactiveSelector) !== null;
       const isText = !isClickable && el.closest("p, h1, h2, h3, h4, h5, h6, .code-snippet, .log-line, pre, code, .terminal-window, .doc-body") !== null;
+      const newState = isClickable ? "hovering" : (isText ? "text" : "default");
 
-      ring.classList.remove("is-hovering", "is-text");
-      dot.classList.remove("is-hovering", "is-text");
+      if (newState !== currentHoverState) {
+        currentHoverState = newState;
+        ring.classList.toggle("is-hovering", newState === "hovering");
+        ring.classList.toggle("is-text", newState === "text");
+        dot.classList.toggle("is-hovering", newState === "hovering");
+        dot.classList.toggle("is-text", newState === "text");
 
-      if (isClickable) {
-        ring.classList.add("is-hovering");
-        dot.classList.add("is-hovering");
-        if (useCustom && currentPointerUrl) {
-          customImg.style.backgroundImage = `url('${resolveCursorPath(currentPointerUrl)}')`;
-        }
-      } else if (isText) {
-        ring.classList.add("is-text");
-        dot.classList.add("is-text");
-        if (useCustom && currentIconUrl) {
-          customImg.style.backgroundImage = `url('${resolveCursorPath(currentIconUrl)}')`;
-        }
-      } else {
-        if (useCustom && currentIconUrl) {
-          customImg.style.backgroundImage = `url('${resolveCursorPath(currentIconUrl)}')`;
+        if (useCustom) {
+          const targetUrl = newState === "hovering" && currentPointerUrl ? currentPointerUrl : currentIconUrl;
+          if (targetUrl) {
+            customImg.style.backgroundImage = `url('${resolveCursorPath(targetUrl)}')`;
+          }
         }
       }
     });
@@ -1755,11 +1776,12 @@ class EchoNodeApp {
     this.hideContextMenu();
   }
 
-  setServerOption(key, val) {
+  setServerOption(key, val, keepOpen = false) {
     sfx.playClick();
     if (!store.data.options) store.data.options = {};
     store.data.options[key] = val;
-    store.save();
+    if (store.saveDebounced) store.saveDebounced(150);
+    else store.save();
 
     // Sync corresponding input on Options tab if present
     const input = document.getElementById("opt-" + key);
@@ -1783,7 +1805,57 @@ class EchoNodeApp {
     const name = labels[key] || key;
     const displayVal = typeof val === "boolean" ? (val ? "Enabled ✓" : "Disabled ✗") : String(val).toUpperCase();
     this.showToast(`${name}: ${displayVal}`, "success");
-    this.hideContextMenu();
+    if (!keepOpen) {
+      this.hideContextMenu();
+    }
+  }
+
+  toggleServerOptionFromMenu(key, e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    sfx.playClick();
+    if (!store.data.options) store.data.options = {};
+    const current = typeof store.data.options[key] !== "undefined"
+      ? !!store.data.options[key]
+      : (key === "nether" || key === "cmdblocks" ? true : false);
+    const newVal = !current;
+    store.data.options[key] = newVal;
+    if (store.saveDebounced) store.saveDebounced(150);
+    else store.save();
+
+    // Sync input on options tab if present
+    const input = document.getElementById("opt-" + key);
+    if (input) {
+      if (input.type === "checkbox") input.checked = newVal;
+      else input.value = newVal;
+    }
+
+    // Instantly update badge in context menu without closing!
+    const menu = document.getElementById("echonode-context-menu");
+    if (menu) {
+      const item = menu.querySelector(`.ctx-item[data-opt-key="${key}"]`);
+      if (item) {
+        const badge = item.querySelector(".ctx-toggle-badge");
+        if (badge) {
+          badge.classList.toggle("active", newVal);
+          badge.textContent = newVal ? "ON" : "OFF";
+        }
+      }
+    }
+
+    const labels = {
+      gamemode: "Game Mode",
+      difficulty: "Difficulty",
+      pvp: "PVP Combat",
+      whitelist: "Player Whitelist",
+      nether: "Nether Dimension",
+      flight: "Flight",
+      cmdblocks: "Command Blocks"
+    };
+    const name = labels[key] || key;
+    this.showToast(`${name}: ${newVal ? 'Enabled ✓' : 'Disabled ✗'}`, "success");
   }
 
   showContextMenu(x, y) {
@@ -1952,7 +2024,7 @@ class EchoNodeApp {
       </div>
 
       <!-- Whitelist Toggle -->
-      <div class="ctx-item" onclick="app.setServerOption('whitelist', ${!whitelist})">
+      <div class="ctx-item" data-opt-key="whitelist" onclick="app.toggleServerOptionFromMenu('whitelist', event)">
         <div class="ctx-item-left">
           <span class="ctx-item-icon">🔒</span>
           <span>Player Whitelist</span>
@@ -1963,7 +2035,7 @@ class EchoNodeApp {
       </div>
 
       <!-- PVP Toggle -->
-      <div class="ctx-item" onclick="app.setServerOption('pvp', ${!pvp})">
+      <div class="ctx-item" data-opt-key="pvp" onclick="app.toggleServerOptionFromMenu('pvp', event)">
         <div class="ctx-item-left">
           <span class="ctx-item-icon">⚔️</span>
           <span>PVP Combat</span>
@@ -1974,7 +2046,7 @@ class EchoNodeApp {
       </div>
 
       <!-- Nether Dimension Toggle -->
-      <div class="ctx-item" onclick="app.setServerOption('nether', ${!nether})">
+      <div class="ctx-item" data-opt-key="nether" onclick="app.toggleServerOptionFromMenu('nether', event)">
         <div class="ctx-item-left">
           <span class="ctx-item-icon">🔥</span>
           <span>Allow Nether Dimension</span>
@@ -1985,7 +2057,7 @@ class EchoNodeApp {
       </div>
 
       <!-- Allow Flight Toggle -->
-      <div class="ctx-item" onclick="app.setServerOption('flight', ${!flight})">
+      <div class="ctx-item" data-opt-key="flight" onclick="app.toggleServerOptionFromMenu('flight', event)">
         <div class="ctx-item-left">
           <span class="ctx-item-icon">✈️</span>
           <span>Allow Flight</span>
@@ -1996,7 +2068,7 @@ class EchoNodeApp {
       </div>
 
       <!-- Command Blocks Toggle -->
-      <div class="ctx-item" onclick="app.setServerOption('cmdblocks', ${!cmdblocks})">
+      <div class="ctx-item" data-opt-key="cmdblocks" onclick="app.toggleServerOptionFromMenu('cmdblocks', event)">
         <div class="ctx-item-left">
           <span class="ctx-item-icon">⚙️</span>
           <span>Command Blocks</span>
@@ -2116,6 +2188,34 @@ class EchoNodeApp {
       } else {
         sub.classList.remove("flip-left");
       }
+    });
+
+    // Submenu smooth hover intent & grace period
+    const submenuParents = menu.querySelectorAll('.ctx-item[data-has-submenu="true"]');
+    let activeSubmenuParent = null;
+    let hideTimer = null;
+
+    submenuParents.forEach(parent => {
+      parent.addEventListener("mouseenter", () => {
+        if (hideTimer) {
+          clearTimeout(hideTimer);
+          hideTimer = null;
+        }
+        if (activeSubmenuParent && activeSubmenuParent !== parent) {
+          activeSubmenuParent.classList.remove("has-open-submenu");
+        }
+        activeSubmenuParent = parent;
+        parent.classList.add("has-open-submenu");
+      });
+
+      parent.addEventListener("mouseleave", () => {
+        hideTimer = setTimeout(() => {
+          if (activeSubmenuParent === parent) {
+            parent.classList.remove("has-open-submenu");
+            activeSubmenuParent = null;
+          }
+        }, 160);
+      });
     });
 
     sfx.playClick();
@@ -3852,10 +3952,19 @@ jobs:
     const motdInput = document.getElementById("motd-input-field");
     if (motdInput) {
       motdInput.value = store.data.options.motd || "";
+      let motdRaf = false;
       motdInput.addEventListener("input", () => {
         store.data.options.motd = motdInput.value;
-        store.save();
-        this.renderMotdLive();
+        if (store.saveDebounced) store.saveDebounced(300);
+        else store.save();
+
+        if (!motdRaf) {
+          requestAnimationFrame(() => {
+            this.renderMotdLive();
+            motdRaf = false;
+          });
+          motdRaf = true;
+        }
       });
     }
 
@@ -3939,6 +4048,16 @@ jobs:
     const gradFormat = document.getElementById("grad-format-select");
     const gradPreviewBox = document.getElementById("grad-live-preview-box");
 
+    let gradRaf = false;
+    const scheduleGradPreview = () => {
+      if (gradRaf) return;
+      gradRaf = true;
+      requestAnimationFrame(() => {
+        updateGradPreview();
+        gradRaf = false;
+      });
+    };
+
     const updateGradPreview = () => {
       if (!gradTextInput || !gradPreviewBox) return;
       let rawText = gradTextInput.value || "SKY HEAVEN MC";
@@ -3961,12 +4080,12 @@ jobs:
     if (gradColorStart && gradHexStart) {
       gradColorStart.addEventListener("input", () => {
         gradHexStart.value = gradColorStart.value.toUpperCase();
-        updateGradPreview();
+        scheduleGradPreview();
       });
       gradHexStart.addEventListener("input", () => {
         if (/^#[0-9a-f]{6}$/i.test(gradHexStart.value)) {
           gradColorStart.value = gradHexStart.value;
-          updateGradPreview();
+          scheduleGradPreview();
         }
       });
     }
@@ -3974,20 +4093,20 @@ jobs:
     if (gradColorEnd && gradHexEnd) {
       gradColorEnd.addEventListener("input", () => {
         gradHexEnd.value = gradColorEnd.value.toUpperCase();
-        updateGradPreview();
+        scheduleGradPreview();
       });
       gradHexEnd.addEventListener("input", () => {
         if (/^#[0-9a-f]{6}$/i.test(gradHexEnd.value)) {
           gradColorEnd.value = gradHexEnd.value;
-          updateGradPreview();
+          scheduleGradPreview();
         }
       });
     }
 
-    if (gradTextInput) gradTextInput.addEventListener("input", updateGradPreview);
-    if (gradSmallCaps) gradSmallCaps.addEventListener("change", updateGradPreview);
-    if (gradBold) gradBold.addEventListener("change", updateGradPreview);
-    if (gradFormat) gradFormat.addEventListener("change", updateGradPreview);
+    if (gradTextInput) gradTextInput.addEventListener("input", scheduleGradPreview);
+    if (gradSmallCaps) gradSmallCaps.addEventListener("change", scheduleGradPreview);
+    if (gradBold) gradBold.addEventListener("change", scheduleGradPreview);
+    if (gradFormat) gradFormat.addEventListener("change", scheduleGradPreview);
 
     // Gradient Presets
     const presetPills = document.querySelectorAll(".grad-preset-pill");

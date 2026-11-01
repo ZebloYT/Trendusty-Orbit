@@ -638,6 +638,12 @@
 
       <div class="log-line">
         <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[OPTIONS_PERF_OPTIMIZED]</span>
+        <span>Completely eliminated Options menu and view lag across EchoNode: (1) Eliminated forced synchronous layout reflow loops in MouseTracker by replacing full-document card query iteration with single-card delegated spotlight and requestAnimationFrame throttled ambient updates; (2) Redesigned context menu and submenus to use hardware-accelerated solid cyber-dark glass surfaces, removing multi-pass backdrop-filter blur overhead on top of WebGL canvas; (3) Added zero-gap hover bridge (::before) and 160ms hover intent grace period for flyout submenus (Game Mode, Difficulty, Server Slots, Apps) to prevent flickering and closing when moving cursor diagonally; (4) Added in-place responsive toggle updates for instant Whitelist, PVP, Nether, Flight, and Command Blocks switching; (5) Debounced MOTD Studio live rendering and localStorage state serialization.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
         <span class="log-ok">[CONTEXT_MENU_ENGINE]</span>
         <span>Built cyberpunk glass custom right-click context menu for EchoNode: instant Copy Server IP, Power Toggle (Start/Stop/Restart), live Server Options &amp; Config (Game Mode selector, Difficulty selector, PVP toggle, Whitelist toggle, Nether Dimension toggle, Flight &amp; Command Blocks toggles), Software &amp; Version shortcut, multi-server instance switcher (Slots 1-3 with active checkmark + Create Server), Go to Home navigation, and Orbit Ecosystem App Switcher (Retrosmart Cursors, Windows Setup, Progress, and 2D/3D toggle).</span>
       </div>

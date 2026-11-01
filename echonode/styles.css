@@ -1095,7 +1095,8 @@ body.mode-3d .spatial-hud-controls {
 
 .content-card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   padding: 20px;
@@ -1103,6 +1104,7 @@ body.mode-3d .spatial-hud-controls {
   position: relative;
   overflow: hidden;
   margin-bottom: 20px;
+  contain: layout style paint;
 }
 
 /* Mouse-tracking border highlight effect */
@@ -4317,21 +4319,20 @@ input:checked + .slider-round:before {
   display: none;
   z-index: 1000000;
   width: 275px;
-  background: rgba(13, 20, 36, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 189, 248, 0.28);
+  background: rgba(10, 15, 28, 0.98);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 14px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(56, 189, 248, 0.18);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 18px rgba(56, 189, 248, 0.16);
   padding: 8px;
   user-select: none;
   color: #f1f5f9;
   font-family: var(--font-sans);
-  animation: ctxFadeIn 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  animation: ctxFadeIn 0.08s ease-out;
 }
 
 @keyframes ctxFadeIn {
-  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  from { opacity: 0; transform: scale(0.98) translateY(-3px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
@@ -4412,7 +4413,7 @@ input:checked + .slider-round:before {
   font-size: 12.5px;
   color: #e2e8f0;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.08s ease, color 0.08s ease;
 }
 
 .ctx-item:hover,
@@ -4457,7 +4458,7 @@ input:checked + .slider-round:before {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
-  transition: all 0.15s ease;
+  transition: background 0.08s ease, color 0.08s ease, border-color 0.08s ease;
 }
 
 .ctx-toggle-badge.active {
@@ -4476,23 +4477,33 @@ input:checked + .slider-round:before {
 .ctx-submenu {
   position: absolute;
   top: -4px;
-  left: 100%;
-  margin-left: 6px;
+  left: calc(100% + 4px);
   min-width: 220px;
-  background: rgba(13, 20, 36, 0.97);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  border: 1px solid rgba(56, 189, 248, 0.32);
+  background: rgba(10, 15, 28, 0.98);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 12px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.18);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 16px rgba(56, 189, 248, 0.15);
   padding: 6px;
   display: none;
   z-index: 1000001;
-  animation: ctxSubmenuIn 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  animation: ctxSubmenuIn 0.08s ease-out;
+}
+
+/* Invisible hover bridge: covers the gap so moving cursor diagonally to submenu never drops hover */
+.ctx-submenu::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: -14px;
+  width: 16px;
+  background: transparent;
+  pointer-events: auto;
 }
 
 @keyframes ctxSubmenuIn {
-  from { opacity: 0; transform: translateX(-6px); }
+  from { opacity: 0; transform: translateX(-4px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
@@ -4504,9 +4515,12 @@ input:checked + .slider-round:before {
 /* Flip submenu to left if near right edge */
 .ctx-submenu.flip-left {
   left: auto;
-  right: 100%;
-  margin-left: 0;
-  margin-right: 6px;
+  right: calc(100% + 4px);
+}
+
+.ctx-submenu.flip-left::before {
+  left: auto;
+  right: -14px;
 }
 
 .ctx-subitem {
@@ -4518,7 +4532,7 @@ input:checked + .slider-round:before {
   font-size: 12px;
   color: #e2e8f0;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.08s ease, color 0.08s ease;
 }
 
 .ctx-subitem:hover {
