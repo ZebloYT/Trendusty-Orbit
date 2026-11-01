@@ -3894,3 +3894,299 @@ input:checked + .slider-round:before {
 .aternos-footer-nav a:hover {
   color: #fff;
 }
+
+/* ==========================================================================
+   USER IDENTITY & MULTI-SERVER QUOTA SYSTEM (MAX 3 SERVERS)
+   ========================================================================== */
+
+/* Topbar User Pill */
+.topbar-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.75));
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 999px;
+  padding: 4px 12px 4px 5px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.topbar-user-pill:hover {
+  background: linear-gradient(135deg, rgba(0, 245, 184, 0.12), rgba(15, 23, 42, 0.85));
+  border-color: #00f5b8;
+  box-shadow: 0 0 16px rgba(0, 245, 184, 0.25);
+  transform: translateY(-1px);
+}
+
+.user-avatar-disc {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00f5b8, #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #07090e;
+  font-size: 12px;
+  text-transform: uppercase;
+  box-shadow: 0 0 8px rgba(0, 245, 184, 0.4);
+  flex-shrink: 0;
+}
+
+.user-pill-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.user-pill-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-pill-slots {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.user-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00f5b8;
+  box-shadow: 0 0 8px #00f5b8;
+  margin-left: 2px;
+}
+
+/* Sidebar User Account Card */
+.sidebar-user-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(15, 23, 42, 0.6));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 10px 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.sidebar-user-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.sidebar-user-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00f5b8, #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #07090e;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.sidebar-user-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.sidebar-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.sidebar-user-role {
+  font-size: 10.5px;
+  color: #94a3b8;
+}
+
+.sidebar-user-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(0, 245, 184, 0.12);
+  border: 1px solid rgba(0, 245, 184, 0.3);
+  color: #00f5b8;
+  letter-spacing: 0.5px;
+}
+
+/* Multi-Server Quota Meter (Max 3 Servers) */
+.server-quota-box {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+.quota-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.quota-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quota-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00f5b8, #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #07090e;
+  font-size: 15px;
+}
+
+.quota-user-title {
+  font-weight: 700;
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+.quota-user-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.quota-slots-badge {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+.quota-slots-badge.limit-reached {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.server-quota-segments {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.quota-segment-slot {
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.quota-segment-slot.filled {
+  border-style: solid;
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+}
+
+.quota-segment-slot.active-slot {
+  border-style: solid;
+  border-color: #00f5b8;
+  background: rgba(0, 245, 184, 0.12);
+  color: #00f5b8;
+  box-shadow: 0 0 10px rgba(0, 245, 184, 0.15);
+}
+
+.quota-segment-slot.empty {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #64748b;
+}
+
+/* Delete Server Button */
+.btn-server-delete {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-server-delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  transform: scale(1.05);
+}
+
+/* Create Server Action Button */
+.btn-create-server-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #00f5b8 0%, #38bdf8 100%);
+  color: #07090e;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.btn-create-server-pill:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(0, 245, 184, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-create-server-pill:disabled {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #64748b !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}

@@ -2416,27 +2416,58 @@
         }, 3500);
       };
 
+      window.updateUserAuthUI = function(name) {
+        if (!name) name = localStorage.getItem('orbit_user_name');
+        if (!name) return;
+        const cornerBtns = document.querySelectorAll('.btn-auth-corner');
+        cornerBtns.forEach(btn => {
+          btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00f5b8;box-shadow:0 0 8px #00f5b8;margin-right:6px;"></span> ${name}`;
+          btn.title = `Logged in as ${name} (Click to switch)`;
+        });
+      };
+
       window.handleAuthSubmit = function(e, type) {
         e.preventDefault();
+        const form = e.target;
+        let userName = "amoghpro7473";
+        let userEmail = "amoghpro7473@gmail.com";
         if (type === 'signup') {
-          window.showAuthToast('Account created successfully! Welcome to Trendusty Orbit.');
+          const nameInput = form.querySelector('input[autocomplete="name"]');
+          const emailInput = form.querySelector('input[type="email"]');
+          if (nameInput && nameInput.value.trim()) userName = nameInput.value.trim();
+          if (emailInput && emailInput.value.trim()) userEmail = emailInput.value.trim();
+          window.showAuthToast(`Account created for ${userName}! Welcome to Trendusty Orbit.`);
         } else {
-          window.showAuthToast('Signed in successfully! Session authenticated.');
+          const emailInput = form.querySelector('input[type="email"]');
+          if (emailInput && emailInput.value.trim()) {
+            userEmail = emailInput.value.trim();
+            userName = userEmail.split('@')[0];
+          }
+          window.showAuthToast(`Signed in as ${userName}! Session authenticated.`);
+        }
+        localStorage.setItem("orbit_user_name", userName);
+        localStorage.setItem("orbit_user_email", userEmail);
+        localStorage.setItem("orbit_user_session", JSON.stringify({ name: userName, email: userEmail, loggedIn: true, time: Date.now() }));
+        if (userName.toLowerCase() === 'amoghpro7473' || userName.toLowerCase() === 'zebloyt') {
+          localStorage.setItem("echonode_auth_role", "owner");
         }
         window.closeAuthModal();
+        window.updateUserAuthUI(userName);
       };
 
       window.selectGoogleAccount = function(name, email) {
         const loader = document.getElementById('google-loader');
         if (loader) loader.style.display = 'block';
         setTimeout(() => {
+          localStorage.setItem("orbit_user_name", name);
+          localStorage.setItem("orbit_user_email", email);
+          localStorage.setItem("orbit_user_session", JSON.stringify({ name: name, email: email, loggedIn: true, time: Date.now() }));
+          if (name.toLowerCase() === 'amoghpro7473' || name.toLowerCase() === 'zebloyt') {
+            localStorage.setItem("echonode_auth_role", "owner");
+          }
           window.showAuthToast(`Authenticated with Google: ${email}`);
           window.closeAuthModal();
-          // Update corner buttons to show logged in state
-          const cornerBtns = document.querySelectorAll('.btn-auth-corner');
-          cornerBtns.forEach(btn => {
-            btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00f5b8;box-shadow:0 0 8px #00f5b8;margin-right:6px;"></span> ${name}`;
-          });
+          window.updateUserAuthUI(name);
         }, 600);
       };
 
@@ -2446,6 +2477,14 @@
           window.selectGoogleAccount(newEmail.split('@')[0], newEmail);
         }
       };
+
+      // Restore session on load
+      try {
+        const initialUser = localStorage.getItem('orbit_user_name');
+        if (initialUser) {
+          window.updateUserAuthUI(initialUser);
+        }
+      } catch(e) {}
     })();
   </script>
 

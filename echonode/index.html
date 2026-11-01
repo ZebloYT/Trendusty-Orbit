@@ -83,6 +83,18 @@
           </div>
         </div>
 
+        <!-- User Account Profile Banner (Login Name & Server Slot Quota) -->
+        <div class="sidebar-user-card" id="sidebar-user-card" title="Click to view Account &amp; Server Quota (Max 3 Servers)">
+          <div class="sidebar-user-left">
+            <div class="sidebar-user-avatar" id="sidebar-user-avatar">A</div>
+            <div class="sidebar-user-meta">
+              <div class="sidebar-user-name" id="sidebar-user-name">amoghpro7473</div>
+              <div class="sidebar-user-role" id="sidebar-user-role">Cloud Operator • <span id="sidebar-user-slots">1/3 Slots</span></div>
+            </div>
+          </div>
+          <span class="sidebar-user-badge">Max 3</span>
+        </div>
+
         <!-- Server Selector Dropdown -->
         <div class="server-selector-card" id="btn-select-server" title="Switch or create servers">
           <div class="selector-left">
@@ -279,6 +291,16 @@
           </div>
 
           <div class="navbar-right">
+            <!-- User Profile Pill (Displays Login Name & 1/3 Server Slot Quota) -->
+            <div class="topbar-user-pill" id="btn-topbar-user-profile" title="Account profile &amp; cloud server quota (Max 3 Servers)">
+              <div class="user-avatar-disc" id="topbar-user-avatar">A</div>
+              <div class="user-pill-text">
+                <span class="user-pill-name" id="topbar-user-name">amoghpro7473</span>
+                <span class="user-pill-slots" id="topbar-server-slots">1/3 Servers</span>
+              </div>
+              <span class="user-status-dot"></span>
+            </div>
+
             <!-- Quick Search Palette Trigger -->
             <button class="search-palette-trigger" id="btn-trigger-search">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1532,71 +1554,142 @@
 
   <!-- Server Switcher / Account Manager Modal -->
   <div class="modal-overlay" id="modal-server-switcher">
-    <div class="modal-content-box" style="max-width: 600px;">
+    <div class="modal-content-box" style="max-width: 620px;">
       <div class="modal-header-row">
         <div>
           <h3>Cloud Server Manager</h3>
-          <span style="font-size: 11px; color: #94a3b8;">Switch server workspace or authenticate owner access</span>
+          <span style="font-size: 11px; color: #94a3b8;">Manage your cloud server instances • Maximum 3 servers allowed</span>
         </div>
         <button class="modal-close-btn" onclick="app.closeModal('modal-server-switcher')">&times;</button>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px;">
-        
-        <!-- Server 1: Visitor / Personal Server -->
-        <div class="server-switch-item" id="switch-item-guest" style="background: rgba(255, 255, 255, 0.03); border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s ease;">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 42px; height: 42px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 6px;">
-              <img src="assets/software/echonode.png" alt="EchoNode Logo" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
+      <!-- Account Profile & Quota Meter (Max 3 Servers) -->
+      <div class="server-quota-box" style="margin-top: 14px;">
+        <div class="quota-header-row">
+          <div class="quota-user-meta">
+            <div class="quota-user-avatar" id="modal-quota-avatar">A</div>
             <div>
-              <div style="font-weight: 700; color: #f8fafc; font-size: 14.5px;">My Minecraft Server</div>
-              <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">Personal Cloud Workspace • Paper 1.20+ • Browser Saved</div>
+              <div class="quota-user-title" id="modal-quota-username">amoghpro7473</div>
+              <div class="quota-user-sub" id="modal-quota-email">amoghpro7473@gmail.com</div>
             </div>
           </div>
-          <button class="btn-secondary" id="btn-activate-guest" style="font-size: 12px; padding: 6px 14px;">Switch</button>
+          <div class="quota-slots-badge" id="modal-quota-badge">1 / 3 Servers</div>
         </div>
 
-        <!-- Server 2: Sky Heaven MC (Owner Only) -->
-        <div class="server-switch-item" id="switch-item-skyheaven" style="background: rgba(0, 245, 184, 0.05); border: 1.5px solid rgba(0, 245, 184, 0.25); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s ease;">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 42px; height: 42px; background: rgba(0, 245, 184, 0.15); border: 1px solid rgba(0, 245, 184, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 6px;">
-              <img src="assets/software/skyheaven.png" alt="Sky Heaven Crown Logo" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
-            <div>
-              <div style="font-weight: 700; color: #00f5b8; font-size: 14.5px; display: flex; align-items: center; gap: 8px;">
-                <span>SKY HEAVEN MC</span>
-                <span style="font-size: 10px; background: rgba(0, 245, 184, 0.15); border: 1px solid rgba(0, 245, 184, 0.35); padding: 2px 7px; border-radius: 999px;">OWNER</span>
-              </div>
-              <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">ZebloYT / amoghpro7473 • Purpur 1.26 • 33 Plugins • 24/7 CI/CD Host</div>
-            </div>
-          </div>
-          <div id="skyheaven-action-box">
-            <button class="btn-primary" id="btn-activate-skyheaven" style="font-size: 12px; padding: 6px 14px;">Switch</button>
-          </div>
+        <!-- 3-Slot Visual Allocation Segments -->
+        <div class="server-quota-segments" id="modal-quota-segments">
+          <div class="quota-segment-slot filled active-slot" id="quota-slot-1">Slot 1 • Active</div>
+          <div class="quota-segment-slot empty" id="quota-slot-2">Slot 2 • Empty</div>
+          <div class="quota-segment-slot empty" id="quota-slot-3">Slot 3 • Empty</div>
         </div>
-
-        <!-- Owner Unlock Box (Shown if not yet authenticated) -->
-        <div id="owner-auth-box" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 14px 18px; margin-top: 4px;">
-          <div style="font-size: 12.5px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            <span>🔐 Owner Authentication</span>
-            <span style="font-size: 11px; color: #64748b; font-weight: 400;">(Enter PIN 7473 to access Sky Heaven MC)</span>
-          </div>
-          <div style="display: flex; gap: 10px;">
-            <input type="password" class="form-input" id="input-owner-passkey" placeholder="Enter Owner PIN (7473) or Admin Token" style="font-size: 12.5px;">
-            <button class="btn-primary" id="btn-submit-owner-key" style="white-space: nowrap; font-size: 12.5px; padding: 0 18px;">Unlock 👑</button>
-          </div>
-        </div>
-
-        <!-- Action Row: Import Server Folder -->
-        <div style="margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; gap: 10px;">
-          <button class="btn-primary" id="btn-switcher-import-server" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; padding: 11px 18px; background: linear-gradient(135deg, rgba(0, 245, 184, 0.18), rgba(56, 189, 248, 0.22)); border: 1.5px solid rgba(0, 245, 184, 0.45); color: #fff;">
-            <img src="assets/software/echonode.png" style="width: 18px; height: 18px; object-fit: contain;">
-            <span>📂 Import Server Folder</span>
-          </button>
-        </div>
-
       </div>
+
+      <!-- Dynamic Server Instances Container -->
+      <div id="server-switcher-list" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Dynamically rendered via app.renderServerSwitcherModal() -->
+      </div>
+
+      <!-- Owner Unlock Box (Shown if not yet authenticated) -->
+      <div id="owner-auth-box" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 14px 18px; margin-top: 10px;">
+        <div style="font-size: 12.5px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <span>🔐 Owner Authentication</span>
+          <span style="font-size: 11px; color: #64748b; font-weight: 400;">(Enter PIN 7473 to access Sky Heaven MC)</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <input type="password" class="form-input" id="input-owner-passkey" placeholder="Enter Owner PIN (7473) or Admin Token" style="font-size: 12.5px;">
+          <button class="btn-primary" id="btn-submit-owner-key" style="white-space: nowrap; font-size: 12.5px; padding: 0 18px;">Unlock 👑</button>
+        </div>
+      </div>
+
+      <!-- Quota Limit Warning (Shown when 3/3 reached) -->
+      <div id="server-limit-banner" style="display: none; margin-top: 10px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #f59e0b; display: flex; align-items: center; gap: 8px;">
+        <span>⚠️</span>
+        <span>Maximum limit reached (3/3 servers). Delete an existing server below to free up a slot.</span>
+      </div>
+
+      <!-- Action Row: Create New Server + Import Server Folder -->
+      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn-create-server-pill" id="btn-open-create-server-modal" type="button">
+          <span>+ Create New Server</span>
+          <span style="font-size: 11px; opacity: 0.85;" id="btn-create-slot-indicator">(Slot 2/3)</span>
+        </button>
+        <button class="btn-secondary" id="btn-switcher-import-server" type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; padding: 10px 16px;">
+          <img src="assets/software/echonode.png" style="width: 16px; height: 16px; object-fit: contain;">
+          <span>📂 Import Folder</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Create New Server Modal (Max 3 Servers Enforcement) -->
+  <div class="modal-overlay" id="modal-create-server">
+    <div class="modal-content-box" style="max-width: 500px;">
+      <div class="modal-header-row">
+        <div>
+          <h3 style="margin: 0; color: #fff; font-size: 18px;">⚡ Create New Cloud Server</h3>
+          <span style="font-size: 11px; color: #94a3b8;" id="create-server-slot-label">Allocating Server Slot • Maximum 3 Allowed</span>
+        </div>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-create-server')">&times;</button>
+      </div>
+
+      <form id="form-create-new-server" onsubmit="app.handleCreateServerSubmit(event)" style="margin-top: 16px; display: flex; flex-direction: column; gap: 14px;">
+        <div class="form-group">
+          <label style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; display: block;">Server Name</label>
+          <input type="text" class="form-input" id="input-new-server-name" placeholder="e.g. Survival SMP, Creative Realm" required style="font-size: 13.5px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; display: block;">Software Platform</label>
+            <select class="form-select" id="select-new-server-software" style="width: 100%; font-size: 13px;">
+              <option value="Paper">Paper (Optimized)</option>
+              <option value="Purpur">Purpur (Feature Rich)</option>
+              <option value="Vanilla">Vanilla (Official)</option>
+              <option value="Fabric">Fabric (Modded)</option>
+              <option value="Spigot">Spigot (Classic)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; display: block;">Minecraft Version</label>
+            <select class="form-select" id="select-new-server-version" style="width: 100%; font-size: 13px;">
+              <option value="1.20.4">1.20.4 (Recommended)</option>
+              <option value="1.20.2">1.20.2</option>
+              <option value="1.19.4">1.19.4</option>
+              <option value="1.18.2">1.18.2</option>
+              <option value="1.16.5">1.16.5 (Legacy PvP)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; display: block;">Default Gamemode</label>
+            <select class="form-select" id="select-new-server-gamemode" style="width: 100%; font-size: 13px;">
+              <option value="survival">Survival</option>
+              <option value="creative">Creative</option>
+              <option value="adventure">Adventure</option>
+              <option value="hardcore">Hardcore</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; display: block;">Max Players</label>
+            <input type="number" class="form-input" id="input-new-server-max-players" value="20" min="1" max="100" style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="background: rgba(0, 245, 184, 0.05); border: 1px solid rgba(0, 245, 184, 0.2); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
+          <span style="color: #00f5b8;">🛡️</span>
+          <span>Dedicated 4.0 GB virtual memory and 24/7 cloud runtime allocated.</span>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+          <button type="button" class="btn-secondary" onclick="app.closeModal('modal-create-server')">Cancel</button>
+          <button type="submit" class="btn-primary" id="btn-submit-create-server">⚡ Launch Server</button>
+        </div>
+      </form>
     </div>
   </div>
 

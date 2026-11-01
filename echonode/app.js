@@ -180,10 +180,112 @@ class StateStore {
     this.init();
   }
 
+  getUserName() {
+    return localStorage.getItem("orbit_user_name") || "amoghpro7473";
+  }
+
+  getUserEmail() {
+    return localStorage.getItem("orbit_user_email") || (this.getUserName() + "@gmail.com");
+  }
+
+  getServersList() {
+    let list = null;
+    try {
+      const raw = localStorage.getItem("echonode_servers_list");
+      if (raw) list = JSON.parse(raw);
+    } catch(e) {}
+    if (!list || !Array.isArray(list) || list.length === 0) {
+      list = [
+        {
+          id: "guest_server",
+          name: "My Minecraft Server",
+          software: "Paper",
+          version: "1.20.4",
+          port: 25565,
+          storageKey: "echonode_guest_state",
+          avatar: "assets/software/echonode.png"
+        },
+        {
+          id: "skyheaven",
+          name: "SKY HEAVEN MC",
+          software: "Purpur",
+          version: "1.26.1.2",
+          port: 25566,
+          storageKey: "echonode_skyheaven_state",
+          avatar: "assets/software/skyheaven.png",
+          ownerOnly: true
+        }
+      ];
+      localStorage.setItem("echonode_servers_list", JSON.stringify(list));
+    }
+    return list;
+  }
+
+  canCreateServer() {
+    return this.getServersList().length < 3;
+  }
+
+  createServer(cfg = {}) {
+    const list = this.getServersList();
+    if (list.length >= 3) {
+      return { success: false, message: "Limit reached! Maximum 3 servers allowed per user." };
+    }
+    const newId = "server_" + Date.now();
+    const nextPort = 25565 + list.length;
+    const meta = {
+      id: newId,
+      name: cfg.name || ("Server #" + (list.length + 1)),
+      software: cfg.software || "Paper",
+      version: cfg.version || "1.20.4",
+      port: nextPort,
+      storageKey: "echonode_server_state_" + newId,
+      avatar: "assets/software/echonode.png"
+    };
+    const newState = JSON.parse(JSON.stringify(GUEST_DEFAULT_STATE));
+    newState.serverName = meta.name;
+    newState.serverVersion = `${meta.software} ${meta.version}`;
+    newState.installedSoftware = meta.software;
+    newState.installedVersion = meta.version;
+    newState.serverIp = `play.echonode.net:${meta.port}`;
+    if (cfg.gamemode) newState.options.gamemode = cfg.gamemode;
+    if (cfg.maxPlayers) newState.options.maxPlayers = parseInt(cfg.maxPlayers) || 20;
+
+    localStorage.setItem(meta.storageKey, JSON.stringify(newState));
+    list.push(meta);
+    localStorage.setItem("echonode_servers_list", JSON.stringify(list));
+    this.switchServer(newId);
+    return { success: true, server: meta };
+  }
+
+  deleteServer(serverId) {
+    let list = this.getServersList();
+    if (list.length <= 1) {
+      return { success: false, message: "Cannot delete your only remaining server." };
+    }
+    const idx = list.findIndex(s => s.id === serverId);
+    if (idx === -1) return { success: false, message: "Server not found." };
+    
+    const removed = list.splice(idx, 1)[0];
+    localStorage.removeItem(removed.storageKey || ("echonode_server_state_" + serverId));
+    localStorage.setItem("echonode_servers_list", JSON.stringify(list));
+
+    const activeId = this.getActiveServerId();
+    if (activeId === serverId) {
+      this.switchServer(list[0].id);
+    } else {
+      this.save();
+    }
+    return { success: true };
+  }
+
   checkUrlAuth() {
     try {
+      const uName = this.getUserName().toLowerCase();
+      if (uName === "amoghpro7473" || uName === "zebloyt") {
+        localStorage.setItem("echonode_auth_role", "owner");
+      }
+
       const params = new URLSearchParams(window.location.search);
-      // Secret owner unlock triggers: ?owner=true, ?owner=7473, ?server=skyheaven, ?admin=amoghpro7473, etc.
       const ownerParam = params.get("owner");
       const adminParam = params.get("admin");
       const userParam = params.get("user");
@@ -224,9 +326,15 @@ class StateStore {
 
   getActiveServerId() {
     const isOwner = this.isOwner();
-    const stored = localStorage.getItem("echonode_active_server_id");
+    const servers = this.getServersList();
+    let stored = localStorage.getItem("echonode_active_server_id");
     if (!stored) {
       return isOwner ? "skyheaven" : "guest_server";
+    }
+    // Verify stored ID exists in servers
+    if (!servers.find(s => s.id === stored)) {
+      stored = servers[0].id;
+      localStorage.setItem("echonode_active_server_id", stored);
     }
     // If not owner, never allow active ID to be skyheaven
     if (!isOwner && stored === "skyheaven") {
@@ -235,8 +343,15 @@ class StateStore {
     return stored;
   }
 
+  getActiveStorageKey() {
+    if (this.currentProfile === "skyheaven") return "echonode_skyheaven_state";
+    if (this.currentProfile === "guest_server") return "echonode_guest_state";
+    return "echonode_server_state_" + this.currentProfile;
+  }
+
   init() {
     const isOwner = this.isOwner();
+    const servers = this.getServersList();
     const activeId = this.getActiveServerId();
 
     if (activeId === "skyheaven" && isOwner) {
@@ -252,7 +367,7 @@ class StateStore {
       }
       this.data = saved;
       this.currentProfile = "skyheaven";
-    } else {
+    } else if (activeId === "guest_server") {
       // 🌐 GUEST / VISITOR PROFILE: PERSONAL SERVER (Clean Sandbox)
       let saved = null;
       try {
@@ -265,13 +380,34 @@ class StateStore {
       }
       this.data = saved;
       this.currentProfile = "guest_server";
+    } else {
+      // CUSTOM USER CREATED SERVER
+      let saved = null;
+      try {
+        const s = localStorage.getItem("echonode_server_state_" + activeId);
+        saved = s ? JSON.parse(s) : null;
+      } catch(e) {}
+      if (!saved) {
+        saved = JSON.parse(JSON.stringify(GUEST_DEFAULT_STATE));
+        const meta = servers.find(s => s.id === activeId);
+        if (meta) {
+          saved.serverName = meta.name;
+          saved.serverVersion = `${meta.software} ${meta.version}`;
+          saved.installedSoftware = meta.software;
+          saved.installedVersion = meta.version;
+          saved.serverIp = `play.echonode.net:${meta.port}`;
+        }
+        localStorage.setItem("echonode_server_state_" + activeId, JSON.stringify(saved));
+      }
+      this.data = saved;
+      this.currentProfile = activeId;
     }
 
     if (!this.data.plugins) this.data.plugins = (this.currentProfile === "skyheaven" ? SKY_HEAVEN_STATE.plugins : GUEST_DEFAULT_STATE.plugins);
     if (!this.data.options) this.data.options = (this.currentProfile === "skyheaven" ? SKY_HEAVEN_STATE.options : GUEST_DEFAULT_STATE.options);
     
     // Default normal Overworld is always active; Nether & End deferred until 1st player joins
-    if (this.currentProfile === "guest_server") {
+    if (this.currentProfile === "guest_server" || this.currentProfile.startsWith("server_")) {
       if (this.data.worldsGenerated === undefined || this.data.worldsGenerated === false) {
         this.data.worldsGenerated = true;
       }
@@ -310,10 +446,16 @@ class StateStore {
 
   save() {
     try {
-      if (this.currentProfile === "skyheaven") {
-        localStorage.setItem("echonode_skyheaven_state", JSON.stringify(this.data));
-      } else {
-        localStorage.setItem("echonode_guest_state", JSON.stringify(this.data));
+      const key = this.getActiveStorageKey();
+      localStorage.setItem(key, JSON.stringify(this.data));
+      // Sync server metadata in servers list
+      const list = this.getServersList();
+      const currentMeta = list.find(s => s.id === this.currentProfile);
+      if (currentMeta) {
+        currentMeta.name = this.data.serverName;
+        currentMeta.software = this.data.installedSoftware;
+        currentMeta.version = this.data.installedVersion;
+        localStorage.setItem("echonode_servers_list", JSON.stringify(list));
       }
     } catch (e) {
       console.warn("Storage quota exceeded", e);
@@ -321,12 +463,11 @@ class StateStore {
   }
 
   switchServer(serverId) {
-    if (serverId === "skyheaven") {
-      if (!this.isOwner()) return false;
-      localStorage.setItem("echonode_active_server_id", "skyheaven");
-    } else {
-      localStorage.setItem("echonode_active_server_id", "guest_server");
-    }
+    const servers = this.getServersList();
+    const target = servers.find(s => s.id === serverId);
+    if (!target) return false;
+    if (target.ownerOnly && !this.isOwner()) return false;
+    localStorage.setItem("echonode_active_server_id", serverId);
     this.init();
     return true;
   }
@@ -1299,6 +1440,7 @@ class EchoNodeApp {
     this.bindImportServer();
 
     // 2. Initial renders
+    this.renderUserSessionUI();
     this.updateServerStatusUI(store.data.status || "offline");
     this.renderInitialConsole();
     this.renderVersionUI();
@@ -1853,9 +1995,11 @@ class EchoNodeApp {
   renderInitialConsole() {
     const sw = store.data.installedSoftware || "Paper";
     const ver = store.data.installedVersion || "1.20.4";
-    this.appendLog("system", `✦ EchoNode Cloud Server Standby [Zero-Boot State]`);
-    this.appendLog("system", `Software: ${sw} ${ver} • Status: OFFLINE`);
-    this.appendLog("info", "Worlds: Zero generated • Player Data: Zero generated");
+    const userName = store.getUserName();
+    const serverCount = store.getServersList().length;
+    this.appendLog("system", `✦ EchoNode Cloud Management Suite • Session: ${userName} [${serverCount}/3 Servers Allocated]`);
+    this.appendLog("system", `Instance: "${store.data.serverName || 'My Minecraft Server'}" • Software: ${sw} ${ver} • Status: OFFLINE`);
+    this.appendLog("info", `Operator '${userName}' authenticated • 24/7 Cloud Host Ready (Slot ${serverCount} of 3).`);
     this.appendLog("info", "Configure settings in [Options] & [Software / Version], then click [Start] in the sidebar to boot.");
   }
 
@@ -2295,7 +2439,7 @@ class EchoNodeApp {
       });
     }
 
-    // 5. Clicking sidebar server selector opens Multi-Server Switcher Modal!
+    // 5. Open Multi-Server Switcher Modal (Sidebar selector, User card, or Topbar pill)
     const sidebarSelector = document.getElementById("btn-select-server");
     if (sidebarSelector) {
       sidebarSelector.addEventListener("click", () => {
@@ -2304,39 +2448,42 @@ class EchoNodeApp {
       });
     }
 
-    // Modal action bindings
-    const btnGuest = document.getElementById("btn-activate-guest");
-    if (btnGuest) {
-      btnGuest.addEventListener("click", (e) => {
-        e.stopPropagation();
+    const sidebarUserCard = document.getElementById("sidebar-user-card");
+    if (sidebarUserCard) {
+      sidebarUserCard.addEventListener("click", () => {
         sfx.playClick();
-        store.switchServer("guest_server");
-        this.reloadServerData();
-        this.showToast("Switched to My Minecraft Server (Personal Workspace)", "success");
-        this.closeModal("modal-server-switcher");
+        this.openServerSwitcherModal();
       });
     }
 
-    const btnSky = document.getElementById("btn-activate-skyheaven");
-    if (btnSky) {
-      btnSky.addEventListener("click", (e) => {
-        e.stopPropagation();
+    const topbarUserPill = document.getElementById("btn-topbar-user-profile");
+    if (topbarUserPill) {
+      topbarUserPill.addEventListener("click", () => {
         sfx.playClick();
-        if (store.isOwner()) {
-          store.switchServer("skyheaven");
-          this.reloadServerData();
-          this.showToast("Switched to Sky Heaven MC (Owner)", "success");
-          this.closeModal("modal-server-switcher");
-        } else {
-          const passInput = document.getElementById("input-owner-passkey");
-          if (passInput) {
-            passInput.focus();
-            passInput.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          }
+        this.openServerSwitcherModal();
+      });
+    }
+
+    // Create New Server Modal Trigger
+    const btnOpenCreate = document.getElementById("btn-open-create-server-modal");
+    if (btnOpenCreate) {
+      btnOpenCreate.addEventListener("click", () => {
+        sfx.playClick();
+        if (!store.canCreateServer()) {
+          sfx.playWarning();
+          this.showToast("Maximum limit reached (3/3 servers). Delete an existing server to free up a slot.", "error");
+          return;
         }
+        const servers = store.getServersList();
+        const slotLabel = document.getElementById("create-server-slot-label");
+        if (slotLabel) slotLabel.textContent = `Allocating Server Slot ${servers.length + 1} of 3 • Free Tier`;
+        const nameInput = document.getElementById("input-new-server-name");
+        if (nameInput) nameInput.value = `Server #${servers.length + 1}`;
+        this.openModal("modal-create-server");
       });
     }
 
+    // Owner Unlock Key Handler
     const btnUnlockOwner = document.getElementById("btn-submit-owner-key");
     const inputPasskey = document.getElementById("input-owner-passkey");
     if (btnUnlockOwner && inputPasskey) {
@@ -3817,40 +3964,246 @@ ${custom}
     if (modal) modal.classList.add("active");
   }
 
+  renderUserSessionUI() {
+    const userName = store.getUserName();
+    const userEmail = store.getUserEmail();
+    const userInitial = (userName[0] || 'A').toUpperCase();
+    const servers = store.getServersList();
+    const count = servers.length;
+
+    // Topbar Pill
+    const topAvatar = document.getElementById("topbar-user-avatar");
+    const topName = document.getElementById("topbar-user-name");
+    const topSlots = document.getElementById("topbar-server-slots");
+    if (topAvatar) topAvatar.textContent = userInitial;
+    if (topName) topName.textContent = userName;
+    if (topSlots) topSlots.textContent = `${count}/3 Servers`;
+
+    // Sidebar User Card
+    const sideAvatar = document.getElementById("sidebar-user-avatar");
+    const sideName = document.getElementById("sidebar-user-name");
+    const sideSlots = document.getElementById("sidebar-user-slots");
+    if (sideAvatar) sideAvatar.textContent = userInitial;
+    if (sideName) sideName.textContent = userName;
+    if (sideSlots) sideSlots.textContent = `${count}/3 Slots`;
+  }
+
   openServerSwitcherModal() {
     const modal = document.getElementById("modal-server-switcher");
     if (!modal) return;
     
+    this.renderUserSessionUI();
+
+    const userName = store.getUserName();
+    const userEmail = store.getUserEmail();
+    const userInitial = (userName[0] || 'A').toUpperCase();
     const isOwner = store.isOwner();
     const activeId = store.getActiveServerId();
+    const servers = store.getServersList();
+    const count = servers.length;
 
-    const guestCard = document.getElementById("switch-item-guest");
-    const skyCard = document.getElementById("switch-item-skyheaven");
-    const btnGuest = document.getElementById("btn-activate-guest");
-    const btnSky = document.getElementById("btn-activate-skyheaven");
-    const authBox = document.getElementById("owner-auth-box");
-
-    if (activeId === "skyheaven") {
-      if (guestCard) guestCard.style.borderColor = "rgba(255, 255, 255, 0.1)";
-      if (skyCard) skyCard.style.borderColor = "#00f5b8";
-      if (btnGuest) { btnGuest.textContent = "Switch"; btnGuest.className = "btn-secondary"; }
-      if (btnSky) { btnSky.textContent = "Active ✓"; btnSky.className = "btn-primary"; }
-      if (authBox) authBox.style.display = "none";
-    } else {
-      if (guestCard) guestCard.style.borderColor = "#38bdf8";
-      if (skyCard) skyCard.style.borderColor = isOwner ? "rgba(0, 245, 184, 0.3)" : "rgba(255, 255, 255, 0.08)";
-      if (btnGuest) { btnGuest.textContent = "Active ✓"; btnGuest.className = "btn-primary"; }
-      if (btnSky) {
-        btnSky.textContent = isOwner ? "Switch" : "Unlock 🔒";
-        btnSky.className = isOwner ? "btn-primary" : "btn-secondary";
+    // Populate Account & Quota Banner
+    const qAvatar = document.getElementById("modal-quota-avatar");
+    const qName = document.getElementById("modal-quota-username");
+    const qEmail = document.getElementById("modal-quota-email");
+    const qBadge = document.getElementById("modal-quota-badge");
+    if (qAvatar) qAvatar.textContent = userInitial;
+    if (qName) qName.textContent = userName;
+    if (qEmail) qEmail.textContent = userEmail;
+    if (qBadge) {
+      qBadge.textContent = `${count} / 3 Servers Active`;
+      if (count >= 3) {
+        qBadge.classList.add("limit-reached");
+      } else {
+        qBadge.classList.remove("limit-reached");
       }
-      if (authBox) authBox.style.display = isOwner ? "none" : "block";
+    }
+
+    // Update 3 Visual Quota Segment Slots
+    for (let i = 1; i <= 3; i++) {
+      const slotEl = document.getElementById(`quota-slot-${i}`);
+      if (slotEl) {
+        if (i <= count) {
+          const s = servers[i - 1];
+          const isActive = (s && s.id === activeId);
+          slotEl.className = `quota-segment-slot filled ${isActive ? 'active-slot' : ''}`;
+          slotEl.textContent = `Slot ${i} • ${isActive ? 'Active' : 'Allocated'}`;
+        } else {
+          slotEl.className = "quota-segment-slot empty";
+          slotEl.textContent = `Slot ${i} • Available`;
+        }
+      }
+    }
+
+    // Dynamically Render Server List Container
+    const listContainer = document.getElementById("server-switcher-list");
+    if (listContainer) {
+      listContainer.innerHTML = "";
+      servers.forEach((s) => {
+        const isActive = (s.id === activeId);
+        const isSky = (s.id === "skyheaven");
+        const card = document.createElement("div");
+        card.className = "server-switch-item";
+        card.style.background = isActive ? "rgba(0, 245, 184, 0.06)" : "rgba(255, 255, 255, 0.03)";
+        card.style.border = isActive ? "1.5px solid #00f5b8" : "1.5px solid rgba(255, 255, 255, 0.1)";
+        card.style.borderRadius = "12px";
+        card.style.padding = "14px 18px";
+        card.style.display = "flex";
+        card.style.justifyContent = "space-between";
+        card.style.alignItems = "center";
+        card.style.transition = "all 0.2s ease";
+
+        const iconSrc = s.avatar || (isSky ? "assets/software/skyheaven.png" : "assets/software/echonode.png");
+
+        card.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 42px; height: 42px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 6px;">
+              <img src="${iconSrc}" alt="Server Logo" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+            <div>
+              <div style="font-weight: 700; color: ${isActive ? '#00f5b8' : '#f8fafc'}; font-size: 14.5px; display: flex; align-items: center; gap: 8px;">
+                <span>${s.name}</span>
+                ${isActive ? '<span style="font-size: 10px; background: rgba(0, 245, 184, 0.2); border: 1px solid #00f5b8; color: #00f5b8; padding: 2px 7px; border-radius: 999px;">CURRENT</span>' : ''}
+                ${s.ownerOnly ? '<span style="font-size: 10px; background: rgba(0, 245, 184, 0.15); border: 1px solid rgba(0, 245, 184, 0.35); padding: 2px 7px; border-radius: 999px; color: #00f5b8;">OWNER</span>' : ''}
+              </div>
+              <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">
+                ${s.software} ${s.version} • Port ${s.port || 25565} • Dedicated 4.0 GB
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            ${isActive
+              ? '<button class="btn-primary" disabled style="font-size: 12px; padding: 6px 14px; opacity: 1; cursor: default;">Active ✓</button>'
+              : `<button class="btn-secondary" onclick="app.handleSwitchServer('${s.id}')" style="font-size: 12px; padding: 6px 14px;">${(s.ownerOnly && !isOwner) ? 'Unlock 🔒' : 'Switch'}</button>`
+            }
+            ${(!s.ownerOnly && servers.length > 1)
+              ? `<button class="btn-server-delete" onclick="app.handleDeleteServer('${s.id}')" title="Delete server to free up 1 of your 3 slots">🗑️</button>`
+              : ''
+            }
+          </div>
+        `;
+        listContainer.appendChild(card);
+      });
+    }
+
+    // Owner Auth Box Visibility
+    const authBox = document.getElementById("owner-auth-box");
+    if (authBox) {
+      authBox.style.display = isOwner ? "none" : "block";
+    }
+
+    // Create Server Button & Limit Banner Control
+    const btnOpenCreate = document.getElementById("btn-open-create-server-modal");
+    const slotIndicator = document.getElementById("btn-create-slot-indicator");
+    const limitBanner = document.getElementById("server-limit-banner");
+
+    if (count >= 3) {
+      if (btnOpenCreate) {
+        btnOpenCreate.disabled = true;
+      }
+      if (slotIndicator) slotIndicator.textContent = "(3/3 Max Reached)";
+      if (limitBanner) limitBanner.style.display = "flex";
+    } else {
+      if (btnOpenCreate) {
+        btnOpenCreate.disabled = false;
+      }
+      if (slotIndicator) slotIndicator.textContent = `(Slot ${count + 1}/3)`;
+      if (limitBanner) limitBanner.style.display = "none";
     }
 
     this.openModal("modal-server-switcher");
   }
 
+  handleSwitchServer(serverId) {
+    sfx.playClick();
+    const servers = store.getServersList();
+    const target = servers.find(s => s.id === serverId);
+    if (!target) return;
+
+    if (target.ownerOnly && !store.isOwner()) {
+      const passInput = document.getElementById("input-owner-passkey");
+      if (passInput) {
+        passInput.focus();
+        passInput.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      return;
+    }
+
+    store.switchServer(serverId);
+    this.reloadServerData();
+    this.showToast(`Switched to "${target.name}"`, "success");
+    this.closeModal("modal-server-switcher");
+  }
+
+  handleDeleteServer(serverId) {
+    sfx.playClick();
+    const servers = store.getServersList();
+    const target = servers.find(s => s.id === serverId);
+    if (!target) return;
+
+    if (servers.length <= 1) {
+      sfx.playWarning();
+      this.showToast("Cannot delete your only remaining server.", "error");
+      return;
+    }
+
+    const confirmed = confirm(`Are you sure you want to delete server "${target.name}"?\nThis will remove the server instance and free up 1 of your 3 server slots.`);
+    if (!confirmed) return;
+
+    const res = store.deleteServer(serverId);
+    if (res.success) {
+      sfx.playSuccess();
+      this.reloadServerData();
+      this.openServerSwitcherModal();
+      this.showToast(`Deleted "${target.name}". 1 server slot freed (${store.getServersList().length}/3)!`, "info");
+    }
+  }
+
+  handleCreateServerSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    sfx.playClick();
+
+    if (!store.canCreateServer()) {
+      sfx.playWarning();
+      this.showToast("Maximum limit reached (3/3 servers). Delete an existing server to free up a slot.", "error");
+      return;
+    }
+
+    const nameInput = document.getElementById("input-new-server-name");
+    const selectSoftware = document.getElementById("select-new-server-software");
+    const selectVersion = document.getElementById("select-new-server-version");
+    const selectGamemode = document.getElementById("select-new-server-gamemode");
+    const inputMaxPlayers = document.getElementById("input-new-server-max-players");
+
+    const name = (nameInput ? nameInput.value.trim() : "") || `Server #${store.getServersList().length + 1}`;
+    const software = selectSoftware ? selectSoftware.value : "Paper";
+    const version = selectVersion ? selectVersion.value : "1.20.4";
+    const gamemode = selectGamemode ? selectGamemode.value : "survival";
+    const maxPlayers = inputMaxPlayers ? parseInt(inputMaxPlayers.value) : 20;
+
+    const res = store.createServer({
+      name,
+      software,
+      version,
+      gamemode,
+      maxPlayers
+    });
+
+    if (res.success) {
+      sfx.playServerChime();
+      this.closeModal("modal-create-server");
+      this.closeModal("modal-server-switcher");
+      this.reloadServerData();
+      this.showToast(`Server "${name}" created successfully (Slot ${store.getServersList().length}/3)!`, "success");
+    } else {
+      sfx.playWarning();
+      this.showToast(res.message || "Failed to create server.", "error");
+    }
+  }
+
   reloadServerData() {
+    this.renderUserSessionUI();
+
     const nameEl = document.getElementById("display-server-name");
     if (nameEl) nameEl.textContent = store.data.serverName;
     const badgeEl = document.getElementById("sidebar-server-badge");
