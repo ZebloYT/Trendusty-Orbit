@@ -180,12 +180,127 @@ class StateStore {
     this.init();
   }
 
+  isLoggedIn() {
+    try {
+      const sess = localStorage.getItem("orbit_user_session");
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed && (parsed.name || parsed.email)) return true;
+      }
+    } catch (e) {}
+    const legacy = localStorage.getItem("orbit_user_name");
+    return Boolean(legacy && legacy.trim() && legacy.trim() !== "Guest User");
+  }
+
   getUserName() {
-    return localStorage.getItem("orbit_user_name") || "amoghpro7473";
+    try {
+      const sess = localStorage.getItem("orbit_user_session");
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed && parsed.name) return parsed.name;
+      }
+    } catch (e) {}
+    const legacy = localStorage.getItem("orbit_user_name");
+    if (legacy && legacy.trim() && legacy.trim() !== "Guest User") {
+      return legacy.trim();
+    }
+    return "Guest User";
   }
 
   getUserEmail() {
-    return localStorage.getItem("orbit_user_email") || (this.getUserName() + "@gmail.com");
+    try {
+      const sess = localStorage.getItem("orbit_user_session");
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed && parsed.email) return parsed.email;
+      }
+    } catch (e) {}
+    const legacy = localStorage.getItem("orbit_user_email");
+    if (legacy && legacy.trim() && !legacy.toLowerCase().includes("amoghpro7473")) {
+      return legacy.trim();
+    }
+    return "";
+  }
+
+  getUserAvatar() {
+    try {
+      const sess = localStorage.getItem("orbit_user_session");
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed && parsed.avatar) return parsed.avatar;
+      }
+    } catch (e) {}
+    const avatar = localStorage.getItem("orbit_user_avatar");
+    if (avatar) return avatar;
+    const name = this.getUserName();
+    if (name && name !== "Guest User") {
+      return name.charAt(0).toUpperCase();
+    }
+    return "👤";
+  }
+
+  getUserAvatarColor() {
+    try {
+      const sess = localStorage.getItem("orbit_user_session");
+      if (sess) {
+        const parsed = JSON.parse(sess);
+        if (parsed && parsed.avatarColor) return parsed.avatarColor;
+      }
+    } catch (e) {}
+    return localStorage.getItem("orbit_user_avatar_color") || "#3b82f6";
+  }
+
+  getSavedAccounts() {
+    try {
+      const raw = localStorage.getItem("orbit_saved_accounts");
+      if (raw) {
+        const list = JSON.parse(raw);
+        if (Array.isArray(list)) return list;
+      }
+    } catch (e) {}
+    return [];
+  }
+
+  saveAccountToDevice(account) {
+    try {
+      const list = this.getSavedAccounts();
+      const idx = list.findIndex(a => a.email && a.email.toLowerCase() === (account.email || "").toLowerCase());
+      if (idx >= 0) {
+        list[idx] = { ...list[idx], ...account };
+      } else {
+        list.push(account);
+      }
+      localStorage.setItem("orbit_saved_accounts", JSON.stringify(list));
+    } catch (e) {}
+  }
+
+  setSession(account) {
+    try {
+      localStorage.setItem("orbit_user_session", JSON.stringify(account));
+      localStorage.setItem("orbit_user_name", account.name || "User");
+      localStorage.setItem("orbit_user_email", account.email || "");
+      if (account.avatar) localStorage.setItem("orbit_user_avatar", account.avatar);
+      if (account.avatarColor) localStorage.setItem("orbit_user_avatar_color", account.avatarColor);
+      this.saveAccountToDevice(account);
+      const lower = (account.name || "").toLowerCase();
+      const emailLower = (account.email || "").toLowerCase();
+      if (lower === "amoghpro7473" || lower === "zebloyt" || emailLower.includes("amoghpro7473")) {
+        this.setOwner(true);
+      } else {
+        this.setOwner(false);
+      }
+    } catch (e) {}
+  }
+
+  clearSession() {
+    try {
+      localStorage.removeItem("orbit_user_session");
+      localStorage.removeItem("orbit_user_name");
+      localStorage.removeItem("orbit_user_email");
+      localStorage.removeItem("orbit_user_avatar");
+      localStorage.removeItem("orbit_user_avatar_color");
+      localStorage.removeItem("echonode_auth_role");
+    } catch (e) {}
   }
 
   getServersList() {
@@ -280,9 +395,12 @@ class StateStore {
 
   checkUrlAuth() {
     try {
-      const uName = this.getUserName().toLowerCase();
-      if (uName === "amoghpro7473" || uName === "zebloyt") {
-        localStorage.setItem("echonode_auth_role", "owner");
+      if (this.isLoggedIn()) {
+        const uName = this.getUserName().toLowerCase();
+        const uEmail = this.getUserEmail().toLowerCase();
+        if (uName === "amoghpro7473" || uName === "zebloyt" || uEmail.includes("amoghpro7473")) {
+          localStorage.setItem("echonode_auth_role", "owner");
+        }
       }
 
       const params = new URLSearchParams(window.location.search);
@@ -297,12 +415,6 @@ class StateStore {
         userParam === "amoghpro7473" || userParam === "ZebloYT" ||
         serverParam === "skyheaven"
       ) {
-        localStorage.setItem("echonode_auth_role", "owner");
-        localStorage.setItem("echonode_active_server_id", "skyheaven");
-      }
-
-      // Localhost / local dev auto-recognition
-      if ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") && !localStorage.getItem("echonode_auth_role")) {
         localStorage.setItem("echonode_auth_role", "owner");
         localStorage.setItem("echonode_active_server_id", "skyheaven");
       }
@@ -4272,11 +4384,24 @@ jobs:
       });
     }
 
+    // Sign In button for guest users
+    const btnTopbarSignin = document.getElementById("btn-topbar-signin");
+    if (btnTopbarSignin) {
+      btnTopbarSignin.addEventListener("click", () => {
+        sfx.playClick();
+        this.openAuthModal("signin");
+      });
+    }
+
     const sidebarUserCard = document.getElementById("sidebar-user-card");
     if (sidebarUserCard) {
       sidebarUserCard.addEventListener("click", () => {
         sfx.playClick();
-        this.openServerSwitcherModal();
+        if (!store.isLoggedIn()) {
+          this.openAuthModal("signin");
+        } else {
+          this.openServerSwitcherModal();
+        }
       });
     }
 
@@ -5967,40 +6092,482 @@ ${custom}
   }
 
   renderUserSessionUI() {
+    const isLoggedIn = store.isLoggedIn();
     const userName = store.getUserName();
     const userEmail = store.getUserEmail();
-    const userInitial = (userName[0] || 'A').toUpperCase();
-    const userAvatar = localStorage.getItem("orbit_user_avatar");
+    const userInitial = (userName[0] || 'U').toUpperCase();
+    const userAvatar = store.getUserAvatar();
+    const avatarColor = store.getUserAvatarColor();
     const servers = store.getServersList();
     const count = servers.length;
 
-    // Topbar Pill
+    // Topbar Pill vs Sign In Button
+    const topPill = document.getElementById("btn-topbar-user-profile");
+    const topSignInBtn = document.getElementById("btn-topbar-signin");
     const topAvatar = document.getElementById("topbar-user-avatar");
     const topName = document.getElementById("topbar-user-name");
     const topSlots = document.getElementById("topbar-server-slots");
-    if (topAvatar) {
-      if (userAvatar) {
-        topAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
-      } else {
-        topAvatar.textContent = userInitial;
+
+    if (isLoggedIn) {
+      if (topSignInBtn) topSignInBtn.style.display = "none";
+      if (topPill) topPill.style.display = "inline-flex";
+      if (topAvatar) {
+        if (userAvatar && userAvatar.startsWith("http")) {
+          topAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
+        } else {
+          topAvatar.style.background = avatarColor;
+          topAvatar.textContent = userInitial;
+        }
       }
+      if (topName) topName.textContent = userName;
+      if (topSlots) topSlots.textContent = `${count}/3 Servers`;
+    } else {
+      if (topSignInBtn) topSignInBtn.style.display = "inline-flex";
+      if (topPill) topPill.style.display = "none";
     }
-    if (topName) topName.textContent = userName;
-    if (topSlots) topSlots.textContent = `${count}/3 Servers`;
 
     // Sidebar User Card
     const sideAvatar = document.getElementById("sidebar-user-avatar");
     const sideName = document.getElementById("sidebar-user-name");
     const sideSlots = document.getElementById("sidebar-user-slots");
-    if (sideAvatar) {
-      if (userAvatar) {
-        sideAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
-      } else {
-        sideAvatar.textContent = userInitial;
+    const sideBadge = document.getElementById("sidebar-user-badge");
+
+    if (isLoggedIn) {
+      if (sideAvatar) {
+        if (userAvatar && userAvatar.startsWith("http")) {
+          sideAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
+        } else {
+          sideAvatar.style.background = avatarColor;
+          sideAvatar.textContent = userInitial;
+        }
+      }
+      if (sideName) sideName.textContent = userName;
+      if (sideSlots) sideSlots.textContent = `Operator • ${count}/3 Slots`;
+      if (sideBadge) sideBadge.textContent = "Max 3";
+    } else {
+      if (sideAvatar) {
+        sideAvatar.style.background = "rgba(255, 255, 255, 0.1)";
+        sideAvatar.textContent = "👤";
+      }
+      if (sideName) sideName.textContent = "Guest User";
+      if (sideSlots) sideSlots.textContent = "Sign In / Sign Up";
+      if (sideBadge) sideBadge.textContent = "Sign In";
+    }
+
+    // Quota banner action button in switcher modal
+    const qAuthActionBtn = document.getElementById("btn-quota-auth-action");
+    if (qAuthActionBtn) {
+      qAuthActionBtn.textContent = isLoggedIn ? "Sign Out" : "Sign In";
+      qAuthActionBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (isLoggedIn) {
+          this.handleSignOut();
+        } else {
+          this.closeModal("modal-server-switcher");
+          this.openAuthModal("signin");
+        }
+      };
+    }
+  }
+
+  // Open Auth Modal
+  openAuthModal(tab = 'signin') {
+    this.switchAuthTab(tab);
+    this.switchAuthStage('credentials');
+    this.openModal('modal-orbit-auth');
+  }
+
+  // Switch between Sign In and Sign Up tabs
+  switchAuthTab(tab) {
+    const tabSignin = document.getElementById('auth-tab-btn-signin');
+    const tabSignup = document.getElementById('auth-tab-btn-signup');
+    const formSignin = document.getElementById('form-auth-signin');
+    const formSignup = document.getElementById('form-auth-signup');
+    const modalTitle = document.getElementById('auth-modal-title');
+
+    if (tab === 'signup') {
+      if (tabSignin) tabSignin.classList.remove('active');
+      if (tabSignup) tabSignup.classList.add('active');
+      if (formSignin) formSignin.style.display = 'none';
+      if (formSignup) formSignup.style.display = 'flex';
+      if (modalTitle) modalTitle.textContent = 'Create EchoNode Account';
+    } else {
+      if (tabSignin) tabSignin.classList.add('active');
+      if (tabSignup) tabSignup.classList.remove('active');
+      if (formSignin) formSignin.style.display = 'flex';
+      if (formSignup) formSignup.style.display = 'none';
+      if (modalTitle) modalTitle.textContent = 'Sign In to EchoNode';
+    }
+  }
+
+  // Switch between Auth Stages: credentials, otp, profile
+  switchAuthStage(stage) {
+    const stageCreds = document.getElementById('auth-stage-credentials');
+    const stageOtp = document.getElementById('auth-stage-otp');
+    const stageProfile = document.getElementById('auth-stage-profile');
+
+    if (stageCreds) stageCreds.style.display = (stage === 'credentials') ? 'block' : 'none';
+    if (stageOtp) stageOtp.style.display = (stage === 'otp') ? 'block' : 'none';
+    if (stageProfile) stageProfile.style.display = (stage === 'profile') ? 'block' : 'none';
+
+    if (stage === 'otp') {
+      const firstBox = document.getElementById('otp-digit-1');
+      if (firstBox) setTimeout(() => firstBox.focus(), 150);
+    } else if (stage === 'profile') {
+      const nameInput = document.getElementById('auth-profile-name');
+      if (nameInput) setTimeout(() => nameInput.focus(), 150);
+    }
+  }
+
+  // Generate 6-Character Verification Code (Unique, different every time)
+  generateVerificationCode() {
+    const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  // Handle Sign In or Sign Up Form Submission
+  handleEmailAuthSubmit(e, type) {
+    if (e) e.preventDefault();
+    sfx.playClick();
+
+    let email = '';
+    let password = '';
+
+    if (type === 'signup') {
+      const emailInput = document.getElementById('auth-signup-email');
+      const passInput = document.getElementById('auth-signup-password');
+      const confirmInput = document.getElementById('auth-signup-confirm-password');
+
+      email = (emailInput ? emailInput.value : '').trim();
+      password = passInput ? passInput.value : '';
+      const confirmPass = confirmInput ? confirmInput.value : '';
+
+      if (!email || !email.includes('@')) {
+        this.showToast('Please enter a valid email address.', 'error');
+        return;
+      }
+      if (password.length < 6) {
+        this.showToast('Password must be at least 6 characters long.', 'error');
+        return;
+      }
+      if (password !== confirmPass) {
+        this.showToast('Passwords do not match! Please check your 2nd password.', 'error');
+        if (confirmInput) confirmInput.focus();
+        return;
+      }
+    } else {
+      const emailInput = document.getElementById('auth-signin-email');
+      const passInput = document.getElementById('auth-signin-password');
+      email = (emailInput ? emailInput.value : '').trim();
+      password = passInput ? passInput.value : '';
+
+      if (!email || !email.includes('@')) {
+        this.showToast('Please enter a valid email address.', 'error');
+        return;
+      }
+      if (!password) {
+        this.showToast('Please enter your password.', 'error');
+        return;
       }
     }
-    if (sideName) sideName.textContent = userName;
-    if (sideSlots) sideSlots.textContent = `${count}/3 Slots`;
+
+    const code = this.generateVerificationCode();
+    this.sendVerificationCode(email, code, { authType: type, password });
+  }
+
+  // Continue with Google Flow
+  startGoogleAuthFlow() {
+    sfx.playClick();
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      try {
+        google.accounts.id.prompt((notification) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            const email = prompt('Enter your Google email address to receive your 6-character code:', '');
+            if (email && email.includes('@')) {
+              const code = this.generateVerificationCode();
+              this.sendVerificationCode(email.trim(), code, { authType: 'google' });
+            }
+          }
+        });
+        return;
+      } catch (e) {
+        console.warn('GIS prompt error:', e);
+      }
+    }
+    const fallbackEmail = prompt('Enter your Google email to receive your 6-character code:', '');
+    if (fallbackEmail && fallbackEmail.includes('@')) {
+      const code = this.generateVerificationCode();
+      this.sendVerificationCode(fallbackEmail.trim(), code, { authType: 'google' });
+    }
+  }
+
+  // Send Verification Code via EmailJS / Server / Interactive Simulation
+  sendVerificationCode(email, code, extra = {}) {
+    this.pendingAuth = {
+      email: email,
+      code: code,
+      generatedAt: Date.now(),
+      expiresAt: Date.now() + (10 * 60 * 1000), // 10 minutes
+      ...extra
+    };
+
+    const displayTarget = document.getElementById('otp-display-target-email');
+    if (displayTarget) displayTarget.textContent = email;
+
+    // Clear digit boxes
+    for (let i = 1; i <= 6; i++) {
+      const box = document.getElementById(`otp-digit-${i}`);
+      if (box) box.value = '';
+    }
+
+    // Try sending with EmailJS if user configured it
+    try {
+      const emailJsRaw = localStorage.getItem('orbit_emailjs_config');
+      if (emailJsRaw && typeof emailjs !== 'undefined') {
+        const emailJsCfg = JSON.parse(emailJsRaw);
+        if (emailJsCfg.publicKey && emailJsCfg.serviceId && emailJsCfg.templateId) {
+          emailjs.init(emailJsCfg.publicKey);
+          emailjs.send(emailJsCfg.serviceId, emailJsCfg.templateId, {
+            to_email: email,
+            recipient: email,
+            verification_code: code,
+            code: code,
+            app_name: 'EchoNode Cloud'
+          }).then(() => {
+            console.log('EmailJS code dispatched to', email);
+          }).catch(err => {
+            console.warn('EmailJS dispatch failed:', err);
+          });
+        }
+      }
+    } catch (e) {}
+
+    // Update real-time banner notice
+    const notice = document.getElementById('otp-live-delivery-notice');
+    if (notice) {
+      notice.style.display = 'block';
+      notice.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <div>
+            <span>📬 6-character code sent to <b>${email}</b>!</span>
+            <span style="display: block; font-size: 11px; opacity: 0.85; margin-top: 2px;">(Simulated / Quick-Fill Code: <code style="background: rgba(0,0,0,0.4); padding: 1px 6px; border-radius: 4px; color: #38bdf8; font-weight: 700; letter-spacing: 1.5px;">${code}</code>)</span>
+          </div>
+          <button type="button" class="btn-secondary" onclick="app.quickFillOtp('${code}')" style="font-size: 11px; padding: 4px 8px; flex-shrink: 0;">Auto-Fill</button>
+        </div>
+      `;
+    }
+
+    this.switchAuthStage('otp');
+    this.bindOtpBoxEvents();
+    this.showToast(`6-character verification code sent to ${email}`, 'info');
+  }
+
+  // Quick fill helper for testing
+  quickFillOtp(code) {
+    sfx.playClick();
+    for (let i = 0; i < 6; i++) {
+      const box = document.getElementById(`otp-digit-${i + 1}`);
+      if (box) box.value = code[i] || '';
+    }
+    const lastBox = document.getElementById('otp-digit-6');
+    if (lastBox) lastBox.focus();
+  }
+
+  // Bind OTP digit boxes: auto-advance, backspace, paste
+  bindOtpBoxEvents() {
+    for (let i = 1; i <= 6; i++) {
+      const box = document.getElementById(`otp-digit-${i}`);
+      if (!box || box._boundOtp) continue;
+      box._boundOtp = true;
+
+      box.addEventListener('input', (e) => {
+        const val = e.target.value.toUpperCase();
+        e.target.value = val.slice(-1);
+        if (val && i < 6) {
+          const nextBox = document.getElementById(`otp-digit-${i + 1}`);
+          if (nextBox) nextBox.focus();
+        }
+      });
+
+      box.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && i > 1) {
+          const prevBox = document.getElementById(`otp-digit-${i - 1}`);
+          if (prevBox) {
+            prevBox.focus();
+            prevBox.value = '';
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          this.verifyOtpCode();
+        }
+      });
+
+      box.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (text) {
+          for (let j = 0; j < 6; j++) {
+            const digitBox = document.getElementById(`otp-digit-${j + 1}`);
+            if (digitBox) digitBox.value = text[j] || '';
+          }
+          const lastTarget = document.getElementById(`otp-digit-${Math.min(text.length, 6)}`);
+          if (lastTarget) lastTarget.focus();
+        }
+      });
+    }
+  }
+
+  // Resend Verification Code
+  resendVerificationCode() {
+    sfx.playClick();
+    if (!this.pendingAuth || !this.pendingAuth.email) {
+      this.switchAuthStage('credentials');
+      return;
+    }
+    const newCode = this.generateVerificationCode();
+    this.sendVerificationCode(this.pendingAuth.email, newCode, this.pendingAuth);
+    this.showToast('A fresh 6-character code has been dispatched!', 'info');
+  }
+
+  // Verify entered OTP
+  verifyOtpCode() {
+    sfx.playClick();
+    let enteredCode = '';
+    for (let i = 1; i <= 6; i++) {
+      const box = document.getElementById(`otp-digit-${i}`);
+      enteredCode += (box ? box.value.trim().toUpperCase() : '');
+    }
+
+    if (enteredCode.length !== 6) {
+      this.showToast('Please enter the full 6-character verification code.', 'warning');
+      return;
+    }
+
+    if (!this.pendingAuth || enteredCode !== this.pendingAuth.code) {
+      sfx.playWarning();
+      this.showToast('Invalid verification code! Please check the code and try again.', 'error');
+      const firstBox = document.getElementById('otp-digit-1');
+      if (firstBox) firstBox.focus();
+      return;
+    }
+
+    // Code verified successfully!
+    if (sfx.playLevelUp) sfx.playLevelUp();
+    else sfx.playClick();
+
+    // Suggest default display name
+    const nameInput = document.getElementById('auth-profile-name');
+    if (nameInput) {
+      if (this.pendingAuth.googlePayload && this.pendingAuth.googlePayload.name) {
+        nameInput.value = this.pendingAuth.googlePayload.name;
+      } else if (this.pendingAuth.email) {
+        const prefix = this.pendingAuth.email.split('@')[0];
+        nameInput.value = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+      }
+    }
+
+    this.bindAvatarColorSwatches();
+    this.switchAuthStage('profile');
+    this.showToast('Code verified! Choose your Minecraft operator name.', 'success');
+  }
+
+  // Bind avatar color picker in Stage 3
+  bindAvatarColorSwatches() {
+    const dots = document.querySelectorAll('.auth-color-dot');
+    dots.forEach((dot) => {
+      if (dot._boundColor) return;
+      dot._boundColor = true;
+      dot.addEventListener('click', () => {
+        dots.forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+        this.selectedAvatarColor = dot.getAttribute('data-color') || '#3b82f6';
+      });
+    });
+  }
+
+  // Handle Profile Setup Completion
+  handleProfileCompleteSubmit(e) {
+    if (e) e.preventDefault();
+    sfx.playClick();
+
+    const nameInput = document.getElementById('auth-profile-name');
+    const name = (nameInput ? nameInput.value : '').trim();
+    if (!name || name.length < 3) {
+      this.showToast('Username must be at least 3 characters long.', 'warning');
+      return;
+    }
+
+    const email = this.pendingAuth ? this.pendingAuth.email : (name + '@gmail.com');
+    const color = this.selectedAvatarColor || '#3b82f6';
+    const avatarPic = this.pendingAuth?.googlePayload?.picture || '';
+
+    const session = {
+      name: name,
+      email: email,
+      avatarColor: color,
+      avatar: avatarPic,
+      loggedIn: true,
+      time: Date.now()
+    };
+
+    store.setSession(session);
+
+    this.closeModal('modal-orbit-auth');
+    if (sfx.playLevelUp) sfx.playLevelUp();
+    this.showToast(`🎉 Welcome, ${name}! Your account is now active on this device.`, 'success');
+
+    this.renderUserSessionUI();
+    this.reloadServerData();
+  }
+
+  // Handle Sign Out
+  handleSignOut() {
+    sfx.playClick();
+    store.clearSession();
+    this.showToast('Signed out of EchoNode. You are now in Guest mode.', 'info');
+    this.renderUserSessionUI();
+    this.reloadServerData();
+    this.closeModal('modal-server-switcher');
+  }
+
+  // Open Email Setup Guide Modal
+  openEmailSetupGuideModal() {
+    sfx.playClick();
+    try {
+      const saved = localStorage.getItem('orbit_emailjs_config');
+      if (saved) {
+        const cfg = JSON.parse(saved);
+        const pk = document.getElementById('input-emailjs-public-key');
+        const sid = document.getElementById('input-emailjs-service-id');
+        const tid = document.getElementById('input-emailjs-template-id');
+        if (pk && cfg.publicKey) pk.value = cfg.publicKey;
+        if (sid && cfg.serviceId) sid.value = cfg.serviceId;
+        if (tid && cfg.templateId) tid.value = cfg.templateId;
+      }
+    } catch(e) {}
+    this.openModal('modal-email-setup-guide');
+  }
+
+  // Save EmailJS Configuration
+  saveEmailJsConfig() {
+    sfx.playClick();
+    const pk = document.getElementById('input-emailjs-public-key');
+    const sid = document.getElementById('input-emailjs-service-id');
+    const tid = document.getElementById('input-emailjs-template-id');
+
+    const cfg = {
+      publicKey: pk ? pk.value.trim() : '',
+      serviceId: sid ? sid.value.trim() : '',
+      templateId: tid ? tid.value.trim() : ''
+    };
+
+    localStorage.setItem('orbit_emailjs_config', JSON.stringify(cfg));
+    this.showToast('EmailJS configuration saved successfully!', 'success');
+    this.closeModal('modal-email-setup-guide');
   }
 
   openServerSwitcherModal() {
@@ -6011,8 +6578,8 @@ ${custom}
 
     const userName = store.getUserName();
     const userEmail = store.getUserEmail();
-    const userInitial = (userName[0] || 'A').toUpperCase();
-    const userAvatar = localStorage.getItem("orbit_user_avatar");
+    const userInitial = (userName[0] || 'U').toUpperCase();
+    const userAvatar = store.getUserAvatar();
     const isOwner = store.isOwner();
     const activeId = store.getActiveServerId();
     const servers = store.getServersList();
@@ -6024,14 +6591,14 @@ ${custom}
     const qEmail = document.getElementById("modal-quota-email");
     const qBadge = document.getElementById("modal-quota-badge");
     if (qAvatar) {
-      if (userAvatar) {
+      if (userAvatar && userAvatar.startsWith("http")) {
         qAvatar.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
       } else {
         qAvatar.textContent = userInitial;
       }
     }
     if (qName) qName.textContent = userName;
-    if (qEmail) qEmail.textContent = userEmail;
+    if (qEmail) qEmail.textContent = userEmail || "Not Signed In";
     if (qBadge) {
       qBadge.textContent = `${count} / 3 Servers Active`;
       if (count >= 3) {
@@ -6146,23 +6713,16 @@ ${custom}
               const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
               const payload = JSON.parse(jsonPayload);
               const name = payload.name || payload.email.split('@')[0];
-              const email = payload.email || 'amoghpro7473@gmail.com';
+              const email = payload.email || '';
               const pic = payload.picture || '';
 
-              localStorage.setItem("orbit_user_name", name);
-              localStorage.setItem("orbit_user_email", email);
-              if (pic) localStorage.setItem("orbit_user_avatar", pic);
-              localStorage.setItem("orbit_user_session", JSON.stringify({ name, email, avatar: pic, loggedIn: true, time: Date.now() }));
-
-              if (name.toLowerCase() === 'amoghpro7473' || email.toLowerCase().includes('amoghpro7473') || name.toLowerCase() === 'zebloyt') {
-                store.setOwner(true);
-                this.showToast("Logged in with Google as Owner! Sky Heaven MC unlocked. 👑", "success");
-              } else {
-                this.showToast(`Logged in with Google as ${name}`, "success");
-              }
-              this.reloadServerData();
-              this.renderUserSessionUI();
-              this.openServerSwitcherModal();
+              // Send 6-character code as required for Google logins
+              const code = this.generateVerificationCode();
+              this.closeModal("modal-server-switcher");
+              this.sendVerificationCode(email, code, {
+                authType: 'google',
+                googlePayload: { name, email, picture: pic }
+              });
             } catch (err) {
               console.error("[EchoNode Google Auth Error]", err);
             }

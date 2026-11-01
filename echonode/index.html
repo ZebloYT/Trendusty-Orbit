@@ -94,9 +94,9 @@
           <!-- Corner Sidebar Minimize/Maximize Toggle Button -->
           <button id="btn-toggle-sidebar" class="sidebar-toggle-btn" title="Minimize sidebar (Ctrl+B)" aria-label="Toggle sidebar width">
             <svg class="sidebar-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2" />
-              <path class="sidebar-icon-panel" d="M3 6a3 3 0 0 1 3-3h3v18H6a3 3 0 0 1-3-3V6z" fill="currentColor" />
-              <line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" stroke-width="2" />
+              <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path class="sidebar-icon-panel" d="M4.5 7a2.5 2.5 0 0 1 2.5-2.5H9v15H7a2.5 2.5 0 0 1-2.5-2.5V7z" fill="currentColor" />
+              <line x1="9" y1="3.5" x2="9" y2="20.5" stroke="currentColor" stroke-width="2" />
             </svg>
           </button>
         </div>
@@ -104,13 +104,13 @@
         <!-- User Account Profile Banner (Login Name & Server Slot Quota) -->
         <div class="sidebar-user-card" id="sidebar-user-card" title="Click to view Account &amp; Server Quota (Max 3 Servers)">
           <div class="sidebar-user-left">
-            <div class="sidebar-user-avatar" id="sidebar-user-avatar">A</div>
+            <div class="sidebar-user-avatar" id="sidebar-user-avatar">👤</div>
             <div class="sidebar-user-meta">
-              <div class="sidebar-user-name" id="sidebar-user-name">amoghpro7473</div>
-              <div class="sidebar-user-role" id="sidebar-user-role">Cloud Operator • <span id="sidebar-user-slots">1/3 Slots</span></div>
+              <div class="sidebar-user-name" id="sidebar-user-name">Guest User</div>
+              <div class="sidebar-user-role" id="sidebar-user-role"><span id="sidebar-user-slots">Sign In / Sign Up</span></div>
             </div>
           </div>
-          <span class="sidebar-user-badge">Max 3</span>
+          <span class="sidebar-user-badge" id="sidebar-user-badge">Sign In</span>
         </div>
 
         <!-- Server Selector Dropdown -->
@@ -305,9 +305,9 @@
           <div class="navbar-left">
             <button id="btn-navbar-toggle-sidebar" class="sidebar-toggle-btn navbar-toggle-btn" title="Toggle sidebar (Ctrl+B)" aria-label="Toggle sidebar width">
               <svg class="sidebar-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2" />
-                <path class="sidebar-icon-panel" d="M3 6a3 3 0 0 1 3-3h3v18H6a3 3 0 0 1-3-3V6z" fill="currentColor" />
-                <line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" stroke-width="2" />
+                <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path class="sidebar-icon-panel" d="M4.5 7a2.5 2.5 0 0 1 2.5-2.5H9v15H7a2.5 2.5 0 0 1-2.5-2.5V7z" fill="currentColor" />
+                <line x1="9" y1="3.5" x2="9" y2="20.5" stroke="currentColor" stroke-width="2" />
               </svg>
             </button>
             <div class="breadcrumb-label">
@@ -324,15 +324,21 @@
           </div>
 
           <div class="navbar-right">
-            <!-- User Profile Pill (Displays Login Name & 1/3 Server Slot Quota) -->
-            <div class="topbar-user-pill" id="btn-topbar-user-profile" title="Account profile &amp; cloud server quota (Max 3 Servers)">
-              <div class="user-avatar-disc" id="topbar-user-avatar">A</div>
+            <!-- User Profile Pill (Displays Login Name & 1/3 Server Slot Quota when logged in) -->
+            <div class="topbar-user-pill" id="btn-topbar-user-profile" style="display: none;" title="Account profile &amp; cloud server quota (Max 3 Servers)">
+              <div class="user-avatar-disc" id="topbar-user-avatar">👤</div>
               <div class="user-pill-text">
-                <span class="user-pill-name" id="topbar-user-name">amoghpro7473</span>
+                <span class="user-pill-name" id="topbar-user-name">User</span>
                 <span class="user-pill-slots" id="topbar-server-slots">1/3 Servers</span>
               </div>
               <span class="user-status-dot"></span>
             </div>
+
+            <!-- Sign In / Sign Up Button for Logged-Out / Guest Users -->
+            <button class="topbar-signin-btn" id="btn-topbar-signin" title="Sign In or Create Account with Email / Google">
+              <span class="signin-icon">🔑</span>
+              <span>Sign In / Sign Up</span>
+            </button>
 
             <!-- Minecraft 24/7 Setup Guide Book Trigger -->
             <button class="topbar-guide-btn" id="btn-topbar-guide" title="Open Minecraft 24/7 Setup Guide Book (Key, Tunnel, OP &amp; Color Codes)">
@@ -1967,13 +1973,16 @@
       <div class="server-quota-box" style="margin-top: 14px;">
         <div class="quota-header-row">
           <div class="quota-user-meta">
-            <div class="quota-user-avatar" id="modal-quota-avatar">A</div>
+            <div class="quota-user-avatar" id="modal-quota-avatar">👤</div>
             <div>
-              <div class="quota-user-title" id="modal-quota-username">amoghpro7473</div>
-              <div class="quota-user-sub" id="modal-quota-email">amoghpro7473@gmail.com</div>
+              <div class="quota-user-title" id="modal-quota-username">Guest User</div>
+              <div class="quota-user-sub" id="modal-quota-email">Not Signed In</div>
             </div>
           </div>
-          <div class="quota-slots-badge" id="modal-quota-badge">1 / 3 Servers</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="quota-slots-badge" id="modal-quota-badge">1 / 3 Servers</div>
+            <button type="button" class="btn-secondary" id="btn-quota-auth-action" style="font-size: 11px; padding: 4px 10px;">Sign In</button>
+          </div>
         </div>
 
         <!-- 3-Slot Visual Allocation Segments -->
@@ -2417,6 +2426,224 @@
       </div>
       <div style="display: flex; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
         <button class="btn-secondary" onclick="app.closeModal('modal-upload-world')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       UNIFIED ORBIT AUTH & VERIFICATION MODAL
+       (Email/Password, Google, 6-Char OTP, Name Setup, Multi-Device Isolation)
+       ==================================================================== -->
+  <div class="modal-overlay" id="modal-orbit-auth" role="dialog" aria-modal="true">
+    <div class="modal-content-box auth-modal-box">
+      
+      <!-- Stage 1: Auth Options (Sign In / Sign Up / Google) -->
+      <div class="auth-stage" id="auth-stage-credentials">
+        <div class="modal-header-row">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="auth-logo-icon">🪐</div>
+            <div>
+              <h3 style="margin: 0; color: #fff; font-size: 18px;" id="auth-modal-title">Sign In to EchoNode</h3>
+              <span style="font-size: 11.5px; color: #94a3b8;">Manage your 24/7 Minecraft servers and cloud saves</span>
+            </div>
+          </div>
+          <button class="modal-close-btn" onclick="app.closeModal('modal-orbit-auth')">&times;</button>
+        </div>
+
+        <!-- Auth Tabs: Sign In vs Sign Up -->
+        <div class="auth-tabs-row">
+          <button type="button" class="auth-tab-btn active" id="auth-tab-btn-signin" onclick="app.switchAuthTab('signin')">Sign In</button>
+          <button type="button" class="auth-tab-btn" id="auth-tab-btn-signup" onclick="app.switchAuthTab('signup')">Create Account (Sign Up)</button>
+        </div>
+
+        <!-- Continue with Google Button -->
+        <div style="margin-top: 16px;">
+          <button type="button" class="btn-google-continue" id="btn-auth-continue-google" onclick="app.startGoogleAuthFlow()">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+            <span>Continue with Google</span>
+          </button>
+        </div>
+
+        <div class="auth-divider-row">
+          <span>OR CONTINUE WITH EMAIL</span>
+        </div>
+
+        <!-- Sign In Form -->
+        <form id="form-auth-signin" onsubmit="app.handleEmailAuthSubmit(event, 'signin')" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="form-group">
+            <label style="font-size: 11.5px; color: #94a3b8; margin-bottom: 4px; display: block;">Email Address</label>
+            <input type="email" class="form-input" id="auth-signin-email" placeholder="you@gmail.com" required style="font-size: 13px;">
+          </div>
+          <div class="form-group">
+            <label style="font-size: 11.5px; color: #94a3b8; margin-bottom: 4px; display: block;">Password</label>
+            <input type="password" class="form-input" id="auth-signin-password" placeholder="••••••••" required style="font-size: 13px;">
+          </div>
+          <button type="submit" class="btn-primary" style="margin-top: 4px; font-size: 13.5px; padding: 10px;">
+            <span>Send Verification Code &rarr;</span>
+          </button>
+        </form>
+
+        <!-- Sign Up Form (with 2nd Password) -->
+        <form id="form-auth-signup" onsubmit="app.handleEmailAuthSubmit(event, 'signup')" style="display: none; flex-direction: column; gap: 12px;">
+          <div class="form-group">
+            <label style="font-size: 11.5px; color: #94a3b8; margin-bottom: 4px; display: block;">Email Address</label>
+            <input type="email" class="form-input" id="auth-signup-email" placeholder="you@gmail.com" required style="font-size: 13px;">
+          </div>
+          <div class="form-group">
+            <label style="font-size: 11.5px; color: #94a3b8; margin-bottom: 4px; display: block;">Create Password</label>
+            <input type="password" class="form-input" id="auth-signup-password" placeholder="Min 6 characters" minlength="6" required style="font-size: 13px;">
+          </div>
+          <div class="form-group">
+            <label style="font-size: 11.5px; color: #94a3b8; margin-bottom: 4px; display: block;">Confirm 2nd Password</label>
+            <input type="password" class="form-input" id="auth-signup-confirm-password" placeholder="Re-enter password to confirm" minlength="6" required style="font-size: 13px;">
+          </div>
+          <button type="submit" class="btn-primary" style="margin-top: 4px; font-size: 13.5px; padding: 10px;">
+            <span>Create Account &amp; Send 6-Char Code &rarr;</span>
+          </button>
+        </form>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <button type="button" class="btn-link-subtle" onclick="app.openEmailSetupGuideModal()" style="font-size: 11.5px; color: #38bdf8; background: none; border: none; cursor: pointer; text-decoration: underline;">
+            ⚙️ How to setup email code delivery (EmailJS / Gmail SMTP guide)
+          </button>
+        </div>
+      </div>
+
+      <!-- Stage 2: 6-Character Verification Code (OTP) -->
+      <div class="auth-stage" id="auth-stage-otp" style="display: none;">
+        <div class="modal-header-row">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="auth-logo-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">📬</div>
+            <div>
+              <h3 style="margin: 0; color: #fff; font-size: 18px;">Check Your Email</h3>
+              <span style="font-size: 11.5px; color: #94a3b8;">Enter the 6-character code sent to your email</span>
+            </div>
+          </div>
+          <button class="modal-close-btn" onclick="app.closeModal('modal-orbit-auth')">&times;</button>
+        </div>
+
+        <div class="otp-target-banner">
+          <span>Code sent to:</span>
+          <strong id="otp-display-target-email">user@gmail.com</strong>
+          <span style="font-size: 11px; opacity: 0.8; margin-left: auto;">Expires in 10m</span>
+        </div>
+
+        <!-- Real-Time Delivery / Simulation Notice -->
+        <div id="otp-live-delivery-notice" class="otp-delivery-notice"></div>
+
+        <div class="otp-boxes-container">
+          <input type="text" maxlength="1" class="otp-digit-box" id="otp-digit-1" autofocus autocomplete="off">
+          <input type="text" maxlength="1" class="otp-digit-box" id="otp-digit-2" autocomplete="off">
+          <input type="text" maxlength="1" class="otp-digit-box" id="otp-digit-3" autocomplete="off">
+          <input type="text" maxlength="1" class="otp-digit-box" id="otp-digit-4" autocomplete="off">
+          <input type="text" maxlength="1" class="otp-digit-box" id="otp-digit-5" autocomplete="off">
+          <input type="text" maxlength="1" class="otp-digit-box" id="otp-digit-6" autocomplete="off">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+          <button type="button" class="btn-secondary" id="btn-otp-resend" onclick="app.resendVerificationCode()" style="font-size: 12px; padding: 6px 12px;">
+            <span>Resend Code</span>
+          </button>
+          <button type="button" class="btn-primary" id="btn-otp-verify" onclick="app.verifyOtpCode()" style="font-size: 13px; padding: 8px 20px;">
+            <span>Verify Code &rarr;</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <button type="button" class="btn-link-subtle" onclick="app.switchAuthStage('credentials')" style="font-size: 11px; color: #64748b; background: none; border: none; cursor: pointer;">
+            &larr; Back to login / change email
+          </button>
+        </div>
+      </div>
+
+      <!-- Stage 3: Set Your Name & Complete Setup -->
+      <div class="auth-stage" id="auth-stage-profile" style="display: none;">
+        <div class="modal-header-row">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="auth-logo-icon" style="background: rgba(34, 197, 94, 0.2); color: #4ade80;">✓</div>
+            <div>
+              <h3 style="margin: 0; color: #fff; font-size: 18px;">Set Your Display Name</h3>
+              <span style="font-size: 11.5px; color: #94a3b8;">Choose your Minecraft &amp; EchoNode operator name</span>
+            </div>
+          </div>
+          <button class="modal-close-btn" onclick="app.closeModal('modal-orbit-auth')">&times;</button>
+        </div>
+
+        <form id="form-auth-profile" onsubmit="app.handleProfileCompleteSubmit(event)" style="margin-top: 14px; display: flex; flex-direction: column; gap: 14px;">
+          <div class="form-group">
+            <label style="font-size: 12px; color: #cbd5e1; font-weight: 600; margin-bottom: 6px; display: block;">Operator / Minecraft Username</label>
+            <input type="text" class="form-input" id="auth-profile-name" placeholder="e.g. Vikrant Madane, Steve99" required minlength="3" maxlength="24" style="font-size: 14px;">
+            <span style="font-size: 11px; color: #64748b; margin-top: 4px; display: block;">This name will be used across your cloud servers, console, and operator permissions.</span>
+          </div>
+
+          <!-- Avatar Color Swatches -->
+          <div class="form-group">
+            <label style="font-size: 12px; color: #cbd5e1; font-weight: 600; margin-bottom: 6px; display: block;">Avatar Color</label>
+            <div class="auth-avatar-colors-row" id="auth-avatar-colors">
+              <span class="auth-color-dot active" data-color="#3b82f6" style="background: #3b82f6;"></span>
+              <span class="auth-color-dot" data-color="#8b5cf6" style="background: #8b5cf6;"></span>
+              <span class="auth-color-dot" data-color="#10b981" style="background: #10b981;"></span>
+              <span class="auth-color-dot" data-color="#f59e0b" style="background: #f59e0b;"></span>
+              <span class="auth-color-dot" data-color="#ec4899" style="background: #ec4899;"></span>
+              <span class="auth-color-dot" data-color="#00f5b8" style="background: #00f5b8;"></span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" style="margin-top: 8px; font-size: 14px; padding: 11px; font-weight: 700;">
+            <span>Done &bull; Complete Setup 🚀</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Email Verification Setup Guide Modal (Step-by-step instructions requested by user) -->
+  <div class="modal-overlay" id="modal-email-setup-guide" role="dialog" aria-modal="true">
+    <div class="modal-content-box" style="max-width: 620px;">
+      <div class="modal-header-row">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 22px;">📧</span>
+          <div>
+            <h3 style="margin: 0; color: #fff; font-size: 18px;">How to Setup 6-Character Email Verification</h3>
+            <span style="font-size: 11.5px; color: #94a3b8;">Send real verification codes to Gmail or any email inbox</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-email-setup-guide')">&times;</button>
+      </div>
+
+      <div class="email-guide-body" style="margin-top: 14px; display: flex; flex-direction: column; gap: 14px; font-size: 12.5px; color: #cbd5e1; line-height: 1.55;">
+        <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 12px 14px;">
+          <strong style="color: #38bdf8; display: block; margin-bottom: 2px;">⚡ Method 1: EmailJS (Free &amp; 100% Client-Side) - Recommended</strong>
+          <span>Works directly from your browser on Vercel and GitHub Pages without any backend server. Free 200 emails per month!</span>
+          <div style="margin-top: 8px; font-size: 12px;">
+            <b>Step 1:</b> Go to <a href="https://www.emailjs.com/" target="_blank" style="color: #38bdf8; text-decoration: underline;">emailjs.com</a> and create a free account.<br>
+            <b>Step 2:</b> Click <b>Email Services ➔ Add New Service</b> and connect your <b>Gmail</b>.<br>
+            <b>Step 3:</b> Click <b>Email Templates ➔ Create New Template</b>. Set subject: <code>Your EchoNode Verification Code: {{code}}</code> and body: <code>Your 6-character code is: {{code}}</code>.<br>
+            <b>Step 4:</b> Copy your <b>Public Key</b>, <b>Service ID</b>, and <b>Template ID</b> and paste them below:
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px;">
+            <input type="text" class="form-input" id="input-emailjs-public-key" placeholder="Public Key" style="font-size: 11px; padding: 6px 8px;">
+            <input type="text" class="form-input" id="input-emailjs-service-id" placeholder="Service ID" style="font-size: 11px; padding: 6px 8px;">
+            <input type="text" class="form-input" id="input-emailjs-template-id" placeholder="Template ID" style="font-size: 11px; padding: 6px 8px;">
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+            <button type="button" class="btn-primary" id="btn-save-emailjs-config" onclick="app.saveEmailJsConfig()" style="font-size: 11px; padding: 4px 12px;">
+              <span>Save EmailJS Settings</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.25); border-radius: 8px; padding: 12px 14px;">
+          <strong style="color: #4ade80; display: block; margin-bottom: 2px;">🐍 Method 2: Python server.py SMTP (Local PC)</strong>
+          <span>When running <code>start_web_server.bat</code> on your PC, you can configure standard Gmail SMTP in <code>server.py</code> with a Gmail App Password.</span>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #94a3b8;">
+          <strong style="color: #fff;">💡 Built-In Auto Simulation Notice:</strong>
+          If EmailJS or SMTP is not yet configured, the system automatically generates unique 6-character codes and displays an instant on-screen verification notification banner so testing works seamlessly out-of-the-box!
+        </div>
       </div>
     </div>
   </div>
