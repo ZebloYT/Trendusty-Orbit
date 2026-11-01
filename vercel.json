@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "cleanUrls": true,
-  "trailingSlash": false,
   "routes": [
     {
       "src": "^/echonode/?$",
@@ -11,6 +10,70 @@
     {
       "src": "^/echonode/(.*)",
       "dest": "/echonode/$1"
+    },
+    {
+      "src": "^/styles\\.css$",
+      "dest": "/echonode/styles.css",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/app\\.js$",
+      "dest": "/echonode/app.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/three\\.min\\.js$",
+      "dest": "/echonode/three.min.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/fflate\\.min\\.js$",
+      "dest": "/echonode/fflate.min.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/GLTFLoader\\.js$",
+      "dest": "/echonode/GLTFLoader.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/OBJLoader\\.js$",
+      "dest": "/echonode/OBJLoader.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/MTLLoader\\.js$",
+      "dest": "/echonode/MTLLoader.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/FBXLoader\\.js$",
+      "dest": "/echonode/FBXLoader.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "^/echonode-cube\\.png$",
+      "dest": "/echonode/echonode-cube.png"
+    },
+    {
+      "src": "^/server-icon\\.png$",
+      "dest": "/echonode/server-icon.png"
     },
     {
       "src": "^/$",
