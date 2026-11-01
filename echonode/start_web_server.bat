@@ -14,18 +14,23 @@ if not defined PYTHON_EXE (
     if %ERRORLEVEL% EQU 0 set "PYTHON_EXE=py -3"
 )
 if not defined PYTHON_EXE (
+    if exist "%LOCALAPPDATA%\Programs\Python\Python313\python.exe" set "PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python313\python.exe"
     if exist "%LOCALAPPDATA%\Programs\Python\Python312\python.exe" set "PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
     if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" set "PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
     if exist "%LOCALAPPDATA%\Programs\Python\Python310\python.exe" set "PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python310\python.exe"
+    if exist "%ProgramFiles%\Python313\python.exe" set "PYTHON_EXE=%ProgramFiles%\Python313\python.exe"
+    if exist "%ProgramFiles%\Python312\python.exe" set "PYTHON_EXE=%ProgramFiles%\Python312\python.exe"
+    if exist "%ProgramFiles%\Python311\python.exe" set "PYTHON_EXE=%ProgramFiles%\Python311\python.exe"
 )
 
 if defined PYTHON_EXE (
-    echo [EchoNode] Launching Python backend server (%PYTHON_EXE%)...
+    echo [EchoNode] Using Python: %PYTHON_EXE%
+    echo [EchoNode] Launching Python backend server...
     echo [EchoNode] Opening Web Panel at http://localhost:3000...
     start "" "http://localhost:3000"
-    %PYTHON_EXE% server.py
+    "%PYTHON_EXE%" server.py
 ) else (
-    echo [WARN] Python was not found in PATH!
+    echo [WARN] Python was not found in PATH or standard directories!
     echo Opening EchoNode Web Panel directly in browser...
     start "" "index.html"
 )

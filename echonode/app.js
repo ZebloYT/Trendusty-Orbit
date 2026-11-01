@@ -1767,28 +1767,39 @@ class EchoNodeApp {
     this.currentBookPage = 1;
     this.book3dViewer = null;
     this.obfuscatedTimer = null;
+    this.isCloudOnline = false;
+    this.isLocalBackendOnline = false;
+    this.lastBackendStatus = "offline";
+    this._lastRenderedStatus = null;
+    this._isPollingGitHub = false;
     this._apiBase = undefined;
   }
 
   getApiBase() {
     if (this._apiBase !== undefined) return this._apiBase;
-    const loc = window.location;
-    // When served directly by server.py on port 3000
-    if (loc.port === "3000") {
+    try {
+      const loc = window.location;
+      if (loc.port === "3000") {
+        this._apiBase = "";
+        return this._apiBase;
+      }
+      if (loc.protocol === "https:") {
+        this._apiBase = "";
+        return this._apiBase;
+      }
+      this._apiBase = "http://localhost:3000";
+      return this._apiBase;
+    } catch (e) {
       this._apiBase = "";
       return this._apiBase;
     }
-    // Cross-origin fallback for VS Code Live Server :5500, file://, etc.
-    this._apiBase = "http://localhost:3000";
-    return this._apiBase;
   }
 
   async apiFetch(endpoint, options = {}) {
     const base = this.getApiBase();
     const url = base ? `${base}${endpoint}` : endpoint;
     try {
-      const res = await fetch(url, options);
-      return res;
+      return await fetch(url, options);
     } catch (err) {
       if (base === "http://localhost:3000") {
         try {
@@ -3040,13 +3051,18 @@ class EchoNodeApp {
   }
 
   updateServerStatusUI(status) {
+    // Safety check: Never show cloud_online if isCloudOnline is not actually verified
+    if ((status === "cloud_online" || status === "cloud") && !this.isCloudOnline) {
+      status = "offline";
+    }
+
     if (this._lastRenderedStatus === status) {
       return;
     }
     this._lastRenderedStatus = status;
     store.data.status = status;
-    // Don't persist temporary 'starting' state across page reloads
-    if (status !== "starting") {
+    // Never persist temporary or network-dependent states into offline localStorage
+    if (status === "offline") {
       store.save();
     }
 
@@ -3104,65 +3120,91 @@ class EchoNodeApp {
       return;
     }
     sfx.playClick();
-    this.updateServerStatusUI("starting");
+
     const sw = store.data.installedSoftware || "Paper";
     const ver = store.data.installedVersion || "1.20.4";
 
-    // Ensure real network IP is detected before starting
-    const net = await this.detectRealNetwork();
-    const currentIp = store.data.serverIp || (net && net.publicIp ? `${net.publicIp}:25565` : "127.0.0.1:25565");
-
-    this.appendLog("system", `[EchoNode] Launching ${sw} ${ver} with Real Network binding...`);
-    this.appendLog("system", `[EchoNode Network] Binding TCP server socket to 0.0.0.0:25565...`);
-    this.appendLog("success", `[EchoNode Network] 🌐 REAL PUBLIC IP: ${currentIp} (Worldwide Direct Connect)`);
-    if (this.realLanIp) {
-      this.appendLog("info", `[EchoNode Network] 🏠 LOCAL LAN IP: ${this.realLanIp}:25565 (Wi-Fi / LAN Play)`);
-    }
-
-    store.data.worldsGenerated = true;
-    if (!store.data.customSeed) {
-      store.data.customSeed = "782194018249102";
-    }
-    store.save();
-    this.renderWorldsList();
-
+    // 1. Check if local Python backend (server.py) is alive and responsive
+    let isBackendAlive = false;
     try {
-      const res = await this.apiFetch("/api/server/start", { method: "POST" });
-      const data = await res.json();
-      if (!data.success) {
-        this.isSimulatedOnline = false;
+      const checkRes = await this.apiFetch("/api/server/status");
+      isBackendAlive = checkRes.ok;
+    } catch (e) {
+      isBackendAlive = false;
+    }
+
+    if (isBackendAlive) {
+      this.updateServerStatusUI("starting");
+      this.appendLog("system", `[EchoNode] Connecting to local server manager (${sw} ${ver})...`);
+
+      // Ensure real network IP is detected before starting
+      const net = await this.detectRealNetwork();
+      const currentIp = store.data.serverIp || (net && net.publicIp ? `${net.publicIp}:25565` : "127.0.0.1:25565");
+      this.appendLog("system", `[EchoNode Network] Binding server socket to 0.0.0.0:25565...`);
+      this.appendLog("success", `[EchoNode Network] 🌐 REAL PUBLIC IP: ${currentIp} (Worldwide Direct Connect)`);
+      if (this.realLanIp) {
+        this.appendLog("info", `[EchoNode Network] 🏠 LOCAL LAN IP: ${this.realLanIp}:25565 (Wi-Fi / LAN Play)`);
+      }
+
+      store.data.worldsGenerated = true;
+      if (!store.data.customSeed) {
+        store.data.customSeed = "782194018249102";
+      }
+      store.save();
+      this.renderWorldsList();
+
+      try {
+        const res = await this.apiFetch("/api/server/start", { method: "POST" });
+        const data = await res.json();
+        if (!data.success) {
+          this.updateServerStatusUI("offline");
+          this.setMetricsOffline();
+          this.appendLog("error", `[EchoNode] Launch failed: ${data.message || 'Unknown error'}`);
+          this.showToast(`Launch failed: ${data.message}`, "error");
+        } else {
+          this.updateServerStatusUI(data.status || "starting");
+          if (data.network) {
+            this.realPublicIp = data.network.publicIp;
+            this.realLanIp = data.network.lanIp;
+            if (store.data.activeIpType === "public" || !store.data.serverIp) {
+              store.data.serverIp = data.network.publicServerIp;
+              store.save();
+            }
+            this.syncNetworkUI();
+          }
+          this.showToast("Real Minecraft Server process launched! Booting...", "info");
+          this.appendLog("system", `[EchoNode] Real Minecraft Java process started in: ${data.serverDir || 'server folder'}`);
+          this.appendLog("info", `[EchoNode] Java Binary: ${data.java || 'java'}`);
+          this.appendLog("info", `[EchoNode] Streaming live server logs...`);
+        }
+      } catch (err) {
         this.updateServerStatusUI("offline");
         this.setMetricsOffline();
-        this.appendLog("error", `[EchoNode] Launch failed: ${data.message || 'Unknown error'}`);
-        this.showToast(`Launch failed: ${data.message}`, "error");
-      } else {
-        this.isLocalBackendOnline = true;
-        this.lastBackendStatus = data.status || "starting";
-        this.isSimulatedOnline = false;
-        this.updateServerStatusUI(data.status || "starting");
-        if (data.network) {
-          this.realPublicIp = data.network.publicIp;
-          this.realLanIp = data.network.lanIp;
-          if (store.data.activeIpType === "public" || !store.data.serverIp) {
-            store.data.serverIp = data.network.publicServerIp;
-            store.save();
-          }
-          this.syncNetworkUI();
-        }
-        this.showToast("Real Minecraft Server process launched! Starting up...", "info");
-        this.appendLog("system", `[EchoNode] Real Minecraft Java process started in: ${data.serverDir || 'server folder'}`);
-        this.appendLog("info", `[EchoNode] Java Binary: ${data.java || 'java'}`);
-        this.appendLog("info", `[EchoNode] Waiting for Paper server core initialization to complete...`);
+        this.appendLog("error", `[EchoNode] Failed to reach local backend: ${err.message}`);
+        this.showToast("Failed to connect to local server backend.", "error");
       }
-    } catch (err) {
-      this.isLocalBackendOnline = false;
-      this.isCloudOnline = false;
-      this.isSimulatedOnline = false;
-      this.updateServerStatusUI("offline");
-      this.setMetricsOffline();
-      this.appendLog("error", "[EchoNode] Could not connect to local server backend (server.py on port 3000).");
-      this.appendLog("info", "▶ Double-click 'start_web_server.bat' in your EchoNode folder to start your server backend and launch Minecraft.");
-      this.showToast("Local backend offline. Please run start_web_server.bat", "warning");
+      return;
+    }
+
+    // 2. Local backend is NOT running (e.g. static site or server.py closed)
+    this.updateServerStatusUI("offline");
+    this.setMetricsOffline();
+    this.appendLog("warn", "[EchoNode] Local backend server (server.py) is not running on this machine.");
+    this.appendLog("info", "▶ Option 1 (Run on your PC): Double-click 'start_web_server.bat' (or 'start_minecraft_server.bat') in your EchoNode folder.");
+    this.appendLog("info", "▶ Option 2 (Run 24/7 in Cloud): Configure your GitHub repository in the '24/7 Hosting' tab.");
+
+    const hasCloudRepo = Boolean(store.data.githubRepo && store.data.githubToken);
+    if (hasCloudRepo) {
+      this.appendLog("system", "[EchoNode 24/7] Checking for 24/7 Cloud Runner on GitHub Actions...");
+      this.showToast("Checking 24/7 Cloud Runner on GitHub Actions...", "info");
+      const dispatched = await this.dispatchGitHub247CloudRunner();
+      if (!dispatched) {
+        this.updateServerStatusUI("offline");
+        this.setMetricsOffline();
+        this.promptRealServerExecution();
+      }
+    } else {
+      this.showToast("Local backend offline. Run start_web_server.bat or use 24/7 Cloud Hosting.", "warning");
       this.promptRealServerExecution();
     }
   }
@@ -3192,8 +3234,7 @@ class EchoNodeApp {
       return false;
     }
 
-    this.appendLog("system", `[EchoNode 24/7] Dispatching real Minecraft 24/7 Cloud Runner on GitHub Actions (${owner}/${repo})...`);
-    this.showToast("Launching 24/7 Cloud Runner on GitHub Actions...", "info");
+    this.appendLog("system", `[EchoNode 24/7] Checking 24/7 Cloud Runner on GitHub Actions (${owner}/${repo})...`);
 
     try {
       const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/minecraft-24-7.yml/dispatches`, {
@@ -3205,16 +3246,36 @@ class EchoNodeApp {
         },
         body: JSON.stringify({ ref: "main" })
       });
+
       if (res.ok || res.status === 204) {
+        this.updateServerStatusUI("starting");
         this.appendLog("success", `[EchoNode 24/7] 24/7 Cloud Runner workflow successfully dispatched on GitHub Actions!`);
         this.showToast("24/7 Cloud Server is booting on GitHub Actions!", "success");
-        setTimeout(() => this.pollGitHubStatus(), 1500);
+        setTimeout(() => this.pollGitHubStatus(), 2000);
         return true;
+      } else if (res.status === 404) {
+        this.updateServerStatusUI("offline");
+        this.setMetricsOffline();
+        this.appendLog("error", `[EchoNode 24/7] Workflow file '.github/workflows/minecraft-24-7.yml' was not found on repository '${owner}/${repo}'.`);
+        this.appendLog("info", "▶ Setup: Copy the workflow from 'echonode/24_7_hosting/minecraft-24-7.yml' to '.github/workflows/minecraft-24-7.yml' on GitHub, or run start_web_server.bat on your PC.");
+        this.showToast("24/7 workflow not found on GitHub. Check console for guide.", "error");
+        return false;
+      } else if (res.status === 403) {
+        this.updateServerStatusUI("offline");
+        this.setMetricsOffline();
+        this.appendLog("error", `[EchoNode 24/7] GitHub permission denied (403). Your PAT needs the 'workflow' scope to trigger actions.`);
+        this.showToast("GitHub Token lacks 'workflow' scope.", "error");
+        return false;
       } else {
-        this.appendLog("info", "[EchoNode 24/7] Deploying 24/7 Cloud Runner workflow and files to GitHub repository...");
-        return await this.clientSideGitHubSync(rUrl, token, true);
+        this.updateServerStatusUI("offline");
+        this.setMetricsOffline();
+        const errJson = await res.json().catch(() => ({}));
+        this.appendLog("error", `[EchoNode 24/7] GitHub returned HTTP ${res.status}: ${errJson.message || 'Dispatch failed'}`);
+        return false;
       }
     } catch (e) {
+      this.updateServerStatusUI("offline");
+      this.setMetricsOffline();
       this.appendLog("error", `[EchoNode 24/7] Dispatch notice: ${e.message}`);
       return false;
     }
@@ -3553,14 +3614,20 @@ class EchoNodeApp {
             if (text) text.textContent = "STOPPED";
           }
 
-          if (!this.isLocalBackendOnline && (store.data.status === "cloud_online" || store.data.status === "cloud")) {
+          if (!this.isLocalBackendOnline && store.data.status === "cloud_online") {
             this.updateServerStatusUI("offline");
-            this.setMetricsOffline();
           }
         }
       } else {
         // No active cloud runner confirmed or query failed - ensure cloud state is strictly offline
         this.isCloudOnline = false;
+        if (badge) {
+          badge.style.background = "rgba(244, 63, 94, 0.15)";
+          badge.style.color = "#fda4af";
+          badge.style.borderColor = "rgba(244, 63, 94, 0.35)";
+        }
+        if (dot) dot.style.background = "#f43f5e";
+        if (text) text.textContent = "OFFLINE";
         if (!this.isLocalBackendOnline && (store.data.status === "cloud_online" || store.data.status === "cloud")) {
           this.updateServerStatusUI("offline");
           this.setMetricsOffline();
@@ -3868,7 +3935,7 @@ jobs:
             // Local MC server is offline: check if Cloud 24/7 is active
             if (this.isCloudOnline) {
               this.updateServerStatusUI("cloud_online");
-            } else {
+            } else if (!this.isSimulatedOnline) {
               this.updateServerStatusUI("offline");
               this.setMetricsOffline();
             }
@@ -3879,7 +3946,7 @@ jobs:
           this.lastBackendStatus = "offline";
           if (this.isCloudOnline) {
             this.updateServerStatusUI("cloud_online");
-          } else {
+          } else if (!this.isSimulatedOnline) {
             this.updateServerStatusUI("offline");
             this.setMetricsOffline();
           }
@@ -3916,7 +3983,7 @@ jobs:
         this.isLocalBackendOnline = false;
         if (this.isCloudOnline) {
           this.updateServerStatusUI("cloud_online");
-        } else {
+        } else if (!this.isSimulatedOnline) {
           this.updateServerStatusUI("offline");
           this.setMetricsOffline();
         }
