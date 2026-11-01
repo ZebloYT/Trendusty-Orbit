@@ -1780,6 +1780,7 @@ class EchoNodeApp {
     });
 
     // 1. Setup UI bindings
+    this.bindSidebarToggle();
     this.bindNavigation();
     this.bindConsole();
     this.bindOptions();
@@ -2580,6 +2581,68 @@ class EchoNodeApp {
       toast.style.transform = "translateX(-20px)";
       setTimeout(() => toast.remove(), 300);
     }, 3200);
+  }
+
+  // Sidebar Minimize/Maximize Toggle (Button on Corner of Sidebar & Ctrl+B)
+  bindSidebarToggle() {
+    const sidebar = document.getElementById("sidebar");
+    const btnToggle = document.getElementById("btn-toggle-sidebar");
+    const btnNavbarToggle = document.getElementById("btn-navbar-toggle-sidebar");
+    if (!sidebar) return;
+
+    const setSidebarState = (minimized) => {
+      sidebar.classList.toggle("minimized", minimized);
+      const title = minimized ? "Maximize sidebar (Ctrl+B)" : "Minimize sidebar (Ctrl+B)";
+      if (btnToggle) btnToggle.setAttribute("title", title);
+      if (btnNavbarToggle) btnNavbarToggle.setAttribute("title", title);
+      try {
+        localStorage.setItem("echonode_sidebar_minimized", minimized ? "true" : "false");
+      } catch (err) {}
+    };
+
+    const toggleSidebar = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      const isCurrentlyMinimized = sidebar.classList.contains("minimized");
+      const nextState = !isCurrentlyMinimized;
+      setSidebarState(nextState);
+
+      if (typeof sfx !== "undefined" && sfx.playClick) {
+        sfx.playClick();
+      }
+
+      // Smooth trigger for Three.js canvas & layout recalculations
+      setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+      }, 300);
+    };
+
+    if (btnToggle) {
+      btnToggle.addEventListener("click", toggleSidebar);
+    }
+    if (btnNavbarToggle) {
+      btnNavbarToggle.addEventListener("click", toggleSidebar);
+    }
+
+    // Keyboard shortcut: Ctrl + B or Cmd + B
+    window.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "b" || e.key === "B")) {
+        const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+        if (activeTag !== "input" && activeTag !== "textarea") {
+          e.preventDefault();
+          toggleSidebar();
+        }
+      }
+    });
+
+    // Restore saved preference
+    try {
+      if (localStorage.getItem("echonode_sidebar_minimized") === "true") {
+        setSidebarState(true);
+      }
+    } catch (err) {}
   }
 
   // Navigation

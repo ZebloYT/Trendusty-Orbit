@@ -345,6 +345,141 @@ body.mode-3d .spatial-hud-controls {
   z-index: 20;
   position: relative;
   overflow: hidden;
+  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Sidebar Minimize/Maximize Corner Button & Responsive Layout
+   ========================================================================== */
+.sidebar-toggle-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  background: rgba(18, 23, 34, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-toggle-btn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(0, 245, 184, 0.45);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 245, 184, 0.2);
+}
+
+.sidebar-toggle-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.sidebar-toggle-icon {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.sidebar-icon-panel {
+  transition: opacity 0.2s ease, fill 0.2s ease;
+}
+
+/* Minimized Sidebar Styles */
+#sidebar.minimized {
+  width: 72px;
+  min-width: 72px;
+}
+
+#sidebar.minimized .brand-info,
+#sidebar.minimized .sidebar-user-meta,
+#sidebar.minimized .sidebar-user-badge,
+#sidebar.minimized .selector-info,
+#sidebar.minimized .selector-dropdown-icon,
+#sidebar.minimized .sidebar-status-card,
+#sidebar.minimized .nav-category-label,
+#sidebar.minimized .nav-item-left span:not(.nav-item-icon),
+#sidebar.minimized .nav-badge-pill,
+#sidebar.minimized .version-chip,
+#sidebar.minimized #sound-label {
+  display: none !important;
+}
+
+#sidebar.minimized .sidebar-brand {
+  padding: 14px 6px;
+  justify-content: center;
+}
+
+#sidebar.minimized .brand-wrapper {
+  display: none !important;
+}
+
+#sidebar.minimized #btn-toggle-sidebar {
+  margin: 0 auto;
+  width: 36px;
+  height: 36px;
+}
+
+#sidebar.minimized .sidebar-user-card {
+  margin: 8px 6px;
+  padding: 8px 0;
+  justify-content: center;
+}
+
+#sidebar.minimized .server-selector-card {
+  margin: 8px 6px;
+  padding: 6px 0;
+  justify-content: center;
+}
+
+#sidebar.minimized .sidebar-nav-container {
+  padding: 6px 4px;
+}
+
+#sidebar.minimized .nav-item-btn {
+  padding: 10px 0;
+  justify-content: center;
+  margin: 4px 4px;
+  width: calc(100% - 8px);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+#sidebar.minimized .nav-item-left {
+  justify-content: center;
+  width: 100%;
+}
+
+#sidebar.minimized .nav-item-icon {
+  margin: 0 auto;
+}
+
+#sidebar.minimized .sidebar-footer {
+  padding: 12px 6px;
+  justify-content: center;
+}
+
+#sidebar.minimized #btn-toggle-sound {
+  padding: 8px;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* Navbar Companion Toggle Button */
+.navbar-toggle-btn {
+  margin-right: 4px;
+}
+
+@media (min-width: 961px) {
+  #sidebar:not(.minimized) ~ #main-wrapper .navbar-toggle-btn {
+    display: none;
+  }
 }
 
 /* Brand Header */
