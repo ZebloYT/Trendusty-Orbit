@@ -22,17 +22,20 @@
           '': '/home/',
           '/': '/home/',
           '/home': '/home/',
-          '/progress': '/progress',
-          '/download': '/windows/download',
-          '/windows/download': '/windows/download',
-          '/cursor-download': '/windows/cursor-download',
-          '/windows/cursor-download': '/windows/cursor-download',
+          '/progress': '/progress/',
+          '/download': '/windows/download/',
+          '/windows/download': '/windows/download/',
+          '/cursor-download': '/windows/cursor-download/',
+          '/windows/cursor-download': '/windows/cursor-download/',
           '/echonode': '/echonode/'
         };
 
         if (routeMap.hasOwnProperty(clean)) {
-          window.location.replace(routeMap[clean] + search + hash);
-          return;
+          var target = routeMap[clean];
+          if (target !== path && target !== clean && target !== path + '/') {
+            window.location.replace(target + search + hash);
+            return;
+          }
         }
       } catch(e) {}
     })();

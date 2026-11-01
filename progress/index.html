@@ -1,12 +1,774 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Redirecting to Progress Radar...</title>
-  <meta http-equiv="refresh" content="0; url=../progress">
-  <script>window.location.replace("../progress");</script>
+  <base href="../">
+<meta charset="UTF-8">
+  <!-- Clean URL & Route Normalizer -->
+  <script>
+    (function() {
+      try {
+        var proto = window.location.protocol;
+        if (proto === 'http:' || proto === 'https:') {
+          var p = window.location.pathname;
+          if (p.endsWith('.html')) {
+            var clean = p.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+            var newUrl = clean + window.location.search + window.location.hash;
+            window.history.replaceState(null, '', newUrl);
+          }
+          document.addEventListener('click', function(e) {
+            var a = e.target.closest('a');
+            if (a && a.href && a.origin === window.location.origin) {
+              if (a.pathname.endsWith('.html')) {
+                var cleanPath = a.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+                a.href = cleanPath + a.search + a.hash;
+              }
+            }
+          }, true);
+        } else if (proto === 'file:') {
+          document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a[href]').forEach(function(a) {
+              var h = a.getAttribute('href');
+              if (h && !h.startsWith('http') && !h.startsWith('#') && !h.startsWith('mailto:') && !h.endsWith('.html') && !h.endsWith('/')) {
+                if (!h.includes('.')) a.setAttribute('href', h + '.html');
+              }
+            });
+          });
+        }
+      } catch(e) {}
+    })();
+  </script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Progress & Development Radar - Trendusty Orbit</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-color: #07090e;
+    --bg-surface: #0c1017;
+    --card-bg: rgba(13, 18, 28, 0.75);
+    --glass-border: rgba(0, 245, 184, 0.16);
+    --glass-border-hover: rgba(0, 245, 184, 0.45);
+    --accent: #00f5b8;
+    --accent-dim: rgba(0, 245, 184, 0.12);
+    --accent-glow: rgba(0, 245, 184, 0.4);
+    --accent-blue: #00b4d8;
+    --accent-warning: #ffb703;
+    --accent-warning-bg: rgba(255, 183, 3, 0.12);
+    --accent-success: #00f5b8;
+    --accent-success-bg: rgba(0, 245, 184, 0.12);
+    --text-main: #f0fdf4;
+    --text-sub: rgba(240, 253, 244, 0.65);
+    --primary-grad: linear-gradient(135deg, #00f5b8 0%, #00b4d8 100%);
+    --border-color: rgba(0, 245, 184, 0.16);
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Inter', sans-serif;
+  }
+
+  html, body, *, *::before, *::after { cursor: none !important; }
+  a, button, input, textarea, select { cursor: none !important; }
+
+  /* Tactical Orbit Cursor */
+  .orbit-cursor-dot {
+    position: fixed; top: 0; left: 0;
+    width: 5px; height: 5px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483647 !important;
+    box-shadow: 0 0 12px var(--accent), 0 0 4px #ffffff;
+    opacity: 0;
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease, opacity 0.3s ease;
+  }
+  .orbit-cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 56px; height: 56px;
+    border: 1px solid rgba(0, 245, 184, 0.5);
+    background: rgba(0, 245, 184, 0.03);
+    border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483646 !important;
+    box-shadow: 0 0 18px rgba(0, 245, 184, 0.3), inset 0 0 10px rgba(0, 245, 184, 0.1);
+    opacity: 0;
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease, border-color 0.5s ease, opacity 0.3s ease;
+  }
+  .orbit-cursor-ring.is-hovering {
+    width: 66px; height: 66px;
+    border: 1.5px solid var(--accent);
+    background: rgba(0, 245, 184, 0.08);
+    box-shadow: 0 0 26px var(--accent-glow);
+  }
+  .orbit-cursor-dot.is-hovering {
+    background: #ffffff;
+    box-shadow: 0 0 14px var(--accent);
+    width: 8px; height: 8px;
+  }
+  .orbit-cursor-ring.is-active {
+    width: 28px; height: 28px;
+    border: 1.5px solid #00d2ff;
+    background: rgba(0, 210, 255, 0.25);
+  }
+  .mouse-trail-dot {
+    position: fixed; width: 4px; height: 4px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483645 !important;
+    opacity: 0.8;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    box-shadow: 0 0 6px var(--accent);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 245, 184, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 10% 30%, rgba(0, 180, 216, 0.05) 0%, transparent 40%),
+        linear-gradient(to bottom, #07090e, #05070a);
+    background-attachment: fixed;
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-size: 48px 48px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    pointer-events: none; z-index: -1;
+  }
+
+  .navbar {
+    background: rgba(7, 9, 14, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .nav-logo {
+    font-size: 22px;
+    font-weight: 800;
+    background: var(--primary-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-links { margin-left: 40px; display: flex; gap: 20px; }
+  .nav-links a { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 15px; transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+  .container { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+
+  .header-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 36px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--primary-grad);
+  }
+
+  .badge-pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--glass-border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .pulse-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulseAnim 1.8s infinite;
+  }
+  @keyframes pulseAnim {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  h1 { font-size: 36px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -1px; }
+  p.subtitle { color: var(--text-sub); font-size: 16px; margin: 0; max-width: 700px; }
+
+  /* Overall progress bar */
+  .progress-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .progress-track {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    height: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 97%;
+    background: var(--primary-grad);
+    box-shadow: 0 0 15px var(--accent-glow);
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+  }
+
+  /* Grid of modules */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .mod-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .mod-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 12px 24px rgba(0, 245, 184, 0.12);
+  }
+
+  .mod-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .mod-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+  
+  .status-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .status-tag.in-progress {
+    background: var(--accent-warning-bg);
+    color: var(--accent-warning);
+    border: 1px solid rgba(255, 183, 3, 0.3);
+  }
+  .status-tag.completed {
+    background: var(--accent-success-bg);
+    color: var(--accent-success);
+    border: 1px solid rgba(0, 245, 184, 0.3);
+  }
+
+  .mod-desc { color: var(--text-sub); font-size: 14px; margin-bottom: 20px; min-height: 44px; }
+
+  .checklist { list-style: none; padding: 0; margin: 0 0 20px 0; font-size: 13px; }
+  .checklist li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: var(--text-main);
+  }
+  .checklist li.done { color: var(--text-sub); text-decoration: line-through; }
+  .checklist li .chk-icon { font-size: 14px; }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+  }
+  .action-btn:hover {
+    background: rgba(0, 245, 184, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Live Terminal Logs */
+  .terminal-card {
+    background: #05070a;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    font-family: var(--font-mono);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+  .terminal-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .terminal-title { font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+  .terminal-body { font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+  .log-line { display: flex; gap: 14px; }
+  .log-time { color: rgba(240, 253, 244, 0.4); min-width: 80px; }
+  .log-ok { color: var(--accent); }
+  .log-warn { color: var(--accent-warning); }
+</style>
 </head>
 <body>
-  <p>Redirecting to <a href="../progress">Progress Radar</a>...</p>
+
+<div class="orbit-cursor-dot" id="orbit-cursor-dot"></div>
+<div class="orbit-cursor-ring" id="orbit-cursor-ring"></div>
+
+<nav class="navbar">
+  <div class="nav-logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#pgrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="pgrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00f5b8" /><stop offset="100%" stop-color="#00b4d8" /></linearGradient></defs><path d="M4 4l16 16M4 20L20 4"/></svg>
+    TRENDUSTY ORBIT
+  </div>
+  <div class="nav-links">
+    <a href="home/">Live COP</a>
+    <a href="windows/cursor-download">Custom Cursors</a>
+    <a href="echonode/" target="_blank" rel="noopener noreferrer">EchoNode Cloud ↗</a>
+    <a href="windows/download">Desktop Client</a>
+    <a href="progress" class="active">Development Radar</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header-card">
+    <div class="badge-pulse">
+      <div class="pulse-dot"></div>
+      ACTIVE CONSTRUCTION RADAR · CONTINUOUS DEPLOYMENT
+    </div>
+    <h1>System Construction & Progress</h1>
+    <p class="subtitle">Live tracking of ongoing features, construction modules, and real-time release milestones across the Trendusty Orbit network.</p>
+
+    <div class="progress-section">
+      <div class="progress-meta">
+        <span>OVERALL PLATFORM READINESS</span>
+        <span style="color: var(--accent);">99% OPERATIONAL</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar" style="width: 99%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Module 0: EchoNode Web Minecraft Cloud Manager -->
+    <div class="mod-card" style="border-color: rgba(147, 51, 234, 0.35); box-shadow: 0 10px 30px rgba(147, 51, 234, 0.1);">
+      <div class="mod-header">
+        <div class="mod-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>⛏️</span> EchoNode Web &mdash; Cloud Manager
+        </div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">24/7 sovereign Minecraft server manager with clean zero-boot state, software version changer, live CLI streaming, 3D WebGL background models, and GitHub Actions CI/CD hosting.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> Clean Zero-Boot Architecture (Offline default, 0 worlds, 0 players)</li>
+        <li class="done"><span class="chk-icon">✅</span> Software &amp; Version Changer (/version: Paper, Purpur, Spigot, Vanilla, Fabric, Forge)</li>
+        <li class="done"><span class="chk-icon">✅</span> Live Server Console &amp; Color Logs (/console)</li>
+        <li class="done"><span class="chk-icon">✅</span> Server Options &amp; Advanced MOTD Designer (/options)</li>
+        <li class="done"><span class="chk-icon">✅</span> 33 Installed Plugins &amp; Mods Hub (/plugins)</li>
+        <li class="done"><span class="chk-icon">✅</span> Aternos-Style Worlds Suite with Action Toolbar (Force upgrade, Optimize, Download, Upload, Options, Files, Generate) &amp; 58 Gamerules (/worlds)</li>
+        <li class="done"><span class="chk-icon">✅</span> Player &amp; SkyHeaven Custom Cape Manager (/players)</li>
+        <li class="done"><span class="chk-icon">✅</span> 24/7 GitHub Actions CI/CD Loop &amp; playit.gg (/uptime)</li>
+        <li class="done"><span class="chk-icon">✅</span> 5 Animated 3D Voxel Models (Three.js) &amp; Spatial Stage</li>
+      </ul>
+      <a href="echonode/" target="_blank" rel="noopener noreferrer" class="action-btn" style="border-color: rgba(147, 51, 234, 0.5); color: #c084fc;">Launch EchoNode Web ↗</a>
+    </div>
+
+
+    <!-- Module 1: Retrosmart Xcursor Kits & Gallery -->
+    <div class="mod-card" style="border-color: rgba(56, 189, 248, 0.35); box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1);">
+      <div class="mod-header">
+        <div class="mod-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>🖱️</span> Retrosmart Xcursor Kits &amp; Gallery
+        </div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">Complete integration of 28 curated 8-bit cursor kits from useless-anvil/retrosmart-cursor (Win-3D Chrome, Mac-ish System 7, Win-ish 95, Cur-Font) with official logo, 1-click install.inf Windows packages, interactive equip testing, and JSZip custom compiler.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> Retrosmart Official Project Logo &amp; Banner Branding</li>
+        <li class="done"><span class="chk-icon">✅</span> 28 Theme Editions (Win-3D, Mac-ish, Win-ish, Cur-Font)</li>
+        <li class="done"><span class="chk-icon">✅</span> 1-Click install.inf Packages (.zip) for all 15 Windows roles</li>
+        <li class="done"><span class="chk-icon">✅</span> Interactive Dual-State In-Browser Equip (Arrow &amp; Pointer)</li>
+        <li class="done"><span class="chk-icon">✅</span> High-Res Hover Preview Sheets &amp; Style Filter Tabs</li>
+        <li class="done"><span class="chk-icon">✅</span> Custom JSZip Pack Compiler with .bat Registry Setup</li>
+      </ul>
+      <a href="windows/cursor-download" class="action-btn" style="border-color: rgba(56, 189, 248, 0.5); color: #38bdf8;">Launch Cursor Gallery ↗</a>
+    </div>
+
+    <!-- Module 2: Tactical Cursor Engine -->
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-title">Tactical Orbit Cursor</div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">High-precision cursor follower engine with trailing neon physics and adaptive hover states.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> Precision Center Dot + Expanding Ring</li>
+        <li class="done"><span class="chk-icon">✅</span> Trailing Particle Physics Engine</li>
+        <li class="done"><span class="chk-icon">✅</span> Context-Aware Button & Card States</li>
+        <li class="done"><span class="chk-icon">✅</span> Seamless Custom Pack Hover Transition</li>
+        <li class="done"><span class="chk-icon">✅</span> Integrated into EchoNode Web &amp; Cursors Suite with Cross-Tab Storage Sync</li>
+      </ul>
+      <a href="home/" class="action-btn">Test On Live COP ↗</a>
+    </div>
+
+    <!-- Module 3: 3D Intelligence COP -->
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-title">Global OSINT Intelligence COP</div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">Real-time global tracking merging live aviation radar, maritime AIS, and orbital satellite tracking.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> 3D Earth WebGL Globe Engine</li>
+        <li class="done"><span class="chk-icon">✅</span> 60,000+ Active Telemetry Contacts</li>
+        <li class="done"><span class="chk-icon">✅</span> Tactical HUD & CCTV Recon Matrix</li>
+        <li class="done"><span class="chk-icon">✅</span> Zero Data Leakage Architecture</li>
+      </ul>
+      <a href="home/" class="action-btn">Open COP Dashboard ↗</a>
+    </div>
+
+    <!-- Module 4: Client Installer -->
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-title">Windows Desktop Setup</div>
+        <span class="status-tag completed">Operational</span>
+      </div>
+      <div class="mod-desc">Native Windows workstation installer with self-contained runtime and automatic service routing.</div>
+      <ul class="checklist">
+        <li class="done"><span class="chk-icon">✅</span> Compiled Setup.exe Distribution</li>
+        <li class="done"><span class="chk-icon">✅</span> Local Offline Environment Support</li>
+        <li class="done"><span class="chk-icon">✅</span> International Localized Guides (EN/ES/FR/AR)</li>
+      </ul>
+      <a href="windows/download" class="action-btn">View Setup Portal ↗</a>
+    </div>
+  </div>
+
+  <!-- Terminal Live Log -->
+  <div class="terminal-card">
+    <div class="terminal-top">
+      <div class="terminal-title">
+        <span style="color: var(--accent);">●</span> DEPLOYMENT & MILESTONE EVENT LOG
+      </div>
+      <span style="color: rgba(240, 253, 244, 0.4); font-size: 11px;">SYNC: GITHUB / MAIN</span>
+    </div>
+    <div class="terminal-body">
+      <div class="log-line">
+        <span class="log-time">[ROUTING]</span>
+        <span class="log-ok">[FIX_REDIRECT_LOOP]</span>
+        <span>Eliminated infinite redirect loop between /cursor-download and /windows/cursor-download: replaced recursive meta-refresh script with standalone full-page deployment in both /windows/cursor-download/index.html and /cursor-download/index.html with scoped &lt;base&gt; asset resolution, patched 404.html anti-recursion loop guards, and applied the same direct standalone architecture to /download and /progress.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[CURSOR]</span>
+        <span class="log-ok">[TACTICAL_ENGINE]</span>
+        <span>Activated full Tactical Orbit Cursor engine on EchoNode Web (/echonode/) and fixed mouse trail runtime in Cursors Suite (/windows/cursor-download): resolved trail array push exception, unified 0.18 easing follower ring, added interactive button/input/card hover &amp; click states, and enabled cross-tab synchronization of equipped Retrosmart bitmap cursors via localStorage.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[WORLDS-ATERNOS]</span>
+        <span>Rebuilt Worlds management suite to match authentic Aternos layout: main World view with Force upgrade, Optimize, Download, Upload, Options, Files &amp; Generate actions; Generate modal with deletion warning, level properties, generator-settings &amp; hardcore toggles; Files view with 8 world items, news ticker, 3 support knowledgebase guides &amp; footer; and Options view with World parameters and all 58 interactive Minecraft Gamerules.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[WORLDS]</span>
+        <span>Removed manual world generation card; enabled default normal Overworld world (active &amp; loaded) while deferring Nether and The End generation until any first player joins the server. Added live player connection triggers across real socket sync, operator additions, and UI test controls.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[MULTI-SERVER]</span>
+        <span>Implemented dual-server architecture: Sky Heaven MC is restricted exclusively to owner (amoghpro7473/ZebloYT) via passkey/PIN 7473, while external visitors receive their own clean sandbox server.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[REFIT]</span>
+        <span>Re-cropped and framed EchoNode logo asset (640x520) to fit media rectangle with full edge-to-edge proportion and zero letterbox distortion.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECOSYSTEM]</span>
+        <span class="log-ok">[INTERACTIVE]</span>
+        <span>Enabled full-card click-anywhere navigation and disabled text selection across all Other Features &amp; Cloud Ecosystem cards.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[VERIFIED]</span>
+        <span>Configured full uncropped EchoNode 24/7 Minecraft Hosting logo display with object-fit containment, cyber-ambient glow ring, and OpenGraph metadata.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[NAVBAR]</span>
+        <span class="log-ok">[FIXED]</span>
+        <span>Fixed upper bar button overflow; streamlined header actions into clean navigation links and added auto-height containment.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[RETROSMART]</span>
+        <span class="log-ok">[INTEGRATED]</span>
+        <span>Integrated Retrosmart Xcursor kits (useless-anvil/retrosmart-cursor) with official logo, 28 themes, 1-click INF installers, and interactive gallery.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[CONFIGURED]</span>
+        <span>Configured clean zero-boot state with interactive Software &amp; Version Changer (/version) and ungenerated dimensions/playerdata.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[SHOWCASE]</span>
+        <span class="log-ok">[UPDATED]</span>
+        <span>Redesigned Other Apps section with sleek rectangular showcase cards and official EchoNode 24/7 logo branding.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[CLEAN-URL]</span>
+        <span class="log-ok">[DEPLOYED]</span>
+        <span>Removed .html extensions across all platform routes; deployed synchronous address bar normalizer and clean routing.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[DEPLOYED]</span>
+        <span>Deployed EchoNode Web 24/7 Minecraft Cloud Suite to /echonode/ with 3D WebGL models &amp; GitHub Actions CI/CD.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[FEATURE]</span>
+        <span>Expanded Software &amp; Version Changer to full Minecraft Java catalog (94 versions from 1.21.4 to 1.0.0 &amp; Beta/Alpha) with instant live search, era filtering tabs, and dynamic one-click installer.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[NETWORK]</span>
+        <span>Enabled Real IP server startup with live IPv4 detection, port 25565 socket binding, Minecraft SLP protocol ping responder, local LAN resolution, and interactive Real IP Network Manager modal.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[BRANDING]</span>
+        <span>Replaced placeholder emojis with authentic high-resolution PNG logos across software cards (Paper, Purpur, Spigot, Vanilla, Fabric, Forge), Options quick banners, and Server Switcher modal with dynamic logo synchronization.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[FEATURE]</span>
+        <span>Built Server Import Suite: folder directory selector &amp; ZIP extractor, full configuration inspection (properties, plugins, worlds, eula), health diagnostics, automated error detection with 1-click quick-fixes and copyable AI diagnostic resolution prompts, and live client-side website state synchronization.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[FEATURE]</span>
+        <span>Added Access tab to sidebar navigation and window view styled with 'COMMING SOON' status notice and return navigation.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[FIX]</span>
+        <span>Decoupled window content interaction &amp; scrolling from 3D camera zooming/orbiting; isolated 3D camera zoom to outer background (or Alt+Scroll) and orbit controls to outer viewport or header titlebar.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[AUTH]</span>
+        <span class="log-ok">[MODAL]</span>
+        <span>Added Login / Sign Up screen modal triggered by clicking 'Download Setup' or the top-corner 'Sign Up / Login' navbar button across all home entrypoints and Windows deployment portal, designed with sleek cyberpunk glass frame, status dot, close button, and an empty body container ready for future authentication workflows.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[USER_SESSION_QUOTA]</span>
+        <span>Integrated authenticated login user profile (amoghpro7473 / dynamic session) into EchoNode: added topbar user profile pill, sidebar account card, and unified multi-server manager with strict 3-server slot quota enforcement (Slot 1, 2, 3 indicators, dynamic instance list, + Create New Server workflow, 3/3 maximum limit lock, and server slot deletion to free capacity).</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[AUTH]</span>
+        <span class="log-ok">[DRIBBBLE_TECH]</span>
+        <span>Implemented dark cyber/circuit Dribbble login and signup interface matching design reference (Image 2): ambient circuit nodes, rounded glass card, top ring logo badge, 'Welcome Back' / 'Create Account' toggle views, email &amp; password fields with visibility eye toggle, vibrant blue CTA button, and single Google SSO provider (Apple &amp; Facebook removed).</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[AUTH]</span>
+        <span class="log-ok">[GOOGLE_CHOOSER]</span>
+        <span>Built interactive Google Account Chooser screen matching specification: animated 4-color stream loader, branded Google header, 'Choose an account to continue to Trendusty Orbit', primary account profile (amoghpro7473 / amoghpro7473@gmail.com), 'Use another account' option, privacy &amp; terms disclaimer, and bottom locale/help footer bar.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECOSYSTEM]</span>
+        <span class="log-ok">[UNIFIED]</span>
+        <span>Unified Other Features &amp; Apps alongside the Windows Download Setup in a shared background container: built 2-column side-by-side cyber-glass layout across home pages and Windows deployment portal, featuring standalone 365 KB installer card, SHA-256 verification, and direct companion links to EchoNode Web and Retrosmart Cursors.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[LATEST]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Initialized progress.html tracker; unified platform architecture across all routes.</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[DEPLOY]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Pushed verified release to GitHub (ZebloYT/Trendusty-Orbit).</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[UI]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Imported OG Tactical Orbit Cursor engine to cursor-download.html.</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[THEME]</span>
+        <span class="log-ok">[OK]</span>
+        <span>Converted cursor gallery to Cyberpunk Trendusty Orbit glassmorphism theme.</span>
+      </div>
+      <div class="log-line">
+        <span class="log-time">[BATCH]</span>
+        <span class="log-warn">[IN-PROGRESS]</span>
+        <span>Pending ingestion of new Minecraft and Anime custom cursor pack batch.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tactical Orbit Cursor Engine
+  (function initOrbitCursor() {
+    const dot = document.getElementById('orbit-cursor-dot');
+    const ring = document.getElementById('orbit-cursor-ring');
+    if (!dot || !ring) return;
+
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+    let isVisible = false;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!isVisible) {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        ringX = mouseX; ringY = mouseY;
+      }
+      dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)';
+    }, { passive: true });
+
+    const trails = [];
+    const MAX_TRAILS = 12;
+    let trailIndex = 0;
+    for (let i = 0; i < MAX_TRAILS; i++) {
+      const t = document.createElement('div');
+      t.className = 'mouse-trail-dot';
+      t.style.opacity = '0';
+      document.body.appendChild(t);
+      trails.push(t);
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      const t = trails[trailIndex];
+      t.style.left = e.clientX + 'px';
+      t.style.top = e.clientY + 'px';
+      t.style.opacity = '0.6';
+      t.style.transform = 'translate(-50%, -50%) scale(1)';
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translate(-50%, -50%) scale(0.2)';
+      }, 50);
+      trailIndex = (trailIndex + 1) % MAX_TRAILS;
+    }, { passive: true });
+
+    window.addEventListener('mousedown', () => {
+      ring.classList.add('is-active');
+      dot.classList.add('is-active');
+    });
+    window.addEventListener('mouseup', () => {
+      ring.classList.remove('is-active');
+      dot.classList.remove('is-active');
+    });
+    document.addEventListener('mouseleave', () => {
+      isVisible = false;
+      dot.style.opacity = '0'; ring.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+      isVisible = true;
+      dot.style.opacity = '1'; ring.style.opacity = '1';
+    });
+
+    function renderFollower() {
+      if (isVisible) {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
+      }
+      requestAnimationFrame(renderFollower);
+    }
+    requestAnimationFrame(renderFollower);
+
+    const interactiveSelector = 'a, button, .action-btn, .mod-card';
+    document.addEventListener('mouseover', (e) => {
+      const el = e.target;
+      if (!el || !el.closest) return;
+      if (el.closest(interactiveSelector)) {
+        ring.classList.add('is-hovering');
+        dot.classList.add('is-hovering');
+      } else {
+        ring.classList.remove('is-hovering');
+        dot.classList.remove('is-hovering');
+      }
+    });
+  })();
+</script>
 </body>
 </html>

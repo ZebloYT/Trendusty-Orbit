@@ -504,6 +504,12 @@
     </div>
     <div class="terminal-body">
       <div class="log-line">
+        <span class="log-time">[ROUTING]</span>
+        <span class="log-ok">[FIX_REDIRECT_LOOP]</span>
+        <span>Eliminated infinite redirect loop between /cursor-download and /windows/cursor-download: replaced recursive meta-refresh script with standalone full-page deployment in both /windows/cursor-download/index.html and /cursor-download/index.html with scoped &lt;base&gt; asset resolution, patched 404.html anti-recursion loop guards, and applied the same direct standalone architecture to /download and /progress.</span>
+      </div>
+
+      <div class="log-line">
         <span class="log-time">[CURSOR]</span>
         <span class="log-ok">[TACTICAL_ENGINE]</span>
         <span>Activated full Tactical Orbit Cursor engine on EchoNode Web (/echonode/) and fixed mouse trail runtime in Cursors Suite (/windows/cursor-download): resolved trail array push exception, unified 0.18 easing follower ring, added interactive button/input/card hover &amp; click states, and enabled cross-tab synchronization of equipped Retrosmart bitmap cursors via localStorage.</span>
