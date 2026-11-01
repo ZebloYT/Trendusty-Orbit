@@ -1042,7 +1042,7 @@
     }
 
     /* ==========================================================================
-       LOGIN / SIGN UP SCREEN (EMPTY WINDOW / MODAL)
+       LOGIN & SIGN UP SCREEN (DRIBBLE TECH / CYBERPUNK THEME - IMAGE 2)
        ========================================================================== */
     .auth-modal-backdrop {
       position: fixed;
@@ -1050,9 +1050,9 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(3, 7, 18, 0.82);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(4, 7, 14, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 999999;
       display: flex;
       align-items: center;
@@ -1070,26 +1070,84 @@
       pointer-events: auto;
     }
 
+    /* Ambient Circuit Background Traces (Image 2) */
+    .auth-circuit-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .auth-circuit-node {
+      position: absolute;
+      width: 72px;
+      height: 42px;
+      background: rgba(14, 20, 32, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .auth-circuit-node::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00f5b8;
+      box-shadow: 0 0 8px #00f5b8;
+      position: absolute;
+    }
+
+    .auth-circuit-node.top-left { top: 40px; left: 40px; }
+    .auth-circuit-node.top-left::after { right: -3px; top: 18px; }
+
+    .auth-circuit-node.top-right { top: 40px; right: 40px; }
+    .auth-circuit-node.top-right::after { left: -3px; top: 18px; }
+
+    .auth-circuit-node.bottom-left { bottom: 40px; left: 40px; }
+    .auth-circuit-node.bottom-left::after { right: -3px; top: 18px; }
+
+    .auth-circuit-node.bottom-right { bottom: 40px; right: 40px; }
+    .auth-circuit-node.bottom-right::after { left: -3px; top: 18px; }
+
+    .auth-node-pins {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .auth-node-pins span {
+      display: block;
+      width: 10px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Central Floating Card (Image 2) */
     .auth-modal-window {
-      background: linear-gradient(160deg, rgba(14, 22, 36, 0.96) 0%, rgba(6, 10, 18, 0.98) 100%);
-      border: 1px solid rgba(0, 245, 184, 0.35);
-      border-radius: 20px;
+      background: #11151e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
       width: 100%;
-      max-width: 520px;
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 245, 184, 0.15);
+      max-width: 440px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 50px rgba(0, 245, 184, 0.08);
       overflow: hidden;
       position: relative;
-      transform: scale(0.94) translateY(12px);
+      z-index: 10;
+      transform: scale(0.95) translateY(12px);
       transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 38px 32px 34px;
     }
 
     .auth-modal-window::before {
       content: "";
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
+      top: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, #00f5b8 0%, #38bdf8 50%, #a855f7 100%);
     }
 
@@ -1097,64 +1155,439 @@
       transform: scale(1) translateY(0);
     }
 
-    .auth-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 24px;
-      border-bottom: 1px solid rgba(0, 245, 184, 0.15);
-      background: rgba(3, 7, 18, 0.5);
-    }
-
-    .auth-modal-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .auth-modal-status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #00f5b8;
-      box-shadow: 0 0 10px #00f5b8;
-    }
-
-    .auth-modal-title {
-      font-family: var(--font-mono, monospace);
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: #ffffff;
-      text-transform: uppercase;
-    }
-
-    .auth-modal-close {
-      background: transparent;
+    .auth-modal-close-corner {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--text-dim, #94a3b8);
+      color: #94a3b8;
       width: 32px;
       height: 32px;
-      border-radius: 8px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s ease;
-      padding: 0;
+      z-index: 20;
     }
 
-    .auth-modal-close:hover {
-      background: rgba(239, 68, 68, 0.15);
-      border-color: rgba(239, 68, 68, 0.4);
+    .auth-modal-close-corner:hover {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: rgba(239, 68, 68, 0.5);
       color: #ef4444;
       transform: rotate(90deg);
     }
 
-    .auth-modal-body {
-      min-height: 360px;
+    /* App Logo in Top Square (Image 2) */
+    .auth-logo-badge {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .auth-logo-box {
+      width: 56px;
+      height: 56px;
+      background: #090d14;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 245, 184, 0.08);
+      position: relative;
+    }
+
+    .auth-logo-ring {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #00f5b8;
+      border-right-color: #38bdf8;
+      box-shadow: 0 0 15px rgba(0, 245, 184, 0.4);
+    }
+
+    .auth-heading {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      text-align: center;
+      margin: 0 0 6px 0;
+      letter-spacing: -0.3px;
+    }
+
+    .auth-subheading {
+      font-size: 13px;
+      color: #8b949e;
+      text-align: center;
+      margin: 0 0 24px 0;
+    }
+
+    .auth-switch-btn {
+      background: none;
+      border: none;
+      color: #3b82f6;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .auth-switch-btn:hover {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+
+    /* Form & Inputs */
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .auth-input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-input-icon {
+      position: absolute;
+      left: 14px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .auth-input {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px 14px 14px 44px;
+      color: #f1f5f9;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .auth-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      background: #0f1520;
+    }
+
+    .auth-input::placeholder {
+      color: #64748b;
+    }
+
+    .auth-toggle-pwd {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .auth-toggle-pwd:hover {
+      color: #94a3b8;
+    }
+
+    .auth-forgot-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -4px;
+      margin-bottom: 4px;
+    }
+
+    .auth-forgot-link {
+      font-size: 12px;
+      color: #64748b;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .auth-forgot-link:hover {
+      color: #94a3b8;
+      text-decoration: underline;
+    }
+
+    /* Primary Submit Button (Image 2) */
+    .auth-btn-primary {
+      width: 100%;
+      background: #1d7af2;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 6px;
+      box-shadow: 0 8px 20px rgba(29, 122, 242, 0.35);
+    }
+
+    .auth-btn-primary:hover {
+      background: #1565c0;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(29, 122, 242, 0.5);
+    }
+
+    /* Divider "OR" */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 22px 0 18px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-divider span {
+      padding: 0 12px;
+    }
+
+    /* Single Social Button: Google (No Facebook / Apple) */
+    .auth-btn-google {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 13px 20px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .auth-btn-google:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* Google Sign In Screen Styles */
+    .google-loader-line {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #4285F4 0%, #EA4335 25%, #FBBC05 50%, #34A853 75%, #4285F4 100%);
+      background-size: 200% 100%;
+      animation: google-stream 1.8s infinite linear;
+    }
+
+    @keyframes google-stream {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .google-screen-header {
+      text-align: center;
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .google-back-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
       background: transparent;
-      /* Completely empty as requested ("make nothing in it") */
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .google-back-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .google-main-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      margin: 14px 0 4px 0;
+    }
+
+    .google-sub-text {
+      font-size: 13.5px;
+      color: #cbd5e1;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .google-accounts-box {
+      background: #090d14;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .google-account-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .google-account-row:last-child {
+      border-bottom: none;
+    }
+
+    .google-account-row:hover {
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .google-avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ea4335;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .google-avatar-neutral {
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+
+    .google-account-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .google-account-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.25;
+    }
+
+    .google-account-email {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.25;
+    }
+
+    .google-disclaimer-box {
+      font-size: 11.5px;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .google-disclaimer-box a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+    .google-disclaimer-box a:hover {
+      text-decoration: underline;
+    }
+
+    .google-screen-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 14px;
+      font-size: 11.5px;
+      color: #64748b;
+    }
+
+    .google-lang-select {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .google-footer-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .google-footer-links a {
+      color: #64748b;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .google-footer-links a:hover {
+      color: #94a3b8;
+    }
+
+    /* Toast Notification for Simulated Actions */
+    .auth-toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(9, 13, 20, 0.95);
+      border: 1px solid #00f5b8;
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 245, 184, 0.3);
+      font-family: var(--font-mono, monospace);
+      font-size: 13px;
+      z-index: 1000000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .auth-toast.show {
+      transform: translateY(0);
+      opacity: 1;
     }
 
     /* Corner Sign Up / Login Button */
@@ -1908,13 +2341,18 @@
       });
 
       // Login / Sign Up Screen Modal Handlers
-      window.openAuthModal = function(e) {
+      window.openAuthModal = function(e, initialView) {
         if (e && e.preventDefault) e.preventDefault();
         const modal = document.getElementById('auth-modal-backdrop');
         if (modal) {
           modal.classList.add('is-open');
           modal.setAttribute('aria-hidden', 'false');
           document.body.style.overflow = 'hidden';
+          if (initialView) {
+            window.switchAuthView(initialView);
+          } else {
+            window.switchAuthView('login');
+          }
         }
       };
 
@@ -1932,26 +2370,299 @@
           window.closeAuthModal();
         }
       };
+
+      window.switchAuthView = function(viewName) {
+        const loginView = document.getElementById('auth-view-login');
+        const signupView = document.getElementById('auth-view-signup');
+        const googleView = document.getElementById('auth-view-google');
+        
+        if (loginView) loginView.style.display = 'none';
+        if (signupView) signupView.style.display = 'none';
+        if (googleView) googleView.style.display = 'none';
+
+        if (viewName === 'signup' && signupView) {
+          signupView.style.display = 'block';
+        } else if (viewName === 'google' && googleView) {
+          googleView.style.display = 'block';
+        } else if (loginView) {
+          loginView.style.display = 'block';
+        }
+      };
+
+      window.togglePasswordVisibility = function(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        if (input.type === 'password') {
+          input.type = 'text';
+          btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+        } else {
+          input.type = 'password';
+          btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+        }
+      };
+
+      window.showAuthToast = function(msg) {
+        let toast = document.getElementById('auth-toast-msg');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'auth-toast-msg';
+          toast.className = 'auth-toast';
+          document.body.appendChild(toast);
+        }
+        toast.innerHTML = `<span style="color:#00f5b8;">●</span> <span>${msg}</span>`;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3500);
+      };
+
+      window.handleAuthSubmit = function(e, type) {
+        e.preventDefault();
+        if (type === 'signup') {
+          window.showAuthToast('Account created successfully! Welcome to Trendusty Orbit.');
+        } else {
+          window.showAuthToast('Signed in successfully! Session authenticated.');
+        }
+        window.closeAuthModal();
+      };
+
+      window.selectGoogleAccount = function(name, email) {
+        const loader = document.getElementById('google-loader');
+        if (loader) loader.style.display = 'block';
+        setTimeout(() => {
+          window.showAuthToast(`Authenticated with Google: ${email}`);
+          window.closeAuthModal();
+          // Update corner buttons to show logged in state
+          const cornerBtns = document.querySelectorAll('.btn-auth-corner');
+          cornerBtns.forEach(btn => {
+            btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00f5b8;box-shadow:0 0 8px #00f5b8;margin-right:6px;"></span> ${name}`;
+          });
+        }, 600);
+      };
+
+      window.handleOtherGoogleAccount = function() {
+        const newEmail = prompt('Enter another Google Account email address:', '');
+        if (newEmail && newEmail.includes('@')) {
+          window.selectGoogleAccount(newEmail.split('@')[0], newEmail);
+        }
+      };
     })();
   </script>
 
-  <!-- Login / Sign Up Screen Modal (Empty Shell) -->
+  <!-- Login & Sign Up Screen Modal (Image 2 Dribbble Tech Design) -->
   <div id="auth-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleAuthBackdropClick(event)">
-    <div class="auth-modal-window" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
-      <div class="auth-modal-header">
-        <div class="auth-modal-title-wrap">
-          <span class="auth-modal-status-dot"></span>
-          <span id="auth-modal-title" class="auth-modal-title">Login / Sign Up</span>
-        </div>
-        <button type="button" class="auth-modal-close" onclick="closeAuthModal()" aria-label="Close Login / Sign Up Screen">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+    <!-- Ambient Tech Circuit Nodes (Image 2) -->
+    <div class="auth-circuit-bg">
+      <div class="auth-circuit-node top-left">
+        <div class="auth-node-pins"><span></span><span></span><span></span></div>
       </div>
-      <!-- Completely Empty Body as Requested ("make nothing in it") -->
-      <div class="auth-modal-body"></div>
+      <div class="auth-circuit-node top-right">
+        <div class="auth-node-pins"><span></span><span></span><span></span></div>
+      </div>
+      <div class="auth-circuit-node bottom-left">
+        <div class="auth-node-pins"><span></span><span></span><span></span></div>
+      </div>
+      <div class="auth-circuit-node bottom-right">
+        <div class="auth-node-pins"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <div class="auth-modal-window" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <!-- Close Button Corner -->
+      <button type="button" class="auth-modal-close-corner" onclick="closeAuthModal()" aria-label="Close Screen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- View 1: Login Screen (Matches Image 2) -->
+      <div class="auth-view" id="auth-view-login">
+        <!-- Top App Logo -->
+        <div class="auth-logo-badge">
+          <div class="auth-logo-box">
+            <div class="auth-logo-ring"></div>
+          </div>
+        </div>
+
+        <h2 class="auth-heading" id="auth-modal-title">Welcome Back</h2>
+        <p class="auth-subheading">
+          Don't have an account yet? <button type="button" class="auth-switch-btn" onclick="switchAuthView('signup')">Sign up</button>
+        </p>
+
+        <form class="auth-form" onsubmit="handleAuthSubmit(event, 'login')">
+          <div class="auth-input-group">
+            <span class="auth-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </span>
+            <input type="email" class="auth-input" placeholder="email address" required autocomplete="email">
+          </div>
+
+          <div class="auth-input-group">
+            <span class="auth-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input type="password" id="login-password" class="auth-input" placeholder="Password" required autocomplete="current-password">
+            <button type="button" class="auth-toggle-pwd" onclick="togglePasswordVisibility('login-password', this)" title="Show/hide password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+
+          <div class="auth-forgot-row">
+            <a href="#" onclick="alert('Password reset link has been dispatched to your email.'); return false;" class="auth-forgot-link">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="auth-btn-primary">Login</button>
+        </form>
+
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+
+        <div class="auth-social-wrap">
+          <button type="button" class="auth-btn-google" onclick="switchAuthView('google')">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- View 2: Sign Up Screen (Matches Login Screen Structure) -->
+      <div class="auth-view" id="auth-view-signup" style="display: none;">
+        <!-- Top App Logo -->
+        <div class="auth-logo-badge">
+          <div class="auth-logo-box">
+            <div class="auth-logo-ring"></div>
+          </div>
+        </div>
+
+        <h2 class="auth-heading">Create Account</h2>
+        <p class="auth-subheading">
+          Already have an account? <button type="button" class="auth-switch-btn" onclick="switchAuthView('login')">Log in</button>
+        </p>
+
+        <form class="auth-form" onsubmit="handleAuthSubmit(event, 'signup')">
+          <div class="auth-input-group">
+            <span class="auth-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+            <input type="text" class="auth-input" placeholder="Full name / username" required autocomplete="name">
+          </div>
+
+          <div class="auth-input-group">
+            <span class="auth-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </span>
+            <input type="email" class="auth-input" placeholder="email address" required autocomplete="email">
+          </div>
+
+          <div class="auth-input-group">
+            <span class="auth-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input type="password" id="signup-password" class="auth-input" placeholder="Password (min 8 characters)" required autocomplete="new-password">
+            <button type="button" class="auth-toggle-pwd" onclick="togglePasswordVisibility('signup-password', this)" title="Show/hide password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+
+          <button type="submit" class="auth-btn-primary">Sign Up</button>
+        </form>
+
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+
+        <div class="auth-social-wrap">
+          <button type="button" class="auth-btn-google" onclick="switchAuthView('google')">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+            </svg>
+            <span>Sign up with Google</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- View 3: Google Account Chooser Screen (The Exact Google Screen Requested) -->
+      <div class="auth-view" id="auth-view-google" style="display: none;">
+        <!-- Google Animated Loading Line -->
+        <div class="google-loader-line" id="google-loader"></div>
+
+        <!-- Google Header -->
+        <div class="google-screen-header">
+          <button type="button" class="google-back-btn" onclick="switchAuthView('login')" title="Back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="google-brand-logo" style="display: flex; justify-content: center; margin-bottom: 8px;">
+            <svg width="74" height="24" viewBox="0 0 74 24">
+              <path fill="#4285F4" d="M9.24 18.28c-5.1 0-9.24-4.14-9.24-9.24S4.14-.2 9.24-.2c2.81 0 4.81 1.11 6.32 2.54l-1.78 1.78c-1.07-1.01-2.52-1.78-4.54-1.78-4.18 0-7.48 3.39-7.48 7.57s3.3 7.57 7.48 7.57c2.72 0 4.27-1.09 5.26-2.08.73-.73 1.21-1.78 1.4-3.23H9.24V9.89h8.84c.08.47.14.99.14 1.58 0 1.88-.51 4.23-2.18 5.89-1.63 1.69-3.72 2.59-6.8 2.59z"/>
+              <path fill="#EA4335" d="M25.4 6.32v11.63h-2.5V6.32h2.5z"/>
+              <path fill="#FBBC05" d="M34.2 12.14c0 3.51-2.73 6.14-6.07 6.14-3.34 0-6.07-2.63-6.07-6.14s2.73-6.14 6.07-6.14c3.34 0 6.07 2.63 6.07 6.14zm-2.48 0c0-2.31-1.66-3.89-3.59-3.89s-3.59 1.58-3.59 3.89c0 2.29 1.66 3.89 3.59 3.89s3.59-1.6 3.59-3.89z"/>
+              <path fill="#4285F4" d="M47.4 12.14c0 3.51-2.73 6.14-6.07 6.14-3.34 0-6.07-2.63-6.07-6.14s2.73-6.14 6.07-6.14c3.34 0 6.07 2.63 6.07 6.14zm-2.48 0c0-2.31-1.66-3.89-3.59-3.89s-3.59 1.58-3.59 3.89c0 2.29 1.66 3.89 3.59 3.89s3.59-1.6 3.59-3.89z"/>
+              <path fill="#34A853" d="M59.4 6.32v10.98c0 4.51-2.65 6.36-5.8 6.36-2.96 0-4.74-1.99-5.41-3.61l2.18-.91c.39.93 1.36 2.02 3.23 2.02 2.11 0 3.42-1.31 3.42-3.76v-.93h-.09c-.63.77-1.84 1.45-3.37 1.45-3.21 0-6.14-2.8-6.14-6.25 0-3.49 2.93-6.29 6.14-6.29 1.53 0 2.74.68 3.37 1.43h.09V6.32h2.38zm-2.29 5.82c0-2.27-1.53-3.89-3.46-3.89-1.97 0-3.46 1.62-3.46 3.89 0 2.25 1.49 3.89 3.46 3.89 1.93 0 3.46-1.64 3.46-3.89z"/>
+              <path fill="#EA4335" d="M66.4 16.5c-2.48 0-4.21-1.13-5.35-2.75l7.55-3.13-.26-.64c-.47-1.28-1.93-3.66-4.9-3.66-2.95 0-5.41 2.33-5.41 6.14 0 3.47 2.44 6.14 5.95 6.14 2.83 0 4.47-1.74 5.15-2.75l-2.11-1.41c-.69.99-1.63 1.76-2.62 1.76zm-.45-8.23c1.01 0 1.86.51 2.14 1.26l-5.12 2.14c0-2.46 1.75-3.4 2.98-3.4z"/>
+            </svg>
+          </div>
+          <h3 class="google-main-title">Sign in with Google</h3>
+          <p class="google-sub-text">
+            Choose an account<br>
+            <span style="font-size: 13px; color: #94a3b8;">to continue to <strong>Trendusty Orbit</strong></span>
+          </p>
+        </div>
+
+        <!-- Google Accounts Selector List -->
+        <div class="google-accounts-box">
+          <!-- Target Account: amoghpro7473 -->
+          <div class="google-account-row" onclick="selectGoogleAccount('amoghpro7473', 'amoghpro7473@gmail.com')">
+            <div class="google-avatar-circle">
+              <span>A</span>
+            </div>
+            <div class="google-account-info">
+              <div class="google-account-name">amoghpro7473</div>
+              <div class="google-account-email">amoghpro7473@gmail.com</div>
+            </div>
+            <div class="google-row-check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f5b8" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+          </div>
+
+          <!-- Use Another Account Option -->
+          <div class="google-account-row google-account-other" onclick="handleOtherGoogleAccount()">
+            <div class="google-avatar-circle google-avatar-neutral">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <div class="google-account-info">
+              <div class="google-account-name" style="font-weight: 500; color: #cbd5e1;">Use another account</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer & Terms -->
+        <div class="google-disclaimer-box">
+          <p>Before using this app, you can review Trendusty Orbit’s <a href="#" target="_blank">Privacy Policy</a> and <a href="#" target="_blank">Terms of Service</a>.</p>
+        </div>
+
+        <!-- Google Footer -->
+        <div class="google-screen-footer">
+          <div class="google-lang-select">
+            <span>English (United States)</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="google-footer-links">
+            <a href="https://support.google.com/accounts?hl=en" target="_blank" rel="noopener noreferrer">Help</a>
+            <a href="https://accounts.google.com/TOS?loc=IN&hl=en&privacy=true" target="_blank" rel="noopener noreferrer">Privacy</a>
+            <a href="https://accounts.google.com/TOS?loc=IN&hl=en" target="_blank" rel="noopener noreferrer">Terms</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
