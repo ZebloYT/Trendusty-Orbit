@@ -28,20 +28,36 @@ if sys.platform == 'win32':
 PORT = 3000
 WEB_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Auto-detect real server directory (Windows desktop or local server_data folder)
-DEFAULT_WIN_DIR = r"C:\Users\Admin\Desktop\Sky Heaven MC"
-LOCAL_SERVER_DIR = os.path.join(WEB_DIR, "server_data")
+# Auto-detect real server directory (Windows desktop, WSL mount, or local server_data folder)
+def find_best_server_dir():
+    env_dir = os.environ.get("ECHONODE_SERVER_DIR")
+    if env_dir and os.path.exists(env_dir):
+        return os.path.abspath(env_dir)
 
-if os.path.exists(DEFAULT_WIN_DIR):
-    SERVER_DIR = DEFAULT_WIN_DIR
-elif os.path.exists(LOCAL_SERVER_DIR):
-    SERVER_DIR = LOCAL_SERVER_DIR
-else:
-    try:
-        os.makedirs(LOCAL_SERVER_DIR, exist_ok=True)
-        SERVER_DIR = LOCAL_SERVER_DIR
-    except Exception:
-        SERVER_DIR = WEB_DIR
+    candidates = [
+        r"C:\Users\Admin\Desktop\Sky Heaven MC",
+        "/mnt/c/Users/Admin/Desktop/Sky Heaven MC",
+        r"C:\Users\Admin\Desktop\EchoCraft Server",
+        "/mnt/c/Users/Admin/Desktop/EchoCraft Server",
+        os.path.join(WEB_DIR, "server_data"),
+        os.path.join(os.path.dirname(WEB_DIR), "server_data"),
+        WEB_DIR
+    ]
+    # Check for folder with existing paper.jar or world folder first (real user data)
+    for c in candidates:
+        if c and os.path.exists(c):
+            if os.path.exists(os.path.join(c, "paper.jar")) or os.path.exists(os.path.join(c, "world")):
+                return os.path.abspath(c)
+    # Check for any valid existing folder
+    for c in candidates:
+        if c and os.path.exists(c):
+            return os.path.abspath(c)
+
+    fallback = os.path.join(WEB_DIR, "server_data")
+    os.makedirs(fallback, exist_ok=True)
+    return os.path.abspath(fallback)
+
+SERVER_DIR = find_best_server_dir()
 
 # ============================================================================
 # CROSS-PLATFORM MEMORY & NETWORK HELPERS
@@ -187,24 +203,88 @@ class MinecraftServerController:
         self.tcp_sock = None
         self.tcp_thread = None
         self.real_network = None
+        self.auto_restart = True  # Real 24/7 continuous local auto-restart
+        self.is_manual_stop = False
 
     def get_java_path(self):
-        jdk25 = os.path.join(self.server_dir, "Java", "jdk-25.0.4.1+1", "bin", "java.exe" if sys.platform == "win32" else "java")
-        if os.path.exists(jdk25):
-            return jdk25
-        alt1 = os.path.join(self.server_dir, "Java", "bin", "java.exe" if sys.platform == "win32" else "java")
-        if os.path.exists(alt1):
-            return alt1
-        import shutil
-        sys_j = shutil.which("java") or shutil.which("java.exe")
-        if sys_j:
-            return sys_j
+        # 1. Environment variable
         j_home = os.environ.get("JAVA_HOME")
         if j_home:
             j_bin = os.path.join(j_home, "bin", "java.exe" if sys.platform == "win32" else "java")
             if os.path.exists(j_bin):
                 return j_bin
-        return "java"
+
+        # 2. Bundled Java in server directory
+        local_candidates = [
+            os.path.join(self.server_dir, "Java", "jdk-25.0.4.1+1", "bin", "java.exe" if sys.platform == "win32" else "java"),
+            os.path.join(self.server_dir, "Java", "bin", "java.exe" if sys.platform == "win32" else "java"),
+        ]
+        for lc in local_candidates:
+            if os.path.exists(lc):
+                return lc
+
+        # 3. Check known verified Java installations on Windows / WSL
+        known_candidates = [
+            r"C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot\bin\java.exe",
+            "/mnt/c/Program Files/Eclipse Adoptium/jdk-21.0.12.101-hotspot/bin/java.exe",
+            r"C:\Program Files\Microsoft\jdk-17.0.20.8-hotspot\bin\java.exe",
+            "/mnt/c/Program Files/Microsoft/jdk-17.0.20.8-hotspot/bin/java.exe",
+            r"C:\Users\Admin\Desktop\EchoCraft Server\Java\jdk-25.0.4.1+1\bin\java.exe",
+            "/mnt/c/Users/Admin/Desktop/EchoCraft Server/Java/jdk-25.0.4.1+1/bin/java.exe",
+            "/usr/bin/java"
+        ]
+        for kc in known_candidates:
+            if os.path.exists(kc):
+                return kc
+
+        # 4. Check system PATH
+        sys_j = shutil.which("java.exe" if sys.platform == "win32" else "java") or shutil.which("java")
+        if sys_j:
+            return sys_j
+
+        return "java.exe" if sys.platform == "win32" else "java"
+
+    def ensure_paper_jar(self):
+        """Ensures paper.jar exists with full data; auto-copies or auto-downloads if missing."""
+        paper_jar = os.path.join(self.server_dir, "paper.jar")
+        if os.path.exists(paper_jar) and os.path.getsize(paper_jar) > 10000000:
+            return paper_jar
+
+        # Check local desktop folders first
+        candidate_jars = [
+            r"C:\Users\Admin\Desktop\Sky Heaven MC\paper.jar",
+            "/mnt/c/Users/Admin/Desktop/Sky Heaven MC/paper.jar",
+            r"C:\Users\Admin\Desktop\EchoCraft Server\paper.jar",
+            "/mnt/c/Users/Admin/Desktop/EchoCraft Server/paper.jar"
+        ]
+        for cj in candidate_jars:
+            if os.path.exists(cj) and os.path.getsize(cj) > 10000000:
+                try:
+                    self.append_log(f"[EchoNode] Copying verified Paper core from {cj}...", "system")
+                    shutil.copy2(cj, paper_jar)
+                    return paper_jar
+                except Exception as e:
+                    self.append_log(f"[EchoNode] Could not copy local paper.jar: {e}", "warn")
+
+        # Auto-download PaperMC 1.20.4 or Purpur 1.20.6
+        self.append_log("[EchoNode] paper.jar not found. Auto-downloading Paper Server Core...", "system")
+        urls = [
+            "https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/499/downloads/paper-1.20.4-499.jar",
+            "https://api.purpurmc.org/v2/purpur/1.20.6/latest/download"
+        ]
+        for u in urls:
+            try:
+                self.append_log(f"[EchoNode] Fetching server core from {u}...", "info")
+                req = urllib.request.Request(u, headers={"User-Agent": "EchoNode/1.0"})
+                with urllib.request.urlopen(req, timeout=90) as resp, open(paper_jar, "wb") as out:
+                    shutil.copyfileobj(resp, out)
+                if os.path.exists(paper_jar) and os.path.getsize(paper_jar) > 10000000:
+                    self.append_log("[EchoNode] Paper server core successfully downloaded!", "success")
+                    return paper_jar
+            except Exception as e:
+                self.append_log(f"[EchoNode] Download attempt error: {e}", "warn")
+
+        return paper_jar if os.path.exists(paper_jar) else None
 
     def append_log(self, text, log_type="info"):
         with self.lock:
@@ -367,10 +447,22 @@ class MinecraftServerController:
             self.player_count = 0
             self.append_log("[EchoNode] Minecraft server process has stopped.", "system")
 
+            # 24/7 Continuous Local Auto-Restart Engine
+            if self.auto_restart and not self.is_manual_stop:
+                self.append_log("[EchoNode 24/7] ⚡ Server process exited! Auto-restarting in 5 seconds for continuous 24/7 uptime...", "warn")
+                def _auto_reboot():
+                    time.sleep(5)
+                    if not self.is_manual_stop and self.status == "offline":
+                        self.append_log("[EchoNode 24/7] ⚡ Rebooting Minecraft server now...", "system")
+                        self.start()
+                threading.Thread(target=_auto_reboot, daemon=True).start()
+
     def start(self):
         with self.lock:
             if (self.process and self.process.poll() is None) or self.status in ("starting", "online"):
                 return {"success": False, "message": "Server is already running!"}
+
+            self.is_manual_stop = False
 
             # Ensure eula.txt
             try:
@@ -380,60 +472,73 @@ class MinecraftServerController:
             except Exception:
                 pass
 
+            # Ensure server.properties exists
+            try:
+                props_file = os.path.join(self.server_dir, "server.properties")
+                if not os.path.exists(props_file):
+                    with open(props_file, "w", encoding="utf-8") as f:
+                        f.write("server-port=25565\ngamemode=survival\ndifficulty=normal\npvp=true\nonline-mode=false\nmax-players=50\nmotd=\\u00A7b\\u00A7l✦ EchoNode Minecraft Server\n")
+            except Exception:
+                pass
+
             net = get_real_network_info()
             self.real_network = net
             self.append_log(f"[EchoNode Network] Discovering real network interfaces...", "system")
             self.append_log(f"[EchoNode Network] 🌐 REAL PUBLIC IP: {net['publicServerIp']} (Global Direct Connect)", "success")
             self.append_log(f"[EchoNode Network] 🏠 LOCAL LAN IP: {net['lanServerIp']} (Wi-Fi / Local Network)", "info")
 
+            # Ensure paper.jar exists with all real data
+            paper_jar = self.ensure_paper_jar()
+            if not paper_jar or not os.path.exists(paper_jar):
+                self.status = "offline"
+                err_msg = "Paper server core (paper.jar) could not be found or downloaded. Please ensure paper.jar exists in the server directory."
+                self.append_log(f"[EchoNode Error] {err_msg}", "error")
+                return {"success": False, "message": err_msg}
+
             java_exe = self.get_java_path()
-            paper_jar = os.path.join(self.server_dir, "paper.jar")
+            self.append_log(f"[EchoNode] Using Java binary: {java_exe}", "info")
+            self.append_log(f"[EchoNode] Server directory: {self.server_dir}", "info")
 
-            # Check if real Java executable and paper.jar exist for full Java execution
-            if os.path.exists(paper_jar):
-                args = [
-                    java_exe,
-                    "-Xmx4G", "-Xms4G",
-                    "-XX:+UseG1GC",
-                    "-XX:+ParallelRefProcEnabled",
-                    "-XX:MaxGCPauseMillis=200",
-                    "-jar", "paper.jar",
-                    "--nogui"
-                ]
+            args = [
+                java_exe,
+                "-Xmx4G", "-Xms2G",
+                "-XX:+UseG1GC",
+                "-XX:+ParallelRefProcEnabled",
+                "-XX:MaxGCPauseMillis=200",
+                "-XX:+UnlockExperimentalVMOptions",
+                "-XX:+DisableExplicitGC",
+                "-jar", "paper.jar",
+                "--nogui"
+            ]
 
-                self.status = "starting"
-                self.start_time = time.time()
-                self.append_log(f"[EchoNode] Launching real Minecraft Server (Java Process): {java_exe}", "system")
-
-                try:
-                    self.process = subprocess.Popen(
-                        args,
-                        cwd=self.server_dir,
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        text=True,
-                        encoding='utf-8',
-                        errors='replace',
-                        bufsize=1
-                    )
-                    t = threading.Thread(target=self.reader_thread, args=(self.process,), daemon=True)
-                    t.start()
-                    return {"success": True, "status": "starting", "network": net}
-                except Exception as e:
-                    self.append_log(f"[EchoNode] Java execution notice ({e}). Starting Real TCP Protocol Listener...", "warn")
-
-            # Start real TCP Minecraft Protocol Listener on port 25565
-            self.status = "online"
+            self.status = "starting"
             self.start_time = time.time()
-            self.start_tcp_listener()
-            self.append_log("[EchoNode Network] Binding real TCP socket to 0.0.0.0:25565...", "system")
-            self.append_log(f"[EchoNode Network] 🌐 Server listening on REAL IP: {net['publicServerIp']}", "success")
-            self.append_log("[EchoNode Network] Real Minecraft SLP ping responder online. Ready for connections!", "success")
-            return {"success": True, "status": "online", "network": net}
+            self.append_log(f"[EchoNode] Launching real Minecraft Server (Java Process)...", "system")
+
+            try:
+                self.process = subprocess.Popen(
+                    args,
+                    cwd=self.server_dir,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    encoding='utf-8',
+                    errors='replace',
+                    bufsize=1
+                )
+                t = threading.Thread(target=self.reader_thread, args=(self.process,), daemon=True)
+                t.start()
+                return {"success": True, "status": "starting", "network": net, "serverDir": self.server_dir, "java": java_exe}
+            except Exception as e:
+                self.status = "offline"
+                err_msg = f"Failed to execute Java process ({e}). Please verify Java 21 or Java 17 is installed."
+                self.append_log(f"[EchoNode Error] {err_msg}", "error")
+                return {"success": False, "message": err_msg}
 
     def stop(self):
         with self.lock:
+            self.is_manual_stop = True
             if not self.process and self.status == "offline" and not self.tcp_sock:
                 self.status = "offline"
                 return {"success": True, "message": "Server is already offline."}

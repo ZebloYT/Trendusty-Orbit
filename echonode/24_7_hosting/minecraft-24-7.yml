@@ -1,0 +1,85 @@
+name: EchoNode 24-7 Cloud Server
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+  schedule:
+    # Run every 5 hours to stay within the 6-hour free GitHub Actions runner limit
+    - cron: '0 */5 * * *'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  run-server:
+    name: 24/7 Cloud Minecraft Runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Java 21 LTS
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Ensure Paper / Purpur Server Core
+        run: |
+          if [ ! -f "paper.jar" ] || [ $(wc -c < "paper.jar") -lt 10000000 ]; then
+            echo "[EchoNode] Downloading Purpur Server Core..."
+            curl -sSL -o paper.jar https://api.purpurmc.org/v2/purpur/1.20.6/latest/download || \
+            curl -sSL -o paper.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/499/downloads/paper-1.20.4-499.jar
+          fi
+          chmod +x paper.jar
+          echo "eula=true" > eula.txt
+
+      - name: Launch 24/7 Cloud Server & Playit Tunnel
+        run: |
+          echo "=========================================================="
+          echo "   EchoNode Cloud Server Running on GitHub Actions 24/7"
+          echo "=========================================================="
+          
+          # 1. Download & Launch playit.gg tunnel in background
+          echo "[EchoNode] Downloading playit tunnel agent..."
+          sudo curl -sSL -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64
+          sudo chmod +x /usr/local/bin/playit
+          
+          echo "[EchoNode] Starting playit tunnel daemon..."
+          /usr/local/bin/playit --secret "${{ secrets.PLAYIT_SECRET || 'ff4c67252a6366cf64a4a32e19be955cfd6dcaa441dc95a83da67c63d7b1dbdf' }}" > playit.log 2>&1 &
+          PLAYIT_PID=$!
+          sleep 4
+          cat playit.log || true
+
+          # 2. Keep stdin open using tail -f /dev/null to prevent headless EOF shutdown
+          # Limit heap to -Xmx5G -Xms2G to prevent GitHub runner 7GB OOM kill
+          echo "[EchoNode] Launching Minecraft Server engine..."
+          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -jar paper.jar --nogui
+
+          # Clean up tunnel when server shuts down
+          kill $PLAYIT_PID 2>/dev/null || true
+
+      - name: Auto-Save World Data
+        if: always()
+        run: |
+          git config --global user.name "echonode-bot"
+          git config --global user.email "echonode-bot@users.noreply.github.com"
+          git add world world_nether world_the_end plugins/Essentials/userdata plugins/SkyHeavenCapes 2>/dev/null || true
+          git commit -m "Auto-saved server state" 2>/dev/null || echo "No changes to save"
+          git push origin HEAD:${{ github.ref_name }} 2>/dev/null || echo "Push skipped"
+
+      - name: Auto-Loop Runner for Continuous 24/7 Uptime
+        if: always()
+        run: |
+          echo "Triggering next 24/7 runner lifecycle..."
+          curl -s -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.AUTO_RESTART_PAT || secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/minecraft-24-7.yml/dispatches \
+            -d '{"ref":"${{ github.ref_name }}"}' || true

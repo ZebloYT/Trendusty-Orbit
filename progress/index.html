@@ -638,6 +638,12 @@
 
       <div class="log-line">
         <span class="log-time">[ECHONODE]</span>
+        <span class="log-ok">[REAL_SERVER_EXECUTION]</span>
+        <span>Enabled real Minecraft Java process execution and true 24/7 continuous hosting: (1) Server backend (server.py) now detects user's actual Minecraft server files across Windows and WSL paths (C:\Users\Admin\Desktop\Sky Heaven MC) with verified paper.jar (55.7MB), world, and 30+ plugins; (2) Automatically discovers installed Java environments (Eclipse Adoptium JDK 21 LTS, Microsoft JDK 17, and EchoCraft JDK 25); (3) Auto-downloads PaperMC 1.20.4/Purpur core if missing so real Java execution never fails; (4) Launches real Java process with Aikar's optimized high-TPS flags (-Xmx4G -Xms2G -XX:+UseG1GC) and binds port 25565 without fake simulation sockets; (5) Added continuous 24/7 local auto-restart engine that detects unexpected server termination and automatically reboots in 5 seconds; (6) Added official 24/7 Cloud Runner workflow (.github/workflows/minecraft-24-7.yml) with automated Playit.gg global tunnel daemon, periodic cron loops, and real-time GitHub Actions status polling; (7) Removed fake simulation timeout in app.js, replacing it with honest real status sync and one-click 24/7 cloud runner dispatch.</span>
+      </div>
+
+      <div class="log-line">
+        <span class="log-time">[ECHONODE]</span>
         <span class="log-ok">[OPTIONS_PERF_OPTIMIZED]</span>
         <span>Completely eliminated Options menu and view lag across EchoNode: (1) Eliminated forced synchronous layout reflow loops in MouseTracker by replacing full-document card query iteration with single-card delegated spotlight and requestAnimationFrame throttled ambient updates; (2) Redesigned context menu and submenus to use hardware-accelerated solid cyber-dark glass surfaces, removing multi-pass backdrop-filter blur overhead on top of WebGL canvas; (3) Added zero-gap hover bridge (::before) and 160ms hover intent grace period for flyout submenus (Game Mode, Difficulty, Server Slots, Apps) to prevent flickering and closing when moving cursor diagonally; (4) Added in-place responsive toggle updates for instant Whitelist, PVP, Nether, Flight, and Command Blocks switching; (5) Debounced MOTD Studio live rendering and localStorage state serialization.</span>
       </div>

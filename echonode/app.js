@@ -2654,10 +2654,10 @@ class EchoNodeApp {
         this.updateServerStatusUI("offline");
         this.setMetricsOffline();
         this.appendLog("error", `[EchoNode] Launch failed: ${data.message || 'Unknown error'}`);
-        this.showToast(`Launch failed: ${data.message}`, "warning");
+        this.showToast(`Launch failed: ${data.message}`, "error");
       } else {
-        this.isSimulatedOnline = true;
-        this.updateServerStatusUI("online");
+        this.isSimulatedOnline = false;
+        this.updateServerStatusUI(data.status || "starting");
         if (data.network) {
           this.realPublicIp = data.network.publicIp;
           this.realLanIp = data.network.lanIp;
@@ -2667,45 +2667,124 @@ class EchoNodeApp {
           }
           this.syncNetworkUI();
         }
-        this.showToast(`Server started on Real IP: ${store.data.serverIp}!`, "success");
-        this.appendLog("success", `[EchoNode Network] Real Minecraft Server listening on ${store.data.serverIp}!`);
-        this.appendLog("info", `[EchoNode] Connect with Minecraft Java client at ${store.data.serverIp}`);
+        this.showToast("Real Minecraft Server process launched! Starting up...", "info");
+        this.appendLog("system", `[EchoNode] Real Minecraft Java process started in: ${data.serverDir || 'server folder'}`);
+        this.appendLog("info", `[EchoNode] Java Binary: ${data.java || 'java'}`);
+        this.appendLog("info", `[EchoNode] Waiting for Paper server core initialization to complete...`);
       }
     } catch (err) {
-      // Standalone simulation mode
-      setTimeout(() => {
-        this.isSimulatedOnline = true;
-        this.updateServerStatusUI("online");
-        store.data.status = "online";
-        store.data.ramUsage = 1.8;
-        store.data.tps = 20.0;
-        store.save();
-        this.appendLog("system", `[Server] Done! For help, type "help"`);
-        this.appendLog("success", `[EchoNode Network] Server listening on REAL IP: ${currentIp}`);
-        this.appendLog("info", `[EchoNode Network] Direct Connection Ready! Share this IP with your friends!`);
-        this.showToast(`Server online! Real IP: ${currentIp}`, "success");
+      this.isSimulatedOnline = false;
+      this.updateServerStatusUI("offline");
+      this.setMetricsOffline();
 
-        const ramVal = document.getElementById("val-ram-usage");
-        if (ramVal) ramVal.textContent = "1.8 GB / 4.0 GB";
-        const ramBar = document.getElementById("bar-ram-fill");
-        if (ramBar) ramBar.style.width = "45%";
-        const ramLive = document.getElementById("metric-ram-live");
-        if (ramLive) ramLive.textContent = "1.8 / 4.0 GB";
-        const cpuLive = document.getElementById("metric-cpu-live");
-        if (cpuLive) cpuLive.textContent = "12%";
-        const tpsLive = document.getElementById("metric-tps-live");
-        if (tpsLive) tpsLive.textContent = "20.0 TPS (11ms)";
-        const topTps = document.getElementById("top-stat-tps");
-        if (topTps) topTps.innerHTML = '<span>TPS</span> 20.0';
-        const topPing = document.getElementById("top-stat-ping");
-        if (topPing) topPing.innerHTML = '<span>PING</span> 12ms';
-        const badgeTps = document.getElementById("badge-tps");
-        if (badgeTps) {
-          badgeTps.textContent = "20.0 TPS";
-          badgeTps.className = "nav-badge-pill highlight";
-        }
-      }, 1400);
+      // Check if 24/7 Cloud Host is configured on GitHub Actions
+      const hasCloudRepo = Boolean(store.data.githubRepo && store.data.githubToken);
+      if (hasCloudRepo) {
+        this.appendLog("warn", "[EchoNode] Local backend server (server.py) is not running on this machine.");
+        this.appendLog("system", "[EchoNode 24/7] Auto-dispatching 24/7 Cloud Runner on GitHub Actions...");
+        this.showToast("Local backend offline. Launching 24/7 Cloud Server on GitHub...", "info");
+        this.dispatchGitHub247CloudRunner();
+      } else {
+        this.appendLog("warn", "[EchoNode] Real Server Execution Notice: Local backend server (server.py) is not running.");
+        this.appendLog("info", "▶ Local PC Server: Double-click 'start_web_server.bat' in your EchoNode folder to start your real Java server with full console.");
+        this.appendLog("info", "▶ 24/7 Cloud Host: Go to '24/7 Hosting' tab to connect your GitHub repo and run Minecraft 24/7 in the cloud with Playit.gg tunnel.");
+        this.showToast("Local backend offline. Run start_web_server.bat or use 24/7 Cloud Hosting.", "warning");
+        this.promptRealServerExecution();
+      }
     }
+  }
+
+  async dispatchGitHub247CloudRunner() {
+    const rUrl = store.data.githubRepo || "";
+    const token = store.data.githubToken || "";
+    if (!rUrl || !token) {
+      this.switchTab("uptime");
+      this.showToast("Please enter your GitHub repository and token to enable 24/7 Cloud Hosting.", "info");
+      return false;
+    }
+    let owner = "", repo = "";
+    const m = rUrl.match(/github\.com[/:]([^/]+)\/([^/.]+)/);
+    if (m) {
+      owner = m[1].trim();
+      repo = m[2].trim().replace(/\.git$/, "");
+    } else {
+      const sm = rUrl.trim().match(/^([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)$/);
+      if (sm) {
+        owner = sm[1].trim();
+        repo = sm[2].trim().replace(/\.git$/, "");
+      }
+    }
+    if (!owner || !repo) {
+      this.switchTab("uptime");
+      return false;
+    }
+
+    this.appendLog("system", `[EchoNode 24/7] Dispatching real Minecraft 24/7 Cloud Runner on GitHub Actions (${owner}/${repo})...`);
+    this.showToast("Launching 24/7 Cloud Runner on GitHub Actions...", "info");
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/minecraft-24-7.yml/dispatches`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ref: "main" })
+      });
+      if (res.ok || res.status === 204) {
+        this.appendLog("success", `[EchoNode 24/7] 24/7 Cloud Runner workflow successfully dispatched on GitHub Actions!`);
+        this.showToast("24/7 Cloud Server is booting on GitHub Actions!", "success");
+        setTimeout(() => this.pollGitHubStatus(), 1500);
+        return true;
+      } else {
+        this.appendLog("info", "[EchoNode 24/7] Deploying 24/7 Cloud Runner workflow and files to GitHub repository...");
+        return await this.clientSideGitHubSync(rUrl, token, true);
+      }
+    } catch (e) {
+      this.appendLog("error", `[EchoNode 24/7] Dispatch notice: ${e.message}`);
+      return false;
+    }
+  }
+
+  promptRealServerExecution() {
+    const existing = document.getElementById("real-server-prompt-banner");
+    if (existing) existing.remove();
+
+    const banner = document.createElement("div");
+    banner.id = "real-server-prompt-banner";
+    banner.style.cssText = "position: fixed; bottom: 24px; right: 24px; z-index: 99999; background: #161722; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 12px; padding: 18px 22px; max-width: 440px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); color: #e2e8f0; font-family: inherit;";
+    banner.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">⚡</span>
+          <strong style="color: #60a5fa; font-size: 15px;">Start Real Minecraft Server</strong>
+        </div>
+        <button id="btn-close-real-prompt" style="background: transparent; border: none; color: #94a3b8; font-size: 18px; cursor: pointer;">&times;</button>
+      </div>
+      <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin: 0 0 14px 0;">
+        To run your real Minecraft server with all your worlds, plugins, and 24/7 uptime:
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <button id="btn-prompt-247" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between;">
+          <span>🌐 Run 24/7 in Cloud (GitHub Actions)</span>
+          <span>→</span>
+        </button>
+        <button id="btn-prompt-local" style="background: #212232; color: #cbd5e1; border: 1px solid #33364f; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; text-align: left;">
+          🖥️ Run Locally: double-click <strong>start_web_server.bat</strong> in EchoNode folder
+        </button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+    document.getElementById("btn-close-real-prompt").onclick = () => banner.remove();
+    document.getElementById("btn-prompt-247").onclick = () => {
+      banner.remove();
+      this.switchTab("uptime");
+    };
+    document.getElementById("btn-prompt-local").onclick = () => {
+      banner.remove();
+      this.showToast("Run start_web_server.bat in your EchoNode folder to start your real local server.", "info");
+    };
   }
 
   async stopServer() {
