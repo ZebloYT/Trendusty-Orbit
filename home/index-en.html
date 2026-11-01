@@ -1801,18 +1801,13 @@
     
 
       /* ==========================================================================
-       OTHER FEATURES & ECOSYSTEM APPS (RECTANGLE CARDS)
+       UNIFIED ECOSYSTEM & DOWNLOAD SETUP (BESIDE EACH OTHER IN SAME BG)
        ========================================================================== */
     .other-apps-section {
-      padding: 90px 0 70px;
+      padding: 80px 0 60px;
       position: relative;
     }
 
-    .other-apps-header {
-      margin-bottom: 32px;
-    }
-
-    /* Other Apps Showcase Section */
     .other-apps-section,
     .other-apps-section *,
     .app-rect-card,
@@ -1823,20 +1818,263 @@
       -ms-user-select: none !important;
     }
 
-    .apps-rect-container {
+    .unified-ecosystem-bg {
+      background: linear-gradient(155deg, rgba(12, 19, 32, 0.94) 0%, rgba(6, 10, 18, 0.98) 100%);
+      border: 1px solid rgba(0, 245, 184, 0.24);
+      border-radius: 28px;
+      padding: 44px 40px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 245, 184, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .unified-ecosystem-bg::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #00f5b8 0%, #38bdf8 50%, #a855f7 100%);
+      z-index: 2;
+    }
+
+    .unified-ecosystem-header {
+      margin-bottom: 34px;
+    }
+
+    .unified-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .unified-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 245, 184, 0.1);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    .unified-ecosystem-grid {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    /* Left Column: Download Setup Card */
+    .ecosystem-download-card {
+      background: linear-gradient(160deg, rgba(16, 26, 44, 0.95), rgba(7, 12, 22, 0.98));
+      border: 1px solid rgba(0, 245, 184, 0.32);
+      border-radius: 22px;
+      padding: 32px 28px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 0 35px rgba(0, 245, 184, 0.05);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .ecosystem-download-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #00f5b8, #38bdf8);
+      z-index: 2;
+    }
+
+    .ecosystem-download-card:hover {
+      border-color: rgba(0, 245, 184, 0.65);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 45px rgba(0, 245, 184, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .dl-card-icon-wrap {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      background: #091322;
+      border: 1px solid rgba(0, 245, 184, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0, 245, 184, 0.2);
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .dl-card-icon-wrap img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .dl-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 245, 184, 0.15);
+      border: 1px solid rgba(0, 245, 184, 0.4);
+      color: #00f5b8;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+
+    .dl-card-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 6px 0;
+      letter-spacing: -0.3px;
+    }
+
+    .dl-card-meta {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .dl-card-meta span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .dl-card-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    .dl-master-btn {
+      display: block;
+      width: 100%;
+      background: #00f5b8;
+      color: #030508;
+      text-decoration: none;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 15px;
+      text-align: center;
+      letter-spacing: 0.2px;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 25px rgba(0, 245, 184, 0.35);
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .dl-master-btn:hover {
+      background: #38bdf8;
+      color: #030508;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.5);
+    }
+
+    .dl-sub-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .dl-sub-btn {
+      flex: 1;
+      min-width: 100px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .dl-sub-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(0, 245, 184, 0.1);
+    }
+
+    .dl-card-checksum {
+      background: rgba(3, 5, 8, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .dl-card-checksum span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text-dim);
+    }
+
+    .dl-card-features {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid rgba(0, 245, 184, 0.15);
+      padding-top: 18px;
+    }
+
+    .dl-card-feat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .dl-card-feat-item span.icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Right Column: Other Features & Apps */
+    .ecosystem-companion-apps {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .app-rect-card {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 240px 1fr;
       background: linear-gradient(145deg, rgba(13, 20, 32, 0.95), rgba(7, 11, 18, 0.98));
       border: 1px solid rgba(0, 245, 184, 0.22);
-      border-radius: 22px;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 245, 184, 0.06);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 245, 184, 0.05);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       cursor: pointer;
@@ -1854,8 +2092,8 @@
 
     .app-rect-card:hover {
       border-color: rgba(0, 245, 184, 0.55);
-      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75), 0 0 50px rgba(0, 245, 184, 0.2);
-      transform: translateY(-4px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 45px rgba(0, 245, 184, 0.2);
+      transform: translateY(-3px);
     }
 
     .app-rect-card:hover .app-launch-btn {
@@ -1872,15 +2110,15 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      min-height: 280px;
-      padding: 24px;
+      min-height: 220px;
+      padding: 20px;
       border-right: 1px solid rgba(0, 245, 184, 0.14);
     }
 
     .app-rect-logo-img {
       width: 100%;
       height: 100%;
-      max-height: 340px;
+      max-height: 220px;
       object-fit: contain;
       object-position: center;
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1892,30 +2130,30 @@
 
     .app-rect-card:hover .app-rect-logo-img {
       transform: scale(1.04);
-      filter: drop-shadow(0 0 40px rgba(0, 245, 184, 0.7));
+      filter: drop-shadow(0 0 35px rgba(0, 245, 184, 0.7));
     }
 
     .app-rect-status-tag {
       position: absolute;
-      bottom: 14px;
-      left: 14px;
+      bottom: 12px;
+      left: 12px;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       background: rgba(3, 7, 18, 0.85);
       border: 1px solid rgba(0, 245, 184, 0.4);
       color: #00f5b8;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
-      padding: 5px 12px;
+      padding: 4px 10px;
       border-radius: 20px;
       backdrop-filter: blur(8px);
       letter-spacing: 0.5px;
     }
 
     .app-rect-details {
-      padding: 32px 36px;
+      padding: 24px 28px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1925,17 +2163,17 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 16px;
+      gap: 16px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
     }
 
     .app-rect-name {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 800;
       color: #ffffff;
-      letter-spacing: -0.4px;
-      margin: 8px 0 4px 0;
+      letter-spacing: -0.3px;
+      margin: 6px 0 3px 0;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -1944,7 +2182,7 @@
     .app-rect-tagline {
       color: var(--accent);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       margin: 0;
       letter-spacing: 0.3px;
@@ -1952,27 +2190,26 @@
 
     .app-rect-desc {
       color: var(--text-muted);
-      font-size: 14.5px;
-      line-height: 1.65;
-      margin: 0 0 20px 0;
-      max-width: 900px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      margin: 0 0 16px 0;
     }
 
     .app-rect-highlights {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
     }
 
     .highlight-chip {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       background: rgba(10, 16, 26, 0.7);
       border: 1px solid rgba(0, 245, 184, 0.12);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 12.5px;
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-size: 12px;
       color: var(--text);
       transition: all 0.2s ease;
     }
@@ -1989,7 +2226,7 @@
     }
 
     .chip-icon {
-      font-size: 16px;
+      font-size: 14px;
       flex-shrink: 0;
     }
 
@@ -2004,8 +2241,8 @@
 
     .app-rect-card-secondary:hover {
       border-color: rgba(56, 189, 248, 0.55);
-      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75), 0 0 50px rgba(56, 189, 248, 0.2);
-      transform: translateY(-4px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 45px rgba(56, 189, 248, 0.2);
+      transform: translateY(-3px);
     }
 
     .app-rect-card-secondary:hover .btn-outline {
@@ -2013,16 +2250,6 @@
       color: #07090e;
       box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
       transform: translateY(-2px);
-    }
-
-    .cursor-rect-preview-box {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at center, rgba(0, 245, 184, 0.15) 0%, rgba(3, 7, 18, 0.95) 70%);
-      position: relative;
     }
 
     .cursor-glow-ring {
@@ -2035,28 +2262,29 @@
       animation: blip 2s infinite ease-in-out;
     }
 
-    .cursor-rect-img {
-      width: 44px;
-      height: 44px;
-      position: relative;
-      z-index: 2;
-      filter: drop-shadow(0 0 10px rgba(0, 245, 184, 0.6));
+    @media (max-width: 1180px) {
+      .unified-ecosystem-grid {
+        grid-template-columns: 1fr;
+      }
+      .unified-ecosystem-bg {
+        padding: 32px 24px;
+      }
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 850px) {
       .app-rect-card, .app-rect-card-secondary {
         grid-template-columns: 1fr;
       }
       .app-rect-media {
-        min-height: 200px;
+        min-height: 180px;
         border-right: none;
         border-bottom: 1px solid rgba(0, 245, 184, 0.12);
       }
       .app-rect-details {
-        padding: 24px;
+        padding: 20px;
       }
       .app-rect-name {
-        font-size: 20px;
+        font-size: 18px;
       }
     }
   </style>
@@ -2673,122 +2901,197 @@
   </section>
 
   
-  <!-- Other Features & Ecosystem Applications -->
-    <!-- Other Features & Cloud Ecosystem Applications -->
+  <!-- Download Setup & Sovereign Ecosystem Applications (Unified Section) -->
   <section class="other-apps-section reveal-on-scroll" id="other-apps">
-    <div class="container">
-      <div class="other-apps-header">
-        <span class="section-tag">// Sovereign Cloud Ecosystem</span>
-        <h2 class="section-title">Other Features &amp; Cloud Applications</h2>
-        <p class="section-desc">Explore companion platforms, dedicated cloud server management suites, and specialized toolchains developed for seamless operational deployments.</p>
-      </div>
-
-      <div class="apps-rect-container">
-
-        <!-- Primary Featured App: EchoNode 24/7 Minecraft Cloud Manager -->
-        <a href="../echonode/" target="_blank" rel="noopener noreferrer" class="app-rect-card" title="Click anywhere to launch EchoNode Web in a new tab">
-          <div class="app-rect-media">
-            <div class="cursor-glow-ring" style="width: 180px; height: 180px; border-color: rgba(0, 245, 184, 0.3); box-shadow: 0 0 45px rgba(0, 245, 184, 0.25); position: absolute; pointer-events: none;"></div>
-            <img src="../assets/echonode-logo.jpg" alt="EchoNode — 24/7 Minecraft Hosting" class="app-rect-logo-img">
-            <div class="app-rect-status-tag">
-              <span class="badge-dot-live"></span> 24/7 LIVE CLOUD HOST
+    <div class="container" style="max-width: 1260px;">
+      <div class="unified-ecosystem-bg">
+        <div class="unified-ecosystem-header">
+          <div class="unified-header-top">
+            <span class="section-tag">// Sovereign Ecosystem &amp; Standalone Client</span>
+            <div class="unified-status-pill">
+              <span class="status-pulse-dot" style="margin: 0; width: 8px; height: 8px;"></span>
+              <span>UNIFIED DESKTOP &amp; CLOUD DEPLOYMENTS</span>
             </div>
           </div>
-          <div class="app-rect-details">
-            <div class="app-rect-top-row">
-              <div>
-                <div class="app-badges">
-                  <span class="app-badge app-badge-status">3D WebGL</span>
-                  <span class="app-badge app-badge-webgl">Paper 1.20+</span>
-                  <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">playit.gg Tunnel</span>
-                  <span class="app-badge" style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.35); color: #4ade80;">TPS 20.0</span>
+          <h2 class="section-title">Download Setup &amp; Other Features &amp; Apps</h2>
+          <p class="section-desc">Deploy the full-featured Windows desktop client or launch companion sovereign cloud management suites and retro toolchains &mdash; all built under one zero-telemetry, offline-capable architecture.</p>
+        </div>
+
+        <div class="unified-ecosystem-grid">
+          <!-- Column 1: Download Setup Card -->
+          <div class="ecosystem-download-card">
+            <div>
+              <div class="dl-card-badge">
+                <span class="badge-dot-live"></span> STANDALONE WINDOWS SETUP
+              </div>
+
+              <div class="dl-card-icon-wrap">
+                <div class="cursor-glow-ring" style="width: 100px; height: 100px; border-color: rgba(0, 245, 184, 0.4); box-shadow: 0 0 30px rgba(0, 245, 184, 0.25);"></div>
+                <img src="../favicon.ico" alt="Trendusty Orbit Logo">
+              </div>
+
+              <h3 class="dl-card-title">Trendusty Orbit Desktop Setup</h3>
+              <div class="dl-card-meta">
+                WINDOWS 10 / 11 (64-BIT) &middot; VERSION <span>2.0.0</span> &middot; SIZE <span>365 KB</span>
+              </div>
+
+              <p class="dl-card-desc">
+                Deploy the complete Common Operating Picture (COP) directly to your Windows workstation. Fuses live global aviation, maritime AIS, satellite ephemeris, CCTV, and cyber intelligence into one ultra-fast, offline-cached environment with zero telemetry leakage.
+              </p>
+
+              <!-- Primary Executable Download Button -->
+              <a href="../windows/Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="dl-master-btn" id="home-dl-btn" title="Download Trendusty-Orbit-Setup.exe">
+                <span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download Orbit Setup (.exe)
+                </span>
+                <small style="display: block; font-size: 11px; font-weight: 500; opacity: 0.85; margin-top: 3px;">Standalone Windows Setup &bull; Auto Desktop Shortcuts</small>
+              </a>
+
+              <!-- Secondary Download Buttons -->
+              <div class="dl-sub-buttons">
+                <a href="../windows/Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="dl-sub-btn" title="Direct Mirror Download">
+                  Mirror Link
+                </a>
+                <a href="../Install%20Trendusty%20Orbit.bat" download class="dl-sub-btn" title="Batch Script Setup">
+                  Batch (.bat)
+                </a>
+                <a href="../windows/download" target="_blank" class="dl-sub-btn" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;" title="Full Windows Download Hub">
+                  Setup Hub ↗
+                </a>
+              </div>
+
+              <!-- SHA-256 Checksum -->
+              <div class="dl-card-checksum">
+                <span><strong>SHA256:</strong> 98bc32ef...408b432d</span>
+                <button type="button" class="copy-btn" onclick="copyOrbitHash(this)" style="background: rgba(0, 245, 184, 0.15); border: 1px solid rgba(0, 245, 184, 0.4); color: #00f5b8; padding: 4px 9px; border-radius: 4px; font-size: 10px; cursor: pointer; font-family: var(--font-mono); font-weight: 700;">COPY</button>
+              </div>
+            </div>
+
+            <div class="dl-card-features">
+              <div class="dl-card-feat-item">
+                <span class="icon">🔒</span>
+                <div><strong>Zero Telemetry Leakage:</strong> All searches, queries, and feeds remain 100% private and local.</div>
+              </div>
+              <div class="dl-card-feat-item">
+                <span class="icon">⚡</span>
+                <div><strong>DirectX / FXAA Engine:</strong> Smooth 60 FPS hardware-accelerated 3D geospatial rendering.</div>
+              </div>
+              <div class="dl-card-feat-item">
+                <span class="icon">📡</span>
+                <div><strong>Offline Ready:</strong> Pre-cached 60,000+ entity baseline for air-gapped field operations.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Other Features & Apps (EchoNode & Retrosmart) -->
+          <div class="ecosystem-companion-apps">
+            <!-- App 1: EchoNode Web -->
+            <a href="../echonode/" target="_blank" rel="noopener noreferrer" class="app-rect-card" title="Click anywhere to launch EchoNode Web in a new tab">
+              <div class="app-rect-media">
+                <div class="cursor-glow-ring" style="width: 140px; height: 140px; border-color: rgba(0, 245, 184, 0.3); box-shadow: 0 0 35px rgba(0, 245, 184, 0.25); position: absolute; pointer-events: none;"></div>
+                <img src="../assets/echonode-logo.jpg" alt="EchoNode — 24/7 Minecraft Hosting" class="app-rect-logo-img">
+                <div class="app-rect-status-tag">
+                  <span class="badge-dot-live"></span> 24/7 LIVE CLOUD HOST
                 </div>
-                <h3 class="app-rect-name">EchoNode Web &mdash; 24/7 Minecraft Cloud Manager</h3>
-                <p class="app-rect-tagline">Sovereign Cloud Server Infrastructure &bull; Continuous GitHub Actions CI/CD</p>
               </div>
-              <span class="btn app-launch-btn">
-                <span>Launch EchoNode Web ↗</span>
-              </span>
-            </div>
-
-            <p class="app-rect-desc">
-              A sovereign, full-featured Minecraft Cloud Server Management Suite featuring live terminal log streaming, interactive 3D WebGL background models, automated continuous 24/7 GitHub Actions CI/CD hosting with playit.gg tunneling, advanced MOTD typography designer, full multi-dimensional management, 33 plugins hub with Geyser Bedrock cross-play, and native Antigravity AI diagnostics.
-            </p>
-
-            <div class="app-rect-highlights">
-              <div class="highlight-chip">
-                <span class="chip-icon">💻</span>
-                <div class="chip-text"><strong>Server Console:</strong> Real-time CLI &amp; color log stream (/console)</div>
-              </div>
-              <div class="highlight-chip">
-                <span class="chip-icon">⚙️</span>
-                <div class="chip-text"><strong>MOTD Studio:</strong> §/&amp; codes, custom symbols &amp; gradients (/options)</div>
-              </div>
-              <div class="highlight-chip">
-                <span class="chip-icon">🧩</span>
-                <div class="chip-text"><strong>Plugins Hub:</strong> 33 plugins &amp; Geyser Bedrock cross-play (/plugins)</div>
-              </div>
-              <div class="highlight-chip">
-                <span class="chip-icon">📁</span>
-                <div class="chip-text"><strong>File Manager:</strong> In-browser root filesystem &amp; editor (/files)</div>
-              </div>
-              <div class="highlight-chip">
-                <span class="chip-icon">🧊</span>
-                <div class="chip-text"><strong>3D WebGL:</strong> Five animated floating voxel models + 3D stage</div>
-              </div>
-              <div class="highlight-chip">
-                <span class="chip-icon">⚡</span>
-                <div class="chip-text"><strong>24/7 CI/CD Host:</strong> Continuous GitHub Actions runner loop (/uptime)</div>
-              </div>
-            </div>
-          </div>
-        </a>
-
-        <!-- Secondary App: Retrosmart Xcursor Kits & Tactical Suite -->
-        <a href="../windows/cursor-download" target="_blank" rel="noopener noreferrer" class="app-rect-card app-rect-card-secondary" title="Click anywhere to explore 28 Cursor Kits">
-          <div class="app-rect-media app-rect-media-cursor" style="background: radial-gradient(circle at center, rgba(14, 165, 233, 0.22) 0%, rgba(3, 7, 18, 0.95) 75%); display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden;">
-            <div class="cursor-glow-ring" style="width: 140px; height: 140px; border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 35px rgba(56, 189, 248, 0.25);"></div>
-            <img src="../assets/retrosmart-logo.png" alt="Retrosmart Xcursor Logo" style="width: 88%; max-height: 90px; object-fit: contain; position: relative; z-index: 2; filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.6));">
-            <div class="app-rect-status-tag" style="background: rgba(56, 189, 248, 0.18); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
-              <span class="badge-dot-live" style="background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span> 28 RETRO KITS
-            </div>
-          </div>
-          <div class="app-rect-details">
-            <div class="app-rect-top-row">
-              <div>
-                <div class="app-badges">
-                  <span class="app-badge app-badge-status" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: #38bdf8;">Retrosmart Xcursor</span>
-                  <span class="app-badge app-badge-webgl">Win-3D • Mac-ish • Win-ish</span>
-                  <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">1-Click .INF Installer</span>
+              <div class="app-rect-details">
+                <div class="app-rect-top-row">
+                  <div>
+                    <div class="app-badges">
+                      <span class="app-badge app-badge-status">3D WebGL</span>
+                      <span class="app-badge app-badge-webgl">Paper 1.20+</span>
+                      <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">playit.gg Tunnel</span>
+                      <span class="app-badge" style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.35); color: #4ade80;">TPS 20.0</span>
+                    </div>
+                    <h3 class="app-rect-name">EchoNode Web &mdash; 24/7 Minecraft Cloud Manager</h3>
+                    <p class="app-rect-tagline">Sovereign Cloud Server Infrastructure &bull; Continuous GitHub Actions CI/CD</p>
+                  </div>
+                  <span class="btn app-launch-btn">
+                    <span>Launch EchoNode Web ↗</span>
+                  </span>
                 </div>
-                <h3 class="app-rect-name">Retrosmart &amp; Tactical Cursors Suite</h3>
-                <p class="app-rect-tagline">Authentic 8-Bit Pixel Cursors &bull; Win95 3D Chrome, Mac System 7 &amp; Modern Palettes</p>
-              </div>
-              <span class="btn btn-outline" style="padding: 13px 26px; font-size: 14px; border-color: #38bdf8; color: #38bdf8; white-space: nowrap;">
-                <span>Explore 28 Cursor Kits ↗</span>
-              </span>
-            </div>
 
-            <p class="app-rect-desc">
-              Sovereign desktop cursor suites from Retrosmart Xcursor featuring Win-3D Chrome (Blue/Red/Green/Violet), Mac-ish System 7, Win-ish 95, and Cur-Font across Catppuccin, Gruvbox, Everforest, and Rosé Pine. Complete with .cur &amp; .ani schemes, one-click install.inf scripts, and interactive browser testing.
-            </p>
+                <p class="app-rect-desc">
+                  A sovereign Minecraft Cloud Server Management Suite featuring live terminal log streaming, interactive 3D WebGL models, automated 24/7 GitHub Actions CI/CD with playit.gg tunneling, MOTD designer, multi-dimensional world manager, 33 plugins hub with Geyser Bedrock cross-play, and native AI diagnostics.
+                </p>
 
-            <div class="app-rect-highlights">
-              <div class="highlight-chip">
-                <span class="chip-icon">🕹️</span>
-                <div class="chip-text"><strong>Win-3D Chrome:</strong> Win95/98 3D beveled chrome with animated stopwatch &amp; hourglass</div>
+                <div class="app-rect-highlights">
+                  <div class="highlight-chip">
+                    <span class="chip-icon">💻</span>
+                    <div class="chip-text"><strong>Server Console:</strong> Real-time CLI &amp; log stream (/console)</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">⚙️</span>
+                    <div class="chip-text"><strong>MOTD Studio:</strong> §/&amp; codes, custom symbols (/options)</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">🧩</span>
+                    <div class="chip-text"><strong>Plugins Hub:</strong> 33 plugins &amp; Geyser Bedrock cross-play (/plugins)</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">📁</span>
+                    <div class="chip-text"><strong>File Manager:</strong> In-browser filesystem &amp; editor (/files)</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">🧊</span>
+                    <div class="chip-text"><strong>3D WebGL:</strong> Five animated floating voxel models + 3D stage</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">⚡</span>
+                    <div class="chip-text"><strong>24/7 CI/CD Host:</strong> Continuous GitHub Actions runner loop (/uptime)</div>
+                  </div>
+                </div>
               </div>
-              <div class="highlight-chip">
-                <span class="chip-icon">🍎</span>
-                <div class="chip-text"><strong>Mac-ish &amp; Win-ish:</strong> System 7 &amp; Win 3.1 pixel artwork in 8 palette themes</div>
+            </a>
+
+            <!-- App 2: Retrosmart Xcursor Kits -->
+            <a href="../windows/cursor-download" target="_blank" rel="noopener noreferrer" class="app-rect-card app-rect-card-secondary" title="Click anywhere to explore 28 Cursor Kits">
+              <div class="app-rect-media app-rect-media-cursor" style="background: radial-gradient(circle at center, rgba(14, 165, 233, 0.22) 0%, rgba(3, 7, 18, 0.95) 75%); display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; min-height: 220px;">
+                <div class="cursor-glow-ring" style="width: 120px; height: 120px; border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 30px rgba(56, 189, 248, 0.25);"></div>
+                <img src="../assets/retrosmart-logo.png" alt="Retrosmart Xcursor Logo" style="width: 88%; max-height: 80px; object-fit: contain; position: relative; z-index: 2; filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.6));">
+                <div class="app-rect-status-tag" style="background: rgba(56, 189, 248, 0.18); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                  <span class="badge-dot-live" style="background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span> 28 RETRO KITS
+                </div>
               </div>
-              <div class="highlight-chip">
-                <span class="chip-icon">⚡</span>
-                <div class="chip-text"><strong>1-Click Install:</strong> Full 15-role Windows schemes with right-click install.inf</div>
+              <div class="app-rect-details">
+                <div class="app-rect-top-row">
+                  <div>
+                    <div class="app-badges">
+                      <span class="app-badge app-badge-status" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: #38bdf8;">Retrosmart Xcursor</span>
+                      <span class="app-badge app-badge-webgl">Win-3D • Mac-ish • Win-ish</span>
+                      <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">1-Click .INF Installer</span>
+                    </div>
+                    <h3 class="app-rect-name">Retrosmart &amp; Tactical Cursors Suite</h3>
+                    <p class="app-rect-tagline">Authentic 8-Bit Pixel Cursors &bull; Win95 3D Chrome, Mac System 7 &amp; Modern Palettes</p>
+                  </div>
+                  <span class="btn btn-outline" style="padding: 12px 22px; font-size: 13px; border-color: #38bdf8; color: #38bdf8; white-space: nowrap;">
+                    <span>Explore 28 Cursor Kits ↗</span>
+                  </span>
+                </div>
+
+                <p class="app-rect-desc">
+                  Sovereign desktop cursor suites from Retrosmart Xcursor featuring Win-3D Chrome (Blue/Red/Green/Violet), Mac-ish System 7, Win-ish 95, and Cur-Font across Catppuccin, Gruvbox, Everforest, and Rosé Pine. Complete with .cur &amp; .ani schemes, one-click install.inf scripts, and interactive browser testing.
+                </p>
+
+                <div class="app-rect-highlights">
+                  <div class="highlight-chip">
+                    <span class="chip-icon">🕹️</span>
+                    <div class="chip-text"><strong>Win-3D Chrome:</strong> Win95/98 3D beveled chrome with animated stopwatch</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">🍎</span>
+                    <div class="chip-text"><strong>Mac-ish &amp; Win-ish:</strong> System 7 &amp; Win 3.1 pixel artwork in 8 palette themes</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">⚡</span>
+                    <div class="chip-text"><strong>1-Click Install:</strong> Full 15-role Windows schemes with right-click install.inf</div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
-        </a>
+        </div>
       </div>
     </div>
   </section>
@@ -4959,6 +5262,28 @@
           closeContextMenu();
         }
       });
+
+      // Copy SHA-256 Checksum Helper
+      window.copyOrbitHash = function(btn) {
+        const hash = "98bc32efd7e455cc643acee9c1594e1a29c90c08645f8b2825545c68408b432d";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(hash).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED!";
+            btn.style.background = "#00f5b8";
+            btn.style.color = "#07090e";
+            setTimeout(() => {
+              btn.innerText = originalText;
+              btn.style.background = "rgba(0, 245, 184, 0.15)";
+              btn.style.color = "#00f5b8";
+            }, 2000);
+          }).catch(() => {
+            prompt("SHA-256 Checksum:", hash);
+          });
+        } else {
+          prompt("SHA-256 Checksum:", hash);
+        }
+      };
     })();
   </script>
 

@@ -231,18 +231,189 @@
       margin: 0 auto 40px;
     }
 
-    /* Master Download Card */
+    /* Master Download & Companion Grid (Beside Each Other in Same BG) */
+    .download-hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 32px;
+      align-items: stretch;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
     .download-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 44px 36px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 245, 184, 0.1);
-      max-width: 680px;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
       text-align: center;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .download-companion-card {
+      background: linear-gradient(155deg, rgba(13, 22, 36, 0.95), rgba(7, 12, 20, 0.98));
+      border: 1px solid rgba(0, 245, 184, 0.25);
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 245, 184, 0.08);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+    }
+
+    .download-companion-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #00f5b8, #38bdf8, #a855f7);
+    }
+
+    .comp-header {
+      margin-bottom: 22px;
+    }
+
+    .comp-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
+
+    .comp-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 6px 0;
+    }
+
+    .comp-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .comp-apps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .comp-app-item {
+      background: rgba(5, 10, 18, 0.75);
+      border: 1px solid rgba(0, 245, 184, 0.15);
+      border-radius: 14px;
+      padding: 18px 20px;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .comp-app-item:hover {
+      border-color: rgba(0, 245, 184, 0.5);
+      background: rgba(9, 16, 28, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 245, 184, 0.15);
+    }
+
+    .comp-app-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .comp-app-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      object-fit: contain;
+      background: #091322;
+      border: 1px solid rgba(0, 245, 184, 0.25);
+      padding: 3px;
+      flex-shrink: 0;
+    }
+
+    .comp-app-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 4px 0;
+    }
+
+    .comp-app-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .comp-badge {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      padding: 2px 7px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .comp-badge-cyan {
+      background: rgba(0, 245, 184, 0.15);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      color: #00f5b8;
+    }
+
+    .comp-badge-blue {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+    }
+
+    .comp-app-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin: 0 0 12px 0;
+    }
+
+    .comp-launch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      transition: all 0.2s ease;
+    }
+
+    .comp-app-item:hover .comp-launch-btn {
+      color: #ffffff;
+      transform: translateX(4px);
+    }
+
+    @media (max-width: 980px) {
+      .download-hero-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .download-card::before {
@@ -1078,7 +1249,7 @@
 
   <!-- Hero & Master Download -->
   <section class="download-hero">
-    <div class="container">
+    <div class="container" style="max-width: 1240px;">
       <div class="release-badge">
         <span class="badge-dot"></span>
         <span data-i18n="badge">PRODUCTION RELEASE · V2.0.0 (X64)</span>
@@ -1089,41 +1260,107 @@
         Deploy the full Common Operating Picture (COP) directly to your Windows system. Fuses live aviation, maritime AIS, satellite ephemeris, CCTV, and threat intelligence with zero telemetry leakage.
       </p>
 
-      <div class="download-card reveal-on-scroll">
-        <div class="app-icon-large">
-          <img src="../favicon.ico" alt="Trendusty Orbit Logo">
-        </div>
-
-        <h2 class="card-title" data-i18n="card_title">Trendusty Orbit Desktop Edition</h2>
-        <div class="card-meta">
-          WINDOWS 10 / 11 (64-BIT) &middot; VERSION <span>2.0.0</span> &middot; SIZE <span>365 KB</span>
-        </div>
-
-        <!-- Primary Executable Download -->
-        <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-download" id="dl-btn">
-          <span>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span data-i18n="btn_dl">Download Trendusty-Orbit-Setup.exe</span>
-          </span>
-          <small><span data-i18n="btn_sub">Standalone Windows Setup &middot; Embedded Icon &middot; Auto-Creates Shortcuts</span></small>
-        </a>
-
-        <!-- Alternative Downloads -->
-        <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-          <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-secondary-dl">
-            <span data-i18n="mirror_link">Mirror Download Link</span>
-          </a>
-          <a href="../Install%20Trendusty%20Orbit.bat" download class="btn-secondary-dl">
-            <span data-i18n="batch_link">Batch Installer (.bat)</span>
-          </a>
-        </div>
-
-        <!-- SHA-256 Hash Verification -->
-        <div class="checksum-box">
-          <div class="hash-text" title="SHA-256 Checksum">
-            <strong>SHA256:</strong> <span id="hash-val">98bc32efd7e455cc643acee9c1594e1a29c90c08645f8b2825545c68408b432d</span>
+      <div class="download-hero-grid">
+        <!-- Column 1: Master Download Card -->
+        <div class="download-card reveal-on-scroll">
+          <div class="app-icon-large">
+            <img src="../favicon.ico" alt="Trendusty Orbit Logo">
           </div>
-          <button class="copy-btn" onclick="copyHash()"><span data-i18n="copy_hash">COPY HASH</span></button>
+
+          <h2 class="card-title" data-i18n="card_title">Trendusty Orbit Desktop Edition</h2>
+          <div class="card-meta">
+            WINDOWS 10 / 11 (64-BIT) &middot; VERSION <span>2.0.0</span> &middot; SIZE <span>365 KB</span>
+          </div>
+
+          <!-- Primary Executable Download -->
+          <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-download" id="dl-btn">
+            <span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span data-i18n="btn_dl">Download Trendusty-Orbit-Setup.exe</span>
+            </span>
+            <small><span data-i18n="btn_sub">Standalone Windows Setup &middot; Embedded Icon &middot; Auto-Creates Shortcuts</span></small>
+          </a>
+
+          <!-- Alternative Downloads -->
+          <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <a href="Trendusty-Orbit-Setup.exe" download="Trendusty-Orbit-Setup.exe" class="btn-secondary-dl">
+              <span data-i18n="mirror_link">Mirror Download Link</span>
+            </a>
+            <a href="../Install%20Trendusty%20Orbit.bat" download class="btn-secondary-dl">
+              <span data-i18n="batch_link">Batch Installer (.bat)</span>
+            </a>
+          </div>
+
+          <!-- SHA-256 Hash Verification -->
+          <div class="checksum-box">
+            <div class="hash-text" title="SHA-256 Checksum">
+              <strong>SHA256:</strong> <span id="hash-val">98bc32efd7e455cc643acee9c1594e1a29c90c08645f8b2825545c68408b432d</span>
+            </div>
+            <button class="copy-btn" onclick="copyHash()"><span data-i18n="copy_hash">COPY HASH</span></button>
+          </div>
+        </div>
+
+        <!-- Column 2: Companion Sovereign Ecosystem Applications (Beside Setup in Same BG) -->
+        <div class="download-companion-card reveal-on-scroll">
+          <div>
+            <div class="comp-header">
+              <div class="comp-tag">
+                <span class="badge-dot" style="background:#00f5b8;"></span> COMPANION SOVEREIGN APPS
+              </div>
+              <h2 class="comp-title">Other Features &amp; Cloud Apps</h2>
+              <p class="comp-subtitle">Explore live cloud server management tools and retro desktop customizer suites built for sovereign workflows.</p>
+            </div>
+
+            <div class="comp-apps-list">
+              <!-- Companion App 1: EchoNode Web -->
+              <a href="../echonode/" target="_blank" rel="noopener noreferrer" class="comp-app-item" title="Launch EchoNode Web in a new tab">
+                <div class="comp-app-top">
+                  <img src="../assets/echonode-logo.jpg" alt="EchoNode Logo" class="comp-app-thumb">
+                  <div>
+                    <h3 class="comp-app-name">EchoNode Web &mdash; 24/7 Minecraft Host</h3>
+                    <div class="comp-app-badges">
+                      <span class="comp-badge comp-badge-cyan">24/7 LIVE CLOUD</span>
+                      <span class="comp-badge comp-badge-blue">3D WebGL</span>
+                      <span class="comp-badge comp-badge-cyan">Paper 1.20+</span>
+                      <span class="comp-badge comp-badge-blue">playit.gg</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="comp-app-desc">
+                  Sovereign 24/7 Minecraft Cloud Server Suite with real-time terminal CLI console, MOTD designer, 33 plugins hub, and automated GitHub Actions CI/CD runner loop.
+                </p>
+                <div class="comp-launch-btn">
+                  <span>Launch EchoNode Web ↗</span>
+                </div>
+              </a>
+
+              <!-- Companion App 2: Retrosmart Xcursor Kits -->
+              <a href="cursor-download" target="_blank" rel="noopener noreferrer" class="comp-app-item" title="Explore Retrosmart Cursors">
+                <div class="comp-app-top">
+                  <img src="../assets/retrosmart-logo.png" alt="Retrosmart Logo" class="comp-app-thumb" style="object-fit: contain;">
+                  <div>
+                    <h3 class="comp-app-name">Retrosmart &amp; Tactical Cursors Suite</h3>
+                    <div class="comp-app-badges">
+                      <span class="comp-badge comp-badge-blue">28 RETRO KITS</span>
+                      <span class="comp-badge comp-badge-cyan">Win-3D Chrome</span>
+                      <span class="comp-badge comp-badge-blue">1-Click .INF</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="comp-app-desc">
+                  Authentic 8-bit &amp; 3D beveled retro cursor sets (Win95 3D Chrome, System 7, Win-ish) in Catppuccin, Gruvbox, and Rosé Pine with 1-click install.inf scripts.
+                </p>
+                <div class="comp-launch-btn">
+                  <span>Explore 28 Cursor Kits ↗</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(0, 245, 184, 0.15); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">
+            <span>🌐 Browser &amp; Cloud Native</span>
+            <a href="../home/#other-apps" style="color: var(--accent); text-decoration: none;">View Ecosystem Details &rarr;</a>
+          </div>
         </div>
       </div>
     </div>
