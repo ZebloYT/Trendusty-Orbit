@@ -409,7 +409,7 @@ class MinecraftServerController:
                 l_type = "warn"
             elif "error" in lower or "exception" in lower:
                 l_type = "error"
-            elif "done (" in lower and "for help" in lower:
+            elif ("done (" in lower) or ("for help" in lower) or ("timings reset" in lower) or ("server started" in lower):
                 l_type = "success"
                 self.status = "online"
             
@@ -512,7 +512,7 @@ class MinecraftServerController:
                 "-Dfile.encoding=UTF-8",
                 "-Dusing.aikars.flags=https://mcflags.emc.gs",
                 "-Daikars.new.flags=true",
-                "-jar", "paper.jar",
+                "-jar", paper_jar,
                 "--nogui"
             ]
 
@@ -1364,14 +1364,14 @@ def run():
         sys.exit(1)
 
     url = f"http://localhost:{port}"
-    print("=" * 65)
-    print("* EchoNode Web Cloud Server Manager is running!")
-    print(f"* Local Web URL: {url}")
-    print(f"* Minecraft Server Directory: {SERVER_DIR}")
-    print(f"* Java 25 Runtime: {mc_server.get_java_path()}")
-    print("* Real 24/7 GitHub Actions Cloud Deployer Ready!")
-    print("* Press Ctrl+C in this window to stop the server.")
-    print("=" * 65)
+    print("=" * 65, flush=True)
+    print("* EchoNode Web Cloud Server Manager is running!", flush=True)
+    print(f"* Local Web URL: {url}", flush=True)
+    print(f"* Minecraft Server Directory: {SERVER_DIR}", flush=True)
+    print(f"* Java 25 Runtime: {mc_server.get_java_path()}", flush=True)
+    print("* Real 24/7 GitHub Actions Cloud Deployer Ready!", flush=True)
+    print("* Press Ctrl+C in this window to stop the server.", flush=True)
+    print("=" * 65, flush=True)
 
     try:
         webbrowser.open(url)

@@ -1767,6 +1767,41 @@ class EchoNodeApp {
     this.currentBookPage = 1;
     this.book3dViewer = null;
     this.obfuscatedTimer = null;
+    this._apiBase = undefined;
+  }
+
+  getApiBase() {
+    if (this._apiBase !== undefined) return this._apiBase;
+    const loc = window.location;
+    // When served directly by server.py on port 3000
+    if (loc.port === "3000") {
+      this._apiBase = "";
+      return this._apiBase;
+    }
+    // Cross-origin fallback for VS Code Live Server :5500, file://, etc.
+    this._apiBase = "http://localhost:3000";
+    return this._apiBase;
+  }
+
+  async apiFetch(endpoint, options = {}) {
+    const base = this.getApiBase();
+    const url = base ? `${base}${endpoint}` : endpoint;
+    try {
+      const res = await fetch(url, options);
+      return res;
+    } catch (err) {
+      if (base === "http://localhost:3000") {
+        try {
+          const fallbackUrl = `http://127.0.0.1:3000${endpoint}`;
+          const res2 = await fetch(fallbackUrl, options);
+          this._apiBase = "http://127.0.0.1:3000";
+          return res2;
+        } catch (err2) {
+          throw err;
+        }
+      }
+      throw err;
+    }
   }
 
   init() {
@@ -2879,7 +2914,7 @@ class EchoNodeApp {
 
     // 1. Try local server backend API if available
     try {
-      const res = await fetch("/api/server/network");
+      const res = await this.apiFetch("/api/server/network");
       if (res.ok) {
         const data = await res.json();
         if (data && data.publicIp && data.publicIp !== "127.0.0.1") {
@@ -3092,7 +3127,7 @@ class EchoNodeApp {
     this.renderWorldsList();
 
     try {
-      const res = await fetch("/api/server/start", { method: "POST" });
+      const res = await this.apiFetch("/api/server/start", { method: "POST" });
       const data = await res.json();
       if (!data.success) {
         this.isSimulatedOnline = false;
@@ -3101,6 +3136,8 @@ class EchoNodeApp {
         this.appendLog("error", `[EchoNode] Launch failed: ${data.message || 'Unknown error'}`);
         this.showToast(`Launch failed: ${data.message}`, "error");
       } else {
+        this.isLocalBackendOnline = true;
+        this.lastBackendStatus = data.status || "starting";
         this.isSimulatedOnline = false;
         this.updateServerStatusUI(data.status || "starting");
         if (data.network) {
@@ -3118,25 +3155,15 @@ class EchoNodeApp {
         this.appendLog("info", `[EchoNode] Waiting for Paper server core initialization to complete...`);
       }
     } catch (err) {
+      this.isLocalBackendOnline = false;
+      this.isCloudOnline = false;
       this.isSimulatedOnline = false;
-
-      // Check if 24/7 Cloud Host is configured on GitHub Actions
-      const hasCloudRepo = Boolean(store.data.githubRepo && store.data.githubToken);
-      if (hasCloudRepo) {
-        this.updateServerStatusUI("starting");
-        this.appendLog("warn", "[EchoNode] Local backend server (server.py) is not running on this machine.");
-        this.appendLog("system", "[EchoNode 24/7] Auto-dispatching 24/7 Cloud Runner on GitHub Actions...");
-        this.showToast("Local backend offline. Launching 24/7 Cloud Server on GitHub...", "info");
-        this.dispatchGitHub247CloudRunner();
-      } else {
-        this.updateServerStatusUI("offline");
-        this.setMetricsOffline();
-        this.appendLog("warn", "[EchoNode] Real Server Execution Notice: Local backend server (server.py) is not running.");
-        this.appendLog("info", "▶ Local PC Server: Double-click 'start_web_server.bat' in your EchoNode folder to start your real Java server with full console.");
-        this.appendLog("info", "▶ 24/7 Cloud Host: Go to '24/7 Hosting' tab to connect your GitHub repo and run Minecraft 24/7 in the cloud with Playit.gg tunnel.");
-        this.showToast("Local backend offline. Run start_web_server.bat or use 24/7 Cloud Hosting.", "warning");
-        this.promptRealServerExecution();
-      }
+      this.updateServerStatusUI("offline");
+      this.setMetricsOffline();
+      this.appendLog("error", "[EchoNode] Could not connect to local server backend (server.py on port 3000).");
+      this.appendLog("info", "▶ Double-click 'start_web_server.bat' in your EchoNode folder to start your server backend and launch Minecraft.");
+      this.showToast("Local backend offline. Please run start_web_server.bat", "warning");
+      this.promptRealServerExecution();
     }
   }
 
@@ -3258,7 +3285,7 @@ class EchoNodeApp {
     this.isCloudOnline = false;
 
     try {
-      await fetch("/api/server/stop", { method: "POST" });
+      await this.apiFetch("/api/server/stop", { method: "POST" });
     } catch (err) {}
     this.updateServerStatusUI("offline");
     this.setMetricsOffline();
@@ -3270,7 +3297,7 @@ class EchoNodeApp {
     sfx.playClick();
     this.showToast("Restarting server...", "info");
     try {
-      await fetch("/api/server/restart", { method: "POST" });
+      await this.apiFetch("/api/server/restart", { method: "POST" });
     } catch (err) {
       this.stopServer();
       setTimeout(() => this.startServer(), 2000);
@@ -3368,7 +3395,7 @@ class EchoNodeApp {
     if (!cmd) return;
 
     try {
-      const res = await fetch("/api/server/command", {
+      const res = await this.apiFetch("/api/server/command", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command: cmd })
@@ -3393,7 +3420,7 @@ class EchoNodeApp {
     this._isPollingGitHub = true;
     let data = null;
     try {
-      const res = await fetch("/api/github/status");
+      const res = await this.apiFetch("/api/github/status");
       if (res.ok) {
         data = await res.json();
       }
@@ -3526,14 +3553,17 @@ class EchoNodeApp {
             if (text) text.textContent = "STOPPED";
           }
 
-          if (!this.isLocalBackendOnline && store.data.status === "cloud_online") {
+          if (!this.isLocalBackendOnline && (store.data.status === "cloud_online" || store.data.status === "cloud")) {
             this.updateServerStatusUI("offline");
+            this.setMetricsOffline();
           }
         }
-      } else if (data && data.hasRun === false) {
+      } else {
+        // No active cloud runner confirmed or query failed - ensure cloud state is strictly offline
         this.isCloudOnline = false;
-        if (!this.isLocalBackendOnline && store.data.status === "cloud_online") {
+        if (!this.isLocalBackendOnline && (store.data.status === "cloud_online" || store.data.status === "cloud")) {
           this.updateServerStatusUI("offline");
+          this.setMetricsOffline();
         }
       }
     } catch (e) {
@@ -3793,7 +3823,7 @@ jobs:
         // 1. Fetch real-time status from server.py
         let sRes = null;
         try {
-          sRes = await fetch("/api/server/status");
+          sRes = await this.apiFetch("/api/server/status");
         } catch (fetchErr) {
           sRes = null;
         }
@@ -3838,7 +3868,7 @@ jobs:
             // Local MC server is offline: check if Cloud 24/7 is active
             if (this.isCloudOnline) {
               this.updateServerStatusUI("cloud_online");
-            } else if (!this.isSimulatedOnline) {
+            } else {
               this.updateServerStatusUI("offline");
               this.setMetricsOffline();
             }
@@ -3849,7 +3879,7 @@ jobs:
           this.lastBackendStatus = "offline";
           if (this.isCloudOnline) {
             this.updateServerStatusUI("cloud_online");
-          } else if (!this.isSimulatedOnline) {
+          } else {
             this.updateServerStatusUI("offline");
             this.setMetricsOffline();
           }
@@ -3858,7 +3888,7 @@ jobs:
         // 2. Fetch new logs from real Minecraft stdout if local server is active
         if (this.isLocalBackendOnline) {
           try {
-            const lRes = await fetch(`/api/server/logs?since=${this.lastLogId}`);
+            const lRes = await this.apiFetch(`/api/server/logs?since=${this.lastLogId}`);
             if (lRes.ok) {
               const lData = await lRes.json();
               if (lData.logs && lData.logs.length > 0) {
@@ -3886,7 +3916,7 @@ jobs:
         this.isLocalBackendOnline = false;
         if (this.isCloudOnline) {
           this.updateServerStatusUI("cloud_online");
-        } else if (!this.isSimulatedOnline) {
+        } else {
           this.updateServerStatusUI("offline");
           this.setMetricsOffline();
         }
@@ -4124,7 +4154,7 @@ jobs:
 
         saveIconBtn.disabled = true;
         try {
-          const res = await fetch("/api/server/icon", {
+          const res = await this.apiFetch("/api/server/icon", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ image: this.stagedIconBase64 })
@@ -5362,7 +5392,7 @@ jobs:
     const autoUpdateChk = document.getElementById("chk-auto-update-repo");
 
     // Fetch server-persisted config if available
-    fetch("/api/github/config").then(r => r.json()).then(res => {
+    this.apiFetch("/api/github/config").then(r => r.json()).then(res => {
       if (res && res.success && res.config) {
         if (!store.data.githubRepo && res.config.RepoUrl) store.data.githubRepo = res.config.RepoUrl;
         if (!store.data.githubToken && res.config.Token) store.data.githubToken = res.config.Token;
@@ -5483,7 +5513,7 @@ jobs:
 
           // 1. Try local server.py backend API first if running locally
           try {
-            const response = await fetch("/api/github/sync", {
+            const response = await this.apiFetch("/api/github/sync", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ repoUrl, token, autoUpdate })
@@ -5540,7 +5570,7 @@ jobs:
       genLocalBtn.addEventListener("click", async () => {
         sfx.playClick();
         try {
-          const res = await fetch("/api/server/generate-247", { method: "POST" });
+          const res = await this.apiFetch("/api/server/generate-247", { method: "POST" });
           const data = await res.json();
           if (data.success) {
             sfx.playServerChime();
@@ -7887,7 +7917,7 @@ ${custom}
 
     // Asynchronously push to backend server_data directory
     if (staged.apiFiles && staged.apiFiles.length > 0) {
-      fetch("/api/server/import", {
+      this.apiFetch("/api/server/import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
