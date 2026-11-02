@@ -6305,7 +6305,7 @@ ${custom}
     }
   }
 
-  // Send Verification Code via EmailJS / Server / Interactive Simulation
+  // Send Verification Code via EmailJS / Server / Gmail
   sendVerificationCode(email, code, extra = {}) {
     this.pendingAuth = {
       email: email,
@@ -6324,7 +6324,7 @@ ${custom}
       if (box) box.value = '';
     }
 
-    // Try sending with EmailJS if user configured it
+    // 1. Try sending with EmailJS if user configured it
     try {
       const emailJsRaw = localStorage.getItem('orbit_emailjs_config');
       if (emailJsRaw && typeof emailjs !== 'undefined') {
@@ -6338,43 +6338,59 @@ ${custom}
             code: code,
             app_name: 'EchoNode Cloud'
           }).then(() => {
-            console.log('EmailJS code dispatched to', email);
+            console.log('[EmailJS] Verification code dispatched to', email);
           }).catch(err => {
-            console.warn('EmailJS dispatch failed:', err);
+            console.warn('[EmailJS] dispatch failed:', err);
           });
         }
       }
     } catch (e) {}
 
-    // Update real-time banner notice
+    // 2. Try dispatching through backend server /api/send-email if available
+    try {
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: email, code: code })
+      }).catch(() => {});
+    } catch (e) {}
+
+    // 3. Determine user's webmail inbox URL (Gmail, Outlook, Yahoo, or default to Gmail)
+    let webmailUrl = 'https://mail.google.com/';
+    let webmailName = 'Open Gmail';
+    const domain = (email.split('@')[1] || '').toLowerCase();
+    if (domain.includes('outlook') || domain.includes('hotmail') || domain.includes('live')) {
+      webmailUrl = 'https://outlook.live.com/mail/';
+      webmailName = 'Open Outlook';
+    } else if (domain.includes('yahoo')) {
+      webmailUrl = 'https://mail.yahoo.com/';
+      webmailName = 'Open Yahoo';
+    }
+
+    // 4. Update banner notice: CODE IS NEVER DISPLAYED ON SCREEN - User must check Gmail
     const notice = document.getElementById('otp-live-delivery-notice');
     if (notice) {
       notice.style.display = 'block';
       notice.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-          <div>
-            <span>📬 6-character code sent to <b>${email}</b>!</span>
-            <span style="display: block; font-size: 11px; opacity: 0.85; margin-top: 2px;">(Simulated / Quick-Fill Code: <code style="background: rgba(0,0,0,0.4); padding: 1px 6px; border-radius: 4px; color: #38bdf8; font-weight: 700; letter-spacing: 1.5px;">${code}</code>)</span>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #38bdf8; flex-shrink: 0;">📬</div>
+            <div>
+              <span style="color: #fff; font-weight: 600; display: block; font-size: 12.5px;">Check Your Email Inbox</span>
+              <span style="font-size: 11.5px; color: #94a3b8; display: block; margin-top: 1px;">A 6-character code was sent to <b style="color: #38bdf8;">${email}</b>. Check your inbox or spam folder.</span>
+            </div>
           </div>
-          <button type="button" class="btn-secondary" onclick="app.quickFillOtp('${code}')" style="font-size: 11px; padding: 4px 8px; flex-shrink: 0;">Auto-Fill</button>
+          <a href="${webmailUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="font-size: 11.5px; padding: 6px 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; box-shadow: 0 0 12px rgba(0, 245, 184, 0.25);">
+            <span>${webmailName}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
         </div>
       `;
     }
 
     this.switchAuthStage('otp');
     this.bindOtpBoxEvents();
-    this.showToast(`6-character verification code sent to ${email}`, 'info');
-  }
-
-  // Quick fill helper for testing
-  quickFillOtp(code) {
-    sfx.playClick();
-    for (let i = 0; i < 6; i++) {
-      const box = document.getElementById(`otp-digit-${i + 1}`);
-      if (box) box.value = code[i] || '';
-    }
-    const lastBox = document.getElementById('otp-digit-6');
-    if (lastBox) lastBox.focus();
+    this.showToast(`Verification code sent to ${email}. Check your Gmail!`, 'info');
   }
 
   // Bind OTP digit boxes: auto-advance, backspace, paste
@@ -6421,16 +6437,35 @@ ${custom}
     }
   }
 
-  // Resend Verification Code
+  // Resend Verification Code with Cooldown Timer
   resendVerificationCode() {
     sfx.playClick();
     if (!this.pendingAuth || !this.pendingAuth.email) {
       this.switchAuthStage('credentials');
       return;
     }
+    const btnResend = document.getElementById('btn-otp-resend');
+    if (btnResend && btnResend.disabled) return;
+
     const newCode = this.generateVerificationCode();
     this.sendVerificationCode(this.pendingAuth.email, newCode, this.pendingAuth);
-    this.showToast('A fresh 6-character code has been dispatched!', 'info');
+    this.showToast('Fresh verification code dispatched to your Gmail!', 'info');
+
+    if (btnResend) {
+      btnResend.disabled = true;
+      let countdown = 30;
+      btnResend.innerHTML = `<span>Resend (${countdown}s)</span>`;
+      const timer = setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+          clearInterval(timer);
+          btnResend.disabled = false;
+          btnResend.innerHTML = `<span>Resend Code</span>`;
+        } else {
+          btnResend.innerHTML = `<span>Resend (${countdown}s)</span>`;
+        }
+      }, 1000);
+    }
   }
 
   // Verify entered OTP

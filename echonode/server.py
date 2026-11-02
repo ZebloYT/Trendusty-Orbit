@@ -627,86 +627,35 @@ mc_server = MinecraftServerController(SERVER_DIR)
 # ============================================================================
 # REAL GITHUB 24/7 SYNC & RUNNER ENGINE
 # ============================================================================
-WORKFLOW_YML = """name: EchoNode 24-7 Cloud Server
+WORKFLOW_YML = """name: EchoNode World & Repository Backup
+
+# GitHub is strictly used as a Git Repository for code, plugins, and world saves.
+# GitHub Actions runner containers are NOT used as a server host.
+# Vercel handles all 24/7 web management, live ping, and Server ON/OFF controls.
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run once every 6 hours (safe non-overlapping schedule)
-    - cron: '0 */6 * * *'
-
-concurrency:
-  group: minecraft-server-247
-  cancel-in-progress: false
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
-  run-server:
-    name: 24/7 Cloud Minecraft Runner
+  backup-world:
+    name: Save World State to Repository
     runs-on: ubuntu-latest
-    timeout-minutes: 350
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Setup Java Runtime
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Ensure Paper / Purpur Server Core & Config
+      - name: Snapshot World & Player Data
         run: |
-          if [ ! -f "paper.jar" ] || [ $(wc -c < "paper.jar") -lt 10000000 ]; then
-            echo "[EchoNode] Downloading Purpur Server Core..."
-            curl -sSL -o paper.jar https://api.purpurmc.org/v2/purpur/1.20.6/latest/download || \\
-            curl -sSL -o paper.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/499/downloads/paper-1.20.4-499.jar
-          fi
-          chmod +x paper.jar
-          echo "eula=true" > eula.txt
-          if [ ! -f "server.properties" ]; then
-            printf "server-port=25565\\ngamemode=survival\\ndifficulty=normal\\npvp=true\\nonline-mode=false\\nmax-players=50\\nmotd=\\\\u00A7b\\\\u00A7l✦ EchoNode 24/7 Cloud Server\\\\n" > server.properties
-          else
-            sed -i 's/online-mode=true/online-mode=false/g' server.properties
-          fi
-
-      - name: Launch 24/7 Cloud Server & Playit Tunnel
-        run: |
-          echo "=========================================================="
-          echo "   EchoNode Cloud Server Running on GitHub Actions 24/7"
-          echo "=========================================================="
-          
-          # 1. Download & Launch playit.gg tunnel agent
-          echo "[EchoNode] Downloading playit tunnel agent..."
-          sudo curl -sSL -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64
-          sudo chmod +x /usr/local/bin/playit
-          
-          echo "[EchoNode] Starting playit tunnel daemon..."
-          /usr/local/bin/playit --secret "${{ secrets.PLAYIT_SECRET || 'ff4c67252a6366cf64a4a32e19be955cfd6dcaa441dc95a83da67c63d7b1dbdf' }}" > playit.log 2>&1 &
-          PLAYIT_PID=$!
-          sleep 4
-          cat playit.log || true
-
-          # 2. Keep stdin open and run Java with safe 4GB memory to prevent runner OOM kill
-          echo "[EchoNode] Launching Minecraft Server engine..."
-          tail -f /dev/null | java -Xmx4G -Xms2G -XX:+UseG1GC -Dterminal.jline=false -Dterminal.ansi=true -jar paper.jar --nogui
-
-          # Clean up tunnel when server shuts down
-          kill $PLAYIT_PID 2>/dev/null || true
-
-      - name: Auto-Save World Data
-        if: always()
-        run: |
+          echo "[EchoNode] Syncing world saves and configuration to repository..."
           git config --global user.name "echonode-bot"
           git config --global user.email "echonode-bot@users.noreply.github.com"
-          git add world world_nether world_the_end plugins/Essentials/userdata plugins/SkyHeavenCapes usercache.json server.properties ops.json whitelist.json 2>/dev/null || true
-          git commit -m "Auto-saved server state [skip ci]" 2>/dev/null || echo "No changes to save"
+          git add world world_nether world_the_end plugins usercache.json server.properties ops.json whitelist.json 2>/dev/null || true
+          git commit -m "Auto-saved server state snapshot [skip ci]" 2>/dev/null || echo "No changes to save"
           git push origin HEAD:${{ github.ref_name }} 2>/dev/null || echo "Push skipped"
 """
 
