@@ -62,8 +62,8 @@
 /* ==========================================================================
    TACTICAL ORBIT CURSOR - ADVANCED STATES
    ========================================================================== */
-html, body, *, *::before, *::after { cursor: none !important; }
-a, button, input, textarea, select, canvas, [role="button"], label { cursor: none !important; }
+body.custom-cursor-active, body.custom-cursor-active *, body.custom-cursor-active *::before, body.custom-cursor-active *::after { cursor: none !important; }
+body.custom-cursor-active a, body.custom-cursor-active button, body.custom-cursor-active input, body.custom-cursor-active textarea, body.custom-cursor-active select, body.custom-cursor-active canvas, body.custom-cursor-active [role="button"], body.custom-cursor-active label { cursor: none !important; }
 
 /* Touch screen fallback */
 @media (pointer: coarse) {

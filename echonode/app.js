@@ -303,44 +303,72 @@ class StateStore {
     } catch (e) {}
   }
 
-  getServersList() {
-    let list = null;
-    try {
-      const raw = localStorage.getItem("echonode_servers_list");
-      if (raw) list = JSON.parse(raw);
-    } catch(e) {}
-    if (!list || !Array.isArray(list) || list.length === 0) {
-      list = [
-        {
-          id: "guest_server",
-          name: "My Minecraft Server",
-          software: "Paper",
-          version: "1.20.4",
-          port: 25565,
-          storageKey: "echonode_guest_state",
-          avatar: "assets/software/echonode.png"
-        },
-        {
-          id: "skyheaven",
-          name: "SKY HEAVEN MC",
-          software: "Purpur",
-          version: "1.26.1.2",
-          port: 25566,
-          storageKey: "echonode_skyheaven_state",
-          avatar: "assets/software/skyheaven.png",
-          ownerOnly: true
-        }
-      ];
-      localStorage.setItem("echonode_servers_list", JSON.stringify(list));
+  getUserServersKey() {
+    if (this.isOwner()) {
+      return "echonode_servers_owner";
     }
-    return list;
+    const email = this.getUserEmail();
+    const name = this.getUserName();
+    if (email && email.trim()) {
+      return "echonode_servers_u_" + email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    }
+    if (name && name !== "Guest User") {
+      return "echonode_servers_u_" + name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    }
+    return "echonode_servers_guest";
+  }
+
+  getServersList() {
+    if (this.isOwner()) {
+      let list = null;
+      try {
+        const raw = localStorage.getItem("echonode_servers_owner");
+        if (raw) list = JSON.parse(raw);
+      } catch (e) {}
+      if (!list || !Array.isArray(list) || list.length === 0) {
+        list = [
+          {
+            id: "skyheaven",
+            name: "SKY HEAVEN MC",
+            software: "Purpur",
+            version: "1.26.1.2",
+            port: 25565,
+            storageKey: "echonode_skyheaven_state",
+            avatar: "assets/software/skyheaven.png",
+            ownerOnly: true
+          }
+        ];
+        localStorage.setItem("echonode_servers_owner", JSON.stringify(list));
+      }
+      return list;
+    }
+
+    // Strict Rule: New accounts and guest users start with ZERO servers by default
+    const key = this.getUserServersKey();
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+
+    return [];
   }
 
   canCreateServer() {
+    if (!this.isLoggedIn()) return false;
     return this.getServersList().length < 3;
   }
 
   createServer(cfg = {}) {
+    if (!this.isLoggedIn()) {
+      return {
+        success: false,
+        requireAuth: true,
+        message: "Please sign in or create an account to create a Minecraft server!"
+      };
+    }
     const list = this.getServersList();
     if (list.length >= 3) {
       return { success: false, message: "Limit reached! Maximum 3 servers allowed per user." };
@@ -367,28 +395,29 @@ class StateStore {
 
     localStorage.setItem(meta.storageKey, JSON.stringify(newState));
     list.push(meta);
-    localStorage.setItem("echonode_servers_list", JSON.stringify(list));
+    localStorage.setItem(this.getUserServersKey(), JSON.stringify(list));
     this.switchServer(newId);
     return { success: true, server: meta };
   }
 
   deleteServer(serverId) {
     let list = this.getServersList();
-    if (list.length <= 1) {
-      return { success: false, message: "Cannot delete your only remaining server." };
+    if (list.length <= 0) {
+      return { success: false, message: "No server to delete." };
     }
     const idx = list.findIndex(s => s.id === serverId);
     if (idx === -1) return { success: false, message: "Server not found." };
     
     const removed = list.splice(idx, 1)[0];
     localStorage.removeItem(removed.storageKey || ("echonode_server_state_" + serverId));
-    localStorage.setItem("echonode_servers_list", JSON.stringify(list));
+    localStorage.setItem(this.getUserServersKey(), JSON.stringify(list));
 
-    const activeId = this.getActiveServerId();
-    if (activeId === serverId) {
-      this.switchServer(list[0].id);
+    const remaining = this.getServersList();
+    if (remaining.length > 0) {
+      this.switchServer(remaining[0].id);
     } else {
-      this.save();
+      localStorage.removeItem("echonode_active_server_id");
+      this.init();
     }
     return { success: true };
   }
@@ -431,7 +460,7 @@ class StateStore {
       localStorage.setItem("echonode_active_server_id", "skyheaven");
     } else {
       localStorage.setItem("echonode_auth_role", "guest");
-      localStorage.setItem("echonode_active_server_id", "guest_server");
+      localStorage.removeItem("echonode_active_server_id");
     }
     this.init();
   }
@@ -439,25 +468,24 @@ class StateStore {
   getActiveServerId() {
     const isOwner = this.isOwner();
     const servers = this.getServersList();
-    let stored = localStorage.getItem("echonode_active_server_id");
-    if (!stored) {
-      return isOwner ? "skyheaven" : "guest_server";
+    if (servers.length === 0) {
+      return null;
     }
-    // Verify stored ID exists in servers
-    if (!servers.find(s => s.id === stored)) {
-      stored = servers[0].id;
+    let stored = localStorage.getItem("echonode_active_server_id");
+    if (!stored || !servers.find(s => s.id === stored)) {
+      stored = isOwner ? "skyheaven" : servers[0].id;
       localStorage.setItem("echonode_active_server_id", stored);
     }
-    // If not owner, never allow active ID to be skyheaven
     if (!isOwner && stored === "skyheaven") {
-      return "guest_server";
+      stored = servers[0].id;
+      localStorage.setItem("echonode_active_server_id", stored);
     }
     return stored;
   }
 
   getActiveStorageKey() {
     if (this.currentProfile === "skyheaven") return "echonode_skyheaven_state";
-    if (this.currentProfile === "guest_server") return "echonode_guest_state";
+    if (!this.currentProfile) return "echonode_empty_state";
     return "echonode_server_state_" + this.currentProfile;
   }
 
@@ -465,6 +493,43 @@ class StateStore {
     const isOwner = this.isOwner();
     const servers = this.getServersList();
     const activeId = this.getActiveServerId();
+
+    if (!activeId || servers.length === 0) {
+      this.currentProfile = null;
+      this.data = {
+        serverName: "No Server Active",
+        serverIp: "No Server",
+        serverVersion: "None",
+        installedSoftware: "None",
+        installedVersion: "",
+        status: "offline",
+        tps: 0.0,
+        ramUsage: 0.0,
+        ramMax: 4.0,
+        cpuUsage: 0,
+        onlinePlayersCount: 0,
+        maxPlayers: 0,
+        soundEnabled: true,
+        currentMode: "2d",
+        options: {
+          gamemode: "survival",
+          difficulty: "normal",
+          whitelist: false,
+          pvp: true,
+          nether: true,
+          cmdblocks: true,
+          flight: false,
+          maxPlayers: 20,
+          viewDist: 10,
+          motd: "No Server Active"
+        },
+        plugins: [],
+        players: [],
+        backups: [],
+        virtualFiles: {}
+      };
+      return;
+    }
 
     if (activeId === "skyheaven" && isOwner) {
       // 👑 OWNER PROFILE: SKY HEAVEN MC
@@ -2393,7 +2458,7 @@ class EchoNodeApp {
     if (store.canCreateServer()) {
       serverItemsHtml += `
         <div class="ctx-divider"></div>
-        <div class="ctx-subitem" onclick="app.openModal('modal-create-server'); app.hideContextMenu();" style="color: #00f5b8;">
+        <div class="ctx-subitem" onclick="app.promptCreateServer(); app.hideContextMenu();" style="color: #00f5b8;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span class="ctx-subitem-icon">➕</span>
             <span style="font-weight: 600;">Create New Server (${servers.length}/3)</span>
@@ -3113,8 +3178,9 @@ class EchoNodeApp {
   }
 
   setMetricsOffline() {
+    const hasServers = store.getServersList().length > 0;
     const ramVal = document.getElementById("val-ram-usage");
-    if (ramVal) ramVal.textContent = "0.0 GB / 8.0 GB";
+    if (ramVal) ramVal.textContent = hasServers ? "0.0 GB / 8.0 GB" : "0.0 GB / 0.0 GB";
     const ramBar = document.getElementById("bar-ram-fill");
     if (ramBar) ramBar.style.width = "0%";
     const cpuVal = document.getElementById("val-cpu-usage");
@@ -3122,21 +3188,21 @@ class EchoNodeApp {
     const cpuBar = document.getElementById("bar-cpu-fill");
     if (cpuBar) cpuBar.style.width = "0%";
     const ramLive = document.getElementById("metric-ram-live");
-    if (ramLive) ramLive.textContent = "Offline";
+    if (ramLive) ramLive.textContent = hasServers ? "Offline" : "No Server";
     const cpuLive = document.getElementById("metric-cpu-live");
     if (cpuLive) cpuLive.textContent = "0%";
     const tpsLive = document.getElementById("metric-tps-live");
-    if (tpsLive) tpsLive.textContent = "0.0 TPS (Offline)";
+    if (tpsLive) tpsLive.textContent = hasServers ? "0.0 TPS (Offline)" : "No Server (0 TPS)";
     const topTps = document.getElementById("top-stat-tps");
     if (topTps) topTps.innerHTML = '<span>TPS</span> --';
     const topPing = document.getElementById("top-stat-ping");
     if (topPing) topPing.innerHTML = '<span>PING</span> --';
     const topUptime = document.getElementById("top-stat-uptime");
-    if (topUptime) topUptime.innerHTML = '<span>UPTIME</span> 0h 0m (Offline)';
+    if (topUptime) topUptime.innerHTML = hasServers ? '<span>UPTIME</span> 0h 0m (Offline)' : '<span>UPTIME</span> 0h 0m (No Server)';
     const badgePlayers = document.getElementById("badge-players-count");
     if (badgePlayers) badgePlayers.textContent = "0 Online";
     const metricPlayers = document.getElementById("metric-players-live");
-    if (metricPlayers) metricPlayers.textContent = "0 / 50 Online";
+    if (metricPlayers) metricPlayers.textContent = hasServers ? "0 / 50 Online" : "0 / 0 Online";
   }
 
   setMetricsCloudActive() {
@@ -3226,6 +3292,18 @@ class EchoNodeApp {
   }
 
   async startServer() {
+    if (store.getServersList().length === 0) {
+      sfx.playWarning();
+      if (!store.isLoggedIn()) {
+        this.showToast("Please sign in or create an account to create a Minecraft server!", "warning");
+        this.openAuthModal("signup");
+      } else {
+        this.showToast("You don't have any servers yet! Click '+ Create New Server' to deploy one.", "info");
+        this.promptCreateServer();
+      }
+      return;
+    }
+
     // Only block if local backend is verified active AND server process is already running
     if (this.isLocalBackendOnline && this.lastBackendStatus === "online") {
       this.showToast("Minecraft Server is already running and online!", "info");
@@ -3437,6 +3515,9 @@ class EchoNodeApp {
   }
 
   async stopServer() {
+    if (store.getServersList().length === 0) {
+      return;
+    }
     this.isSimulatedOnline = false;
     localStorage.setItem('echonode_power_state', 'offline');
     this.isCloudOnline = false;
@@ -3472,6 +3553,17 @@ class EchoNodeApp {
   }
 
   async restartServer() {
+    if (store.getServersList().length === 0) {
+      sfx.playWarning();
+      if (!store.isLoggedIn()) {
+        this.showToast("Please sign in or create an account to create a Minecraft server!", "warning");
+        this.openAuthModal("signup");
+      } else {
+        this.showToast("You don't have any servers yet! Click '+ Create New Server' to deploy one.", "info");
+        this.promptCreateServer();
+      }
+      return;
+    }
     sfx.playClick();
     this.showToast("Restarting server...", "info");
     try {
@@ -3855,91 +3947,36 @@ class EchoNodeApp {
     if (pctText) pctText.textContent = "45%";
     if (statusMsg) statusMsg.textContent = "Deploying 24/7 Cloud Runner workflow to .github/workflows/minecraft-24-7.yml...";
 
-    const workflowContent = `name: EchoNode 24-7 Cloud Server
+    const workflowContent = `name: EchoNode World & Repository Backup
+
+# GitHub is strictly used as a Git Repository for code, plugins, and world saves.
+# GitHub Actions runner containers are NOT used as a server host.
+# Vercel handles all 24/7 web management, live ping, and Server ON/OFF controls.
 
 on:
-  push:
-    branches: [ main, master ]
   workflow_dispatch:
-  schedule:
-    # Run every 5 hours to stay within the 6-hour free GitHub Actions runner limit
-    - cron: '0 */5 * * *'
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
-  run-server:
-    name: 24/7 Cloud Minecraft Runner
+  backup-world:
+    name: Save World State to Repository
     runs-on: ubuntu-latest
-    timeout-minutes: 350
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Setup Java 21 LTS
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Ensure Paper / Purpur Server Core
+      - name: Snapshot World & Player Data
         run: |
-          if [ ! -f "paper.jar" ] || [ $(wc -c < "paper.jar") -lt 10000000 ]; then
-            echo "[EchoNode] Downloading Purpur Server Core..."
-            curl -sSL -o paper.jar https://api.purpurmc.org/v2/purpur/1.20.6/latest/download || \\
-            curl -sSL -o paper.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/499/downloads/paper-1.20.4-499.jar
-          fi
-          chmod +x paper.jar
-          echo "eula=true" > eula.txt
-
-      - name: Launch 24/7 Cloud Server & Playit Tunnel
-        run: |
-          echo "=========================================================="
-          echo "   EchoNode Cloud Server Running on GitHub Actions 24/7"
-          echo "=========================================================="
-          
-          # 1. Download & Launch playit.gg tunnel in background of this step
-          echo "[EchoNode] Downloading playit tunnel agent..."
-          sudo curl -sSL -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64
-          sudo chmod +x /usr/local/bin/playit
-          
-          echo "[EchoNode] Starting playit tunnel daemon..."
-          /usr/local/bin/playit --secret "\${{ secrets.PLAYIT_SECRET || 'ff4c67252a6366cf64a4a32e19be955cfd6dcaa441dc95a83da67c63d7b1dbdf' }}" > playit.log 2>&1 &
-          PLAYIT_PID=$!
-          sleep 4
-          cat playit.log || true
-
-          # 2. Keep stdin open using tail -f /dev/null to prevent headless EOF shutdown
-          # Limit heap to -Xmx5G -Xms2G to prevent GitHub runner 7GB OOM kill
-          echo "[EchoNode] Launching Minecraft Server engine..."
-          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -jar paper.jar --nogui
-
-          # Clean up tunnel when server shuts down
-          kill $PLAYIT_PID 2>/dev/null || true
-
-      - name: Auto-Save World Data
-        if: always()
-        run: |
+          echo "[EchoNode] Syncing world saves and configuration to repository..."
           git config --global user.name "echonode-bot"
           git config --global user.email "echonode-bot@users.noreply.github.com"
-          git add world world_nether world_the_end plugins/Essentials/userdata plugins/SkyHeavenCapes 2>/dev/null || true
-          git commit -m "Auto-saved server state" 2>/dev/null || echo "No changes to save"
+          git add world world_nether world_the_end plugins usercache.json server.properties ops.json whitelist.json 2>/dev/null || true
+          git commit -m "Auto-saved server state snapshot [skip ci]" 2>/dev/null || echo "No changes to save"
           git push origin HEAD:\${{ github.ref_name }} 2>/dev/null || echo "Push skipped"
-
-      - name: Auto-Loop Runner for Continuous 24/7 Uptime
-        if: always()
-        run: |
-          echo "Triggering next 24/7 runner lifecycle..."
-          curl -s -X POST \\
-            -H "Accept: application/vnd.github.v3+json" \\
-            -H "Authorization: token \${{ secrets.AUTO_RESTART_PAT || secrets.GITHUB_TOKEN }}" \\
-            https://api.github.com/repos/\${{ github.repository }}/actions/workflows/minecraft-24-7.yml/dispatches \\
-            -d '{"ref":"\${{ github.ref_name }}"}' || true
 `;
 
     await putGitHubFile(".github/workflows/minecraft-24-7.yml", workflowContent, "EchoNode 24/7 Cloud Server Deployment - Automatic Sync");
@@ -4004,6 +4041,12 @@ jobs:
 
     setInterval(async () => {
       try {
+        if (store.getServersList().length === 0) {
+          this.updateServerStatusUI("offline");
+          this.setMetricsOffline();
+          return;
+        }
+
         // 1. Fetch real-time status from server
         const currentPower = localStorage.getItem('echonode_power_state') || (this.isCloudOnline ? 'online' : 'offline');
         let sRes = null;
@@ -4087,11 +4130,6 @@ jobs:
           this.lastBackendStatus = "offline";
           if (this.isCloudOnline || currentPower === "online") {
             this.updateServerStatusUI("cloud_online");
-          } else if (!this.isSimulatedOnline) {
-            this.updateServerStatusUI("offline");
-            this.setMetricsOffline();
-          }
-        }
           } else if (!this.isSimulatedOnline) {
             this.updateServerStatusUI("offline");
             this.setMetricsOffline();
@@ -4451,18 +4489,7 @@ jobs:
     const btnOpenCreate = document.getElementById("btn-open-create-server-modal");
     if (btnOpenCreate) {
       btnOpenCreate.addEventListener("click", () => {
-        sfx.playClick();
-        if (!store.canCreateServer()) {
-          sfx.playWarning();
-          this.showToast("Maximum limit reached (3/3 servers). Delete an existing server to free up a slot.", "error");
-          return;
-        }
-        const servers = store.getServersList();
-        const slotLabel = document.getElementById("create-server-slot-label");
-        if (slotLabel) slotLabel.textContent = `Allocating Server Slot ${servers.length + 1} of 3 • Free Tier`;
-        const nameInput = document.getElementById("input-new-server-name");
-        if (nameInput) nameInput.value = `Server #${servers.length + 1}`;
-        this.openModal("modal-create-server");
+        this.promptCreateServer();
       });
     }
 
@@ -6697,51 +6724,69 @@ ${custom}
     const listContainer = document.getElementById("server-switcher-list");
     if (listContainer) {
       listContainer.innerHTML = "";
-      servers.forEach((s) => {
-        const isActive = (s.id === activeId);
-        const isSky = (s.id === "skyheaven");
-        const card = document.createElement("div");
-        card.className = "server-switch-item";
-        card.style.background = isActive ? "rgba(0, 245, 184, 0.06)" : "rgba(255, 255, 255, 0.03)";
-        card.style.border = isActive ? "1.5px solid #00f5b8" : "1.5px solid rgba(255, 255, 255, 0.1)";
-        card.style.borderRadius = "12px";
-        card.style.padding = "14px 18px";
-        card.style.display = "flex";
-        card.style.justifyContent = "space-between";
-        card.style.alignItems = "center";
-        card.style.transition = "all 0.2s ease";
-
-        const iconSrc = s.avatar || (isSky ? "assets/software/skyheaven.png" : "assets/software/echonode.png");
-
-        card.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 42px; height: 42px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 6px;">
-              <img src="${iconSrc}" alt="Server Logo" style="width: 100%; height: 100%; object-fit: contain;">
+      if (servers.length === 0) {
+        listContainer.innerHTML = `
+          <div style="text-align: center; padding: 36px 20px; background: rgba(255, 255, 255, 0.02); border: 1.5px dashed rgba(255, 255, 255, 0.12); border-radius: 14px;">
+            <div style="font-size: 38px; margin-bottom: 10px;">🎮</div>
+            <div style="font-weight: 700; color: #fff; font-size: 15px;">No Servers Created Yet</div>
+            <div style="color: #94a3b8; font-size: 12px; margin-top: 6px; max-width: 340px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+              ${store.isLoggedIn()
+                ? "You have 3 free server slots available. Create your first server to deploy!"
+                : "Sign in or create an account to deploy your own free Minecraft cloud server!"
+              }
             </div>
-            <div>
-              <div style="font-weight: 700; color: ${isActive ? '#00f5b8' : '#f8fafc'}; font-size: 14.5px; display: flex; align-items: center; gap: 8px;">
-                <span>${s.name}</span>
-                ${isActive ? '<span style="font-size: 10px; background: rgba(0, 245, 184, 0.2); border: 1px solid #00f5b8; color: #00f5b8; padding: 2px 7px; border-radius: 999px;">CURRENT</span>' : ''}
-                ${s.ownerOnly ? '<span style="font-size: 10px; background: rgba(0, 245, 184, 0.15); border: 1px solid rgba(0, 245, 184, 0.35); padding: 2px 7px; border-radius: 999px; color: #00f5b8;">OWNER</span>' : ''}
-              </div>
-              <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">
-                ${s.software} ${s.version} • Port ${s.port || 25565} • Dedicated 4.0 GB
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            ${isActive
-              ? '<button class="btn-primary" disabled style="font-size: 12px; padding: 6px 14px; opacity: 1; cursor: default;">Active ✓</button>'
-              : `<button class="btn-secondary" onclick="app.handleSwitchServer('${s.id}')" style="font-size: 12px; padding: 6px 14px;">${(s.ownerOnly && !isOwner) ? 'Unlock 🔒' : 'Switch'}</button>`
-            }
-            ${(!s.ownerOnly && servers.length > 1)
-              ? `<button class="btn-server-delete" onclick="app.handleDeleteServer('${s.id}')" title="Delete server to free up 1 of your 3 slots">🗑️</button>`
-              : ''
-            }
+            <button type="button" class="btn-primary" onclick="app.promptCreateServer()" style="margin-top: 18px; font-size: 13px; padding: 9px 22px; box-shadow: 0 0 16px rgba(0, 245, 184, 0.25); display: inline-flex; align-items: center; gap: 8px;">
+              <span>${store.isLoggedIn() ? "+ Create My First Server" : "🔑 Sign In to Create Server"}</span>
+            </button>
           </div>
         `;
-        listContainer.appendChild(card);
-      });
+      } else {
+        servers.forEach((s) => {
+          const isActive = (s.id === activeId);
+          const isSky = (s.id === "skyheaven");
+          const card = document.createElement("div");
+          card.className = "server-switch-item";
+          card.style.background = isActive ? "rgba(0, 245, 184, 0.06)" : "rgba(255, 255, 255, 0.03)";
+          card.style.border = isActive ? "1.5px solid #00f5b8" : "1.5px solid rgba(255, 255, 255, 0.1)";
+          card.style.borderRadius = "12px";
+          card.style.padding = "14px 18px";
+          card.style.display = "flex";
+          card.style.justifyContent = "space-between";
+          card.style.alignItems = "center";
+          card.style.transition = "all 0.2s ease";
+
+          const iconSrc = s.avatar || (isSky ? "assets/software/skyheaven.png" : "assets/software/echonode.png");
+
+          card.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 42px; height: 42px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 6px;">
+                <img src="${iconSrc}" alt="Server Logo" style="width: 100%; height: 100%; object-fit: contain;">
+              </div>
+              <div>
+                <div style="font-weight: 700; color: ${isActive ? '#00f5b8' : '#f8fafc'}; font-size: 14.5px; display: flex; align-items: center; gap: 8px;">
+                  <span>${s.name}</span>
+                  ${isActive ? '<span style="font-size: 10px; background: rgba(0, 245, 184, 0.2); border: 1px solid #00f5b8; color: #00f5b8; padding: 2px 7px; border-radius: 999px;">CURRENT</span>' : ''}
+                  ${s.ownerOnly ? '<span style="font-size: 10px; background: rgba(0, 245, 184, 0.15); border: 1px solid rgba(0, 245, 184, 0.35); padding: 2px 7px; border-radius: 999px; color: #00f5b8;">OWNER</span>' : ''}
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">
+                  ${s.software} ${s.version} • Port ${s.port || 25565} • Dedicated 4.0 GB
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              ${isActive
+                ? '<button class="btn-primary" disabled style="font-size: 12px; padding: 6px 14px; opacity: 1; cursor: default;">Active ✓</button>'
+                : `<button class="btn-secondary" onclick="app.handleSwitchServer('${s.id}')" style="font-size: 12px; padding: 6px 14px;">${(s.ownerOnly && !isOwner) ? 'Unlock 🔒' : 'Switch'}</button>`
+              }
+              ${(!s.ownerOnly && servers.length > 1)
+                ? `<button class="btn-server-delete" onclick="app.handleDeleteServer('${s.id}')" title="Delete server to free up 1 of your 3 slots">🗑️</button>`
+                : ''
+              }
+            </div>
+          `;
+          listContainer.appendChild(card);
+        });
+      }
     }
 
     // Owner Auth Box Visibility
@@ -6755,15 +6800,24 @@ ${custom}
     const slotIndicator = document.getElementById("btn-create-slot-indicator");
     const limitBanner = document.getElementById("server-limit-banner");
 
-    if (count >= 3) {
+    if (!store.isLoggedIn()) {
+      if (btnOpenCreate) {
+        btnOpenCreate.disabled = false;
+        btnOpenCreate.innerHTML = `<span>🔑 Sign In / Sign Up to Create</span>`;
+      }
+      if (slotIndicator) slotIndicator.textContent = "(Login Required)";
+      if (limitBanner) limitBanner.style.display = "none";
+    } else if (count >= 3) {
       if (btnOpenCreate) {
         btnOpenCreate.disabled = true;
+        btnOpenCreate.innerHTML = `<span>+ Create New Server (3/3 Max)</span>`;
       }
       if (slotIndicator) slotIndicator.textContent = "(3/3 Max Reached)";
       if (limitBanner) limitBanner.style.display = "flex";
     } else {
       if (btnOpenCreate) {
         btnOpenCreate.disabled = false;
+        btnOpenCreate.innerHTML = `<span>+ Create New Server</span>`;
       }
       if (slotIndicator) slotIndicator.textContent = `(Slot ${count + 1}/3)`;
       if (limitBanner) limitBanner.style.display = "none";
@@ -6857,9 +6911,39 @@ ${custom}
     }
   }
 
+  promptCreateServer() {
+    sfx.playClick();
+    if (!store.isLoggedIn()) {
+      sfx.playWarning();
+      this.closeModal("modal-server-switcher");
+      this.showToast("Please sign in or create an account to create a Minecraft server!", "warning");
+      this.openAuthModal("signup");
+      return;
+    }
+    if (!store.canCreateServer()) {
+      sfx.playWarning();
+      this.showToast("Maximum limit reached (3/3 servers). Delete an existing server to free up a slot.", "error");
+      return;
+    }
+    const servers = store.getServersList();
+    const slotLabel = document.getElementById("create-server-slot-label");
+    if (slotLabel) slotLabel.textContent = `Allocating Server Slot ${servers.length + 1} of 3 • Free Tier`;
+    const nameInput = document.getElementById("input-new-server-name");
+    if (nameInput) nameInput.value = `Server #${servers.length + 1}`;
+    this.openModal("modal-create-server");
+  }
+
   handleCreateServerSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
     sfx.playClick();
+
+    if (!store.isLoggedIn()) {
+      sfx.playWarning();
+      this.closeModal("modal-create-server");
+      this.showToast("Please sign in or create an account to create a Minecraft server!", "warning");
+      this.openAuthModal("signup");
+      return;
+    }
 
     if (!store.canCreateServer()) {
       sfx.playWarning();
@@ -6896,39 +6980,54 @@ ${custom}
     } else {
       sfx.playWarning();
       this.showToast(res.message || "Failed to create server.", "error");
+      if (res.requireAuth) {
+        this.closeModal("modal-create-server");
+        this.openAuthModal("signup");
+      }
     }
   }
 
   reloadServerData() {
     this.renderUserSessionUI();
+    const servers = store.getServersList();
+    const hasServer = servers.length > 0 && store.data && store.currentProfile;
 
     const nameEl = document.getElementById("display-server-name");
-    if (nameEl) nameEl.textContent = store.data.serverName;
+    if (nameEl) nameEl.textContent = hasServer ? store.data.serverName : "+ Create Server";
+
     const badgeEl = document.getElementById("sidebar-server-badge");
     if (badgeEl) {
-      if (store.currentProfile === "skyheaven") {
+      if (!hasServer) {
+        badgeEl.textContent = store.isLoggedIn() ? "0/3 Slots • Click to Create" : "Sign In to Create";
+      } else if (store.currentProfile === "skyheaven") {
         badgeEl.innerHTML = '<span style="color: #00f5b8; font-weight: 700;">👑 OWNER</span> • ' + store.data.serverVersion;
       } else {
         badgeEl.textContent = store.data.serverVersion;
       }
     }
-    const ipEl = document.getElementById("display-server-ip");
-    if (ipEl) ipEl.textContent = store.data.serverIp;
 
-    if (store.currentProfile === "skyheaven") {
+    const ipEl = document.getElementById("display-server-ip");
+    if (ipEl) ipEl.textContent = hasServer ? store.data.serverIp : "No Server";
+
+    const previewName = document.getElementById("preview-server-name");
+    if (previewName) previewName.textContent = hasServer ? store.data.serverName : "No Server Active";
+
+    if (!hasServer) {
+      this.updateAllUiIcons("assets/software/echonode.png");
+    } else if (store.currentProfile === "skyheaven") {
       this.updateAllUiIcons("assets/software/skyheaven.png");
     } else {
       this.updateAllUiIcons("server-icon.png");
     }
 
     const motdInput = document.getElementById("input-motd-editor");
-    if (motdInput && store.data.options) motdInput.value = store.data.options.motd || "";
+    if (motdInput && store.data && store.data.options) motdInput.value = store.data.options.motd || "";
     
     const repoInput = document.getElementById("input-github-repo");
-    if (repoInput) repoInput.value = store.data.githubRepo || "";
+    if (repoInput && store.data) repoInput.value = store.data.githubRepo || "";
     const runnerCard = document.getElementById("github-runner-live-card");
     if (runnerCard) {
-      if (store.data.githubRepo) {
+      if (store.data && store.data.githubRepo) {
         runnerCard.style.display = "block";
         const link = document.getElementById("github-runner-link");
         const repoEl = document.getElementById("github-runner-repo");
@@ -6939,7 +7038,12 @@ ${custom}
       }
     }
 
-    this.updateServerStatusUI(store.data.status || "offline");
+    if (!hasServer) {
+      this.updateServerStatusUI("offline");
+      this.setMetricsOffline();
+    } else {
+      this.updateServerStatusUI(store.data.status || "offline");
+    }
     this.renderInitialConsole();
     this.renderVersionUI();
     this.renderWorldsList();
@@ -8107,6 +8211,13 @@ ${custom}
     if (btnSwitcherImport) {
       btnSwitcherImport.addEventListener("click", () => {
         sfx.playClick();
+        if (!store.isLoggedIn()) {
+          sfx.playWarning();
+          this.closeModal("modal-server-switcher");
+          this.showToast("Please sign in or create an account to import a server!", "warning");
+          this.openAuthModal("signup");
+          return;
+        }
         this.closeModal("modal-server-switcher");
         this.openModal("modal-import-server");
       });
