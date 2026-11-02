@@ -72,6 +72,12 @@ function pingMinecraft(host, port = 25565, timeout = 2500) {
     socket.on('close', () => {
       if (!settled) { settled = true; resolve({ online: false }); }
     });
+
+    try {
+      socket.connect(port, host);
+    } catch (e) {
+      if (!settled) { settled = true; socket.destroy(); resolve({ online: false }); }
+    }
   });
 }
 
