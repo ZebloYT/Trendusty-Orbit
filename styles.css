@@ -352,11 +352,11 @@ body.mode-3d .spatial-hud-controls {
    Sidebar Minimize/Maximize Corner Button & Responsive Layout
    ========================================================================== */
 .sidebar-toggle-btn {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  background: #18181b;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  background: #18191c;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   color: #a1a1aa;
   display: inline-flex;
@@ -367,34 +367,32 @@ body.mode-3d .spatial-hud-controls {
   padding: 0;
   flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  position: relative;
+  z-index: 5;
 }
 
 .sidebar-toggle-btn:hover {
   background: #27272a;
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.32);
   color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .sidebar-toggle-btn:active {
-  transform: translateY(0) scale(0.95);
+  transform: translateY(0) scale(0.94);
 }
 
 .sidebar-toggle-icon {
-  width: 18px;
-  height: 18px;
+  width: 19px;
+  height: 19px;
   display: block;
+  pointer-events: none;
 }
 
 .sidebar-icon-panel {
+  fill: currentColor;
   transition: opacity 0.2s ease, fill 0.2s ease;
-}
-
-#sidebar.minimized .sidebar-icon-panel,
-.sidebar-minimized .sidebar-icon-panel {
-  opacity: 0.2;
-  fill: none;
 }
 
 /* Minimized Sidebar Styles */
@@ -430,6 +428,16 @@ body.mode-3d .spatial-hud-controls {
   margin: 0 auto;
   width: 36px;
   height: 36px;
+  background: #202227;
+  border-color: rgba(0, 245, 184, 0.35);
+  color: #00f5b8;
+}
+
+#sidebar.minimized #btn-toggle-sidebar:hover {
+  background: #282a32;
+  border-color: #00f5b8;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(0, 245, 184, 0.4);
 }
 
 #sidebar.minimized .sidebar-user-card {
