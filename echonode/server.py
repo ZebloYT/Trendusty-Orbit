@@ -630,12 +630,14 @@ mc_server = MinecraftServerController(SERVER_DIR)
 WORKFLOW_YML = """name: EchoNode 24-7 Cloud Server
 
 on:
-  push:
-    branches: [ main, master ]
   workflow_dispatch:
   schedule:
-    # Run every 5 hours to stay within the 6-hour free GitHub Actions runner limit
-    - cron: '0 */5 * * *'
+    # Run once every 6 hours (safe non-overlapping schedule)
+    - cron: '0 */6 * * *'
+
+concurrency:
+  group: minecraft-server-247
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -653,13 +655,13 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Java 21 LTS
+      - name: Setup Java Runtime
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Ensure Paper / Purpur Server Core
+      - name: Ensure Paper / Purpur Server Core & Config
         run: |
           if [ ! -f "paper.jar" ] || [ $(wc -c < "paper.jar") -lt 10000000 ]; then
             echo "[EchoNode] Downloading Purpur Server Core..."
@@ -670,6 +672,8 @@ jobs:
           echo "eula=true" > eula.txt
           if [ ! -f "server.properties" ]; then
             printf "server-port=25565\\ngamemode=survival\\ndifficulty=normal\\npvp=true\\nonline-mode=false\\nmax-players=50\\nmotd=\\\\u00A7b\\\\u00A7l✦ EchoNode 24/7 Cloud Server\\\\n" > server.properties
+          else
+            sed -i 's/online-mode=true/online-mode=false/g' server.properties
           fi
 
       - name: Launch 24/7 Cloud Server & Playit Tunnel
@@ -678,7 +682,7 @@ jobs:
           echo "   EchoNode Cloud Server Running on GitHub Actions 24/7"
           echo "=========================================================="
           
-          # 1. Download & Launch playit.gg tunnel in background of this step
+          # 1. Download & Launch playit.gg tunnel agent
           echo "[EchoNode] Downloading playit tunnel agent..."
           sudo curl -sSL -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-linux-amd64
           sudo chmod +x /usr/local/bin/playit
@@ -689,10 +693,9 @@ jobs:
           sleep 4
           cat playit.log || true
 
-          # 2. Keep stdin open using tail -f /dev/null to prevent headless EOF shutdown
-          # Limit heap to -Xmx5G -Xms2G to prevent GitHub runner 7GB OOM kill
+          # 2. Keep stdin open and run Java with safe 4GB memory to prevent runner OOM kill
           echo "[EchoNode] Launching Minecraft Server engine..."
-          tail -f /dev/null | java -Xmx5G -Xms2G -XX:+UseG1GC -Dterminal.jline=false -Dterminal.ansi=true -jar paper.jar --nogui
+          tail -f /dev/null | java -Xmx4G -Xms2G -XX:+UseG1GC -Dterminal.jline=false -Dterminal.ansi=true -jar paper.jar --nogui
 
           # Clean up tunnel when server shuts down
           kill $PLAYIT_PID 2>/dev/null || true
@@ -702,19 +705,9 @@ jobs:
         run: |
           git config --global user.name "echonode-bot"
           git config --global user.email "echonode-bot@users.noreply.github.com"
-          git add world world_nether world_the_end plugins/Essentials/userdata plugins/SkyHeavenCapes 2>/dev/null || true
-          git commit -m "Auto-saved server state" 2>/dev/null || echo "No changes to save"
+          git add world world_nether world_the_end plugins/Essentials/userdata plugins/SkyHeavenCapes usercache.json server.properties ops.json whitelist.json 2>/dev/null || true
+          git commit -m "Auto-saved server state [skip ci]" 2>/dev/null || echo "No changes to save"
           git push origin HEAD:${{ github.ref_name }} 2>/dev/null || echo "Push skipped"
-
-      - name: Auto-Loop Runner for Continuous 24/7 Uptime
-        if: always()
-        run: |
-          echo "Triggering next 24/7 runner lifecycle..."
-          curl -s -X POST \\
-            -H "Accept: application/vnd.github.v3+json" \\
-            -H "Authorization: token ${{ secrets.AUTO_RESTART_PAT || secrets.GITHUB_TOKEN }}" \\
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/minecraft-24-7.yml/dispatches \\
-            -d '{"ref":"${{ github.ref_name }}"}' || true
 """
 
 LOCAL_BAT = """@echo off
@@ -1166,6 +1159,70 @@ class RobustHandler(SimpleHTTPRequestHandler):
                     body_data = json.loads(body_bytes.decode("utf-8"))
             except Exception:
                 body_data = {}
+
+        # --- REST API: Send Verification Code Email via Gmail / SMTP ---
+        if path == "/api/send-email":
+            to_email = (body_data.get("to") or body_data.get("email") or "").strip()
+            code = (body_data.get("code") or "").strip()
+            if not to_email or not code:
+                self.send_json({"success": False, "message": "Missing recipient email or code"}, 400)
+                return
+
+            smtp_user = os.environ.get("SMTP_USER") or os.environ.get("GMAIL_USER")
+            smtp_pass = os.environ.get("SMTP_PASS") or os.environ.get("GMAIL_APP_PASSWORD")
+            smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+            smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+
+            sent = False
+            error_msg = None
+            if smtp_user and smtp_pass:
+                try:
+                    import smtplib
+                    from email.mime.text import MIMEText
+                    from email.mime.multipart import MIMEMultipart
+
+                    msg = MIMEMultipart("alternative")
+                    msg["Subject"] = f"Your EchoNode Verification Code: {code}"
+                    msg["From"] = f"EchoNode Cloud <{smtp_user}>"
+                    msg["To"] = to_email
+
+                    text_content = f"Your EchoNode 6-character verification code is: {code}\n\nThis code expires in 10 minutes."
+                    html_content = f"""
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; background: #0f172a; color: #f8fafc; border-radius: 12px; border: 1px solid #1e293b;">
+                      <div style="text-align: center; margin-bottom: 20px;">
+                        <h2 style="color: #38bdf8; margin: 0; font-size: 24px; letter-spacing: 1px;">ECHONODE CLOUD</h2>
+                        <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">24/7 Minecraft Server Management Suite</p>
+                      </div>
+                      <div style="background: #1e293b; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 20px;">
+                        <span style="font-size: 13px; color: #94a3b8; display: block; margin-bottom: 8px;">Your 6-Character Verification Code:</span>
+                        <div style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #4ade80; background: #0f172a; padding: 12px; border-radius: 6px; display: inline-block; font-family: monospace;">{code}</div>
+                        <span style="font-size: 11px; color: #64748b; display: block; margin-top: 10px;">Valid for 10 minutes. Do not share this code with anyone.</span>
+                      </div>
+                      <p style="font-size: 12px; color: #64748b; text-align: center; margin: 0;">If you did not request this verification code, please ignore this email.</p>
+                    </div>
+                    """
+                    msg.attach(MIMEText(text_content, "plain"))
+                    msg.attach(MIMEText(html_content, "html"))
+
+                    if smtp_port == 465:
+                        with smtplib.SMTP_SSL(smtp_host, smtp_port) as s:
+                            s.login(smtp_user, smtp_pass)
+                            s.sendmail(smtp_user, to_email, msg.as_string())
+                    else:
+                        with smtplib.SMTP(smtp_host, smtp_port) as s:
+                            s.starttls()
+                            s.login(smtp_user, smtp_pass)
+                            s.sendmail(smtp_user, to_email, msg.as_string())
+                    sent = True
+                    print(f"[AUTH EMAIL] Successfully sent verification code to {to_email} via SMTP")
+                except Exception as ex:
+                    error_msg = str(ex)
+                    print(f"[AUTH EMAIL ERROR] Failed to send via SMTP: {ex}")
+            else:
+                print(f"[AUTH EMAIL] Verification code dispatched to {to_email}")
+
+            self.send_json({"success": True, "sent": sent, "message": "Verification code dispatched to " + to_email, "error": error_msg})
+            return
 
         # --- REST API: Start Server ---
         if path == "/api/server/start":
