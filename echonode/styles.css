@@ -92,6 +92,58 @@ body.custom-cursor-active td {
   cursor: none !important;
 }
 
+/* ==========================================================================
+   TERMINAL TEXT SELECTION & NATIVE TEXT CURSOR OVERRIDE
+   Allows selecting and copying terminal text with the native OS text cursor (I-beam)
+   ========================================================================== */
+body.custom-cursor-active .terminal-body,
+body.custom-cursor-active .terminal-body *,
+body.custom-cursor-active #terminal-output,
+body.custom-cursor-active #terminal-output *,
+body.custom-cursor-active .log-line,
+body.custom-cursor-active .log-line *,
+body.custom-cursor-active .terminal-input,
+body.custom-cursor-active #terminal-cmd-input,
+.terminal-body,
+.terminal-body *,
+#terminal-output,
+#terminal-output *,
+.log-line,
+.log-line *,
+.terminal-input,
+#terminal-cmd-input {
+  cursor: text !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Vivid selection highlight inside terminal */
+.terminal-body ::selection,
+.terminal-body *::selection,
+#terminal-output ::selection,
+#terminal-output *::selection,
+.log-line::selection,
+.log-line *::selection,
+.terminal-input::selection,
+#terminal-cmd-input::selection {
+  background: rgba(0, 245, 184, 0.45) !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 6px rgba(0, 245, 184, 0.8) !important;
+}
+
+/* Header buttons and action controls inside terminal */
+body.custom-cursor-active .terminal-header-bar,
+body.custom-cursor-active .terminal-header-bar *,
+body.custom-cursor-active .term-btn,
+body.custom-cursor-active .term-send-btn,
+.term-btn,
+.term-send-btn {
+  cursor: pointer !important;
+  user-select: none !important;
+}
+
 /* Touch screen fallback */
 @media (pointer: coarse) {
   html, body, *, *::before, *::after { cursor: auto !important; }

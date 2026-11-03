@@ -2154,11 +2154,43 @@ class EchoNodeApp {
       }
     });
 
+    // Terminal text area detection: allows native OS I-beam text cursor inside terminal
+    const terminalTextSelector = ".terminal-body, #terminal-output, .log-line, .terminal-input, #terminal-cmd-input";
+    let isOverTerminal = false;
+
+    const checkTerminalTarget = (target) => {
+      if (!target || !target.closest) return false;
+      return target.closest(terminalTextSelector) !== null;
+    };
+
     // Mouse movement with distance threshold for particle trail
     let lastTrailX = -100, lastTrailY = -100;
     window.addEventListener("mousemove", (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+
+      const overTerminal = checkTerminalTarget(e.target);
+      if (overTerminal !== isOverTerminal) {
+        isOverTerminal = overTerminal;
+        if (isOverTerminal) {
+          dot.style.opacity = "0";
+          ring.style.opacity = "0";
+          customImg.style.opacity = "0";
+          trails.forEach(t => (t.style.opacity = "0"));
+        } else if (isVisible) {
+          if (!useCustom) {
+            dot.style.opacity = "1";
+            ring.style.opacity = "1";
+          } else {
+            customImg.style.opacity = "1";
+          }
+        }
+      }
+
+      if (isOverTerminal) {
+        // Hide custom cursor elements over the terminal so native OS text cursor (I-beam) is displayed cleanly
+        return;
+      }
 
       if (!isVisible) {
         isVisible = true;
@@ -2196,7 +2228,7 @@ class EchoNodeApp {
 
     // Smooth follower easing ring
     const renderFollower = () => {
-      if (isVisible && !useCustom) {
+      if (isVisible && !useCustom && !isOverTerminal) {
         const ease = 0.18;
         ringX += (mouseX - ringX) * ease;
         ringY += (mouseY - ringY) * ease;
@@ -2289,6 +2321,11 @@ class EchoNodeApp {
     window.addEventListener("contextmenu", (e) => {
       // Allow default browser context menu for input fields and textareas
       if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+
+      // Allow native browser context menu inside terminal logs so users can copy selected text
+      if (e.target && e.target.closest && e.target.closest(".terminal-body, #terminal-output, .log-line")) {
+        return;
+      }
 
       // In 3D mode, if the user was actively panning/orbiting the camera, don't open menu
       if (typeof spatialEngine !== "undefined" && spatialEngine.is3D && spatialEngine.hasDraggedDistance > 6) {
