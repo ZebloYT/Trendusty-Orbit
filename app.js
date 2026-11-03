@@ -2067,6 +2067,10 @@ class EchoNodeApp {
 
     if (!dot || !ring || !customImg) return;
 
+    // Enable custom cursor mode: hide the OS default mouse so only the website cursor renders
+    document.documentElement.classList.add("custom-cursor-active");
+    if (document.body) document.body.classList.add("custom-cursor-active");
+
     let mouseX = -100, mouseY = -100;
     let ringX = -100, ringY = -100;
     let isVisible = false;
@@ -2097,12 +2101,24 @@ class EchoNodeApp {
 
     const updateDomCursorImage = (url) => {
       if (url) {
-        useCustom = true;
-        dot.style.display = "none";
-        ring.style.display = "none";
-        trails.forEach(t => (t.style.display = "none"));
-        customImg.style.display = "block";
-        customImg.style.backgroundImage = `url('${resolveCursorPath(url)}')`;
+        const resolved = resolveCursorPath(url);
+        const testImg = new Image();
+        testImg.onload = () => {
+          useCustom = true;
+          dot.style.display = "none";
+          ring.style.display = "none";
+          trails.forEach(t => (t.style.display = "none"));
+          customImg.style.display = "block";
+          customImg.style.backgroundImage = `url('${resolved}')`;
+        };
+        testImg.onerror = () => {
+          useCustom = false;
+          dot.style.display = "block";
+          ring.style.display = "block";
+          customImg.style.display = "none";
+          trails.forEach(t => (t.style.display = "block"));
+        };
+        testImg.src = resolved;
       } else {
         useCustom = false;
         dot.style.display = "block";

@@ -62,8 +62,35 @@
 /* ==========================================================================
    TACTICAL ORBIT CURSOR - ADVANCED STATES
    ========================================================================== */
-body.custom-cursor-active, body.custom-cursor-active *, body.custom-cursor-active *::before, body.custom-cursor-active *::after { cursor: none !important; }
-body.custom-cursor-active a, body.custom-cursor-active button, body.custom-cursor-active input, body.custom-cursor-active textarea, body.custom-cursor-active select, body.custom-cursor-active canvas, body.custom-cursor-active [role="button"], body.custom-cursor-active label { cursor: none !important; }
+html.custom-cursor-active,
+html.custom-cursor-active body,
+html.custom-cursor-active *,
+html.custom-cursor-active *::before,
+html.custom-cursor-active *::after,
+body.custom-cursor-active,
+body.custom-cursor-active *,
+body.custom-cursor-active *::before,
+body.custom-cursor-active *::after {
+  cursor: none !important;
+}
+
+body.custom-cursor-active a,
+body.custom-cursor-active button,
+body.custom-cursor-active input,
+body.custom-cursor-active textarea,
+body.custom-cursor-active select,
+body.custom-cursor-active canvas,
+body.custom-cursor-active [role="button"],
+body.custom-cursor-active label,
+body.custom-cursor-active div,
+body.custom-cursor-active span,
+body.custom-cursor-active pre,
+body.custom-cursor-active code,
+body.custom-cursor-active p,
+body.custom-cursor-active tr,
+body.custom-cursor-active td {
+  cursor: none !important;
+}
 
 /* Touch screen fallback */
 @media (pointer: coarse) {
