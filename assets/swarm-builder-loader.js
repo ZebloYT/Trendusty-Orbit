@@ -1489,7 +1489,8 @@
   // ------------------------------------------------------------------ styles
 
   const STYLE = `
-:host{all:initial}
+:host{all:initial;cursor:none !important}
+:host *{cursor:none !important}
 *{box-sizing:border-box}
 .bg{position:absolute;inset:0;opacity:0;transition:opacity .5s ease}
 .bg.on{opacity:1}
@@ -1634,7 +1635,7 @@
       for (const old of document.querySelectorAll("swarm-rebuild")) old.remove();
       const host = document.createElement("swarm-rebuild");
       host.style.cssText =
-        "all:initial !important;position:fixed !important;inset:0 !important;z-index:2147483647 !important;display:block !important;pointer-events:auto !important;contain:strict !important;opacity:1;transition:opacity .6s ease;";
+        "all:initial !important;position:fixed !important;inset:0 !important;z-index:2147483640 !important;display:block !important;pointer-events:auto !important;contain:strict !important;opacity:1;transition:opacity .6s ease;";
       env.host = host;
       this.host = host;
       const root = host.attachShadow({ mode: "open" });
@@ -3973,6 +3974,30 @@
       if (dot) dot.style.opacity = '0';
       if (ring) ring.style.opacity = '0';
       if (customImg) customImg.style.opacity = '0';
+
+      // Prevent the main website from scrolling while mouse is disconnected / before calibration
+      if (!this._scrollLockAttached) {
+        this._scrollLockAttached = true;
+        this._scrollBlocker = (e) => {
+          if (document.documentElement.classList.contains('sb-mouse-disconnected')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        };
+        window.addEventListener('wheel', this._scrollBlocker, { passive: false, capture: true });
+        window.addEventListener('touchmove', this._scrollBlocker, { passive: false, capture: true });
+        window.addEventListener('keydown', (e) => {
+          if (document.documentElement.classList.contains('sb-mouse-disconnected')) {
+            const blockedKeys = ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Space', 'Home', 'End'];
+            if (blockedKeys.includes(e.code) || blockedKeys.includes(e.key)) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }
+        }, { capture: true });
+      }
+      try { window.scrollTo(0, 0); } catch (_) {}
     }
 
     enableUserMouse() {
@@ -3982,8 +4007,20 @@
       const dot = document.getElementById('orbit-cursor-dot');
       const ring = document.getElementById('orbit-cursor-ring');
       const customImg = document.getElementById('custom-img-cursor');
-      if (dot) dot.style.opacity = '1';
-      if (ring) ring.style.opacity = '1';
+      if (dot) {
+        dot.style.opacity = '1';
+        dot.style.visibility = 'visible';
+        dot.style.display = 'block';
+        dot.style.zIndex = '2147483649';
+        document.body.appendChild(dot); // Bring to very top of body
+      }
+      if (ring) {
+        ring.style.opacity = '1';
+        ring.style.visibility = 'visible';
+        ring.style.display = 'block';
+        ring.style.zIndex = '2147483648';
+        document.body.appendChild(ring); // Bring to very top of body
+      }
       if (customImg && customImg.style.display !== 'none') customImg.style.opacity = '1';
     }
 
@@ -4096,22 +4133,31 @@
       this.stage = document.createElement('div');
       this.stage.id = 'sb-forge-stage';
       this.stage.innerHTML = `
-        <!-- 1. Master Cursor (Cursor Architect) -->
+        <!-- 1. Master Cursor (Cursor Architect 1) -->
         <div id="sb-master-cur" class="sb-master-cursor" style="transform: translate3d(${cx - 280}px, ${cy - 220}px, 0);">
           <svg class="sb-master-pointer" viewBox="0 0 24 24" fill="none">
             <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#a855f7" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
           </svg>
           <div class="sb-master-tag">Orbit AI</div>
-          <div id="sb-master-bubble" class="sb-master-bubble">Architecting custom cursor... 🛠️</div>
+          <div id="sb-master-bubble" class="sb-master-bubble">Calibrating cursor origin... 🎯</div>
         </div>
 
-        <!-- 2. Newly Generated Cursor Elements -->
+        <!-- 2. Second Cursor (Cursor Architect 2) -->
+        <div id="sb-second-cur" class="sb-master-cursor" style="transform: translate3d(${cx + 300}px, ${cy + 180}px, 0); opacity: 0; pointer-events: none;">
+          <svg class="sb-master-pointer" viewBox="0 0 24 24" fill="none">
+            <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#38bdf8" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <div class="sb-master-tag" style="background:#0284c7; box-shadow:0 3px 12px rgba(2, 132, 199, 0.5);">Orbit Bot 2</div>
+          <div id="sb-second-bubble" class="sb-master-bubble" style="border-color:#38bdf8; color:#38bdf8;">Tracing follower ring... ⭕</div>
+        </div>
+
+        <!-- 3. Newly Generated Cursor Elements -->
         <div id="sb-created-cur" class="sb-created-cursor" style="transform: translate3d(${cx}px, ${cy}px, 0);">
           <div id="sb-created-dot" class="sb-created-dot"></div>
           <div id="sb-created-ring" class="sb-created-ring"></div>
         </div>
 
-        <!-- 3. Non-Interactable Code / Kinematics Overlay Menu -->
+        <!-- 4. Non-Interactable Code / Kinematics Overlay Menu -->
         <div id="sb-code-overlay" class="sb-code-overlay" style="left: ${cx + 70}px; top: ${cy - 120}px;">
           <div class="sb-overlay-header">
             <div class="sb-traffic-dots">
@@ -4144,6 +4190,8 @@
 
       const master = document.getElementById('sb-master-cur');
       const bubble = document.getElementById('sb-master-bubble');
+      const second = document.getElementById('sb-second-cur');
+      const secondBubble = document.getElementById('sb-second-bubble');
       const createdCur = document.getElementById('sb-created-cur');
       const dotEl = document.getElementById('sb-created-dot');
       const ringEl = document.getElementById('sb-created-ring');
@@ -4157,6 +4205,12 @@
         bubble.classList.add('is-active');
       };
 
+      const setSecondBubble = (text) => {
+        if (!secondBubble) return;
+        secondBubble.textContent = text;
+        secondBubble.classList.add('is-active');
+      };
+
       const spawnWave = (x, y) => {
         const w = document.createElement('div');
         w.className = 'sb-click-wave';
@@ -4166,58 +4220,86 @@
         setTimeout(() => w.remove(), 500);
       };
 
-      // TIMELINE 1: Master cursor swoops to center (50ms)
+      // STEP 1: First mouse comes in (50ms) to center, WAITS FOR 1 FULL SECOND!
       this.schedule(() => {
-        if (master) master.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-        setBubble('Generating website mouse... 🛠️');
+        if (master) {
+          master.style.transition = 'transform 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          master.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        }
+        setBubble('Locking target: Center mouse... 🎯');
       }, 50);
 
-      // TIMELINE 2: Step 1 - Make the mouse a GREEN DOT (450ms)
+      // AFTER 1 SEC WAIT (400ms arrival + 1000ms wait = 1400ms): Click on main mouse to make it the green middle dot!
       this.schedule(() => {
-        if (master) master.style.transform = `translate3d(${cx + 4}px, ${cy + 4}px, 0)`;
+        if (master) {
+          master.style.transform = `translate3d(${cx + 4}px, ${cy + 4}px, 0)`;
+        }
         spawnWave(cx, cy);
         playSynthTone(720, 'sine', 0.12, 0.09);
 
         if (dotEl) dotEl.classList.add('is-visible');
-        setBubble('1. Creating core green dot 🟢');
-      }, 450);
+        setBubble('1. Green core dot forged 🟢');
+      }, 1400);
 
-      // TIMELINE 3: Step 2 - Trace CIRCLE AROUND THE DOT (800ms)
+      // STEP 2: Second mouse comes and generates the round circle (1900ms)
       this.schedule(() => {
-        setBubble('2. Tracing follower circle ⭕');
-        if (ringEl) ringEl.classList.add('is-visible', 'is-tracing');
-        playSynthTone(840, 'triangle', 0.18, 0.08);
+        const r = 28; // 28px radius = 56px follower circle diameter
+        if (second) {
+          second.style.opacity = '1';
+          second.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          second.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
+        }
+        setSecondBubble('2. Tracing true 360° circle ⭕');
+      }, 1900);
 
-        const r = 32;
-        if (master) {
-          master.style.transition = 'transform 0.16s ease-out';
-          master.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
+      // Trigonometric circular trajectory (2350ms): Smooth round movement, NOT a rhombus!
+      this.schedule(() => {
+        const r = 28;
+        const traceDuration = 1100;
+        const traceStart = performance.now();
+        if (ringEl) {
+          ringEl.classList.add('is-visible', 'is-tracing');
+          ringEl.style.transition = 'none';
         }
 
-        this.schedule(() => {
-          if (master) master.style.transform = `translate3d(${cx}px, ${cy + r}px, 0)`;
-          playSynthTone(880, 'sine', 0.07);
-        }, 160);
+        let lastAudioAngle = 0;
+        const traceStep = () => {
+          if (!this.stage) return;
+          const elapsed = performance.now() - traceStart;
+          const p = Math.min(1, elapsed / traceDuration);
+          const angle = p * Math.PI * 2;
+          const px = cx + Math.cos(angle) * r;
+          const py = cy + Math.sin(angle) * r;
 
-        this.schedule(() => {
-          if (master) master.style.transform = `translate3d(${cx - r}px, ${cy}px, 0)`;
-          playSynthTone(920, 'sine', 0.07);
-        }, 320);
+          if (second) {
+            second.style.transition = 'none';
+            second.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+          }
 
-        this.schedule(() => {
-          if (master) master.style.transform = `translate3d(${cx}px, ${cy - r}px, 0)`;
-          playSynthTone(980, 'sine', 0.07);
-        }, 480);
+          if (ringEl) {
+            ringEl.style.transform = `translate(-50%, -50%) scale(${Math.min(1, 0.25 + p * 0.75)})`;
+          }
 
-        this.schedule(() => {
-          if (master) master.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
-          if (ringEl) ringEl.classList.remove('is-tracing');
-          playSynthTone(1046, 'sine', 0.22, 0.1);
-        }, 640);
+          if (angle - lastAudioAngle > 1.2) {
+            lastAudioAngle = angle;
+            playSynthTone(860 + (p * 220), 'sine', 0.05, 0.04);
+          }
 
-      }, 800);
+          if (p < 1) {
+            requestAnimationFrame(traceStep);
+          } else {
+            if (ringEl) {
+              ringEl.classList.remove('is-tracing');
+              ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
+            }
+            playSynthTone(1046, 'sine', 0.22, 0.1);
+            setSecondBubble('Follower ring bounded ⭕ ✔');
+          }
+        };
+        requestAnimationFrame(traceStep);
+      }, 2350);
 
-      // TIMELINE 4: Step 3 - DOUBLE CLICK IT (1600ms)
+      // STEP 3: Master mouse double-clicks it (3600ms)
       this.schedule(() => {
         if (master) {
           master.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
@@ -4233,9 +4315,9 @@
           setTimeout(() => {
             if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
           }, 70);
-        }, 220);
+        }, 180);
 
-        // Click 2 (Double click rapid succession)
+        // Click 2
         this.schedule(() => {
           spawnWave(cx, cy);
           playSynthTone(480, 'square', 0.08, 0.1);
@@ -4243,45 +4325,56 @@
           setTimeout(() => {
             if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
           }, 120);
-        }, 340);
+        }, 300);
+      }, 3600);
 
-      }, 1600);
-
-      // TIMELINE 5: Step 4 - MENU OPENS (OVERLAY, NON-INTERACTABLE) (2100ms)
+      // STEP 4: Configuration overlay opens (4100ms)
       this.schedule(() => {
         playSynthTone(580, 'triangle', 0.16, 0.08);
         if (codeOverlay) codeOverlay.classList.add('is-active');
         setBubble('Opening configuration overlay ⚙️');
-      }, 2100);
+      }, 4100);
 
-      // TIMELINE 6: Step 5 - AUTO-MOVES RIGIDLY WITHOUT SMOOTH GLIDING (2400ms)
+      // STEP 5: Test them without gliding: Make it really move like a real human! NO TELEPORTING! (4450ms)
       this.schedule(() => {
-        setBubble('Testing kinematics: NO GLIDE ⚠️');
+        setBubble('Testing kinematics: RIGID (NO GLIDE) ⚠️');
 
+        // Leg 1: quick human flick with sharp dead stop
         if (createdCur) {
-          createdCur.style.transition = 'none';
-          createdCur.style.transform = `translate3d(${cx - 130}px, ${cy - 60}px, 0)`;
+          createdCur.style.transition = 'transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1)';
+          createdCur.style.transform = `translate3d(${cx - 150}px, ${cy - 70}px, 0)`;
         }
         playSynthTone(320, 'sawtooth', 0.05, 0.04);
 
+        // Leg 2: swift dart to upper right
         this.schedule(() => {
-          if (createdCur) createdCur.style.transform = `translate3d(${cx + 140}px, ${cy - 40}px, 0)`;
-          playSynthTone(320, 'sawtooth', 0.05, 0.04);
-        }, 250);
+          if (createdCur) {
+            createdCur.style.transition = 'transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1)';
+            createdCur.style.transform = `translate3d(${cx + 160}px, ${cy - 40}px, 0)`;
+          }
+          playSynthTone(340, 'sawtooth', 0.05, 0.04);
+        }, 360);
 
+        // Leg 3: human hand adjustment down left
         this.schedule(() => {
-          if (createdCur) createdCur.style.transform = `translate3d(${cx - 70}px, ${cy + 70}px, 0)`;
-          playSynthTone(320, 'sawtooth', 0.05, 0.04);
-        }, 500);
+          if (createdCur) {
+            createdCur.style.transition = 'transform 0.26s cubic-bezier(0.22, 0.61, 0.36, 1)';
+            createdCur.style.transform = `translate3d(${cx - 80}px, ${cy + 80}px, 0)`;
+          }
+          playSynthTone(330, 'sawtooth', 0.05, 0.04);
+        }, 720);
 
+        // Leg 4: crisp return to center
         this.schedule(() => {
-          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-          playSynthTone(320, 'sawtooth', 0.05, 0.04);
-        }, 750);
+          if (createdCur) {
+            createdCur.style.transition = 'transform 0.26s cubic-bezier(0.22, 0.61, 0.36, 1)';
+            createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+          }
+          playSynthTone(360, 'sawtooth', 0.05, 0.04);
+        }, 1080);
+      }, 4450);
 
-      }, 2400);
-
-      // TIMELINE 7: Step 6 - MASTER CURSOR WRITES GLIDING CODE (3350ms)
+      // STEP 6: Master cursor writes gliding script (5900ms)
       this.schedule(() => {
         if (codeOverlay && master) {
           const overlayRect = codeOverlay.getBoundingClientRect();
@@ -4310,10 +4403,9 @@
             setBubble('Gliding compiled! 100% ✔');
           }
         }, 20);
+      }, 5900);
 
-      }, 3350);
-
-      // TIMELINE 8: Step 7 - MOUSE STARTS GLIDING SMOOTHLY! (4600ms)
+      // STEP 7: Mouse starts gliding smoothly! (7200ms)
       this.schedule(() => {
         setBubble('Watch it glide! ✨');
 
@@ -4340,10 +4432,9 @@
           if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
           playSynthTone(880, 'sine', 0.18, 0.08);
         }, 900);
+      }, 7200);
 
-      }, 4600);
-
-      // TIMELINE 9: Step 8 - MAKE MOUSE OPERABLE AND VISIBLE ON WEBSITE (5800ms)
+      // STEP 8: Allow user to move the mouse! (8400ms)
       this.schedule(() => {
         if (codeOverlay) {
           codeOverlay.classList.remove('is-active');
@@ -4353,16 +4444,17 @@
         setBubble('Control granted! Test your mouse 🎮');
         this.schedule(() => {
           if (master) master.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
+          if (second) second.style.transform = `translate3d(${window.innerWidth + 200}px, ${window.innerHeight + 100}px, 0)`;
         }, 350);
 
         if (this.overlay) {
           this.overlay.classList.add('is-canvas-only');
         }
 
+        // UNLOCK user mouse now!
         this.enableUserMouse();
         this.startTwoSecondWait();
-
-      }, 5800);
+      }, 8400);
     }
 
     startTwoSecondWait() {
@@ -4389,6 +4481,11 @@
           if (window.SwarmRebuild && window.SwarmRebuild.start) {
             window.SwarmRebuild.start();
           }
+          // Ensure website custom cursor stays fully visible and on top of <swarm-rebuild>!
+          setTimeout(() => {
+            this.enableUserMouse();
+          }, 60);
+
           // Handover: Remove initial shield only after SwarmRebuild has mounted its shadow root
           setTimeout(() => {
             if (this.overlay && this.overlay.parentNode) {

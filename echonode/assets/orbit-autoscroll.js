@@ -84,6 +84,11 @@
     bindEvents() {
       // Middle click activates / toggles auto-scroll
       window.addEventListener('mousedown', (e) => {
+        // Never activate if mouse is disconnected / pending calibration
+        if (document.documentElement.classList.contains('sb-mouse-disconnected') || document.body.classList.contains('sb-mouse-disconnected')) {
+          return;
+        }
+
         if (e.button === 1) { // Middle mouse button
           e.preventDefault();
           e.stopPropagation();

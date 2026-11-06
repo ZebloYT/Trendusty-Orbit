@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&family=Silkscreen:wght@400;700&display=swap');
 
+/* Hide native Google Chrome and browser window scrollbars */
+html, body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
 /* ==========================================================================
    EchoNode Web - Ultra-Modern Cloud Server Management Suite
    Theme: Aternos Architecture x Cinematic Glassmorphism x 3D Spatial
@@ -156,7 +169,7 @@ body.custom-cursor-active .term-send-btn,
   width: 5px; height: 5px;
   background: #00f5b8; border-radius: 50%;
   pointer-events: none !important;
-  z-index: 2147483647 !important;
+  z-index: 2147483649 !important;
   box-shadow: 0 0 12px rgba(0, 245, 184, 1), 0 0 4px #ffffff, 0 0 8px #000000;
   will-change: transform, width, height;
   opacity: 0;
@@ -172,7 +185,7 @@ body.custom-cursor-active .term-send-btn,
   background: rgba(0, 245, 184, 0.03);
   border-radius: 50%;
   pointer-events: none !important;
-  z-index: 2147483646 !important;
+  z-index: 2147483648 !important;
   box-shadow: 0 0 18px rgba(0, 245, 184, 0.3), 0 0 4px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(0, 245, 184, 0.1);
   will-change: transform, width, height;
   opacity: 0;

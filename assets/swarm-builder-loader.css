@@ -46,12 +46,59 @@ html.sb-from-button #orbit-initial-shield {
   display: none !important;
 }
 
-/* Mouse Disconnected State: Complete pointer invisibility on direct URL load */
+/* Hide native Google Chrome / browser side scrollbars completely across the entire site */
+html, body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Ensure the website's custom cursor is ALWAYS visible above the swarm-rebuild overlay */
+#orbit-cursor-dot,
+.orbit-cursor-dot {
+  z-index: 2147483649 !important;
+  pointer-events: none !important;
+}
+
+#orbit-cursor-ring,
+.orbit-cursor-ring {
+  z-index: 2147483648 !important;
+  pointer-events: none !important;
+}
+
+swarm-rebuild {
+  z-index: 2147483640 !important;
+}
+
+/* Mouse Disconnected State: Complete pointer invisibility & scroll lock on direct URL load */
+html.sb-mouse-disconnected,
+body.sb-mouse-disconnected {
+  overflow: hidden !important;
+  height: 100vh !important;
+  touch-action: none !important;
+}
+
 html.sb-mouse-disconnected,
 html.sb-mouse-disconnected *,
 body.sb-mouse-disconnected,
 body.sb-mouse-disconnected * {
   cursor: none !important;
+  pointer-events: none !important;
+}
+
+#orbit-initial-shield,
+.sb-enter-overlay,
+.sb-enter-box,
+.sb-enter-pill {
+  pointer-events: auto !important;
 }
 
 html.sb-mouse-disconnected #orbit-cursor-dot,
@@ -228,6 +275,16 @@ html.sb-mouse-disconnected .mouse-trail-dot {
 .sb-master-bubble.is-active {
   opacity: 1;
   transform: translateY(0);
+}
+
+#sb-second-cur .sb-master-tag {
+  background: #0284c7 !important;
+  box-shadow: 0 3px 12px rgba(2, 132, 199, 0.5) !important;
+}
+
+#sb-second-cur .sb-master-bubble {
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
 }
 
 /* Created Custom Cursor (Green Dot + Follower Ring) */
