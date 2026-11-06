@@ -147,7 +147,7 @@
 
   const SKIP = new Set([
     "script", "style", "noscript", "template", "head", "meta", "link", "title",
-    "base", "datalist", "area", "map", "source", "track", "param", "swarm-rebuild", "orbit-initial-shield", "orbit-calibration-overlay", "sb-replay-pill", "sb-wait-banner", "sb-forge-container",
+    "base", "datalist", "area", "map", "source", "track", "param", "swarm-rebuild", "orbit-initial-shield", "orbit-calibration-overlay", "sb-replay-pill", "sb-wait-banner", "sb-forge-stage", "sb-code-overlay",
   ]);
   const DROP_IN_CLONE = new Set(["script", "style", "noscript", "template", "iframe", "object", "embed", "link", "meta"]);
   const REPLACED = new Set(["img", "svg", "video", "canvas", "iframe", "embed", "object", "picture"]);
@@ -3817,7 +3817,16 @@
 
 
 /* ==========================================================================
-   TRENDUSTY ORBIT // HARDWARE CALIBRATION & DIRECT URL COORDINATOR
+   TRENDUSTY ORBIT // CINEMATIC MOUSE CREATION & SWARM COORDINATOR
+   1. User presses Enter (or click).
+   2. Master cursor flies in -> generates green dot.
+   3. Traces circle around dot.
+   4. Double clicks it -> non-interactable code/kinematics menu overlay opens.
+   5. Mouse auto-moves rigidly (no smooth gliding).
+   6. Master cursor types smooth gliding animation code -> compiles!
+   7. Mouse starts gliding smoothly with trailing follower ring!
+   8. User mouse becomes operatable & visible on website.
+   9. Swarm loading animation builds the website!
    ========================================================================== */
 
 (function () {
@@ -3833,8 +3842,8 @@
     }
   }, true);
 
-  // Tone synthesizer for laser forge & calibration feedback
-  function playSynthTone(freq, type = 'sine', duration = 0.12, gainVal = 0.08) {
+  // Synthesizer for laser forge, typing clicks & harmonic chimes
+  function playSynthTone(freq, type = 'sine', duration = 0.1, gainVal = 0.08) {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
@@ -3856,9 +3865,10 @@
     constructor() {
       this.isFromButton = false;
       this.overlay = document.getElementById('orbit-initial-shield') || document.getElementById('orbit-calibration-overlay');
+      this.stage = null;
       this.banner = null;
-      this.forgeContainer = null;
       this.isTriggered = false;
+      this.timers = [];
     }
 
     init() {
@@ -3890,7 +3900,7 @@
           window.SwarmRebuild.start();
         }
       } else {
-        // Direct URL visit: Mouse feels disconnected -> Enter prompt -> AI forge mouse -> 2s movable wait -> start swarm rebuild!
+        // Direct URL visit: Mouse feels disconnected -> Wire up Enter prompt -> Full cinematic creation sequence!
         this.disableUserMouse();
         this.wireEnterPrompt();
       }
@@ -3918,6 +3928,17 @@
       if (dot) dot.style.opacity = '1';
       if (ring) ring.style.opacity = '1';
       if (customImg && customImg.style.display !== 'none') customImg.style.opacity = '1';
+    }
+
+    schedule(fn, ms) {
+      const t = setTimeout(fn, ms);
+      this.timers.push(t);
+      return t;
+    }
+
+    clearTimers() {
+      this.timers.forEach((t) => clearTimeout(t));
+      this.timers = [];
     }
 
     wireEnterPrompt() {
@@ -3953,20 +3974,28 @@
         const btn = document.getElementById('sb-enter-btn');
         const desc = document.getElementById('sb-status-desc');
         const dot = document.getElementById('sb-enter-dot');
+        const box = this.overlay ? this.overlay.querySelector('.sb-enter-box') : null;
         if (btn) {
           btn.style.transform = 'scale(0.95)';
-          btn.innerHTML = `<span>⚙ CALIBRATING HARDWARE...</span>`;
+          btn.innerHTML = `<span>⚙ INITIATING CURSOR FORGE...</span>`;
         }
-        if (desc) desc.textContent = 'DESIGNING MOUSE CURSOR LIVE...';
+        if (desc) desc.textContent = 'GENERATING WEBSITE MOUSE LIVE...';
         if (dot) {
           dot.style.background = '#38bdf8';
           dot.style.boxShadow = '0 0 10px #38bdf8';
         }
 
-        this.runMouseForge();
+        // Fade down the prompt box slightly to center stage focus
+        if (box) {
+          box.style.transform = 'translateY(160px) scale(0.85)';
+          box.style.opacity = '0.35';
+        }
+
+        // Run the complete cinematic mouse generation story!
+        this.runCinematicMouseStory();
       };
 
-      // Check if user already clicked/pressed enter before JS initialized
+      // Check if user already clicked/pressed enter before script initialized
       if (window.__shieldTriggered) {
         triggerCalibration();
         return;
@@ -3978,8 +4007,7 @@
           triggerCalibration();
         } else if (e.key === 'Escape') {
           window.removeEventListener('keydown', enterHandler);
-          if (this.overlay) this.overlay.remove();
-          this.enableUserMouse();
+          this.skipAll();
         }
       };
       window.addEventListener('keydown', enterHandler);
@@ -3990,60 +4018,327 @@
       });
     }
 
-    runMouseForge() {
-      this.forgeContainer = document.createElement('div');
-      this.forgeContainer.id = 'sb-forge-container';
-      this.forgeContainer.className = 'sb-forge-container is-active';
-      this.forgeContainer.innerHTML = `
-        <div class="sb-forge-ring"></div>
-        <div class="sb-forge-core-dot" id="sb-forge-dot"></div>
-        <div id="sb-forge-ai-cursor" style="position:absolute; width:22px; height:22px; transition:all 0.4s ease; transform:translate(35px, 25px); pointer-events:none;">
-          <svg viewBox="0 0 24 24" fill="none" style="width:24px; height:24px; transform:rotate(-10deg);">
+    skipAll() {
+      this.clearTimers();
+      if (this.stage) this.stage.remove();
+      if (this.overlay) this.overlay.remove();
+      if (this.banner) this.banner.remove();
+      this.enableUserMouse();
+      if (window.SwarmRebuild && window.SwarmRebuild.stop) {
+        window.SwarmRebuild.stop(true);
+      }
+    }
+
+    // =========================================================================
+    // CINEMATIC MOUSE CREATOR SEQUENCE
+    // =========================================================================
+    runCinematicMouseStory() {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2 - 30;
+
+      this.stage = document.createElement('div');
+      this.stage.id = 'sb-forge-stage';
+      this.stage.innerHTML = `
+        <!-- 1. Master Cursor (Cursor Architect) -->
+        <div id="sb-master-cur" class="sb-master-cursor" style="transform: translate3d(${cx - 280}px, ${cy - 220}px, 0);">
+          <svg class="sb-master-pointer" viewBox="0 0 24 24" fill="none">
             <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#a855f7" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
           </svg>
+          <div class="sb-master-tag">Orbit AI</div>
+          <div id="sb-master-bubble" class="sb-master-bubble">Architecting custom cursor... 🛠️</div>
+        </div>
+
+        <!-- 2. Newly Generated Cursor Elements -->
+        <div id="sb-created-cur" class="sb-created-cursor" style="transform: translate3d(${cx}px, ${cy}px, 0);">
+          <div id="sb-created-dot" class="sb-created-dot"></div>
+          <div id="sb-created-ring" class="sb-created-ring"></div>
+        </div>
+
+        <!-- 3. Non-Interactable Code / Kinematics Overlay Menu -->
+        <div id="sb-code-overlay" class="sb-code-overlay" style="left: ${cx + 70}px; top: ${cy - 120}px;">
+          <div class="sb-overlay-header">
+            <div class="sb-traffic-dots">
+              <span class="sb-dot-red"></span>
+              <span class="sb-dot-yellow"></span>
+              <span class="sb-dot-green"></span>
+            </div>
+            <span class="sb-overlay-title">CONFIG: CURSOR_KINEMATICS</span>
+          </div>
+          <div class="sb-overlay-props">
+            <div class="sb-prop-row">
+              <span class="sb-prop-label">Core Dot:</span>
+              <span class="sb-prop-val">#00f5b8 (Active)</span>
+            </div>
+            <div class="sb-prop-row">
+              <span class="sb-prop-label">Follower Ring:</span>
+              <span class="sb-prop-val">56px Orbit (Bound)</span>
+            </div>
+            <div class="sb-prop-row">
+              <span class="sb-prop-label">Physics Mode:</span>
+              <span id="sb-prop-glide" class="sb-prop-val" style="color:#ef4444;">RIGID (NO SMOOTH)</span>
+            </div>
+          </div>
+          <div class="sb-code-terminal">
+            <span id="sb-code-stream"></span><span class="sb-code-caret"></span>
+          </div>
         </div>
       `;
-      document.body.appendChild(this.forgeContainer);
+      document.body.appendChild(this.stage);
 
-      setTimeout(() => {
-        playSynthTone(750, 'sawtooth', 0.12, 0.06);
-      }, 300);
+      const master = document.getElementById('sb-master-cur');
+      const bubble = document.getElementById('sb-master-bubble');
+      const createdCur = document.getElementById('sb-created-cur');
+      const dotEl = document.getElementById('sb-created-dot');
+      const ringEl = document.getElementById('sb-created-ring');
+      const codeOverlay = document.getElementById('sb-code-overlay');
+      const codeStream = document.getElementById('sb-code-stream');
+      const propGlide = document.getElementById('sb-prop-glide');
 
-      setTimeout(() => {
-        const dot = document.getElementById('sb-forge-dot');
-        if (dot) dot.classList.add('is-forged');
-        playSynthTone(880, 'sine', 0.15, 0.08);
-      }, 600);
+      const setBubble = (text) => {
+        if (!bubble) return;
+        bubble.textContent = text;
+        bubble.classList.add('is-active');
+      };
 
-      setTimeout(() => {
-        playSynthTone(1046, 'sine', 0.25, 0.1); // High C chime
+      const spawnWave = (x, y) => {
+        const w = document.createElement('div');
+        w.className = 'sb-click-wave';
+        w.style.left = `${x}px`;
+        w.style.top = `${y}px`;
+        this.stage.appendChild(w);
+        setTimeout(() => w.remove(), 500);
+      };
 
+      // -----------------------------------------------------------------------
+      // TIMELINE 1: Master cursor swoops to center (0ms - 550ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        master.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        setBubble('Generating website mouse... 🛠️');
+      }, 100);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 2: Step 1 - Make the mouse a GREEN DOT (650ms - 1100ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        master.style.transform = `translate3d(${cx + 4}px, ${cy + 4}px, 0)`;
+        spawnWave(cx, cy);
+        playSynthTone(720, 'sine', 0.12, 0.09);
+
+        dotEl.classList.add('is-visible');
+        setBubble('1. Creating core green dot 🟢');
+      }, 650);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 3: Step 2 - Trace CIRCLE AROUND THE DOT (1200ms - 2100ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        setBubble('2. Tracing follower circle ⭕');
+        ringEl.classList.add('is-visible', 'is-tracing');
+        playSynthTone(840, 'triangle', 0.2, 0.08);
+
+        // Master cursor traces circle around green dot
+        const r = 32;
+        master.style.transition = 'transform 0.22s ease-out';
+        master.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
+
+        this.schedule(() => {
+          master.style.transform = `translate3d(${cx}px, ${cy + r}px, 0)`;
+          playSynthTone(880, 'sine', 0.08);
+        }, 220);
+
+        this.schedule(() => {
+          master.style.transform = `translate3d(${cx - r}px, ${cy}px, 0)`;
+          playSynthTone(920, 'sine', 0.08);
+        }, 440);
+
+        this.schedule(() => {
+          master.style.transform = `translate3d(${cx}px, ${cy - r}px, 0)`;
+          playSynthTone(980, 'sine', 0.08);
+        }, 660);
+
+        this.schedule(() => {
+          master.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
+          ringEl.classList.remove('is-tracing');
+          playSynthTone(1046, 'sine', 0.25, 0.1); // High C chime
+        }, 880);
+
+      }, 1200);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 4: Step 3 - DOUBLE CLICK IT (2200ms - 2600ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        master.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+        master.style.transform = `translate3d(${cx + 8}px, ${cy + 8}px, 0)`;
+        setBubble('3. Double-clicking cursor 🖱️');
+
+        // Click 1
+        this.schedule(() => {
+          spawnWave(cx, cy);
+          playSynthTone(440, 'square', 0.06, 0.08);
+          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(0.92)`;
+          setTimeout(() => {
+            createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
+          }, 80);
+        }, 300);
+
+        // Click 2 (Double click rapid succession)
+        this.schedule(() => {
+          spawnWave(cx, cy);
+          playSynthTone(480, 'square', 0.08, 0.1);
+          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1.18)`;
+          setTimeout(() => {
+            createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
+          }, 140);
+        }, 440);
+
+      }, 2200);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 5: Step 4 - MENU OPENS (OVERLAY, NON-INTERACTABLE) (2700ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        playSynthTone(580, 'triangle', 0.18, 0.08);
+        codeOverlay.classList.add('is-active');
+        setBubble('Opening configuration overlay ⚙️');
+      }, 2750);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 6: Step 5 - AUTO-MOVES RIGIDLY WITHOUT SMOOTH GLIDING (3100ms - 4200ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        setBubble('Testing kinematics: NO GLIDE ⚠️');
+
+        // Rigid, abrupt linear steps (zero lerp / smooth easing)
+        createdCur.style.transition = 'none'; // Absolutely zero smoothing!
+
+        createdCur.style.transform = `translate3d(${cx - 140}px, ${cy - 70}px, 0)`;
+        playSynthTone(320, 'sawtooth', 0.05, 0.04);
+
+        this.schedule(() => {
+          createdCur.style.transform = `translate3d(${cx + 160}px, ${cy - 50}px, 0)`;
+          playSynthTone(320, 'sawtooth', 0.05, 0.04);
+        }, 320);
+
+        this.schedule(() => {
+          createdCur.style.transform = `translate3d(${cx - 80}px, ${cy + 80}px, 0)`;
+          playSynthTone(320, 'sawtooth', 0.05, 0.04);
+        }, 640);
+
+        this.schedule(() => {
+          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+          playSynthTone(320, 'sawtooth', 0.05, 0.04);
+        }, 960);
+
+      }, 3100);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 7: Step 6 - MASTER CURSOR WRITES GLIDING CODE (4300ms - 5900ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        const overlayRect = codeOverlay.getBoundingClientRect();
+        master.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1)';
+        master.style.transform = `translate3d(${overlayRect.left + 50}px, ${overlayRect.top + 90}px, 0)`;
+        setBubble('Writing smooth gliding code... ✍️');
+
+        const codeSnippet = '// Injecting Smooth Gliding\nfunction applyGlide(x, y) {\n  ring.x += (x - ring.x) * 0.16;\n  ring.y += (y - ring.y) * 0.16;\n}\ncursor.setSmoothGlide(true);';
+        let charIdx = 0;
+
+        const typeInterval = setInterval(() => {
+          if (charIdx < codeSnippet.length) {
+            charIdx += 2; // Fast, authentic typing
+            codeStream.textContent = codeSnippet.slice(0, charIdx);
+            playSynthTone(1100 + (charIdx * 18) % 350, 'triangle', 0.025, 0.025);
+          } else {
+            clearInterval(typeInterval);
+            codeStream.textContent = codeSnippet;
+
+            // Compilation success!
+            propGlide.textContent = 'SMOOTH GLIDING (ACTIVE) ✔';
+            propGlide.style.color = '#00f5b8';
+            playSynthTone(1046, 'sine', 0.28, 0.1);
+            setBubble('Gliding compiled! 100% ✔');
+          }
+        }, 28);
+
+      }, 4300);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 8: Step 7 - MOUSE STARTS GLIDING SMOOTHLY! (6000ms - 7200ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        setBubble('Watch it glide! ✨');
+
+        // Activate fluid, drifting gliding physics on created cursor
+        createdCur.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
+        ringEl.style.transition = 'transform 0.55s cubic-bezier(0.25, 1, 0.5, 1)';
+
+        // Graceful infinity / curving sweep
+        createdCur.style.transform = `translate3d(${cx - 150}px, ${cy - 50}px, 0)`;
+        ringEl.style.transform = 'translate(-50%, -50%) scale(1.12)';
+
+        this.schedule(() => {
+          createdCur.style.transform = `translate3d(${cx + 150}px, ${cy + 60}px, 0)`;
+          ringEl.style.transform = 'translate(-50%, -50%) scale(0.96)';
+          playSynthTone(660, 'sine', 0.15, 0.06);
+        }, 380);
+
+        this.schedule(() => {
+          createdCur.style.transform = `translate3d(${cx - 80}px, ${cy + 80}px, 0)`;
+          ringEl.style.transform = 'translate(-50%, -50%) scale(1.08)';
+          playSynthTone(740, 'sine', 0.15, 0.06);
+        }, 760);
+
+        this.schedule(() => {
+          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+          ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
+          playSynthTone(880, 'sine', 0.2, 0.08);
+        }, 1100);
+
+      }, 6000);
+
+      // -----------------------------------------------------------------------
+      // TIMELINE 9: Step 8 - MAKE MOUSE OPERABLE AND VISIBLE ON WEBSITE (7400ms)
+      // -----------------------------------------------------------------------
+      this.schedule(() => {
+        // Fade out overlay menu
+        codeOverlay.classList.remove('is-active');
+        setTimeout(() => codeOverlay.remove(), 400);
+
+        // Master cursor waves goodbye and flies out
+        setBubble('Control granted! Test your mouse 🎮');
+        this.schedule(() => {
+          master.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
+        }, 500);
+
+        // Remove the staging container and shield
         if (this.overlay) {
           this.overlay.classList.add('is-hidden');
           setTimeout(() => {
             if (this.overlay && this.overlay.parentNode) this.overlay.parentNode.removeChild(this.overlay);
           }, 350);
         }
-        if (this.forgeContainer) {
-          this.forgeContainer.classList.remove('is-active');
+
+        // Grant control to user: user mouse is now operatable and visible!
+        this.enableUserMouse();
+        if (this.stage) {
           setTimeout(() => {
-            if (this.forgeContainer && this.forgeContainer.parentNode) this.forgeContainer.parentNode.removeChild(this.forgeContainer);
-          }, 350);
+            if (this.stage && this.stage.parentNode) this.stage.parentNode.removeChild(this.stage);
+          }, 450);
         }
 
-        // Transfer control to user: mouse is now live and movable!
-        this.enableUserMouse();
-
-        // Start 2.0s Movable Wait Sequence
+        // 2-Second Movable Wait Notification: User moves their newly forged mouse freely!
         this.startTwoSecondWait();
-      }, 1000);
+
+      }, 7400);
     }
 
     startTwoSecondWait() {
       this.banner = document.createElement('div');
       this.banner.id = 'sb-wait-banner';
       this.banner.className = 'sb-wait-banner is-active';
-      this.banner.innerHTML = `<span>⚡ MOUSE CONNECTED • LAUNCHING SITE BUILDER IN <strong id="sb-wait-sec">2.0s</strong></span>`;
+      this.banner.innerHTML = `<span>⚡ MOUSE OPERATIONAL • LAUNCHING SITE BUILDER IN <strong id="sb-wait-sec">2.0s</strong></span>`;
       document.body.appendChild(this.banner);
 
       let remaining = 20; // 2.0s in 100ms ticks
@@ -4059,7 +4354,7 @@
               if (this.banner && this.banner.parentNode) this.banner.parentNode.removeChild(this.banner);
             }, 300);
           }
-          // Launch authentic Swarm Rebuild on the actual page immediately!
+          // Launch authentic Swarm Rebuild loading animation to build the website!
           if (window.SwarmRebuild && window.SwarmRebuild.start) {
             window.SwarmRebuild.start();
           }
