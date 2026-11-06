@@ -348,12 +348,25 @@
       line-height: 1.15;
       letter-spacing: -1.5px;
       margin-bottom: 24px;
+      background: linear-gradient(110deg, #ffffff 20%, #e2e8f0 45%, #00f5b8 70%, #ffffff 90%);
+      background-size: 240% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: text-aurora-sweep 9s ease-in-out infinite;
+      transition: letter-spacing 0.35s ease, filter 0.35s ease;
+    }
+
+    .hero h1:hover {
+      letter-spacing: -1px;
+      filter: drop-shadow(0 0 20px rgba(0, 245, 184, 0.45));
     }
 
     .hero h1 .gradient-text {
-      background: linear-gradient(135deg, #ffffff 30%, var(--accent) 100%);
+      background: linear-gradient(110deg, #00f5b8 15%, #38bdf8 45%, #c084fc 75%, #00f5b8 100%);
+      background-size: 250% 100%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: text-aurora-sweep 6s linear infinite;
     }
 
     .hero p {
@@ -432,12 +445,44 @@
       text-align: center;
     }
 
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: block;
+      text-align: center;
+      animation: text-pulse-glow 3.5s ease-in-out infinite alternate;
+      transition: letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+      cursor: default;
+    }
+
+    .section-tag:hover {
+      letter-spacing: 4.5px;
+      filter: drop-shadow(0 0 12px var(--accent));
+    }
+
     .section-title {
       font-size: 42px;
       font-weight: 700;
       text-align: center;
       margin-bottom: 18px;
       letter-spacing: -0.5px;
+      background: linear-gradient(110deg, #ffffff 18%, #00f5b8 42%, #38bdf8 62%, #c084fc 80%, #ffffff 95%);
+      background-size: 260% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: text-aurora-sweep 8s ease-in-out infinite;
+      transition: letter-spacing 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+      will-change: background-position, filter;
+    }
+
+    .section-title:hover {
+      letter-spacing: 0px;
+      filter: drop-shadow(0 0 16px rgba(0, 245, 184, 0.55));
+      animation-duration: 3s;
     }
 
     .section-desc {
@@ -1316,16 +1361,81 @@
       50% { transform: translateY(-4px); }
     }
 
-    /* Text Glow Pulse on Headers */
+    /* Text Glow & Aurora Shimmer on Headers */
     .gradient-text {
       background-size: 200% auto;
-      animation: gradientFlow 6s linear infinite;
+      animation: text-aurora-sweep 6s linear infinite;
     }
 
-    @keyframes gradientFlow {
-      0% { background-position: 0% center; }
-      50% { background-position: 100% center; }
-      100% { background-position: 0% center; }
+    @keyframes text-aurora-sweep {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes text-pulse-glow {
+      0% {
+        text-shadow: 0 0 6px rgba(0, 245, 184, 0.35);
+        opacity: 0.88;
+      }
+      50% {
+        text-shadow: 0 0 16px rgba(0, 245, 184, 0.85), 0 0 28px rgba(56, 189, 248, 0.45);
+        opacity: 1;
+      }
+      100% {
+        text-shadow: 0 0 6px rgba(0, 245, 184, 0.35);
+        opacity: 0.88;
+      }
+    }
+
+    /* Card Headings Interactive Dual-Chroma Shift */
+    .feature-card h3,
+    .capability-card h3,
+    .step-card h3,
+    .app-rect-card h3,
+    .cctv-viewport,
+    .cop-title {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .feature-card:hover h3,
+    .capability-card:hover h3,
+    .step-card:hover h3,
+    .app-rect-card:hover h3 {
+      color: #ffffff;
+      text-shadow: -1px 0 rgba(56, 189, 248, 0.7), 1px 0 rgba(168, 85, 247, 0.7), 0 0 12px rgba(0, 245, 184, 0.55);
+      transform: translateX(3px);
+    }
+
+    .dl-card-title {
+      background: linear-gradient(110deg, #ffffff 20%, #00f5b8 55%, #38bdf8 85%);
+      background-size: 240% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: text-aurora-sweep 7s ease-in-out infinite;
+      transition: filter 0.3s ease;
+    }
+
+    .dl-card-title:hover {
+      filter: drop-shadow(0 0 14px rgba(0, 245, 184, 0.6));
+    }
+
+    /* Statistics Animated Glow Pulse */
+    .stat-val {
+      background: linear-gradient(135deg, #ffffff 30%, #00f5b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: stat-val-pulse 3.5s ease-in-out infinite alternate;
+      display: inline-block;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+    .stat-item:hover .stat-val {
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 14px rgba(0, 245, 184, 0.75));
+    }
+    @keyframes stat-val-pulse {
+      0% { filter: drop-shadow(0 0 4px rgba(0, 245, 184, 0.25)); }
+      100% { filter: drop-shadow(0 0 12px rgba(0, 245, 184, 0.6)); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -5655,7 +5765,29 @@
   <script>
     (function initAnimations() {
       // Tactical Cursor handled by initOrbitCursor
-      // 2. Scroll Reveal Intersection Observer
+      // Cyber text deciphering decode animation
+      function scrambleText(el) {
+        if (!el || el._isScrambling) return;
+        el._isScrambling = true;
+        const originalText = el.textContent;
+        const chars = '01#%*+-=_<>[]{}アイウエオカキクケコ';
+        let iteration = 0;
+        const interval = setInterval(() => {
+          el.textContent = originalText.split('').map((char, index) => {
+            if (char === ' ' || char === '/') return char;
+            if (index < iteration) return originalText[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+          }).join('');
+          if (iteration >= originalText.length) {
+            clearInterval(interval);
+            el.textContent = originalText;
+            el._isScrambling = false;
+          }
+          iteration += 1 / 2;
+        }, 30);
+      }
+
+      // 2. Scroll Reveal Intersection Observer with Dynamic Text Deciphering
       const reveals = document.querySelectorAll('.reveal-on-scroll');
       if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
@@ -5663,6 +5795,8 @@
             if (entry.isIntersecting) {
               entry.target.classList.add('revealed');
               observer.unobserve(entry.target);
+              const tag = entry.target.querySelector('.section-tag, .feeds-title');
+              if (tag) scrambleText(tag);
             }
           });
         }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
@@ -5671,6 +5805,11 @@
       } else {
         reveals.forEach(el => el.classList.add('revealed'));
       }
+
+      // Re-trigger text scramble on hovering section tags
+      document.querySelectorAll('.section-tag, .cop-title').forEach(el => {
+        el.addEventListener('mouseenter', () => scrambleText(el));
+      });
 
       // 3. Stats Number Counter Animation
       const stats = document.querySelectorAll('.stat-number');
