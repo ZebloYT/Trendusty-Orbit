@@ -906,7 +906,11 @@
       background: #030508;
       overflow: hidden;
       user-select: none;
+      -webkit-user-select: none;
       cursor: grab;
+      touch-action: none !important;
+      overscroll-behavior: contain !important;
+      -webkit-user-drag: none;
     }
 
     .preview-canvas-wrapper:active {
@@ -921,6 +925,7 @@
       height: 100%;
       display: none;
       pointer-events: none;
+      touch-action: none !important;
     }
 
     #live-cop-canvas {
@@ -930,6 +935,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      touch-action: none !important;
     }
 
     .hud-card {
@@ -4696,6 +4702,7 @@
 
       wrapper.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return; // Only left-click drags
+        e.preventDefault();
         state.isDragging = true;
         didDrag = false;
         dragStartX = e.clientX;
@@ -4750,16 +4757,97 @@
         canvas.style.cursor = 'grab';
       });
 
-      // Smooth Wheel Zoom (Expanded range 0.6x to 5.0x)
+      // Smooth Wheel Zoom (Expanded range 0.6x to 5.0x) — strictly stops page scroll
       wrapper.addEventListener('wheel', (e) => {
         e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.22 : 0.22;
+        e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        const delta = e.deltaY > 0 ? -0.24 : 0.24;
         updateZoom(state.targetZoom + delta);
+        return false;
+      }, { passive: false, capture: true });
+
+      // Touch Gestures: Touch Drag to rotate Earth & 2-Finger Pinch to Zoom (Zero page scroll)
+      let touchStartDist = 0;
+      let touchStartZoom = 1;
+      let isPinching = false;
+
+      wrapper.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          e.preventDefault();
+          state.isDragging = true;
+          didDrag = false;
+          isPinching = false;
+          const t = e.touches[0];
+          dragStartX = t.clientX;
+          dragStartY = t.clientY;
+          state.lastMouseX = t.clientX;
+          state.lastMouseY = t.clientY;
+        } else if (e.touches.length === 2) {
+          e.preventDefault();
+          state.isDragging = false;
+          isPinching = true;
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          touchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          touchStartZoom = state.targetZoom;
+        }
       }, { passive: false });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!state.isDragging && !isPinching) return;
+
+        if (state.isDragging && e.touches.length === 1) {
+          e.preventDefault();
+          const t = e.touches[0];
+          const dx = t.clientX - state.lastMouseX;
+          const dy = t.clientY - state.lastMouseY;
+          if (Math.hypot(t.clientX - dragStartX, t.clientY - dragStartY) > 5) {
+            didDrag = true;
+            state.trackTarget = false;
+            const trackBtn = document.getElementById('btn-track-target');
+            if (trackBtn) trackBtn.classList.remove('active');
+          }
+          const inv = state.invertDrag ? -1 : 1;
+          state.rotY += dx * (0.005 / state.zoom) * inv;
+          state.rotX -= dy * (0.005 / state.zoom) * inv;
+          state.rotX = Math.max(-1.15, Math.min(1.15, state.rotX));
+          state.velY = dx * 0.0006 * inv;
+          state.lastMouseX = t.clientX;
+          state.lastMouseY = t.clientY;
+        } else if (isPinching && e.touches.length === 2) {
+          e.preventDefault();
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          if (touchStartDist > 0) {
+            const scaleFactor = currentDist / touchStartDist;
+            updateZoom(touchStartZoom * scaleFactor);
+          }
+        }
+      }, { passive: false });
+
+      window.addEventListener('touchend', (e) => {
+        if (state.isDragging && !didDrag && e.changedTouches && e.changedTouches.length === 1) {
+          handleCanvasClick({
+            clientX: e.changedTouches[0].clientX,
+            clientY: e.changedTouches[0].clientY,
+            target: canvas
+          });
+        }
+        state.isDragging = false;
+        isPinching = false;
+      });
+
+      window.addEventListener('touchcancel', () => {
+        state.isDragging = false;
+        isPinching = false;
+      });
 
       // Double-Click To Quick Zoom-In
       wrapper.addEventListener('dblclick', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         updateZoom(state.targetZoom + 0.6);
       });
 

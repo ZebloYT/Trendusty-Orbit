@@ -95,6 +95,10 @@
           if (this.isActive) {
             this.stop();
           } else {
+            // Isolate interactive Earth preview and canvases from autoscroll
+            if (e.target && e.target.closest && e.target.closest('.preview-canvas-wrapper, #preview-wrapper, #live-cop-canvas, #cop-webgl-canvas')) {
+              return;
+            }
             this.start(e.clientX, e.clientY, e.target);
           }
         } else if (this.isActive) {

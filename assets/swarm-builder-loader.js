@@ -3964,6 +3964,16 @@
     handleWheel(e) {
       if (!this.isEnabled) return;
       if (e.ctrlKey || e.metaKey) return; // Allow pinch/browser zoom
+      if (e.defaultPrevented) return; // Prevent page scroll if wheel was handled by a widget
+
+      // Strictly isolate interactive canvas widgets (Earth 3D preview, WebGL maps, CCTV, terminals)
+      const target = e.target;
+      if (target && target.closest) {
+        if (target.closest('.preview-canvas-wrapper, #preview-wrapper, #live-cop-canvas, #cop-webgl-canvas, .cctv-viewport, [data-no-page-scroll], .terminal-body')) {
+          return;
+        }
+      }
+
       e.preventDefault();
 
       let dy = e.deltaY;

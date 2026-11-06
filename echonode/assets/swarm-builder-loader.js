@@ -3964,6 +3964,16 @@
     handleWheel(e) {
       if (!this.isEnabled) return;
       if (e.ctrlKey || e.metaKey) return; // Allow pinch/browser zoom
+      if (e.defaultPrevented) return; // Prevent page scroll if wheel was handled by a widget
+
+      // Strictly isolate interactive canvas widgets (Earth 3D preview, WebGL maps, CCTV, terminals)
+      const target = e.target;
+      if (target && target.closest) {
+        if (target.closest('.preview-canvas-wrapper, #preview-wrapper, #live-cop-canvas, #cop-webgl-canvas, .cctv-viewport, [data-no-page-scroll], .terminal-body')) {
+          return;
+        }
+      }
+
       e.preventDefault();
 
       let dy = e.deltaY;
@@ -4083,25 +4093,63 @@
   }
 
   function ensureTacticalCursorMarkup(dot) {
-    if (!dot || dot.querySelector('.tactical-cursor-svg')) return;
-    dot.innerHTML = `
-      <svg class="tactical-cursor-svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <path class="tc-shadow" d="M4 2L21 9L13 13L9 21L4 2Z" fill="#000000" stroke="#000000" stroke-width="3.5" stroke-linejoin="round"/>
-        <path class="tc-spine-white" d="M4 2L13 13L9 21L4 2Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" stroke-linejoin="round"/>
-        <path class="tc-wing-carbon" d="M4 2L21 9L13 13L4 2Z" fill="#070b14" stroke="#a855f7" stroke-width="1.2" stroke-linejoin="round"/>
-        <g class="tc-reticle-group">
-          <circle class="tc-reticle-ring" cx="16" cy="16" r="8" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="3 3"/>
-          <circle class="tc-reticle-inner" cx="16" cy="16" r="4.5" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"/>
-        </g>
-        <g class="tc-crosshairs">
-          <line class="tc-ch-n" x1="16" y1="4" x2="16" y2="8" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
-          <line class="tc-ch-e" x1="24" y1="16" x2="28" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
-          <line class="tc-ch-s" x1="16" y1="24" x2="16" y2="28" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
-          <line class="tc-ch-w" x1="4" y1="16" x2="8" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
-        </g>
-        <circle class="tc-apex-dot" cx="4" cy="2" r="1.8" fill="#38bdf8"/>
-      </svg>
-    `;
+    if (!dot) return;
+    if (!dot.querySelector('.tactical-cursor-svg')) {
+      dot.innerHTML = `
+        <svg class="tactical-cursor-svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <path class="tc-shadow" d="M4 2L21 9L13 13L9 21L4 2Z" fill="#000000" stroke="#000000" stroke-width="3.5" stroke-linejoin="round"/>
+          <path class="tc-spine-white" d="M4 2L13 13L9 21L4 2Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" stroke-linejoin="round"/>
+          <path class="tc-wing-carbon" d="M4 2L21 9L13 13L4 2Z" fill="#070b14" stroke="#a855f7" stroke-width="1.2" stroke-linejoin="round"/>
+          <g class="tc-reticle-group">
+            <circle class="tc-reticle-ring" cx="16" cy="16" r="8" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <circle class="tc-reticle-inner" cx="16" cy="16" r="4.5" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"/>
+          </g>
+          <g class="tc-crosshairs">
+            <line class="tc-ch-n" x1="16" y1="4" x2="16" y2="8" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+            <line class="tc-ch-e" x1="24" y1="16" x2="28" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+            <line class="tc-ch-s" x1="16" y1="24" x2="16" y2="28" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+            <line class="tc-ch-w" x1="4" y1="16" x2="8" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+          </g>
+          <circle class="tc-apex-dot" cx="4" cy="2" r="1.8" fill="#38bdf8"/>
+        </svg>
+      `;
+    }
+    if (!dot.querySelector('.cursor-solar-system')) {
+      const solar = document.createElement('div');
+      solar.className = 'cursor-solar-system';
+      solar.id = 'cursor-solar-system';
+      solar.innerHTML = `
+        <div class="planet-orbit orbit-1">
+          <div class="planet-track"></div>
+          <div class="planet-spinner">
+            <div class="planet-body planet-cyan"></div>
+          </div>
+        </div>
+        <div class="planet-orbit orbit-2">
+          <div class="planet-track"></div>
+          <div class="planet-spinner">
+            <div class="planet-body planet-azure">
+              <div class="planet-moon-orbit"><div class="planet-moon"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="planet-orbit orbit-3">
+          <div class="planet-track"></div>
+          <div class="planet-spinner">
+            <div class="planet-body planet-gold">
+              <div class="planet-rings"></div>
+            </div>
+          </div>
+        </div>
+        <div class="planet-orbit orbit-4">
+          <div class="planet-track"></div>
+          <div class="planet-spinner">
+            <div class="planet-body planet-purple"></div>
+          </div>
+        </div>
+      `;
+      dot.appendChild(solar);
+    }
   }
 
   class SwarmCoordinator {
@@ -4404,6 +4452,38 @@
             <!-- Apex Core Dot -->
             <circle id="sb-f-apex" cx="4" cy="2" r="1.8" fill="#38bdf8" opacity="0"/>
           </svg>
+
+          <!-- Revolving Planetary Solar System -->
+          <div id="sb-forge-solar" class="cursor-solar-system" style="opacity: 0; transform: scale(0.2); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div class="planet-orbit orbit-1">
+              <div class="planet-track"></div>
+              <div class="planet-spinner">
+                <div class="planet-body planet-cyan"></div>
+              </div>
+            </div>
+            <div class="planet-orbit orbit-2">
+              <div class="planet-track"></div>
+              <div class="planet-spinner">
+                <div class="planet-body planet-azure">
+                  <div class="planet-moon-orbit"><div class="planet-moon"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="planet-orbit orbit-3">
+              <div class="planet-track"></div>
+              <div class="planet-spinner">
+                <div class="planet-body planet-gold">
+                  <div class="planet-rings"></div>
+                </div>
+              </div>
+            </div>
+            <div class="planet-orbit orbit-4">
+              <div class="planet-track"></div>
+              <div class="planet-spinner">
+                <div class="planet-body planet-purple"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 7. Non-Interactable Code / Kinematics Overlay Menu -->
@@ -4428,6 +4508,10 @@
             <div class="sb-prop-row">
               <span class="sb-prop-label">Reticle Radar:</span>
               <span id="sb-prop-reticle" class="sb-prop-val" style="color:#ef4444;">CALIBRATING...</span>
+            </div>
+            <div class="sb-prop-row">
+              <span class="sb-prop-label">Solar Orbits:</span>
+              <span id="sb-prop-solar" class="sb-prop-val" style="color:#ef4444;">CALIBRATING...</span>
             </div>
             <div class="sb-prop-row">
               <span class="sb-prop-label">Smooth Scroll:</span>
@@ -4473,8 +4557,10 @@
       const codeOverlay = document.getElementById('sb-code-overlay');
       const codeStream = document.getElementById('sb-code-stream');
       const propReticle = document.getElementById('sb-prop-reticle');
+      const propSolar = document.getElementById('sb-prop-solar');
       const propScroll = document.getElementById('sb-prop-scroll');
       const propGlide = document.getElementById('sb-prop-glide');
+      const sbForgeSolar = document.getElementById('sb-forge-solar');
 
       const setBubble = (bubbleEl, text) => {
         if (!bubbleEl) return;
@@ -4721,7 +4807,12 @@
           fApex.style.opacity = '1';
           fApex.classList.add('tc-apex-dot');
         }
-        setBubble(bubbleEpsilon, 'Option 4 Tactical Reticle online! ⚡ ✔');
+        // Activate revolving planetary solar system!
+        if (sbForgeSolar) {
+          sbForgeSolar.style.opacity = '1';
+          sbForgeSolar.style.transform = 'scale(1)';
+        }
+        setBubble(bubbleEpsilon, 'Planetary orbits locked! 4 planets revolving 🪐 ✔');
         if (botEpsilon) {
           botEpsilon.style.transition = 'transform 0.4s ease';
           botEpsilon.style.transform = `translate3d(${cx - 50}px, ${cy - 60}px, 0)`;
@@ -4765,6 +4856,10 @@
         if (propReticle) {
           propReticle.textContent = 'ROTATING (12 RPM) ✔';
           propReticle.style.color = '#00f5b8';
+        }
+        if (propSolar) {
+          propSolar.textContent = '4 BODIES (REVOLVING) 🪐 ✔';
+          propSolar.style.color = '#00f5b8';
         }
         setBubble(bubbleAlpha, 'Opening kinematics synthesizer ⚙️');
       }, 7600);
@@ -4844,9 +4939,9 @@
                 botGamma.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
                 botGamma.style.transform = `translate3d(${overlayRect.left + 75}px, ${overlayRect.top + 105}px, 0)`;
               }
-              setBubble(bubbleGamma, '2/2: Compiling Tactical Reticle animation & gliding... ✍️');
+              setBubble(bubbleGamma, '2/2: Compiling Tactical Reticle & Planetary Solar System... 🪐');
 
-              const cursorAnimSnippet = '// 2. Tactical Reticle & Radar Kinematics\nfunction initTacticalCursor() {\n  reticle.startRotation({ rpm: 12, mode: "holographic" });\n  crosshairs.pulse({ glow: "#38bdf8", rate: 1.5 });\n  cursor.setSmoothGlide({ lerp: 0.16, trail: "inertia" });\n}\ninitTacticalCursor();';
+              const cursorAnimSnippet = '// 2. Tactical Reticle & Planetary Solar System\nfunction initTacticalCursor() {\n  solarSystem.bindCelestialOrbits({ planets: 4, mode: "heliocentric" });\n  reticle.startRotation({ rpm: 12, mode: "holographic" });\n  cursor.setSmoothGlide({ lerp: 0.16, trail: "inertia" });\n}\ninitTacticalCursor();';
               let animIdx = 0;
 
               const animInterval = setInterval(() => {
