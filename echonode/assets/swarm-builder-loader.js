@@ -1496,7 +1496,7 @@
 .bg.on{opacity:1}
 .layer,.port{position:absolute;overflow:hidden;pointer-events:none}
 .layer{inset:0}
-.world{position:absolute;left:0;top:0;will-change:transform}
+.world{position:absolute;left:0;top:0;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .it{position:absolute;left:0;top:0;transform-origin:0 0}
 .it.settle{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
 .r{background-color:var(--ph,#D9D9D9);transition:background-color .22s ease,border-radius .22s ease}
@@ -1520,7 +1520,7 @@
 .ov{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .badges,.cursors{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .badge{position:absolute;transform:translate(-50%);padding:1px 4px;border-radius:2px;color:#fff;font:600 11px/16px Inter,system-ui,-apple-system,"Segoe UI",sans-serif;white-space:nowrap;font-variant-numeric:tabular-nums}
-.cursor{position:absolute;left:0;top:0;will-change:transform}
+.cursor{position:absolute;left:0;top:0;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .cursor svg{position:absolute;overflow:visible;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.28))}
 .rulers{position:absolute;inset:0;pointer-events:none}
 .ruler{position:absolute;background:#2c2c2c;pointer-events:none}
@@ -1741,7 +1741,7 @@
 
     syncWorld() {
       const vp = this.vp;
-      this.world.style.transform = `translate(${-vp.sx}px,${-vp.sy}px)`;
+      this.world.style.transform = `translate3d(${-vp.sx.toFixed(2)}px,${-vp.sy.toFixed(2)}px,0)`;
     }
 
     mount(model) {
@@ -1852,7 +1852,7 @@
       }
       const w = it.draw ? it.draw.w : it.w;
       const h = it.draw ? it.draw.h : it.h;
-      let tf = `translate(${it.x + it.dx}px,${it.y + it.dy}px)`;
+      let tf = `translate3d(${(it.x + it.dx).toFixed(2)}px,${(it.y + it.dy).toFixed(2)}px,0)`;
       if (it.scale !== 1) tf += ` scale(${it.scale})`;
       n.style.transform = tf;
       n.style.width = w + "px";
@@ -1948,7 +1948,7 @@
         seen.add(c.id);
         const X = c.sticky ? c.x : c.x - vp.sx + vp.ox;
         const Y = c.sticky ? c.y : c.y - vp.sy + vp.oy;
-        el.style.transform = `translate(${f1(X)}px,${f1(Y)}px)`;
+        el.style.transform = `translate3d(${X.toFixed(2)}px,${Y.toFixed(2)}px,0)`;
         const svg = el.firstChild;
         if (el._shape !== c.shape) {
           svg.innerHTML = cursorSVG(c.shape, c.color);
@@ -1959,7 +1959,7 @@
           svg.style.transformOrigin = `${hx}px ${hy}px`;
         }
         const s = 1 - c.press * 0.12;
-        svg.style.transform = `translate(${-el._hx}px,${-el._hy}px) rotate(${f1(c.angle)}deg) scale(${s})`;
+        svg.style.transform = `translate3d(${-el._hx}px,${-el._hy}px,0) rotate(${c.angle.toFixed(1)}deg) scale(${s})`;
       }
       for (const [id, el] of this.cursorEls)
         if (!seen.has(id)) {
@@ -2597,14 +2597,23 @@
       while (t < dur) {
         t += (yield) * this.tempo;
         const k = Math.min(1, t / dur);
-        const e = o.drag || k < 0.15 ? easeInOut(k) : easeOut(k);
+        const e = easeInOut(k);
         const p = get();
         const dx = p.x - x0;
         const dy = p.y - y0;
         const L = Math.hypot(dx, dy) || 1;
         const off = Math.sin(Math.PI * e) * bend;
+        const prevX = c.x;
+        const prevY = c.y;
         c.x = x0 + dx * e + (-dy / L) * off;
         c.y = y0 + dy * e + (dx / L) * off;
+        const stepVx = c.x - prevX;
+        const stepVy = c.y - prevY;
+        if (Math.hypot(stepVx, stepVy) > 0.4 && !c.sticky) {
+          const targetAngle = (Math.atan2(stepVy, stepVx) * 180) / Math.PI + 128;
+          const dAngle = ((((targetAngle - c.angle + 540) % 360) + 360) % 360) - 180;
+          c.angle += dAngle * 0.28;
+        }
         if (o.onStep) o.onStep();
       }
       const p = get();
@@ -3603,15 +3612,19 @@
       }, true);
       // browsers only let audio start after a click/keypress on the page
       on(window, "pointerdown", () => this.unlockSound(), true);
-      // Forward wheel events from the fixed host element so the user can scroll naturally
+      // Forward wheel events from the fixed host element through smooth momentum scroll engine
       on(this.view.host, "wheel", (e) => {
-        e.preventDefault();
-        const target = this.env.isRoot ? window : this.env.scroller;
-        target.scrollBy({ top: e.deltaY, left: e.deltaX, behavior: "instant" });
-        if (!this.view.frozen) this.view.syncWorld();
+        if (window.__orbitSmoothScroll && window.__orbitSmoothScroll.isEnabled) {
+          window.__orbitSmoothScroll.handleWheel(e);
+        } else {
+          e.preventDefault();
+          const target = this.env.isRoot ? window : this.env.scroller;
+          target.scrollBy({ top: e.deltaY, left: e.deltaX, behavior: "instant" });
+          if (!this.view.frozen) this.view.syncWorld();
+        }
       }, { passive: false });
 
-      // Forward touch scrolling on trackpads / touchscreens
+      // Forward touch scrolling on trackpads / touchscreens with smooth momentum
       let lastTouchY = 0;
       on(this.view.host, "touchstart", (e) => {
         if (e.touches && e.touches[0]) lastTouchY = e.touches[0].clientY;
@@ -3620,13 +3633,17 @@
         if (e.touches && e.touches[0]) {
           const dy = lastTouchY - e.touches[0].clientY;
           lastTouchY = e.touches[0].clientY;
-          const target = this.env.isRoot ? window : this.env.scroller;
-          target.scrollBy({ top: dy, behavior: "instant" });
-          if (!this.view.frozen) this.view.syncWorld();
+          if (window.__orbitSmoothScroll && window.__orbitSmoothScroll.isEnabled) {
+            window.__orbitSmoothScroll.scrollBy(dy);
+          } else {
+            const target = this.env.isRoot ? window : this.env.scroller;
+            target.scrollBy({ top: dy, behavior: "instant" });
+            if (!this.view.frozen) this.view.syncWorld();
+          }
         }
       }, { passive: true });
 
-      // Forward keyboard scrolling (ArrowDown, ArrowUp, PageDown, PageUp, Space)
+      // Forward keyboard scrolling (ArrowDown, ArrowUp, PageDown, PageUp, Space) smoothly
       on(window, "keydown", (e) => {
         const scrollKeys = {
           ArrowDown: 90,
@@ -3636,12 +3653,17 @@
           Space: e.shiftKey ? -window.innerHeight * 0.85 : window.innerHeight * 0.85,
         };
         if (scrollKeys[e.key] != null && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
-          e.preventDefault();
-          const target = this.env.isRoot ? window : this.env.scroller;
-          target.scrollBy({ top: scrollKeys[e.key], behavior: "smooth" });
-          if (!this.view.frozen) this.view.syncWorld();
+          if (window.__orbitSmoothScroll && window.__orbitSmoothScroll.isEnabled) {
+            e.preventDefault();
+            window.__orbitSmoothScroll.scrollBy(scrollKeys[e.key]);
+          } else {
+            e.preventDefault();
+            const target = this.env.isRoot ? window : this.env.scroller;
+            target.scrollBy({ top: scrollKeys[e.key], behavior: "instant" });
+            if (!this.view.frozen) this.view.syncWorld();
+          }
         }
-      }, false);
+      }, { passive: false });
       on(this.view.hud, "click", (e) => {
         const b = e.target.closest("button");
         if (!b) return;
@@ -3723,7 +3745,11 @@
       if (this.tourAcc >= 1) {
         const d = Math.floor(this.tourAcc);
         this.tourAcc -= d;
-        this.env.scrollBy(d);
+        if (window.__orbitSmoothScroll && window.__orbitSmoothScroll.isEnabled) {
+          window.__orbitSmoothScroll.scrollBy(d);
+        } else {
+          this.env.scrollBy(d);
+        }
       }
     }
 
@@ -3900,6 +3926,143 @@
     }
   }, true);
 
+  /* ==========================================================================
+     ORBIT SMOOTH MOMENTUM SCROLL ENGINE
+     Buttery smooth exponential damping physics for mouse wheel, keys & touch
+     ========================================================================== */
+  class OrbitSmoothScroll {
+    constructor() {
+      this.isEnabled = false;
+      this.targetY = 0;
+      this.currentY = 0;
+      this.isGliding = false;
+      this.rafId = null;
+      this.lerp = 0.11; // Buttery smooth momentum factor
+      this.boundWheel = (e) => this.handleWheel(e);
+      this.boundKey = (e) => this.handleKey(e);
+      this.boundScroll = () => this.handleNativeScroll();
+    }
+
+    getMaxScroll() {
+      const se = document.scrollingElement || document.documentElement;
+      const b = document.body;
+      return Math.max(0, Math.max(se ? se.scrollHeight : 0, b ? b.scrollHeight : 0) - window.innerHeight);
+    }
+
+    sync() {
+      const sy = window.scrollY || window.pageYOffset || 0;
+      this.targetY = sy;
+      this.currentY = sy;
+    }
+
+    handleNativeScroll() {
+      if (!this.isGliding) {
+        this.sync();
+      }
+    }
+
+    handleWheel(e) {
+      if (!this.isEnabled) return;
+      if (e.ctrlKey || e.metaKey) return; // Allow pinch/browser zoom
+      e.preventDefault();
+
+      let dy = e.deltaY;
+      if (e.deltaMode === 1) dy *= 34; // DOM_DELTA_LINE
+      else if (e.deltaMode === 2) dy *= window.innerHeight; // DOM_DELTA_PAGE
+
+      const maxScroll = this.getMaxScroll();
+      this.targetY = Math.max(0, Math.min(maxScroll, this.targetY + dy));
+      this.startGlide();
+    }
+
+    handleKey(e) {
+      if (!this.isEnabled) return;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (document.activeElement?.isContentEditable) return;
+
+      const keys = {
+        ArrowDown: 90,
+        ArrowUp: -90,
+        PageDown: window.innerHeight * 0.82,
+        PageUp: -window.innerHeight * 0.82,
+        Space: e.shiftKey ? -window.innerHeight * 0.82 : window.innerHeight * 0.82,
+      };
+
+      if (keys[e.key] != null) {
+        e.preventDefault();
+        const maxScroll = this.getMaxScroll();
+        this.targetY = Math.max(0, Math.min(maxScroll, this.targetY + keys[e.key]));
+        this.startGlide();
+      }
+    }
+
+    scrollBy(dy) {
+      if (!this.isEnabled) {
+        window.scrollBy({ top: dy, behavior: "instant" });
+        return;
+      }
+      const maxScroll = this.getMaxScroll();
+      this.targetY = Math.max(0, Math.min(maxScroll, this.targetY + dy));
+      this.startGlide();
+    }
+
+    scrollTo(y) {
+      const maxScroll = this.getMaxScroll();
+      this.targetY = Math.max(0, Math.min(maxScroll, y));
+      this.startGlide();
+    }
+
+    startGlide() {
+      if (this.isGliding) return;
+      this.isGliding = true;
+      this.step();
+    }
+
+    step() {
+      if (!this.isGliding) return;
+      const diff = this.targetY - this.currentY;
+      if (Math.abs(diff) > 0.35) {
+        this.currentY += diff * this.lerp;
+        window.scrollTo({ top: this.currentY, left: 0, behavior: "instant" });
+        if (window.SwarmRebuild && window.SwarmRebuild.app && window.SwarmRebuild.app.view) {
+          window.SwarmRebuild.app.view.syncWorld();
+        }
+        this.rafId = requestAnimationFrame(() => this.step());
+      } else {
+        this.currentY = this.targetY;
+        window.scrollTo({ top: this.currentY, left: 0, behavior: "instant" });
+        if (window.SwarmRebuild && window.SwarmRebuild.app && window.SwarmRebuild.app.view) {
+          window.SwarmRebuild.app.view.syncWorld();
+        }
+        this.isGliding = false;
+        this.rafId = null;
+      }
+    }
+
+    enable() {
+      if (this.isEnabled) return;
+      this.isEnabled = true;
+      this.sync();
+      window.addEventListener("wheel", this.boundWheel, { passive: false });
+      window.addEventListener("keydown", this.boundKey, { passive: false });
+      window.addEventListener("scroll", this.boundScroll, { passive: true });
+    }
+
+    disable() {
+      this.isEnabled = false;
+      this.isGliding = false;
+      if (this.rafId) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+      }
+      window.removeEventListener("wheel", this.boundWheel);
+      window.removeEventListener("keydown", this.boundKey);
+      window.removeEventListener("scroll", this.boundScroll);
+    }
+  }
+
+  window.__orbitSmoothScroll = new OrbitSmoothScroll();
+
   // Synthesizer for laser forge, typing clicks & harmonic chimes
   function playSynthTone(freq, type = 'sine', duration = 0.1, gainVal = 0.08) {
     try {
@@ -3954,6 +4117,7 @@
           this.overlay = null;
         }
         this.enableUserMouse();
+        if (window.__orbitSmoothScroll) window.__orbitSmoothScroll.enable();
         if (window.SwarmRebuild && window.SwarmRebuild.start) {
           window.SwarmRebuild.start();
         }
@@ -4162,26 +4326,30 @@
         </div>
 
         <!-- 4. Non-Interactable Code / Kinematics Overlay Menu -->
-        <div id="sb-code-overlay" class="sb-code-overlay" style="left: ${cx + 70}px; top: ${cy - 120}px;">
+        <div id="sb-code-overlay" class="sb-code-overlay" style="left: ${cx + 70}px; top: ${cy - 140}px;">
           <div class="sb-overlay-header">
             <div class="sb-traffic-dots">
               <span class="sb-dot-red"></span>
               <span class="sb-dot-yellow"></span>
               <span class="sb-dot-green"></span>
             </div>
-            <span class="sb-overlay-title">CONFIG: CURSOR_KINEMATICS</span>
+            <span class="sb-overlay-title">CONFIG: SYSTEM_KINEMATICS</span>
           </div>
           <div class="sb-overlay-props">
             <div class="sb-prop-row">
               <span class="sb-prop-label">Core Dot:</span>
-              <span class="sb-prop-val">#00f5b8 (Active)</span>
+              <span class="sb-prop-val">#00f5b8 (Active) ✔</span>
             </div>
             <div class="sb-prop-row">
               <span class="sb-prop-label">Follower Ring:</span>
-              <span class="sb-prop-val">56px Orbit (Bound)</span>
+              <span class="sb-prop-val">56px Orbit (Bound) ✔</span>
             </div>
             <div class="sb-prop-row">
-              <span class="sb-prop-label">Physics Mode:</span>
+              <span class="sb-prop-label">Smooth Scroll:</span>
+              <span id="sb-prop-scroll" class="sb-prop-val" style="color:#ef4444;">DISENGAGED (STEPPED)</span>
+            </div>
+            <div class="sb-prop-row">
+              <span class="sb-prop-label">Cursor Gliding:</span>
               <span id="sb-prop-glide" class="sb-prop-val" style="color:#ef4444;">RIGID (NO SMOOTH)</span>
             </div>
           </div>
@@ -4202,6 +4370,7 @@
       const ringArc = document.getElementById('sb-ring-arc');
       const codeOverlay = document.getElementById('sb-code-overlay');
       const codeStream = document.getElementById('sb-code-stream');
+      const propScroll = document.getElementById('sb-prop-scroll');
       const propGlide = document.getElementById('sb-prop-glide');
 
       const setBubble = (text) => {
@@ -4385,38 +4554,69 @@
         }, 1080);
       }, 4450);
 
-      // STEP 6: Master cursor writes gliding script (5900ms)
+      // STEP 6: Master cursor writes scripts (Smooth Scroll FIRST, then Smooth Gliding!)
       this.schedule(() => {
         if (codeOverlay && master) {
           const overlayRect = codeOverlay.getBoundingClientRect();
           master.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
           master.style.transform = `translate3d(${overlayRect.left + 50}px, ${overlayRect.top + 90}px, 0)`;
         }
-        setBubble('Writing smooth gliding code... ✍️');
+        setBubble('1/2: Compiling smooth scroll engine... 📜');
 
-        const codeSnippet = '// Injecting Smooth Gliding\nfunction applyGlide(x, y) {\n  ring.x += (x - ring.x) * 0.16;\n  ring.y += (y - ring.y) * 0.16;\n}\ncursor.setSmoothGlide(true);';
-        let charIdx = 0;
+        const scrollSnippet = '// 1. Injecting Smooth Inertia Scroll\nfunction initSmoothScroll() {\n  momentumGlide({ lerp: 0.12, friction: 0.90 });\n}\ninitSmoothScroll();';
+        let scrollIdx = 0;
 
-        const typeInterval = setInterval(() => {
-          if (charIdx < codeSnippet.length) {
-            charIdx += 3;
-            if (codeStream) codeStream.textContent = codeSnippet.slice(0, charIdx);
-            playSynthTone(1100 + (charIdx * 18) % 350, 'triangle', 0.02, 0.025);
+        const scrollInterval = setInterval(() => {
+          if (scrollIdx < scrollSnippet.length) {
+            scrollIdx += 4;
+            if (codeStream) codeStream.textContent = scrollSnippet.slice(0, scrollIdx);
+            playSynthTone(1080 + (scrollIdx * 16) % 360, 'triangle', 0.02, 0.025);
           } else {
-            clearInterval(typeInterval);
-            if (codeStream) codeStream.textContent = codeSnippet;
+            clearInterval(scrollInterval);
+            if (codeStream) codeStream.textContent = scrollSnippet;
 
-            if (propGlide) {
-              propGlide.textContent = 'SMOOTH GLIDING (ACTIVE) ✔';
-              propGlide.style.color = '#00f5b8';
+            if (propScroll) {
+              propScroll.textContent = 'SMOOTH SCROLL (ACTIVE) ✔';
+              propScroll.style.color = '#00f5b8';
             }
-            playSynthTone(1046, 'sine', 0.25, 0.1);
-            setBubble('Gliding compiled! 100% ✔');
+            playSynthTone(1046, 'sine', 0.22, 0.1);
+            setBubble('Smooth scroll compiled! 100% ✔');
+            if (window.__orbitSmoothScroll) window.__orbitSmoothScroll.enable();
+
+            // Next: Master cursor writes gliding script (Part 2)
+            this.schedule(() => {
+              if (master && codeOverlay) {
+                const overlayRect = codeOverlay.getBoundingClientRect();
+                master.style.transform = `translate3d(${overlayRect.left + 75}px, ${overlayRect.top + 105}px, 0)`;
+              }
+              setBubble('2/2: Compiling smooth cursor gliding... ✍️');
+
+              const glideSnippet = '// 2. Injecting Smooth Cursor Gliding\nfunction applyGlide(x, y) {\n  ring.x += (x - ring.x) * 0.16;\n  ring.y += (y - ring.y) * 0.16;\n}\ncursor.setSmoothGlide(true);';
+              let glideIdx = 0;
+
+              const glideInterval = setInterval(() => {
+                if (glideIdx < glideSnippet.length) {
+                  glideIdx += 4;
+                  if (codeStream) codeStream.textContent = scrollSnippet + '\n\n' + glideSnippet.slice(0, glideIdx);
+                  playSynthTone(1140 + (glideIdx * 18) % 380, 'triangle', 0.02, 0.025);
+                } else {
+                  clearInterval(glideInterval);
+                  if (codeStream) codeStream.textContent = scrollSnippet + '\n\n' + glideSnippet;
+
+                  if (propGlide) {
+                    propGlide.textContent = 'SMOOTH GLIDING (ACTIVE) ✔';
+                    propGlide.style.color = '#00f5b8';
+                  }
+                  playSynthTone(1046, 'sine', 0.25, 0.1);
+                  setBubble('Gliding compiled! 100% ✔');
+                }
+              }, 18);
+            }, 550);
           }
-        }, 20);
+        }, 18);
       }, 5900);
 
-      // STEP 7: Mouse starts gliding smoothly! (7200ms)
+      // STEP 7: Mouse starts gliding smoothly! (8200ms)
       this.schedule(() => {
         setBubble('Watch it glide! ✨');
 
@@ -4443,16 +4643,16 @@
           if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
           playSynthTone(880, 'sine', 0.18, 0.08);
         }, 900);
-      }, 7200);
+      }, 8200);
 
-      // STEP 8: Allow user to move the mouse! (8400ms)
+      // STEP 8: Allow user to move the mouse & scroll! (9400ms)
       this.schedule(() => {
         if (codeOverlay) {
           codeOverlay.classList.remove('is-active');
           setTimeout(() => { if (codeOverlay.parentNode) codeOverlay.parentNode.removeChild(codeOverlay); }, 300);
         }
 
-        setBubble('Control granted! Test your mouse 🎮');
+        setBubble('Control granted! Test mouse & smooth scroll 🎮');
         this.schedule(() => {
           if (master) master.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
           if (second) second.style.transform = `translate3d(${window.innerWidth + 200}px, ${window.innerHeight + 100}px, 0)`;
@@ -4465,14 +4665,14 @@
         // UNLOCK user mouse now!
         this.enableUserMouse();
         this.startTwoSecondWait();
-      }, 8400);
+      }, 9400);
     }
 
     startTwoSecondWait() {
       this.banner = document.createElement('div');
       this.banner.id = 'sb-wait-banner';
       this.banner.className = 'sb-wait-banner is-active';
-      this.banner.innerHTML = `<span>⚡ MOUSE OPERATIONAL • LAUNCHING SITE BUILDER IN <strong id="sb-wait-sec">2.0s</strong></span>`;
+      this.banner.innerHTML = `<span>⚡ MOUSE & SMOOTH SCROLL OPERATIONAL • LAUNCHING SITE BUILDER IN <strong id="sb-wait-sec">2.0s</strong></span>`;
       document.body.appendChild(this.banner);
 
       let remaining = 20; // 2.0s in 100ms ticks
