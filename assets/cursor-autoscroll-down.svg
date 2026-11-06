@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <defs>
+    <filter id="down-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <radialGradient id="disc-down" cx="50%" cy="60%" r="50%">
+      <stop offset="0%" stop-color="#00f5b8" stop-opacity="0.25" />
+      <stop offset="80%" stop-color="#070a12" stop-opacity="0.95" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Disc -->
+  <circle cx="24" cy="24" r="22" fill="url(#disc-down)" stroke="#00f5b8" stroke-width="2" filter="url(#down-glow)" />
+
+  <!-- Center Dot -->
+  <circle cx="24" cy="20" r="3" fill="#38bdf8" />
+
+  <!-- Highlighted Glowing DOWN Arrow -->
+  <path d="M16 32 L24 42 L32 32" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#down-glow)" />
+  <path d="M18 26 L24 34 L30 26" stroke="#00f5b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

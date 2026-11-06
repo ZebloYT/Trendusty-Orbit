@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <defs>
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <radialGradient id="disc-bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0c1322" stop-opacity="0.95" />
+      <stop offset="70%" stop-color="#070a12" stop-opacity="0.92" />
+      <stop offset="100%" stop-color="#00f5b8" stop-opacity="0.25" />
+    </radialGradient>
+  </defs>
+
+  <!-- Circular Cyber Disc Background -->
+  <circle cx="24" cy="24" r="22" fill="url(#disc-bg)" stroke="#00f5b8" stroke-width="1.5" stroke-opacity="0.65" filter="url(#neon-glow)" />
+  <circle cx="24" cy="24" r="16" stroke="#38bdf8" stroke-width="0.8" stroke-opacity="0.4" stroke-dasharray="2 3" />
+
+  <!-- Center Core Dot / Target -->
+  <circle cx="24" cy="24" r="3.5" fill="#00f5b8" filter="url(#neon-glow)" />
+  <circle cx="24" cy="24" r="1.5" fill="#ffffff" />
+
+  <!-- 4 Directional Chevrons -->
+  <!-- UP Arrow -->
+  <path id="arrow-up" d="M19 12 L24 6 L29 12" stroke="#00f5b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow)" />
+  <!-- DOWN Arrow -->
+  <path id="arrow-down" d="M19 36 L24 42 L29 36" stroke="#00f5b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow)" />
+  <!-- LEFT Arrow -->
+  <path id="arrow-left" d="M12 19 L6 24 L12 29" stroke="#00f5b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow)" />
+  <!-- RIGHT Arrow -->
+  <path id="arrow-right" d="M36 19 L42 24 L36 29" stroke="#00f5b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow)" />
+
+  <!-- 4 Crosshair Tick Marks -->
+  <line x1="24" y1="1" x2="24" y2="4" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.8" />
+  <line x1="24" y1="44" x2="24" y2="47" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.8" />
+  <line x1="1" y1="24" x2="4" y2="24" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.8" />
+  <line x1="44" y1="24" x2="47" y2="24" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.8" />
+</svg>

@@ -1,0 +1,98 @@
+/* ==========================================================================
+   TRENDUSTY ORBIT // AUTO-SCROLL MIDDLE MOUSE BUTTON (MMB) CURSOR STYLING
+   Futuristic cyber auto-scroll indicator & origin anchor
+   ========================================================================== */
+
+/* Pinned Origin Anchor */
+.orbit-autoscroll-anchor {
+  position: fixed;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%) scale(0.6);
+  pointer-events: none !important;
+  z-index: 2147483645 !important;
+  opacity: 0;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 0 12px rgba(0, 245, 184, 0.6));
+}
+
+.orbit-autoscroll-anchor.is-active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: orbit-anchor-pulse 2.2s infinite ease-in-out;
+}
+
+@keyframes orbit-anchor-pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    filter: drop-shadow(0 0 10px rgba(0, 245, 184, 0.5));
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.85));
+  }
+}
+
+/* Floating Auto-Scroll Dynamic Cursor */
+.orbit-autoscroll-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+  pointer-events: none !important;
+  z-index: 2147483647 !important;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+  will-change: transform;
+}
+
+.orbit-autoscroll-cursor.is-active {
+  opacity: 1;
+}
+
+/* Directional Chevrons Active Glow */
+.orbit-autoscroll-cursor svg path {
+  transition: stroke 0.14s ease, opacity 0.14s ease, stroke-width 0.14s ease;
+}
+
+.orbit-autoscroll-cursor.is-scrolling-up svg #arrow-up {
+  stroke: #ffffff !important;
+  stroke-width: 3.5px !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 6px #00f5b8) drop-shadow(0 0 12px #ffffff);
+}
+.orbit-autoscroll-cursor.is-scrolling-up svg #arrow-down {
+  opacity: 0.28 !important;
+}
+
+.orbit-autoscroll-cursor.is-scrolling-down svg #arrow-down {
+  stroke: #ffffff !important;
+  stroke-width: 3.5px !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 6px #00f5b8) drop-shadow(0 0 12px #ffffff);
+}
+.orbit-autoscroll-cursor.is-scrolling-down svg #arrow-up {
+  opacity: 0.28 !important;
+}
+
+.orbit-autoscroll-cursor.is-scrolling-left svg #arrow-left {
+  stroke: #ffffff !important;
+  stroke-width: 3.5px !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 6px #38bdf8) drop-shadow(0 0 12px #ffffff);
+}
+.orbit-autoscroll-cursor.is-scrolling-left svg #arrow-right {
+  opacity: 0.28 !important;
+}
+
+.orbit-autoscroll-cursor.is-scrolling-right svg #arrow-right {
+  stroke: #ffffff !important;
+  stroke-width: 3.5px !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 6px #38bdf8) drop-shadow(0 0 12px #ffffff);
+}
+.orbit-autoscroll-cursor.is-scrolling-right svg #arrow-left {
+  opacity: 0.28 !important;
+}
