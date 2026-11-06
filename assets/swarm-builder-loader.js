@@ -1656,7 +1656,7 @@
   <button data-a="tour" title="Auto-scroll while the swarm builds">Tour</button>
   <button data-a="speed" title="Build speed">1×</button>
   <button data-a="sound" class="snd" title="Sound (M)"></button>
-  <button data-a="live" class="pri" hidden title="Fade back to the real page">Go live</button>
+  <button data-a="live" class="pri" title="Fade back to the real page">Go live</button>
   <button data-a="replay" hidden title="Wipe and rebuild again">Replay</button>
   <button data-a="close" class="x" title="Exit (Esc)">✕</button>
 </div>`;
@@ -2322,10 +2322,11 @@
       this.lastScroll = vp.sy;
       this.vel = Math.max(this.vel * Math.exp(-dt * 1.2), this.vel * 0.7 + sv * 0.3);
       if (this.started) {
-        // Unlock all hero & viewport tasks so the swarm constructs the complete interface smoothly without scroll freeze
-        const env = this.env || (this.view && this.view.env);
-        const scrollH = env && typeof env.scrollHeight === "function" ? env.scrollHeight() : 4000;
-        this.frontier = Math.max(this.frontier, Math.max(this.viewBot * 2.5, scrollH));
+        // Frontier strictly matches the visible resolution of the user's monitor!
+        // this.viewBot = window.scrollY + window.innerHeight.
+        // Only elements within the visible monitor resolution (+ 40px buffer) are generated.
+        // As the user scrolls, frontier advances, unlocking the next elements in real-time.
+        this.frontier = Math.max(this.frontier, this.viewBot + 40);
       }
       const avail = this.started ? this.available() : [];
       this.tempo = clamp(2.1 + this.vel / 900 + (avail.length / Math.max(1, this.cursors.length)) * 0.5, 2.1, 4.5) * this.speed;
@@ -2347,24 +2348,9 @@
         }
       }
 
-      const buildDuration = this.startTime != null ? (this.time - this.startTime) : 0;
-      const allDoneOrTimeout = (this.ready && this.tasks && this.tasks.length > 0 && this.waitCount === 0) ||
-                               (this.ready && this.tasks && this.tasks.length > 0 && avail.length === 0 && this.backlog() === 0 && buildDuration > 1.5) ||
-                               (this.startTime != null && buildDuration > 7.5);
-      if (!this.flocking && this.started && allDoneOrTimeout) {
-        if (this.waitCount > 0) {
-          for (const it of this.items || []) {
-            it.vis = true;
-            it.styled = true;
-            it.done = true;
-            if (it.kind === "text") it.shown = it.total || (it.seq ? it.seq.length : 0);
-            bump(it);
-          }
-          for (const t of this.tasks) {
-            t.state = "done";
-          }
-          this.waitCount = 0;
-        }
+      // Complete only when ALL tasks on the entire document are built (when user scrolls through to the end)
+      const allDone = this.ready && this.tasks && this.tasks.length > 0 && this.waitCount === 0;
+      if (!this.flocking && this.started && allDone) {
         for (const c of this.cursors) {
           if (!c.follow) {
             c.follow = true;
@@ -3616,12 +3602,45 @@
       }, true);
       // browsers only let audio start after a click/keypress on the page
       on(window, "pointerdown", () => this.unlockSound(), true);
-      if (!this.env.isRoot) {
-        on(this.view.host, "wheel", (e) => {
+      // Forward wheel events from the fixed host element so the user can scroll naturally
+      on(this.view.host, "wheel", (e) => {
+        e.preventDefault();
+        const target = this.env.isRoot ? window : this.env.scroller;
+        target.scrollBy({ top: e.deltaY, left: e.deltaX, behavior: "instant" });
+        if (!this.view.frozen) this.view.syncWorld();
+      }, { passive: false });
+
+      // Forward touch scrolling on trackpads / touchscreens
+      let lastTouchY = 0;
+      on(this.view.host, "touchstart", (e) => {
+        if (e.touches && e.touches[0]) lastTouchY = e.touches[0].clientY;
+      }, { passive: true });
+      on(this.view.host, "touchmove", (e) => {
+        if (e.touches && e.touches[0]) {
+          const dy = lastTouchY - e.touches[0].clientY;
+          lastTouchY = e.touches[0].clientY;
+          const target = this.env.isRoot ? window : this.env.scroller;
+          target.scrollBy({ top: dy, behavior: "instant" });
+          if (!this.view.frozen) this.view.syncWorld();
+        }
+      }, { passive: true });
+
+      // Forward keyboard scrolling (ArrowDown, ArrowUp, PageDown, PageUp, Space)
+      on(window, "keydown", (e) => {
+        const scrollKeys = {
+          ArrowDown: 90,
+          ArrowUp: -90,
+          PageDown: window.innerHeight * 0.85,
+          PageUp: -window.innerHeight * 0.85,
+          Space: e.shiftKey ? -window.innerHeight * 0.85 : window.innerHeight * 0.85,
+        };
+        if (scrollKeys[e.key] != null && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
           e.preventDefault();
-          this.env.scroller.scrollBy({ top: e.deltaY, left: e.deltaX, behavior: "instant" });
-        }, { passive: false });
-      }
+          const target = this.env.isRoot ? window : this.env.scroller;
+          target.scrollBy({ top: scrollKeys[e.key], behavior: "smooth" });
+          if (!this.view.frozen) this.view.syncWorld();
+        }
+      }, false);
       on(this.view.hud, "click", (e) => {
         const b = e.target.closest("button");
         if (!b) return;
@@ -3721,7 +3740,7 @@
         const below = E.tasks.some((t) => t.state === "wait" && t.layer === "world" && t.gate > E.frontier);
         v.status.innerHTML =
           `<b>${workers}</b> agents<span class="sep"></span><b>${done.toLocaleString()}</b> / ${total.toLocaleString()} layers` +
-          (below && pend && !this.tour && E.backlog() === 0 ? `<span class="sep"></span>scroll to keep building` : "");
+          (below && pend && !this.tour && E.backlog() === 0 ? `<span class="sep"></span><span style="color:#00f5b8;font-weight:600;letter-spacing:0.02em;">scroll to build next elements ↓</span>` : "");
       }
       v.barFill.style.width = total ? `${(done / total) * 100}%` : "0%";
       const busy = E.cursors.filter((c) => c.task).slice(-5);
