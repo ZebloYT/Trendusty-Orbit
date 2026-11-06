@@ -4154,7 +4154,11 @@
         <!-- 3. Newly Generated Cursor Elements -->
         <div id="sb-created-cur" class="sb-created-cursor" style="transform: translate3d(${cx}px, ${cy}px, 0);">
           <div id="sb-created-dot" class="sb-created-dot"></div>
-          <div id="sb-created-ring" class="sb-created-ring"></div>
+          <div id="sb-created-ring" class="sb-created-ring">
+            <svg class="sb-ring-svg" viewBox="0 0 60 60" width="60" height="60">
+              <circle id="sb-ring-arc" cx="30" cy="30" r="28" fill="none" stroke="#00f5b8" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="175.93" stroke-dashoffset="175.93" />
+            </svg>
+          </div>
         </div>
 
         <!-- 4. Non-Interactable Code / Kinematics Overlay Menu -->
@@ -4195,6 +4199,7 @@
       const createdCur = document.getElementById('sb-created-cur');
       const dotEl = document.getElementById('sb-created-dot');
       const ringEl = document.getElementById('sb-created-ring');
+      const ringArc = document.getElementById('sb-ring-arc');
       const codeOverlay = document.getElementById('sb-code-overlay');
       const codeStream = document.getElementById('sb-code-stream');
       const propGlide = document.getElementById('sb-prop-glide');
@@ -4247,19 +4252,22 @@
         if (second) {
           second.style.opacity = '1';
           second.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
-          second.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
+          second.style.transform = `translate3d(${cx + r - 4}px, ${cy - 2}px, 0)`;
         }
         setSecondBubble('2. Tracing true 360° circle ⭕');
       }, 1900);
 
-      // Trigonometric circular trajectory (2350ms): Smooth round movement, NOT a rhombus!
+      // Trigonometric circular trajectory (2350ms): Smooth round movement actively drawing the circle!
       this.schedule(() => {
         const r = 28;
         const traceDuration = 1100;
         const traceStart = performance.now();
         if (ringEl) {
-          ringEl.classList.add('is-visible', 'is-tracing');
+          ringEl.classList.remove('is-complete');
           ringEl.style.transition = 'none';
+        }
+        if (ringArc) {
+          ringArc.style.strokeDashoffset = '175.93';
         }
 
         let lastAudioAngle = 0;
@@ -4273,11 +4281,11 @@
 
           if (second) {
             second.style.transition = 'none';
-            second.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+            second.style.transform = `translate3d(${px - 4}px, ${py - 2}px, 0)`;
           }
 
-          if (ringEl) {
-            ringEl.style.transform = `translate(-50%, -50%) scale(${Math.min(1, 0.25 + p * 0.75)})`;
+          if (ringArc) {
+            ringArc.style.strokeDashoffset = (175.93 * (1 - p)).toFixed(2);
           }
 
           if (angle - lastAudioAngle > 1.2) {
@@ -4288,10 +4296,13 @@
           if (p < 1) {
             requestAnimationFrame(traceStep);
           } else {
-            if (ringEl) {
-              ringEl.classList.remove('is-tracing');
-              ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
+            if (ringArc) {
+              ringArc.style.strokeDashoffset = '0';
             }
+            if (ringEl) {
+              ringEl.classList.add('is-complete');
+            }
+            spawnWave(cx + r, cy);
             playSynthTone(1046, 'sine', 0.22, 0.1);
             setSecondBubble('Follower ring bounded ⭕ ✔');
           }
