@@ -66,6 +66,11 @@ body::-webkit-scrollbar,
 .orbit-cursor-dot {
   z-index: 2147483649 !important;
   pointer-events: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  width: 36px !important;
+  height: 36px !important;
+  box-shadow: none !important;
 }
 
 #orbit-cursor-ring,
@@ -217,42 +222,44 @@ html.sb-mouse-disconnected .mouse-trail-dot {
   overflow: hidden;
 }
 
-/* Master Cursor (Cursor Architect) */
-.sb-master-cursor {
+/* ==========================================================================
+   MULTI-CURSOR COLLABORATIVE BUILDER BOTS (ALPHA, BETA, GAMMA, DELTA, EPSILON)
+   ========================================================================== */
+
+.sb-bot-cursor {
   position: absolute;
   top: 0;
   left: 0;
   pointer-events: none;
   z-index: 2147483646;
-  will-change: transform;
+  will-change: transform, opacity;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  transition: transform 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.1), opacity 0.3s ease;
 }
 
-.sb-master-pointer {
+.sb-bot-pointer {
   width: 24px;
   height: 24px;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.85));
 }
 
-.sb-master-tag {
-  background: #a855f7;
+.sb-bot-tag {
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 4px;
   margin-top: -2px;
   margin-left: 14px;
   white-space: nowrap;
-  box-shadow: 0 3px 12px rgba(168, 85, 247, 0.5);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.sb-master-bubble {
+.sb-bot-bubble {
   position: absolute;
   left: 32px;
   top: -28px;
@@ -260,7 +267,7 @@ html.sb-mouse-disconnected .mouse-trail-dot {
   border: 1px solid rgba(0, 245, 184, 0.5);
   color: #00f5b8;
   font-family: "JetBrains Mono", monospace;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   padding: 6px 12px;
   border-radius: 8px;
@@ -269,85 +276,110 @@ html.sb-mouse-disconnected .mouse-trail-dot {
   pointer-events: none;
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-.sb-master-bubble.is-active {
+.sb-bot-bubble.is-active {
   opacity: 1;
   transform: translateY(0);
 }
 
-#sb-second-cur .sb-master-tag {
-  background: #0284c7 !important;
-  box-shadow: 0 3px 12px rgba(2, 132, 199, 0.5) !important;
-}
+/* Individual Bot Aesthetics */
+#sb-bot-alpha .sb-bot-tag { background: #a855f7; box-shadow: 0 3px 12px rgba(168, 85, 247, 0.55); }
+#sb-bot-alpha .sb-bot-bubble { border-color: #a855f7; color: #d8b4fe; }
 
-#sb-second-cur .sb-master-bubble {
-  border-color: #38bdf8 !important;
-  color: #38bdf8 !important;
-}
+#sb-bot-beta .sb-bot-tag { background: #059669; box-shadow: 0 3px 12px rgba(5, 150, 105, 0.55); }
+#sb-bot-beta .sb-bot-bubble { border-color: #00f5b8; color: #00f5b8; }
 
-/* Created Custom Cursor (Green Dot + Follower Ring) */
-.sb-created-cursor {
+#sb-bot-gamma .sb-bot-tag { background: #0284c7; box-shadow: 0 3px 12px rgba(2, 132, 199, 0.55); }
+#sb-bot-gamma .sb-bot-bubble { border-color: #38bdf8; color: #38bdf8; }
+
+#sb-bot-delta .sb-bot-tag { background: #d97706; box-shadow: 0 3px 12px rgba(217, 119, 6, 0.55); }
+#sb-bot-delta .sb-bot-bubble { border-color: #f59e0b; color: #fbbf24; }
+
+#sb-bot-epsilon .sb-bot-tag { background: #0891b2; box-shadow: 0 3px 12px rgba(8, 145, 178, 0.55); }
+#sb-bot-epsilon .sb-bot-bubble { border-color: #00d2ff; color: #67e8f9; }
+
+/* ==========================================================================
+   OPTION 4: TACTICAL OSINT RETICLE ARROW (WEBSITE DEFAULT & FORGE STAGE)
+   ========================================================================== */
+
+.sb-created-tactical {
   position: absolute;
   top: 0;
   left: 0;
   pointer-events: none;
   z-index: 2147483644;
   will-change: transform;
+  margin-left: -4px;
+  margin-top: -2px;
 }
 
-.sb-created-dot {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 7px;
-  height: 7px;
-  background: #00f5b8;
-  border-radius: 50%;
-  box-shadow: 0 0 16px #00f5b8, 0 0 6px #ffffff;
-  transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.sb-created-dot.is-visible {
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.sb-created-ring {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  border: 1.5px solid transparent;
-  background: transparent;
-  box-shadow: none;
-  transition: border-color 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
-}
-
-.sb-created-ring.is-complete {
-  border-color: rgba(0, 245, 184, 0.7);
-  background: rgba(0, 245, 184, 0.05);
-  box-shadow: 0 0 20px rgba(0, 245, 184, 0.35);
-}
-
-.sb-ring-svg {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
+.sb-tactical-svg,
+.tactical-cursor-svg {
+  width: 38px;
+  height: 38px;
   overflow: visible;
   pointer-events: none;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85));
 }
 
-#sb-ring-arc {
+/* Animations for Option 4 Tactical Cursor */
+@keyframes tactical-reticle-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes tactical-crosshair-pulse {
+  0%, 100% { opacity: 0.75; stroke: #38bdf8; filter: drop-shadow(0 0 2px #38bdf8); }
+  50% { opacity: 1; stroke: #00f5b8; filter: drop-shadow(0 0 6px #00f5b8); }
+}
+
+@keyframes tactical-apex-pulse {
+  0%, 100% { fill: #38bdf8; filter: drop-shadow(0 0 3px #38bdf8); transform: scale(1); }
+  50% { fill: #00f5b8; filter: drop-shadow(0 0 8px #00f5b8); transform: scale(1.3); }
+}
+
+.tc-reticle-group {
+  transform-origin: 16px 16px;
+  animation: tactical-reticle-spin 10s linear infinite;
+}
+
+.tc-crosshairs {
+  animation: tactical-crosshair-pulse 2s ease-in-out infinite alternate;
+}
+
+.tc-apex-dot {
+  transform-origin: 4px 2px;
+  animation: tactical-apex-pulse 1.6s ease-in-out infinite alternate;
+}
+
+/* Hover, Active, and Text Interaction States */
+.orbit-cursor-dot.is-hovering .tc-reticle-group {
+  animation-duration: 2.2s;
+  stroke: #00f5b8;
+}
+.orbit-cursor-dot.is-hovering .tc-reticle-ring {
+  stroke: #00f5b8;
   filter: drop-shadow(0 0 6px #00f5b8);
+}
+.orbit-cursor-dot.is-hovering .tc-crosshairs {
+  animation-duration: 0.8s;
+  stroke: #00f5b8;
+}
+.orbit-cursor-dot.is-hovering .tc-apex-dot {
+  fill: #ffffff;
+  filter: drop-shadow(0 0 10px #00f5b8);
+}
+
+.orbit-cursor-dot.is-active .tactical-cursor-svg {
+  transform: scale(0.92);
+  transition: transform 0.08s ease;
+}
+.orbit-cursor-dot.is-active .tc-crosshairs {
+  transform: scale(0.75);
+  transform-origin: 16px 16px;
+  transition: transform 0.08s ease;
 }
 
 /* Double-Click Visual Wave Ripple */
@@ -376,7 +408,7 @@ html.sb-mouse-disconnected .mouse-trail-dot {
   position: absolute;
   top: 0;
   left: 0;
-  width: 380px;
+  width: 440px;
   background: rgba(11, 16, 26, 0.95);
   border: 1px solid rgba(0, 245, 184, 0.45);
   border-radius: 14px;
@@ -457,7 +489,7 @@ html.sb-mouse-disconnected .mouse-trail-dot {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 10px 12px;
-  min-height: 110px;
+  min-height: 140px;
   font-family: "JetBrains Mono", monospace;
   font-size: 10.5px;
   line-height: 1.55;

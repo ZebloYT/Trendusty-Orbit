@@ -4082,6 +4082,28 @@
     } catch (e) {}
   }
 
+  function ensureTacticalCursorMarkup(dot) {
+    if (!dot || dot.querySelector('.tactical-cursor-svg')) return;
+    dot.innerHTML = `
+      <svg class="tactical-cursor-svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <path class="tc-shadow" d="M4 2L21 9L13 13L9 21L4 2Z" fill="#000000" stroke="#000000" stroke-width="3.5" stroke-linejoin="round"/>
+        <path class="tc-spine-white" d="M4 2L13 13L9 21L4 2Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" stroke-linejoin="round"/>
+        <path class="tc-wing-carbon" d="M4 2L21 9L13 13L4 2Z" fill="#070b14" stroke="#a855f7" stroke-width="1.2" stroke-linejoin="round"/>
+        <g class="tc-reticle-group">
+          <circle class="tc-reticle-ring" cx="16" cy="16" r="8" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="3 3"/>
+          <circle class="tc-reticle-inner" cx="16" cy="16" r="4.5" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"/>
+        </g>
+        <g class="tc-crosshairs">
+          <line class="tc-ch-n" x1="16" y1="4" x2="16" y2="8" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+          <line class="tc-ch-e" x1="24" y1="16" x2="28" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+          <line class="tc-ch-s" x1="16" y1="24" x2="16" y2="28" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+          <line class="tc-ch-w" x1="4" y1="16" x2="8" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+        </g>
+        <circle class="tc-apex-dot" cx="4" cy="2" r="1.8" fill="#38bdf8"/>
+      </svg>
+    `;
+  }
+
   class SwarmCoordinator {
     constructor() {
       this.isFromButton = false;
@@ -4172,6 +4194,7 @@
       const ring = document.getElementById('orbit-cursor-ring');
       const customImg = document.getElementById('custom-img-cursor');
       if (dot) {
+        ensureTacticalCursorMarkup(dot);
         dot.style.opacity = '1';
         dot.style.visibility = 'visible';
         dot.style.display = 'block';
@@ -4186,6 +4209,16 @@
         document.body.appendChild(ring); // Bring to very top of body
       }
       if (customImg && customImg.style.display !== 'none') customImg.style.opacity = '1';
+
+      if (!window._tacticalCursorMovementAttached) {
+        window._tacticalCursorMovementAttached = true;
+        window.addEventListener('mousemove', (e) => {
+          const d = document.getElementById('orbit-cursor-dot');
+          if (d && !document.documentElement.classList.contains('sb-mouse-disconnected')) {
+            d.style.transform = 'translate3d(' + e.clientX + 'px, ' + e.clientY + 'px, 0) translate(-4px, -2px)';
+          }
+        }, { passive: true });
+      }
     }
 
     schedule(fn, ms) {
@@ -4288,7 +4321,7 @@
     }
 
     // =========================================================================
-    // CINEMATIC MOUSE CREATOR SEQUENCE
+    // CINEMATIC MOUSE CREATOR SEQUENCE (5-BOT MULTI-CURSOR COLLABORATION)
     // =========================================================================
     runCinematicMouseStory() {
       const cx = window.innerWidth / 2;
@@ -4297,35 +4330,83 @@
       this.stage = document.createElement('div');
       this.stage.id = 'sb-forge-stage';
       this.stage.innerHTML = `
-        <!-- 1. Master Cursor (Cursor Architect 1) -->
-        <div id="sb-master-cur" class="sb-master-cursor" style="transform: translate3d(${cx - 280}px, ${cy - 220}px, 0);">
-          <svg class="sb-master-pointer" viewBox="0 0 24 24" fill="none">
+        <!-- 1. Bot Alpha: Architect Lead (Purple) -->
+        <div id="sb-bot-alpha" class="sb-bot-cursor" style="transform: translate3d(${cx - 280}px, ${cy - 220}px, 0);">
+          <svg class="sb-bot-pointer" viewBox="0 0 24 24" fill="none">
             <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#a855f7" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
           </svg>
-          <div class="sb-master-tag">Orbit AI</div>
-          <div id="sb-master-bubble" class="sb-master-bubble">Calibrating cursor origin... 🎯</div>
+          <div class="sb-bot-tag">Orbit Alpha</div>
+          <div id="sb-bubble-alpha" class="sb-bot-bubble">Calibrating grid origin... 🎯</div>
         </div>
 
-        <!-- 2. Second Cursor (Cursor Architect 2) -->
-        <div id="sb-second-cur" class="sb-master-cursor" style="transform: translate3d(${cx + 300}px, ${cy + 180}px, 0); opacity: 0; pointer-events: none;">
-          <svg class="sb-master-pointer" viewBox="0 0 24 24" fill="none">
+        <!-- 2. Bot Beta: Fuselage Smith (Emerald) -->
+        <div id="sb-bot-beta" class="sb-bot-cursor" style="transform: translate3d(${cx + 380}px, ${cy - 200}px, 0); opacity: 0;">
+          <svg class="sb-bot-pointer" viewBox="0 0 24 24" fill="none">
+            <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#00f5b8" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <div class="sb-bot-tag">Orbit Beta</div>
+          <div id="sb-bubble-beta" class="sb-bot-bubble">Forging stealth fuselage... 📐</div>
+        </div>
+
+        <!-- 3. Bot Gamma: Radar Engineer (Sky Cyan) -->
+        <div id="sb-bot-gamma" class="sb-bot-cursor" style="transform: translate3d(${cx - 360}px, ${cy + 220}px, 0); opacity: 0;">
+          <svg class="sb-bot-pointer" viewBox="0 0 24 24" fill="none">
             <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#38bdf8" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
           </svg>
-          <div class="sb-master-tag" style="background:#0284c7; box-shadow:0 3px 12px rgba(2, 132, 199, 0.5);">Orbit Bot 2</div>
-          <div id="sb-second-bubble" class="sb-master-bubble" style="border-color:#38bdf8; color:#38bdf8;">Tracing follower ring... ⭕</div>
+          <div class="sb-bot-tag">Orbit Gamma</div>
+          <div id="sb-bubble-gamma" class="sb-bot-bubble">Projecting 360° radar ring... ⭕</div>
         </div>
 
-        <!-- 3. Newly Generated Cursor Elements -->
-        <div id="sb-created-cur" class="sb-created-cursor" style="transform: translate3d(${cx}px, ${cy}px, 0);">
-          <div id="sb-created-dot" class="sb-created-dot"></div>
-          <div id="sb-created-ring" class="sb-created-ring">
-            <svg class="sb-ring-svg" viewBox="0 0 60 60" width="60" height="60">
-              <circle id="sb-ring-arc" cx="30" cy="30" r="28" fill="none" stroke="#00f5b8" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="175.93" stroke-dashoffset="175.93" />
-            </svg>
-          </div>
+        <!-- 4. Bot Delta: Crosshair Specialist (Amber Gold) -->
+        <div id="sb-bot-delta" class="sb-bot-cursor" style="transform: translate3d(${cx + 360}px, ${cy + 220}px, 0); opacity: 0;">
+          <svg class="sb-bot-pointer" viewBox="0 0 24 24" fill="none">
+            <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#f59e0b" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <div class="sb-bot-tag">Orbit Delta</div>
+          <div id="sb-bubble-delta" class="sb-bot-bubble">Etching crosshairs... 🎯</div>
         </div>
 
-        <!-- 4. Non-Interactable Code / Kinematics Overlay Menu -->
+        <!-- 5. Bot Epsilon: Quantum Core Injector (Electric Blue) -->
+        <div id="sb-bot-epsilon" class="sb-bot-cursor" style="transform: translate3d(${cx}px, ${cy - 280}px, 0); opacity: 0;">
+          <svg class="sb-bot-pointer" viewBox="0 0 24 24" fill="none">
+            <path d="M4 2L20 10L11.5 13L8 21.5L4 2Z" fill="#00d2ff" stroke="#06080e" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <div class="sb-bot-tag">Orbit Epsilon</div>
+          <div id="sb-bubble-epsilon" class="sb-bot-bubble">Injecting quantum core... ⚡</div>
+        </div>
+
+        <!-- 6. Option 4: Tactical OSINT Reticle Assembly -->
+        <div id="sb-created-cur" class="sb-created-tactical" style="transform: translate3d(${cx}px, ${cy}px, 0);">
+          <svg id="sb-tactical-svg" class="sb-tactical-svg" width="48" height="48" viewBox="0 0 36 36" fill="none">
+            <!-- Arrow Drop Shadow -->
+            <path id="sb-f-shadow" d="M4 2L21 9L13 13L9 21L4 2Z" fill="#000000" stroke="#000000" stroke-width="3.5" stroke-linejoin="round" opacity="0"/>
+            <!-- Left spine white facet -->
+            <path id="sb-f-spine" d="M4 2L13 13L9 21L4 2Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" stroke-linejoin="round" opacity="0"/>
+            <!-- Right wing carbon facet -->
+            <path id="sb-f-wing" d="M4 2L21 9L13 13L4 2Z" fill="#070b14" stroke="#a855f7" stroke-width="1.2" stroke-linejoin="round" opacity="0"/>
+            <!-- Welding laser trace -->
+            <path id="sb-f-trace" d="M4 2L21 9L13 13L9 21L4 2Z" fill="none" stroke="#00f5b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="64" stroke-dashoffset="64"/>
+
+            <!-- Reticle Ring -->
+            <g id="sb-f-reticle-group" style="opacity: 0;">
+              <circle id="sb-f-reticle-ring" cx="16" cy="16" r="8" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="50.26" stroke-dashoffset="50.26"/>
+              <circle id="sb-f-reticle-inner" cx="16" cy="16" r="4.5" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"/>
+            </g>
+
+            <!-- Cardinal Crosshairs -->
+            <g id="sb-f-crosshairs" style="opacity: 0;">
+              <line id="sb-ch-n" x1="16" y1="4" x2="16" y2="8" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" opacity="0"/>
+              <line id="sb-ch-e" x1="24" y1="16" x2="28" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" opacity="0"/>
+              <line id="sb-ch-s" x1="16" y1="24" x2="16" y2="28" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" opacity="0"/>
+              <line id="sb-ch-w" x1="4" y1="16" x2="8" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" opacity="0"/>
+            </g>
+
+            <!-- Apex Core Dot -->
+            <circle id="sb-f-apex" cx="4" cy="2" r="1.8" fill="#38bdf8" opacity="0"/>
+          </svg>
+        </div>
+
+        <!-- 7. Non-Interactable Code / Kinematics Overlay Menu -->
         <div id="sb-code-overlay" class="sb-code-overlay" style="left: ${cx + 70}px; top: ${cy - 140}px;">
           <div class="sb-overlay-header">
             <div class="sb-traffic-dots">
@@ -4337,12 +4418,16 @@
           </div>
           <div class="sb-overlay-props">
             <div class="sb-prop-row">
-              <span class="sb-prop-label">Core Dot:</span>
-              <span class="sb-prop-val">#00f5b8 (Active) ✔</span>
+              <span class="sb-prop-label">Cursor Model:</span>
+              <span class="sb-prop-val">Option 4 (Tactical OSINT) ✔</span>
             </div>
             <div class="sb-prop-row">
-              <span class="sb-prop-label">Follower Ring:</span>
-              <span class="sb-prop-val">56px Orbit (Bound) ✔</span>
+              <span class="sb-prop-label">Fuselage:</span>
+              <span class="sb-prop-val">Stealth Carbon + White Spine ✔</span>
+            </div>
+            <div class="sb-prop-row">
+              <span class="sb-prop-label">Reticle Radar:</span>
+              <span id="sb-prop-reticle" class="sb-prop-val" style="color:#ef4444;">CALIBRATING...</span>
             </div>
             <div class="sb-prop-row">
               <span class="sb-prop-label">Smooth Scroll:</span>
@@ -4360,29 +4445,41 @@
       `;
       document.body.appendChild(this.stage);
 
-      const master = document.getElementById('sb-master-cur');
-      const bubble = document.getElementById('sb-master-bubble');
-      const second = document.getElementById('sb-second-cur');
-      const secondBubble = document.getElementById('sb-second-bubble');
+      const botAlpha = document.getElementById('sb-bot-alpha');
+      const bubbleAlpha = document.getElementById('sb-bubble-alpha');
+      const botBeta = document.getElementById('sb-bot-beta');
+      const bubbleBeta = document.getElementById('sb-bubble-beta');
+      const botGamma = document.getElementById('sb-bot-gamma');
+      const bubbleGamma = document.getElementById('sb-bubble-gamma');
+      const botDelta = document.getElementById('sb-bot-delta');
+      const bubbleDelta = document.getElementById('sb-bubble-delta');
+      const botEpsilon = document.getElementById('sb-bot-epsilon');
+      const bubbleEpsilon = document.getElementById('sb-bubble-epsilon');
+
       const createdCur = document.getElementById('sb-created-cur');
-      const dotEl = document.getElementById('sb-created-dot');
-      const ringEl = document.getElementById('sb-created-ring');
-      const ringArc = document.getElementById('sb-ring-arc');
+      const fShadow = document.getElementById('sb-f-shadow');
+      const fSpine = document.getElementById('sb-f-spine');
+      const fWing = document.getElementById('sb-f-wing');
+      const fTrace = document.getElementById('sb-f-trace');
+      const fReticleGroup = document.getElementById('sb-f-reticle-group');
+      const fReticleRing = document.getElementById('sb-f-reticle-ring');
+      const fCrosshairs = document.getElementById('sb-f-crosshairs');
+      const chN = document.getElementById('sb-ch-n');
+      const chE = document.getElementById('sb-ch-e');
+      const chS = document.getElementById('sb-ch-s');
+      const chW = document.getElementById('sb-ch-w');
+      const fApex = document.getElementById('sb-f-apex');
+
       const codeOverlay = document.getElementById('sb-code-overlay');
       const codeStream = document.getElementById('sb-code-stream');
+      const propReticle = document.getElementById('sb-prop-reticle');
       const propScroll = document.getElementById('sb-prop-scroll');
       const propGlide = document.getElementById('sb-prop-glide');
 
-      const setBubble = (text) => {
-        if (!bubble) return;
-        bubble.textContent = text;
-        bubble.classList.add('is-active');
-      };
-
-      const setSecondBubble = (text) => {
-        if (!secondBubble) return;
-        secondBubble.textContent = text;
-        secondBubble.classList.add('is-active');
+      const setBubble = (bubbleEl, text) => {
+        if (!bubbleEl) return;
+        bubbleEl.textContent = text;
+        bubbleEl.classList.add('is-active');
       };
 
       const spawnWave = (x, y) => {
@@ -4394,102 +4491,254 @@
         setTimeout(() => w.remove(), 500);
       };
 
-      // STEP 1: First mouse comes in (50ms) to center, WAITS FOR 1 FULL SECOND!
+      // STEP 1: Bot Alpha (Architect Lead) arrives (50ms) to center, WAITS FOR 1 FULL SECOND!
       this.schedule(() => {
-        if (master) {
-          master.style.transition = 'transform 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
-          master.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        if (botAlpha) {
+          botAlpha.style.transition = 'transform 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          botAlpha.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
         }
-        setBubble('Locking target: Center mouse... 🎯');
+        setBubble(bubbleAlpha, 'Locking coordinate grid (Option 4)... 🎯');
       }, 50);
 
-      // AFTER 1 SEC WAIT (400ms arrival + 1000ms wait = 1400ms): Click on main mouse to make it the green middle dot!
+      // AFTER 1 SEC WAIT (400ms arrival + 1000ms wait = 1400ms): Bot Alpha clicks to initialize forge zone!
       this.schedule(() => {
-        if (master) {
-          master.style.transform = `translate3d(${cx + 4}px, ${cy + 4}px, 0)`;
+        if (botAlpha) {
+          botAlpha.style.transform = `translate3d(${cx + 4}px, ${cy + 4}px, 0)`;
         }
         spawnWave(cx, cy);
         playSynthTone(720, 'sine', 0.12, 0.09);
-
-        if (dotEl) dotEl.classList.add('is-visible');
-        setBubble('1. Green core dot forged 🟢');
+        setBubble(bubbleAlpha, '1/5: Grid origin locked 📐');
       }, 1400);
 
-      // STEP 2: Second mouse comes and generates the round circle (1900ms)
+      // STEP 2: Bot Beta (Fuselage Smith) swoops in (1700ms) to forge stealth arrow fuselage
       this.schedule(() => {
-        const r = 28; // 28px radius = 56px follower circle diameter
-        if (second) {
-          second.style.opacity = '1';
-          second.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
-          second.style.transform = `translate3d(${cx + r - 4}px, ${cy - 2}px, 0)`;
+        if (botBeta) {
+          botBeta.style.opacity = '1';
+          botBeta.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          botBeta.style.transform = `translate3d(${cx + 4}px, ${cy + 2}px, 0)`;
         }
-        setSecondBubble('2. Tracing true 360° circle ⭕');
-      }, 1900);
+        setBubble(bubbleBeta, '2/5: Forging Tactical Stealth fuselage... ⚡');
+      }, 1700);
 
-      // Trigonometric circular trajectory (2350ms): Smooth round movement actively drawing the circle!
+      // Bot Beta traces laser outline of the arrow (2100ms)
       this.schedule(() => {
-        const r = 28;
-        const traceDuration = 1100;
+        const traceDuration = 800;
         const traceStart = performance.now();
-        if (ringEl) {
-          ringEl.classList.remove('is-complete');
-          ringEl.style.transition = 'none';
-        }
-        if (ringArc) {
-          ringArc.style.strokeDashoffset = '175.93';
-        }
-
-        let lastAudioAngle = 0;
         const traceStep = () => {
           if (!this.stage) return;
           const elapsed = performance.now() - traceStart;
           const p = Math.min(1, elapsed / traceDuration);
-          const angle = p * Math.PI * 2;
-          const px = cx + Math.cos(angle) * r;
-          const py = cy + Math.sin(angle) * r;
-
-          if (second) {
-            second.style.transition = 'none';
-            second.style.transform = `translate3d(${px - 4}px, ${py - 2}px, 0)`;
+          if (fTrace) {
+            fTrace.style.strokeDashoffset = (64 * (1 - p)).toFixed(2);
+          }
+          if (botBeta) {
+            // Path approximation M4 2 -> 21 9 -> 13 13 -> 9 21 -> 4 2
+            let tx = cx + 4, ty = cy + 2;
+            if (p < 0.25) {
+              const subP = p / 0.25;
+              tx = cx + 4 + (21 - 4) * subP;
+              ty = cy + 2 + (9 - 2) * subP;
+            } else if (p < 0.5) {
+              const subP = (p - 0.25) / 0.25;
+              tx = cx + 21 + (13 - 21) * subP;
+              ty = cy + 9 + (13 - 9) * subP;
+            } else if (p < 0.75) {
+              const subP = (p - 0.5) / 0.25;
+              tx = cx + 13 + (9 - 13) * subP;
+              ty = cy + 13 + (21 - 13) * subP;
+            } else {
+              const subP = (p - 0.75) / 0.25;
+              tx = cx + 9 + (4 - 9) * subP;
+              ty = cy + 21 + (2 - 21) * subP;
+            }
+            botBeta.style.transition = 'none';
+            botBeta.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
           }
 
-          if (ringArc) {
-            ringArc.style.strokeDashoffset = (175.93 * (1 - p)).toFixed(2);
-          }
-
-          if (angle - lastAudioAngle > 1.2) {
-            lastAudioAngle = angle;
-            playSynthTone(860 + (p * 220), 'sine', 0.05, 0.04);
+          if (Math.random() < 0.25) {
+            playSynthTone(750 + Math.random() * 300, 'sawtooth', 0.03, 0.02);
           }
 
           if (p < 1) {
             requestAnimationFrame(traceStep);
           } else {
-            if (ringArc) {
-              ringArc.style.strokeDashoffset = '0';
+            if (fTrace) fTrace.style.strokeDashoffset = '0';
+            if (fShadow) fShadow.style.opacity = '1';
+            if (fSpine) fSpine.style.opacity = '1';
+            if (fWing) fWing.style.opacity = '1';
+            spawnWave(cx + 13, cy + 13);
+            playSynthTone(920, 'sine', 0.15, 0.08);
+            setBubble(bubbleBeta, 'Fuselage titanium & white spine bonded ✔');
+            if (botBeta) {
+              botBeta.style.transition = 'transform 0.4s ease';
+              botBeta.style.transform = `translate3d(${cx + 60}px, ${cy - 50}px, 0)`;
             }
-            if (ringEl) {
-              ringEl.classList.add('is-complete');
-            }
-            spawnWave(cx + r, cy);
-            playSynthTone(1046, 'sine', 0.22, 0.1);
-            setSecondBubble('Follower ring bounded ⭕ ✔');
           }
         };
         requestAnimationFrame(traceStep);
-      }, 2350);
+      }, 2100);
 
-      // STEP 3: Master mouse double-clicks it (3600ms)
+      // STEP 3: Bot Gamma (Radar Engineer) swoops in (3100ms) to calibrate 360° radar reticle ring
       this.schedule(() => {
-        if (master) {
-          master.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
-          master.style.transform = `translate3d(${cx + 8}px, ${cy + 8}px, 0)`;
+        if (botGamma) {
+          botGamma.style.opacity = '1';
+          botGamma.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          botGamma.style.transform = `translate3d(${cx + 16 + 8}px, ${cy + 16}px, 0)`;
         }
-        setBubble('3. Double-clicking cursor 🖱️');
+        setBubble(bubbleGamma, '3/5: Calibrating 360° radar reticle ring... ⭕');
+      }, 3100);
+
+      // Bot Gamma traces true 360° circular trajectory around reticle center (3500ms)
+      this.schedule(() => {
+        const r = 8; // Reticle radius
+        const rcX = cx + 16;
+        const rcY = cy + 16;
+        const traceDuration = 950;
+        const traceStart = performance.now();
+        if (fReticleGroup) fReticleGroup.style.opacity = '1';
+        if (fReticleRing) fReticleRing.style.strokeDashoffset = '50.26';
+
+        let lastToneAngle = 0;
+        const circleStep = () => {
+          if (!this.stage) return;
+          const elapsed = performance.now() - traceStart;
+          const p = Math.min(1, elapsed / traceDuration);
+          const angle = p * Math.PI * 2;
+          const px = rcX + Math.cos(angle) * (r + 4);
+          const py = rcY + Math.sin(angle) * (r + 4);
+
+          if (botGamma) {
+            botGamma.style.transition = 'none';
+            botGamma.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+          }
+
+          if (fReticleRing) {
+            fReticleRing.style.strokeDashoffset = (50.26 * (1 - p)).toFixed(2);
+          }
+
+          if (angle - lastToneAngle > 1.1) {
+            lastToneAngle = angle;
+            playSynthTone(600 + (p * 500), 'sine', 0.05, 0.035);
+          }
+
+          if (p < 1) {
+            requestAnimationFrame(circleStep);
+          } else {
+            if (fReticleRing) {
+              fReticleRing.style.strokeDashoffset = '0';
+              fReticleRing.style.strokeDasharray = '3 3';
+            }
+            if (fReticleGroup) {
+              fReticleGroup.classList.add('tc-reticle-group'); // Start continuous rotating radar animation!
+            }
+            spawnWave(rcX, rcY);
+            playSynthTone(1046, 'sine', 0.2, 0.09);
+            setBubble(bubbleGamma, 'Radar ring locked at 12 RPM ⭕ ✔');
+            if (botGamma) {
+              botGamma.style.transition = 'transform 0.4s ease';
+              botGamma.style.transform = `translate3d(${cx - 70}px, ${cy + 60}px, 0)`;
+            }
+          }
+        };
+        requestAnimationFrame(circleStep);
+      }, 3500);
+
+      // STEP 4: Bot Delta (Crosshair Specialist) swoops in (4700ms) to etch 4 cardinal crosshairs
+      this.schedule(() => {
+        if (botDelta) {
+          botDelta.style.opacity = '1';
+          botDelta.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          botDelta.style.transform = `translate3d(${cx + 16}px, ${cy + 6}px, 0)`;
+        }
+        setBubble(bubbleDelta, '4/5: Precision-etching 4 targeting crosshairs... 🎯');
+      }, 4700);
+
+      // Bot Delta laser-etches the 4 crosshairs in cardinal sequence (5100ms - 5900ms)
+      this.schedule(() => {
+        if (fCrosshairs) fCrosshairs.style.opacity = '1';
+
+        // 1. North tick
+        this.schedule(() => {
+          if (chN) chN.style.opacity = '1';
+          spawnWave(cx + 16, cy + 6);
+          playSynthTone(880, 'triangle', 0.07, 0.05);
+          if (botDelta) {
+            botDelta.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+            botDelta.style.transform = `translate3d(${cx + 26}px, ${cy + 16}px, 0)`;
+          }
+        }, 50);
+
+        // 2. East tick
+        this.schedule(() => {
+          if (chE) chE.style.opacity = '1';
+          spawnWave(cx + 26, cy + 16);
+          playSynthTone(932, 'triangle', 0.07, 0.05);
+          if (botDelta) {
+            botDelta.style.transform = `translate3d(${cx + 16}px, ${cy + 26}px, 0)`;
+          }
+        }, 250);
+
+        // 3. South tick
+        this.schedule(() => {
+          if (chS) chS.style.opacity = '1';
+          spawnWave(cx + 16, cy + 26);
+          playSynthTone(988, 'triangle', 0.07, 0.05);
+          if (botDelta) {
+            botDelta.style.transform = `translate3d(${cx + 6}px, ${cy + 16}px, 0)`;
+          }
+        }, 450);
+
+        // 4. West tick
+        this.schedule(() => {
+          if (chW) chW.style.opacity = '1';
+          spawnWave(cx + 6, cy + 16);
+          playSynthTone(1046, 'triangle', 0.08, 0.06);
+          if (fCrosshairs) fCrosshairs.classList.add('tc-crosshairs'); // Start pulsing radar keyframes!
+          setBubble(bubbleDelta, '4 cardinal crosshairs operational 🎯 ✔');
+          if (botDelta) {
+            botDelta.style.transition = 'transform 0.4s ease';
+            botDelta.style.transform = `translate3d(${cx + 70}px, ${cy + 70}px, 0)`;
+          }
+        }, 650);
+      }, 5100);
+
+      // STEP 5: Bot Epsilon (Quantum Core) drops in (6100ms) to inject apex quantum laser core
+      this.schedule(() => {
+        if (botEpsilon) {
+          botEpsilon.style.opacity = '1';
+          botEpsilon.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          botEpsilon.style.transform = `translate3d(${cx + 4}px, ${cy + 2}px, 0)`;
+        }
+        setBubble(bubbleEpsilon, '5/5: Injecting quantum apex laser core... ⚡');
+      }, 6100);
+
+      // Bot Epsilon locks apex laser core (6500ms)
+      this.schedule(() => {
+        spawnWave(cx + 4, cy + 2);
+        playSynthTone(523, 'sine', 0.25, 0.1);
+        playSynthTone(1046, 'sine', 0.25, 0.1);
+        if (fApex) {
+          fApex.style.opacity = '1';
+          fApex.classList.add('tc-apex-dot');
+        }
+        setBubble(bubbleEpsilon, 'Option 4 Tactical Reticle online! ⚡ ✔');
+        if (botEpsilon) {
+          botEpsilon.style.transition = 'transform 0.4s ease';
+          botEpsilon.style.transform = `translate3d(${cx - 50}px, ${cy - 60}px, 0)`;
+        }
+      }, 6500);
+
+      // Master Bot Alpha double-clicks Tactical Cursor to verify actuation (7000ms)
+      this.schedule(() => {
+        if (botAlpha) {
+          botAlpha.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          botAlpha.style.transform = `translate3d(${cx + 8}px, ${cy + 8}px, 0)`;
+        }
+        setBubble(bubbleAlpha, 'Verifying Option 4 actuation 🖱️');
 
         // Click 1
         this.schedule(() => {
-          spawnWave(cx, cy);
+          spawnWave(cx + 4, cy + 2);
           playSynthTone(440, 'square', 0.06, 0.08);
           if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(0.92)`;
           setTimeout(() => {
@@ -4499,25 +4748,30 @@
 
         // Click 2
         this.schedule(() => {
-          spawnWave(cx, cy);
-          playSynthTone(480, 'square', 0.08, 0.1);
-          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1.18)`;
+          spawnWave(cx + 4, cy + 2);
+          playSynthTone(520, 'square', 0.08, 0.1);
+          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1.15)`;
           setTimeout(() => {
             if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
           }, 120);
-        }, 300);
-      }, 3600);
+          setBubble(bubbleAlpha, 'Option 4 Actuation 100% verified ✔');
+        }, 320);
+      }, 7000);
 
-      // STEP 4: Configuration overlay opens (4100ms)
+      // STEP 6: Configuration overlay menu opens (7600ms)
       this.schedule(() => {
         playSynthTone(580, 'triangle', 0.16, 0.08);
         if (codeOverlay) codeOverlay.classList.add('is-active');
-        setBubble('Opening configuration overlay ⚙️');
-      }, 4100);
+        if (propReticle) {
+          propReticle.textContent = 'ROTATING (12 RPM) ✔';
+          propReticle.style.color = '#00f5b8';
+        }
+        setBubble(bubbleAlpha, 'Opening kinematics synthesizer ⚙️');
+      }, 7600);
 
-      // STEP 5: Test them without gliding: Make it really move like a real human! NO TELEPORTING! (4450ms)
+      // STEP 7: Test them without gliding: Make it really move like a real human! NO TELEPORTING! (8000ms)
       this.schedule(() => {
-        setBubble('Testing kinematics: RIGID (NO GLIDE) ⚠️');
+        setBubble(bubbleAlpha, 'Testing kinematics: RIGID (NO GLIDE) ⚠️');
 
         // Leg 1: quick human flick with sharp dead stop
         if (createdCur) {
@@ -4552,18 +4806,18 @@
           }
           playSynthTone(360, 'sawtooth', 0.05, 0.04);
         }, 1080);
-      }, 4450);
+      }, 8000);
 
-      // STEP 6: Master cursor writes scripts (Smooth Scroll FIRST, then Smooth Gliding!)
+      // STEP 8: Collaborative code writing animation! (Smooth Scroll FIRST, then Cursor Animations & Gliding!) (9400ms)
       this.schedule(() => {
-        if (codeOverlay && master) {
+        if (codeOverlay && botAlpha) {
           const overlayRect = codeOverlay.getBoundingClientRect();
-          master.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
-          master.style.transform = `translate3d(${overlayRect.left + 50}px, ${overlayRect.top + 90}px, 0)`;
+          botAlpha.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
+          botAlpha.style.transform = `translate3d(${overlayRect.left + 50}px, ${overlayRect.top + 90}px, 0)`;
         }
-        setBubble('1/2: Compiling smooth scroll engine... 📜');
+        setBubble(bubbleAlpha, '1/2: Compiling smooth scroll engine... 📜');
 
-        const scrollSnippet = '// 1. Injecting Smooth Inertia Scroll\nfunction initSmoothScroll() {\n  momentumGlide({ lerp: 0.12, friction: 0.90 });\n}\ninitSmoothScroll();';
+        const scrollSnippet = '// 1. Injecting Smooth Inertia Scroll Engine\nfunction initSmoothScroll() {\n  momentumGlide({ lerp: 0.12, friction: 0.90 });\n}\ninitSmoothScroll();';
         let scrollIdx = 0;
 
         const scrollInterval = setInterval(() => {
@@ -4580,82 +4834,81 @@
               propScroll.style.color = '#00f5b8';
             }
             playSynthTone(1046, 'sine', 0.22, 0.1);
-            setBubble('Smooth scroll compiled! 100% ✔');
+            setBubble(bubbleAlpha, 'Smooth scroll engine compiled! ✔');
             if (window.__orbitSmoothScroll) window.__orbitSmoothScroll.enable();
 
-            // Next: Master cursor writes gliding script (Part 2)
+            // Next: Bot Gamma writes Tactical Cursor Animation & Gliding Script (Part 2)
             this.schedule(() => {
-              if (master && codeOverlay) {
+              if (botGamma && codeOverlay) {
                 const overlayRect = codeOverlay.getBoundingClientRect();
-                master.style.transform = `translate3d(${overlayRect.left + 75}px, ${overlayRect.top + 105}px, 0)`;
+                botGamma.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
+                botGamma.style.transform = `translate3d(${overlayRect.left + 75}px, ${overlayRect.top + 105}px, 0)`;
               }
-              setBubble('2/2: Compiling smooth cursor gliding... ✍️');
+              setBubble(bubbleGamma, '2/2: Compiling Tactical Reticle animation & gliding... ✍️');
 
-              const glideSnippet = '// 2. Injecting Smooth Cursor Gliding\nfunction applyGlide(x, y) {\n  ring.x += (x - ring.x) * 0.16;\n  ring.y += (y - ring.y) * 0.16;\n}\ncursor.setSmoothGlide(true);';
-              let glideIdx = 0;
+              const cursorAnimSnippet = '// 2. Tactical Reticle & Radar Kinematics\nfunction initTacticalCursor() {\n  reticle.startRotation({ rpm: 12, mode: "holographic" });\n  crosshairs.pulse({ glow: "#38bdf8", rate: 1.5 });\n  cursor.setSmoothGlide({ lerp: 0.16, trail: "inertia" });\n}\ninitTacticalCursor();';
+              let animIdx = 0;
 
-              const glideInterval = setInterval(() => {
-                if (glideIdx < glideSnippet.length) {
-                  glideIdx += 4;
-                  if (codeStream) codeStream.textContent = scrollSnippet + '\n\n' + glideSnippet.slice(0, glideIdx);
-                  playSynthTone(1140 + (glideIdx * 18) % 380, 'triangle', 0.02, 0.025);
+              const animInterval = setInterval(() => {
+                if (animIdx < cursorAnimSnippet.length) {
+                  animIdx += 4;
+                  if (codeStream) codeStream.textContent = scrollSnippet + '\n\n' + cursorAnimSnippet.slice(0, animIdx);
+                  playSynthTone(1140 + (animIdx * 18) % 380, 'triangle', 0.02, 0.025);
                 } else {
-                  clearInterval(glideInterval);
-                  if (codeStream) codeStream.textContent = scrollSnippet + '\n\n' + glideSnippet;
+                  clearInterval(animInterval);
+                  if (codeStream) codeStream.textContent = scrollSnippet + '\n\n' + cursorAnimSnippet;
 
                   if (propGlide) {
                     propGlide.textContent = 'SMOOTH GLIDING (ACTIVE) ✔';
                     propGlide.style.color = '#00f5b8';
                   }
                   playSynthTone(1046, 'sine', 0.25, 0.1);
-                  setBubble('Gliding compiled! 100% ✔');
+                  setBubble(bubbleGamma, 'Tactical Reticle animations compiled! 100% ✔');
                 }
               }, 18);
             }, 550);
           }
         }, 18);
-      }, 5900);
+      }, 9400);
 
-      // STEP 7: Mouse starts gliding smoothly! (8200ms)
+      // STEP 9: Tactical Cursor starts gliding smoothly in fluid curves! (12000ms)
       this.schedule(() => {
-        setBubble('Watch it glide! ✨');
+        setBubble(bubbleAlpha, 'Watch the Tactical Reticle glide! ✨');
 
         if (createdCur) createdCur.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-        if (ringEl) ringEl.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
 
-        if (createdCur) createdCur.style.transform = `translate3d(${cx - 140}px, ${cy - 40}px, 0)`;
-        if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1.12)';
+        if (createdCur) createdCur.style.transform = `translate3d(${cx - 140}px, ${cy - 40}px, 0) scale(1.08)`;
 
         this.schedule(() => {
-          if (createdCur) createdCur.style.transform = `translate3d(${cx + 140}px, ${cy + 50}px, 0)`;
-          if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(0.96)';
+          if (createdCur) createdCur.style.transform = `translate3d(${cx + 140}px, ${cy + 50}px, 0) scale(0.96)`;
           playSynthTone(660, 'sine', 0.12, 0.06);
         }, 300);
 
         this.schedule(() => {
-          if (createdCur) createdCur.style.transform = `translate3d(${cx - 60}px, ${cy + 70}px, 0)`;
-          if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1.08)';
+          if (createdCur) createdCur.style.transform = `translate3d(${cx - 60}px, ${cy + 70}px, 0) scale(1.06)`;
           playSynthTone(740, 'sine', 0.12, 0.06);
         }, 600);
 
         this.schedule(() => {
-          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-          if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
+          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
           playSynthTone(880, 'sine', 0.18, 0.08);
         }, 900);
-      }, 8200);
+      }, 12000);
 
-      // STEP 8: Allow user to move the mouse & scroll! (9400ms)
+      // STEP 10: Allow user to move the mouse & scroll! (13300ms)
       this.schedule(() => {
         if (codeOverlay) {
           codeOverlay.classList.remove('is-active');
           setTimeout(() => { if (codeOverlay.parentNode) codeOverlay.parentNode.removeChild(codeOverlay); }, 300);
         }
 
-        setBubble('Control granted! Test mouse & smooth scroll 🎮');
+        setBubble(bubbleAlpha, 'Option 4 Tactical Reticle operational! Control granted 🎮');
         this.schedule(() => {
-          if (master) master.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
-          if (second) second.style.transform = `translate3d(${window.innerWidth + 200}px, ${window.innerHeight + 100}px, 0)`;
+          if (botAlpha) botAlpha.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
+          if (botBeta) botBeta.style.transform = `translate3d(${window.innerWidth + 200}px, ${cy - 200}px, 0)`;
+          if (botGamma) botGamma.style.transform = `translate3d(-200px, ${window.innerHeight + 100}px, 0)`;
+          if (botDelta) botDelta.style.transform = `translate3d(${window.innerWidth + 200}px, ${window.innerHeight + 100}px, 0)`;
+          if (botEpsilon) botEpsilon.style.transform = `translate3d(${cx}px, -200px, 0)`;
         }, 350);
 
         if (this.overlay) {
@@ -4665,14 +4918,14 @@
         // UNLOCK user mouse now!
         this.enableUserMouse();
         this.startTwoSecondWait();
-      }, 9400);
+      }, 13300);
     }
 
     startTwoSecondWait() {
       this.banner = document.createElement('div');
       this.banner.id = 'sb-wait-banner';
       this.banner.className = 'sb-wait-banner is-active';
-      this.banner.innerHTML = `<span>⚡ MOUSE & SMOOTH SCROLL OPERATIONAL • LAUNCHING SITE BUILDER IN <strong id="sb-wait-sec">2.0s</strong></span>`;
+      this.banner.innerHTML = `<span>⚡ TACTICAL RETICLE & SMOOTH SCROLL READY • LAUNCHING SITE BUILDER IN <strong id="sb-wait-sec">2.0s</strong></span>`;
       document.body.appendChild(this.banner);
 
       let remaining = 20; // 2.0s in 100ms ticks

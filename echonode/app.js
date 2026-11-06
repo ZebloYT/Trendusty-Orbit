@@ -2204,7 +2204,7 @@ class EchoNodeApp {
       if (useCustom) {
         customImg.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       } else {
-        dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+        dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-4px, -2px)`;
 
         const distSq = (mouseX - lastTrailX) ** 2 + (mouseY - lastTrailY) ** 2;
         if (distSq > 144) { // Only drop trail dot after moving > 12px
