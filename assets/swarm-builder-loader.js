@@ -1,23 +1,61 @@
 /**
  * TRENDUSTY ORBIT // SWARM BUILDER PRELOADER ENGINE
  * Inspired by Figma / Canva collaborative multiplayer canvas assembly
- * A swarm of cursors builds the website hero live from scratch:
- * - Drags & resizes brand logo
- * - Drags text box & live types "TRENDUSTY ORBIT" with gradient finish
- * - Types subtitle
- * - Drags raw button, adjusts corner radius into a pill, styles with neon gradient
- * - Types button text "⚡ START FREE SERVER" and tests click
- * - Snaps feature badges with alignment guides & chat reactions
- * - Smooth celebration swirl & seamless site reveal
+ * Features:
+ * 1. Direct URL visit:
+ *    - User's mouse is not shown (feels disconnected) but interactable.
+ *    - User sees prompt: CLICK OR PRESS "ENTER" TO START.
+ *    - On Enter / Click: Orbit AI swoops in and designs / calrates their mouse cursor live.
+ *    - Mouse control is granted, custom cursor becomes active and movable.
+ *    - User moves their mouse for 2 seconds.
+ *    - Swarm of 5 cursors flies in and constructs the website from scratch!
+ * 2. Directed by a button / internal link:
+ *    - Skips the "Enter" prompt and calibration.
+ *    - Directly begins constructing the website with the swarm.
+ * 3. Instant bypass via Escape key or [Skip Intro] button.
+ * 4. Replayable via floating [⚡ Replay Intro] pill.
  */
 
 (function () {
   'use strict';
 
-  // Check if user already saw the intro in this tab session
+  // Ignore touch/coarse devices
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+    return;
+  }
+
   const SESSION_KEY = 'orbit_swarm_intro_played';
   const forceReplay = window.location.search.includes('replay_intro=true');
   const alreadySeen = sessionStorage.getItem(SESSION_KEY) === 'true';
+
+  // Global navigation tracker: any click on an interactive link or button flags button navigation
+  window.addEventListener('click', (e) => {
+    const btn = e.target.closest('a, button, [role="button"], [onclick], [data-href]');
+    if (btn) {
+      try {
+        sessionStorage.setItem('orbit_nav_from_button', 'true');
+      } catch (err) {}
+    }
+  }, true);
+
+  // Audio tone synthesizer for laser forge & calibration feedback
+  function playSynthTone(freq, type = 'sine', duration = 0.12, gainVal = 0.08) {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    } catch (e) {}
+  }
 
   // Find relative assets path
   function getAssetPath(filename) {
@@ -30,14 +68,14 @@
     return prefix + filename;
   }
 
-  // Preloader Manager
   class SwarmBuilderLoader {
     constructor() {
       this.container = null;
       this.cursors = {};
       this.isSkipped = false;
       this.timelineTimers = [];
-      this.rafId = null;
+      this.isMouseConnected = false;
+      this.isFromButton = false;
 
       this.cursorConfigs = [
         { id: 'amogh', name: 'Amogh', color: '#00f5b8', textColor: '#041610', startX: 120, startY: 80 },
@@ -49,23 +87,38 @@
     }
 
     init() {
-      // Create DOM elements
+      // Check whether this visit was triggered by clicking a button/link
+      try {
+        this.isFromButton = sessionStorage.getItem('orbit_nav_from_button') === 'true';
+        sessionStorage.removeItem('orbit_nav_from_button'); // Consume flag
+      } catch (e) {
+        this.isFromButton = false;
+      }
+
       this.createDOM();
       this.bindEvents();
       this.injectReplayPill();
 
-      if (alreadySeen && !forceReplay) {
-        // Skip animation seamlessly if already watched in this tab
+      if (alreadySeen && !forceReplay && !this.isFromButton) {
+        // Skip animation seamlessly if already watched in this tab and not explicitly requested
+        this.enableUserMouse();
         this.finish(true);
         return;
       }
 
-      // Start the animated swarm choreography
-      this.startChoreography();
+      if (this.isFromButton) {
+        // Directed by a button/link: Skip "Enter" prompt, mouse is already calibrated, directly start website builder!
+        this.hideEnterOverlay(true);
+        this.enableUserMouse();
+        this.startChoreography();
+      } else {
+        // Direct URL visit: User mouse is invisible (feels disconnected) -> Wait for Enter/Click -> Forge mouse -> Wait 2s -> Start builder!
+        this.disableUserMouse();
+        this.showEnterPrompt();
+      }
     }
 
     createDOM() {
-      // Remove any existing preloader
       const old = document.getElementById('swarm-builder-preloader');
       if (old) old.remove();
 
@@ -156,6 +209,31 @@
 
         <!-- Multiplayer Cursors Layer -->
         <div id="sb-cursors-layer" style="position:absolute; inset:0; pointer-events:none; z-index:500;"></div>
+
+        <!-- Interactive Direct URL Hardware Enter Prompt Overlay -->
+        <div id="sb-enter-overlay" class="sb-enter-overlay">
+          <div class="sb-enter-box">
+            <span class="sb-enter-tag">HARDWARE LINK REQUIRED</span>
+            <button id="sb-enter-btn" class="sb-enter-pill" type="button">
+              <span>⚡ CLICK OR PRESS <kbd>ENTER</kbd> TO START</span>
+            </button>
+            <div class="sb-enter-status">
+              <span class="sb-status-dot-blink" id="sb-enter-dot"></span>
+              <span id="sb-status-desc">MOUSE DISCONNECTED • PENDING CALIBRATION</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Mouse Forge Reticle -->
+        <div id="sb-forge-container" class="sb-forge-container">
+          <div class="sb-forge-ring" id="sb-forge-ring"></div>
+          <div class="sb-forge-core-dot" id="sb-forge-dot"></div>
+        </div>
+
+        <!-- 2-Second Movable Wait Notification -->
+        <div id="sb-wait-banner" class="sb-wait-banner">
+          <span>⚡ MOUSE CONNECTED • LAUNCHING SITE BUILDER IN <strong id="sb-wait-seconds">2.0s</strong></span>
+        </div>
       `;
 
       document.body.prepend(this.container);
@@ -178,7 +256,6 @@
         cursorsLayer.appendChild(cur);
         this.cursors[cfg.id] = cur;
 
-        // Position at starting coordinate
         this.moveCursor(cfg.id, cfg.startX, cfg.startY, 0);
       });
     }
@@ -199,12 +276,172 @@
         });
       }
 
-      // Background click to finish instantly
+      // Background click to finish if already running builder
       this.container.addEventListener('click', (e) => {
-        if (e.target === this.container || e.target.classList.contains('sb-blueprint-grid') || e.target.classList.contains('sb-ambient-glow')) {
+        if (this.isMouseConnected && (e.target === this.container || e.target.classList.contains('sb-blueprint-grid') || e.target.classList.contains('sb-ambient-glow'))) {
           this.finish(false);
         }
       });
+    }
+
+    disableUserMouse() {
+      this.isMouseConnected = false;
+      document.body.classList.add('sb-mouse-disconnected');
+      document.documentElement.classList.add('sb-mouse-disconnected');
+
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      const customImg = document.getElementById('custom-img-cursor');
+      if (dot) dot.style.opacity = '0';
+      if (ring) ring.style.opacity = '0';
+      if (customImg) customImg.style.opacity = '0';
+    }
+
+    enableUserMouse() {
+      this.isMouseConnected = true;
+      document.body.classList.remove('sb-mouse-disconnected');
+      document.documentElement.classList.remove('sb-mouse-disconnected');
+
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      const customImg = document.getElementById('custom-img-cursor');
+      if (dot) dot.style.opacity = '1';
+      if (ring) ring.style.opacity = '1';
+      if (customImg && customImg.style.display !== 'none') customImg.style.opacity = '1';
+    }
+
+    hideEnterOverlay(instant = false) {
+      const overlay = document.getElementById('sb-enter-overlay');
+      if (!overlay) return;
+      if (instant) {
+        overlay.classList.add('is-hidden');
+        overlay.remove();
+      } else {
+        overlay.classList.add('is-hidden');
+        setTimeout(() => overlay.remove(), 400);
+      }
+    }
+
+    showEnterPrompt() {
+      const overlay = document.getElementById('sb-enter-overlay');
+      const btn = document.getElementById('sb-enter-btn');
+      const desc = document.getElementById('sb-status-desc');
+      const dot = document.getElementById('sb-enter-dot');
+      if (!overlay || !btn) return;
+
+      let triggered = false;
+
+      const triggerCalibration = () => {
+        if (triggered) return;
+        triggered = true;
+
+        playSynthTone(480, 'triangle', 0.15);
+        playSynthTone(640, 'sine', 0.2);
+
+        btn.style.transform = 'scale(0.95)';
+        btn.innerHTML = `<span>⚙ CALIBRATING HARDWARE...</span>`;
+        if (desc) desc.textContent = 'DESIGNING MOUSE CURSOR LIVE...';
+        if (dot) {
+          dot.style.background = '#38bdf8';
+          dot.style.boxShadow = '0 0 10px #38bdf8';
+        }
+
+        // Orbit AI swoops down to design the user's cursor
+        this.runMouseForgeAnimation();
+      };
+
+      // Listen for Enter key
+      this.enterKeyHandler = (e) => {
+        if (e.key === 'Enter') {
+          triggerCalibration();
+        }
+      };
+      window.addEventListener('keydown', this.enterKeyHandler);
+
+      // Listen for Click on the button or anywhere on the overlay
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerCalibration();
+      });
+      overlay.addEventListener('click', () => {
+        triggerCalibration();
+      });
+    }
+
+    runMouseForgeAnimation() {
+      if (window.removeEventListener && this.enterKeyHandler) {
+        window.removeEventListener('keydown', this.enterKeyHandler);
+      }
+
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const forgeContainer = document.getElementById('sb-forge-container');
+      const forgeDot = document.getElementById('sb-forge-dot');
+      const desc = document.getElementById('sb-status-desc');
+
+      if (forgeContainer) forgeContainer.classList.add('is-active');
+
+      // Orbit AI cursor swoops to center stage
+      this.moveCursor('orbit', cx + 30, cy + 20, 0.45);
+      this.showBubble('orbit', 'Forging custom mouse cursor 🛠️', 2000);
+
+      // Laser forge audio tone
+      this.schedule(() => {
+        playSynthTone(750, 'sawtooth', 0.12, 0.06);
+      }, 350);
+
+      // Pop the central core dot into existence
+      this.schedule(() => {
+        if (forgeDot) forgeDot.classList.add('is-forged');
+        playSynthTone(880, 'sine', 0.15, 0.08);
+      }, 700);
+
+      // Connect mouse hardware & grant control to user
+      this.schedule(() => {
+        playSynthTone(1046, 'sine', 0.25, 0.1); // High C chime
+
+        if (desc) desc.innerHTML = `<span style="color:#00f5b8;">🟢 HARDWARE SYNCHRONIZED • MOUSE CONNECTED!</span>`;
+        this.showBubble('orbit', 'Mouse connected! Control granted ✨', 2200);
+
+        this.hideEnterOverlay(false);
+        if (forgeContainer) {
+          forgeContainer.classList.remove('is-active');
+          setTimeout(() => forgeContainer.remove(), 400);
+        }
+
+        // Transfer control to user: mouse is now movable!
+        this.enableUserMouse();
+
+        // 2-Second Movable Wait Sequence
+        this.startTwoSecondWait();
+      }, 1250);
+    }
+
+    startTwoSecondWait() {
+      const banner = document.getElementById('sb-wait-banner');
+      const secEl = document.getElementById('sb-wait-seconds');
+      if (banner) banner.classList.add('is-active');
+
+      let remaining = 20; // 2.0s in 100ms intervals
+      const interval = setInterval(() => {
+        if (this.isSkipped) {
+          clearInterval(interval);
+          if (banner) banner.remove();
+          return;
+        }
+        remaining -= 1;
+        if (secEl) secEl.textContent = (remaining / 10).toFixed(1) + 's';
+
+        if (remaining <= 0) {
+          clearInterval(interval);
+          if (banner) {
+            banner.classList.remove('is-active');
+            setTimeout(() => banner.remove(), 300);
+          }
+          // Now start constructing the website with the swarm!
+          this.startChoreography();
+        }
+      }, 100);
     }
 
     injectReplayPill() {
@@ -217,6 +454,7 @@
       pill.title = 'Watch website builder swarm animation again';
       pill.addEventListener('click', () => {
         sessionStorage.removeItem(SESSION_KEY);
+        sessionStorage.removeItem('orbit_nav_from_button');
         const l = new SwarmBuilderLoader();
         l.init();
       });
@@ -312,8 +550,6 @@
       const stage = document.getElementById('sb-canvas-stage');
       if (!stage) return;
 
-      const getStageRect = () => stage.getBoundingClientRect();
-      const rect = getStageRect();
       const cx = window.innerWidth / 2;
       const cy = window.innerHeight / 2;
 
@@ -339,7 +575,6 @@
         const imgElem = document.getElementById('sb-image-element');
         if (!imgElem) return;
 
-        // Orbit AI flies to grab the image from top left
         this.moveCursor('orbit', cx - 190, cy - 230, 0.4);
 
         this.schedule(() => {
@@ -347,26 +582,22 @@
           imgElem.classList.add('is-selected');
           imgElem.style.transform = 'translate(-180px, -210px) scale(0.7)';
           
-          // Orbit AI drags it towards center
           this.schedule(() => {
             this.moveCursor('orbit', cx - 45, cy - 185, 0.6);
             imgElem.style.transform = 'translate(-50%, 0) scale(0.85)';
           }, 350);
 
-          // Kai flies in to grab the bottom-right corner resize handle
           this.schedule(() => {
             this.moveCursor('kai', cx + 15, cy - 135, 0.4);
             this.showBubble('kai', 'Scaling to 100px 📐');
           }, 700);
 
-          // Kai stretches the resize handle, expanding image
           this.schedule(() => {
             this.moveCursor('kai', cx + 38, cy - 110, 0.35);
             imgElem.style.transform = 'translate(-50%, 0) scale(1.05)';
             this.flashGuides(cx, cy - 170);
           }, 1050);
 
-          // Snapping into final centered place
           this.schedule(() => {
             imgElem.style.transform = 'translate(-50%, 0) scale(1)';
             imgElem.classList.remove('is-selected');
@@ -384,7 +615,6 @@
         const textElem = document.getElementById('sb-text-element');
         if (!textElem) return;
 
-        // Amogh drags marquee bounding box into place
         this.moveCursor('amogh', cx - 140, cy - 80, 0.4);
 
         this.schedule(() => {
@@ -392,12 +622,9 @@
           textElem.classList.add('is-selected');
           this.showBubble('amogh', 'Typing headline live ✍️');
 
-          // Move cursor across as text types
           this.moveCursor('amogh', cx + 80, cy - 70, 1.2);
 
-          // Live Letter-by-Letter Typing
           this.typeText('sb-typed-headline', 'sb-headline-caret', 'TRENDUSTY ORBIT', 100, 52, () => {
-            // Elena swoops in to apply the radiant neon gradient styling
             this.moveCursor('elena', cx - 10, cy - 75, 0.35);
             this.showBubble('elena', 'Applying neon gradient ✨');
             this.schedule(() => {
@@ -408,7 +635,6 @@
           });
         }, 400);
 
-        // Alex drags subtitle text box and types subtitle
         this.schedule(() => {
           const subElem = document.getElementById('sb-subtext-element');
           if (!subElem) return;
@@ -431,7 +657,6 @@
         const btnElem = document.getElementById('sb-button-element');
         if (!btnElem) return;
 
-        // Elena drags a raw square gray box into place
         this.moveCursor('elena', cx - 110, cy + 45, 0.45);
 
         this.schedule(() => {
@@ -441,13 +666,11 @@
           btnElem.style.background = '#334155';
           btnElem.style.minWidth = '130px';
 
-          // Alex cursor flies to the corner radius handle
           this.schedule(() => {
             this.moveCursor('alex', cx + 55, cy + 42, 0.35);
             this.showBubble('alex', 'Morphing to sleek pill! 💊');
           }, 350);
 
-          // Alex drags corner handle inward: LIVE RADIUS MORPHING
           this.schedule(() => {
             btnElem.style.borderRadius = '6px';
             this.moveCursor('alex', cx + 48, cy + 46, 0.15);
@@ -464,14 +687,12 @@
             this.flashGuides(cx, cy + 55);
           }, 1050);
 
-          // Orbit AI clicks to apply neon gradient styling
           this.schedule(() => {
             this.moveCursor('orbit', cx - 40, cy + 55, 0.35);
             this.showBubble('orbit', 'Adding neon cyan gradient 🎨');
             btnElem.classList.add('is-styled');
           }, 1300);
 
-          // Amogh clicks inside button to type the CTA text
           this.schedule(() => {
             this.moveCursor('amogh', cx - 20, cy + 55, 0.3);
             const icon = document.getElementById('sb-btn-icon');
@@ -480,7 +701,6 @@
             this.typeText('sb-typed-button', 'sb-button-caret', 'START FREE SERVER', 50, 36, () => {
               btnElem.classList.remove('is-selected');
 
-              // Alex hovers and test clicks the button
               this.moveCursor('alex', cx + 10, cy + 55, 0.25);
               this.schedule(() => {
                 btnElem.style.transform = 'translate(-50%, 0) scale(0.94)';
@@ -515,26 +735,22 @@
         const b2 = document.getElementById('sb-badge-2');
         const b3 = document.getElementById('sb-badge-3');
 
-        // Kai drops badge 1
         this.moveCursor('kai', cx - 180, cy + 125, 0.3);
         this.schedule(() => {
           if (b1) b1.classList.add('is-snapped');
         }, 150);
 
-        // Elena drops badge 2
         this.schedule(() => {
           this.moveCursor('elena', cx, cy + 125, 0.3);
           if (b2) b2.classList.add('is-snapped');
           this.flashGuides(cx, cy + 125);
         }, 350);
 
-        // Alex drops badge 3
         this.schedule(() => {
           this.moveCursor('alex', cx + 180, cy + 125, 0.3);
           if (b3) b3.classList.add('is-snapped');
         }, 550);
 
-        // Celebratory Chat Bubbles
         this.schedule(() => {
           this.showBubble('amogh', 'Build verified! Ready for launch 🚀');
           this.showBubble('orbit', 'All systems 100% operational 🔥');
@@ -550,7 +766,6 @@
       // STAGE 5: Coordinated Orbit Swirl & Seamless Reveal (8000ms - 8700ms)
       // =======================================================================
       this.schedule(() => {
-        // Cursors swirl in an orbit around the center button
         const r = 180;
         const cursorsList = ['amogh', 'orbit', 'elena', 'alex', 'kai'];
         cursorsList.forEach((id, idx) => {
@@ -560,7 +775,6 @@
           this.moveCursor(id, targetX, targetY, 0.4);
         });
 
-        // Scatter outward off-screen
         this.schedule(() => {
           this.moveCursor('amogh', -200, -200, 0.5);
           this.moveCursor('orbit', window.innerWidth + 200, -200, 0.5);
@@ -569,7 +783,6 @@
           this.moveCursor('kai', cx, -300, 0.5);
         }, 400);
 
-        // Fade out preloader
         this.schedule(() => {
           this.finish(false);
         }, 700);
@@ -581,17 +794,20 @@
       if (this.isSkipped) return;
       this.isSkipped = true;
 
-      // Clear all scheduled timers
+      this.enableUserMouse();
+
       this.timelineTimers.forEach(t => clearTimeout(t));
       this.timelineTimers = [];
 
-      // Mark session as played
       try {
         sessionStorage.setItem(SESSION_KEY, 'true');
       } catch (e) {}
 
       if (window.removeEventListener && this.keyHandler) {
         window.removeEventListener('keydown', this.keyHandler);
+      }
+      if (window.removeEventListener && this.enterKeyHandler) {
+        window.removeEventListener('keydown', this.enterKeyHandler);
       }
 
       if (!this.container) return;
@@ -614,7 +830,6 @@
     }
   }
 
-  // Auto-boot when DOM is ready
   function boot() {
     const loader = new SwarmBuilderLoader();
     loader.init();

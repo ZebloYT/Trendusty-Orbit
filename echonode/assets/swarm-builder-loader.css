@@ -28,6 +28,23 @@
   transform: scale(1.04);
 }
 
+/* Mouse Disconnected State: Complete pointer invisibility */
+body.sb-mouse-disconnected,
+body.sb-mouse-disconnected *,
+html.sb-mouse-disconnected,
+html.sb-mouse-disconnected * {
+  cursor: none !important;
+}
+
+body.sb-mouse-disconnected #orbit-cursor-dot,
+body.sb-mouse-disconnected #orbit-cursor-ring,
+body.sb-mouse-disconnected #custom-img-cursor,
+body.sb-mouse-disconnected .mouse-trail-dot {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* Cyber Blueprint Grid Background */
 .sb-blueprint-grid {
   position: absolute;
@@ -568,4 +585,192 @@
     padding: 2px 6px;
   }
 }
+
+/* ==========================================================================
+   INTERACTIVE HARDWARE CALIBRATION & "CLICK ENTER" MOUSE FORGE STAGE
+   ========================================================================== */
+
+.sb-enter-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  background: rgba(6, 8, 14, 0.94);
+  backdrop-filter: blur(16px);
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  user-select: none;
+}
+
+.sb-enter-overlay.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sb-enter-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 34px 44px;
+  background: rgba(13, 18, 28, 0.88);
+  border: 1px solid rgba(0, 245, 184, 0.4);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 245, 184, 0.2);
+  text-align: center;
+  max-width: 520px;
+  animation: sb-box-float 3s ease-in-out infinite alternate;
+}
+
+@keyframes sb-box-float {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-6px); }
+}
+
+.sb-enter-tag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.sb-enter-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(0, 245, 184, 0.18), rgba(59, 130, 246, 0.22));
+  border: 1.5px solid #00f5b8;
+  color: #ffffff;
+  padding: 14px 32px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(0, 245, 184, 0.4);
+  transition: all 0.22s ease;
+  animation: sb-pill-glow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes sb-pill-glow {
+  0% { box-shadow: 0 0 15px rgba(0, 245, 184, 0.3); border-color: #00f5b8; }
+  100% { box-shadow: 0 0 35px rgba(0, 245, 184, 0.7), 0 0 15px #38bdf8; border-color: #ffffff; }
+}
+
+.sb-enter-pill:hover {
+  background: linear-gradient(135deg, rgba(0, 245, 184, 0.35), rgba(59, 130, 246, 0.4));
+  transform: scale(1.04);
+}
+
+.sb-enter-pill kbd {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-family: "JetBrains Mono", monospace;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.sb-enter-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  color: #ef4444;
+  letter-spacing: 0.06em;
+}
+
+.sb-status-dot-blink {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 10px #ef4444;
+  animation: sb-pulse 1s infinite;
+}
+
+/* Mouse Calibration & Forge Container */
+.sb-forge-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sb-forge-container.is-active {
+  opacity: 1;
+}
+
+.sb-forge-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed #00f5b8;
+  width: 70px;
+  height: 70px;
+  animation: sb-forge-spin 3s linear infinite;
+}
+
+@keyframes sb-forge-spin {
+  0% { transform: rotate(0deg) scale(0.6); opacity: 0.3; }
+  50% { transform: rotate(180deg) scale(1.05); opacity: 0.9; }
+  100% { transform: rotate(360deg) scale(0.6); opacity: 0.3; }
+}
+
+.sb-forge-core-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00f5b8;
+  box-shadow: 0 0 24px #00f5b8, 0 0 12px #ffffff;
+  transform: scale(0);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sb-forge-core-dot.is-forged {
+  transform: scale(1);
+}
+
+/* 2-Second Movable Wait Notification */
+.sb-wait-banner {
+  position: absolute;
+  bottom: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(14, 20, 32, 0.92);
+  border: 1px solid rgba(0, 245, 184, 0.4);
+  padding: 10px 24px;
+  border-radius: 9999px;
+  color: #00f5b8;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  z-index: 3000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.sb-wait-banner.is-active {
+  opacity: 1;
+}
+
 
