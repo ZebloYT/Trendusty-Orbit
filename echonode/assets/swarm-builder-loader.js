@@ -32,10 +32,10 @@
   const BLUE = "#0D99FF";
   const RED = "#F24822";
   const RULER = 20;
-  const MIN_AGENTS = 8;
-  const MAX_AGENTS = 20;
-  const FLOCK_AGENTS = 24;
-  const INTRO_AGENTS = 12;
+  const MIN_AGENTS = 12;
+  const MAX_AGENTS = 36;
+  const FLOCK_AGENTS = 28;
+  const INTRO_AGENTS = 16;
   const MAX_ITEMS = 2500;
   const MAX_WORLD_H = 40000;
   const SVGNS = "http://www.w3.org/2000/svg";
@@ -1655,7 +1655,7 @@
   <div class="txt"><span class="status">Scanning page…</span></div>
   <div class="bar"><i></i></div>
   <button data-a="tour" title="Auto-scroll while the swarm builds">Tour</button>
-  <button data-a="speed" title="Build speed">1×</button>
+  <button data-a="speed" title="Build speed">2×</button>
   <button data-a="sound" class="snd" title="Sound (M)"></button>
   <button data-a="live" class="pri" title="Fade back to the real page">Go live</button>
   <button data-a="replay" hidden title="Wipe and rebuild again">Replay</button>
@@ -2173,9 +2173,9 @@
         shape: "arrow", press: 0, task: null, gen: null, ov: null,
         idleFor: 0, leaving: false, worked: false, sticky: false,
         vx: 0, vy: 0, angle: 0,
-        speed: fast ? rand(550, 850) : rand(220, 420),
-        force: fast ? rand(2000, 3200) : rand(500, 1000),
-        spin: fast ? rand(1.6, 2.4) : rand(0.6, 1.2),
+        speed: fast ? rand(750, 1150) : rand(300, 580),
+        force: fast ? rand(2600, 4800) : rand(700, 1600),
+        spin: fast ? rand(1.8, 2.8) : rand(0.8, 1.5),
         curl: rand(-1, 1), orbit: rand(70, 170), follow: false,
       };
     }
@@ -3505,7 +3505,7 @@
       this.tour = false;
       this.tourV = 0;
       this.tourAcc = 0;
-      this.speeds = [0.85, 1.5, 2.5];
+      this.speeds = [2, 3, 1];
       this.speedIx = 0;
       this.complete = false;
       this.timing = {};
@@ -3533,7 +3533,7 @@
       const shotP = this.loadShot();
       this.view = new View(this.env);
       this.engine = new Engine(this.view);
-      this.engine.speed = 0.85; // Slow, steady, cinematic build speed!
+      this.engine.speed = 2; // Default 2x build speed!
       this.sfx = new Sound();
       this.sfx.init();
       this.engine.sfx = this.sfx;
