@@ -3,27 +3,8 @@
    Authentic Joel Califa / Dhvanil Patel Swarm Engine with Hardware Link
    ========================================================================== */
 
-/* Mouse Disconnected State: Complete pointer invisibility on direct URL load */
-body.sb-mouse-disconnected,
-body.sb-mouse-disconnected *,
-html.sb-mouse-disconnected,
-html.sb-mouse-disconnected * {
-  cursor: none !important;
-}
-
-body.sb-mouse-disconnected #orbit-cursor-dot,
-body.sb-mouse-disconnected #orbit-cursor-ring,
-body.sb-mouse-disconnected #custom-img-cursor,
-body.sb-mouse-disconnected .mouse-trail-dot {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-/* ==========================================================================
-   INTERACTIVE HARDWARE CALIBRATION OVERLAY (CLICK OR PRESS "ENTER" TO START)
-   ========================================================================== */
-
+/* Immediate Preloader Shield: 100% covers viewport on first paint with ZERO flash */
+#orbit-initial-shield,
 .sb-enter-overlay {
   position: fixed;
   inset: 0;
@@ -34,10 +15,9 @@ body.sb-mouse-disconnected .mouse-trail-dot {
   align-items: center;
   justify-content: center;
   z-index: 2147483640;
-  background: rgba(6, 8, 14, 0.94);
+  background: #06080e;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -48,16 +28,41 @@ body.sb-mouse-disconnected .mouse-trail-dot {
   pointer-events: none;
 }
 
+html.sb-from-button #orbit-initial-shield {
+  display: none !important;
+}
+
+/* Mouse Disconnected State: Complete pointer invisibility on direct URL load */
+html.sb-mouse-disconnected,
+html.sb-mouse-disconnected *,
+body.sb-mouse-disconnected,
+body.sb-mouse-disconnected * {
+  cursor: none !important;
+}
+
+html.sb-mouse-disconnected #orbit-cursor-dot,
+html.sb-mouse-disconnected #orbit-cursor-ring,
+html.sb-mouse-disconnected #custom-img-cursor,
+html.sb-mouse-disconnected .mouse-trail-dot {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
+   INTERACTIVE HARDWARE CALIBRATION OVERLAY (CLICK OR PRESS "ENTER" TO START)
+   ========================================================================== */
+
 .sb-enter-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   padding: 36px 48px;
-  background: rgba(13, 18, 28, 0.88);
+  background: rgba(13, 18, 28, 0.92);
   border: 1px solid rgba(0, 245, 184, 0.4);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 245, 184, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 245, 184, 0.25);
   text-align: center;
   max-width: 520px;
   animation: sb-box-float 3s ease-in-out infinite alternate;

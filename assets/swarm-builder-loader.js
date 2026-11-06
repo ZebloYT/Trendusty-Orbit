@@ -36,7 +36,7 @@
   const MAX_AGENTS = 48;
   const FLOCK_AGENTS = 36;
   const INTRO_AGENTS = 18;
-  const MAX_ITEMS = 4000;
+  const MAX_ITEMS = 250;
   const MAX_WORLD_H = 40000;
   const SVGNS = "http://www.w3.org/2000/svg";
 
@@ -147,7 +147,7 @@
 
   const SKIP = new Set([
     "script", "style", "noscript", "template", "head", "meta", "link", "title",
-    "base", "datalist", "area", "map", "source", "track", "param", "swarm-rebuild", "orbit-calibration-overlay", "sb-replay-pill", "sb-wait-banner", "sb-forge-container",
+    "base", "datalist", "area", "map", "source", "track", "param", "swarm-rebuild", "orbit-initial-shield", "orbit-calibration-overlay", "sb-replay-pill", "sb-wait-banner", "sb-forge-container",
   ]);
   const DROP_IN_CLONE = new Set(["script", "style", "noscript", "template", "iframe", "object", "embed", "link", "meta"]);
   const REPLACED = new Set(["img", "svg", "video", "canvas", "iframe", "embed", "object", "picture"]);
@@ -3499,6 +3499,7 @@
       const shotP = this.loadShot();
       this.view = new View(this.env);
       this.engine = new Engine(this.view);
+      this.engine.speed = 2.2; // Snappy, fluid 2.2x speed!
       this.sfx = new Sound();
       this.sfx.init();
       this.engine.sfx = this.sfx;
@@ -3513,18 +3514,11 @@
       this.view.bg.classList.add("on");
       this.view.intro.classList.add("on");
       this.view.hud.classList.add("on");
-      const mark = (k) => (this.timing[k] = Math.round(performance.now() - this.t0));
-      await sleep(520);
+      
+      // Fast start: no artificial 5-second delays!
       await unhidePage();
-      mark("blank");
       if (this.dead) return;
-      await this.scan();
-      mark("scan");
-      if (this.dead) return;
-      try {
-        await Promise.race([document.fonts.ready, sleep(1200)]);
-      } catch (_) {}
-      mark("fonts");
+      
       this.view.measure();
       const shot = await shotP;
       if (shot) {
@@ -3538,35 +3532,19 @@
         console.error("[swarm-rebuild] capture failed", err);
         model = { items: [], tasks: [], groups: [], guides: [], docW: 0, docH: 0 };
       }
-      mark("capture");
       if (this.dead) return;
       this.view.mount(model);
       this.engine.setModel(model);
       this.model = model;
-      mark("mount");
-      const wait = 1500 - (performance.now() - this.t0);
-      if (wait > 0) await sleep(wait);
+      
+      // Crisp 350ms orbit before launching construction!
+      await sleep(350);
       if (this.dead) return;
       this.engine.start();
     }
 
     async scan() {
-      const env = this.env;
-      const g = env.geom();
-      const H = env.scrollHeight();
-      if (H <= g.vh * 1.25) return;
-      this.view.frozen = { ...this.view.vp };
-      const steps = Math.min(28, Math.ceil(H / (g.vh * 0.85)));
-      for (let i = 1; i <= steps && !this.dead; i++) {
-        env.scrollTo(Math.min(H, (H / steps) * i));
-        await nextFrame();
-        await sleep(30);
-      }
-      env.scrollTo(g.sy, g.sx);
-      await nextFrame();
-      await sleep(750);
-      env.scrollTo(g.sy, g.sx);
-      this.view.frozen = null;
+      return;
     }
 
     bind() {
@@ -3735,7 +3713,7 @@
         if (this.complete && !this.dead) {
           stop(true);
         }
-      }, 2500);
+      }, 2000);
     }
 
     destroy(reveal) {
@@ -3877,14 +3855,16 @@
   class SwarmCoordinator {
     constructor() {
       this.isFromButton = false;
-      this.overlay = null;
+      this.overlay = document.getElementById('orbit-initial-shield') || document.getElementById('orbit-calibration-overlay');
       this.banner = null;
       this.forgeContainer = null;
+      this.isTriggered = false;
     }
 
     init() {
       // Ignore mobile touch devices
       if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+        if (this.overlay) this.overlay.remove();
         this.enableUserMouse();
         return;
       }
@@ -3900,7 +3880,11 @@
       this.injectReplayPill();
 
       if (this.isFromButton) {
-        // Directed by button/link: Skip Enter prompt & calibration, directly launch swarm rebuild on page!
+        // Directed by button/link: Skip Enter prompt & calibration, remove shield immediately, directly launch swarm rebuild on page!
+        if (this.overlay) {
+          this.overlay.remove();
+          this.overlay = null;
+        }
         this.enableUserMouse();
         if (window.SwarmRebuild && window.SwarmRebuild.start) {
           window.SwarmRebuild.start();
@@ -3908,7 +3892,7 @@
       } else {
         // Direct URL visit: Mouse feels disconnected -> Enter prompt -> AI forge mouse -> 2s movable wait -> start swarm rebuild!
         this.disableUserMouse();
-        this.showEnterPrompt();
+        this.wireEnterPrompt();
       }
     }
 
@@ -3936,31 +3920,32 @@
       if (customImg && customImg.style.display !== 'none') customImg.style.opacity = '1';
     }
 
-    showEnterPrompt() {
-      const old = document.getElementById('orbit-calibration-overlay');
-      if (old) old.remove();
-
-      this.overlay = document.createElement('div');
-      this.overlay.id = 'orbit-calibration-overlay';
-      this.overlay.className = 'sb-enter-overlay';
-      this.overlay.innerHTML = `
-        <div class="sb-enter-box">
-          <span class="sb-enter-tag">HARDWARE LINK REQUIRED</span>
-          <button id="sb-enter-btn" class="sb-enter-pill" type="button">
-            <span>⚡ CLICK OR PRESS <kbd>ENTER</kbd> TO START</span>
-          </button>
-          <div class="sb-enter-status">
-            <span class="sb-status-dot-blink" id="sb-enter-dot"></span>
-            <span id="sb-status-desc">MOUSE DISCONNECTED • PENDING CALIBRATION</span>
+    wireEnterPrompt() {
+      if (!this.overlay) {
+        this.overlay = document.getElementById('orbit-initial-shield') || document.getElementById('orbit-calibration-overlay');
+      }
+      if (!this.overlay) {
+        this.overlay = document.createElement('div');
+        this.overlay.id = 'orbit-initial-shield';
+        this.overlay.className = 'sb-enter-overlay';
+        this.overlay.innerHTML = `
+          <div class="sb-enter-box">
+            <span class="sb-enter-tag">HARDWARE LINK REQUIRED</span>
+            <button id="sb-enter-btn" class="sb-enter-pill" type="button">
+              <span>⚡ CLICK OR PRESS <kbd>ENTER</kbd> TO START</span>
+            </button>
+            <div class="sb-enter-status">
+              <span class="sb-status-dot-blink" id="sb-enter-dot"></span>
+              <span id="sb-status-desc">MOUSE DISCONNECTED • PENDING CALIBRATION</span>
+            </div>
           </div>
-        </div>
-      `;
-      document.body.appendChild(this.overlay);
+        `;
+        document.body.prepend(this.overlay);
+      }
 
-      let triggered = false;
       const triggerCalibration = () => {
-        if (triggered) return;
-        triggered = true;
+        if (this.isTriggered) return;
+        this.isTriggered = true;
 
         playSynthTone(480, 'triangle', 0.15);
         playSynthTone(640, 'sine', 0.2);
@@ -3980,6 +3965,12 @@
 
         this.runMouseForge();
       };
+
+      // Check if user already clicked/pressed enter before JS initialized
+      if (window.__shieldTriggered) {
+        triggerCalibration();
+        return;
+      }
 
       const enterHandler = (e) => {
         if (e.key === 'Enter') {
@@ -4016,13 +4007,13 @@
 
       setTimeout(() => {
         playSynthTone(750, 'sawtooth', 0.12, 0.06);
-      }, 350);
+      }, 300);
 
       setTimeout(() => {
         const dot = document.getElementById('sb-forge-dot');
         if (dot) dot.classList.add('is-forged');
         playSynthTone(880, 'sine', 0.15, 0.08);
-      }, 700);
+      }, 600);
 
       setTimeout(() => {
         playSynthTone(1046, 'sine', 0.25, 0.1); // High C chime
@@ -4031,13 +4022,13 @@
           this.overlay.classList.add('is-hidden');
           setTimeout(() => {
             if (this.overlay && this.overlay.parentNode) this.overlay.parentNode.removeChild(this.overlay);
-          }, 400);
+          }, 350);
         }
         if (this.forgeContainer) {
           this.forgeContainer.classList.remove('is-active');
           setTimeout(() => {
             if (this.forgeContainer && this.forgeContainer.parentNode) this.forgeContainer.parentNode.removeChild(this.forgeContainer);
-          }, 400);
+          }, 350);
         }
 
         // Transfer control to user: mouse is now live and movable!
@@ -4045,7 +4036,7 @@
 
         // Start 2.0s Movable Wait Sequence
         this.startTwoSecondWait();
-      }, 1250);
+      }, 1000);
     }
 
     startTwoSecondWait() {
@@ -4068,7 +4059,7 @@
               if (this.banner && this.banner.parentNode) this.banner.parentNode.removeChild(this.banner);
             }, 300);
           }
-          // Launch authentic Swarm Rebuild on the actual page!
+          // Launch authentic Swarm Rebuild on the actual page immediately!
           if (window.SwarmRebuild && window.SwarmRebuild.start) {
             window.SwarmRebuild.start();
           }
