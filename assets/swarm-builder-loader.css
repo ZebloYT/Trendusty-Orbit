@@ -22,6 +22,20 @@
   -webkit-user-select: none;
 }
 
+
+.sb-enter-overlay.is-canvas-only {
+  background: #06080e !important;
+  pointer-events: none !important;
+}
+
+.sb-enter-overlay.is-canvas-only .sb-enter-box {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(60px) scale(0.9) !important;
+  transition: opacity 0.35s ease, transform 0.35s ease !important;
+}
+
 .sb-enter-overlay.is-hidden {
   opacity: 0;
   visibility: hidden;

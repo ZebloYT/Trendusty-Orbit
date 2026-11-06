@@ -32,11 +32,11 @@
   const BLUE = "#0D99FF";
   const RED = "#F24822";
   const RULER = 20;
-  const MIN_AGENTS = 8;
-  const MAX_AGENTS = 48;
+  const MIN_AGENTS = 16;
+  const MAX_AGENTS = 54;
   const FLOCK_AGENTS = 36;
-  const INTRO_AGENTS = 18;
-  const MAX_ITEMS = 250;
+  const INTRO_AGENTS = 24;
+  const MAX_ITEMS = 2500;
   const MAX_WORLD_H = 40000;
   const SVGNS = "http://www.w3.org/2000/svg";
 
@@ -164,7 +164,7 @@
     "text-wrap-mode", "text-wrap-style", "direction", "overflow-wrap", "word-break",
     "hyphens", "tab-size", "-webkit-text-fill-color", "-webkit-text-stroke-width",
     "-webkit-text-stroke-color", "text-rendering", "-webkit-font-smoothing",
-    "list-style-type", "list-style-position", "list-style-image", "writing-mode",
+    "list-style-type", "list-style-position", "list-style-image", "writing-mode", "background-image", "background-clip", "-webkit-background-clip", "background-size", "background-position", "background-repeat",
   ];
   const BOX_PROPS = [
     "display", "box-sizing", "width", "height", "min-width", "min-height", "max-width",
@@ -277,6 +277,9 @@
       dst.setAttribute("width", src.clientWidth || src.getBoundingClientRect().width);
       dst.setAttribute("height", src.clientHeight || src.getBoundingClientRect().height);
       st += styleString(cs, SVG_OUTER_PROPS);
+    }
+    if (cs.webkitBackgroundClip === "text" || cs.backgroundClip === "text") {
+      st += "-webkit-background-clip:text;background-clip:text;";
     }
     dst.setAttribute("style", st);
     for (const a of [...dst.attributes]) {
@@ -569,6 +572,12 @@
 
     function rootStyle(cs, isRun) {
       let s = styleString(cs, TEXT_PROPS);
+      if (cs.webkitBackgroundClip === "text" || cs.backgroundClip === "text") {
+        s += "-webkit-background-clip:text;background-clip:text;";
+        if (cs.backgroundImage && cs.backgroundImage !== "none") {
+          s += `background-image:${cs.backgroundImage};`;
+        }
+      }
       if (isRun) return s + "display:block;padding:0;margin:0;box-sizing:border-box;width:100%;height:100%;position:relative;";
       const pad = (side) =>
         (parseFloat(cs.getPropertyValue(`padding-${side}`)) || 0) + (parseFloat(cs.getPropertyValue(`border-${side}-width`)) || 0);
@@ -1040,7 +1049,9 @@
         flushRun();
         return;
       }
-      const op = ctx.op * parseFloat(cs.opacity);
+      const isReveal = el.classList && (el.classList.contains("reveal-on-scroll") || (el.closest && el.closest(".reveal-on-scroll")));
+      const rawOp = isReveal ? 1.0 : parseFloat(cs.opacity);
+      const op = ctx.op * (isNaN(rawOp) ? 1.0 : rawOp);
       if (!(op > 0.03)) return;
       const r = el.getBoundingClientRect();
       // "visually hidden" accessibility text: 1px boxes, clip:rect(0 0 0 0), clip-path:inset(50%)
@@ -1785,7 +1796,9 @@
         n.appendChild(f);
       } else if (it.kind === "image") {
         n.className = "it m";
-        n.innerHTML = IMG_ICON;
+        if (!it.media || it.media.localName !== "svg") {
+          n.innerHTML = IMG_ICON;
+        }
       } else if (it.kind === "text") {
         n.className = "it t";
         prepText(it);
@@ -2306,7 +2319,10 @@
       const sv = Math.abs(vp.sy - (this.lastScroll == null ? vp.sy : this.lastScroll)) / Math.max(dt, 0.001);
       this.lastScroll = vp.sy;
       this.vel = Math.max(this.vel * Math.exp(-dt * 1.2), this.vel * 0.7 + sv * 0.3);
-      if (this.started) this.frontier = Math.max(this.frontier, this.viewBot);
+      if (this.started) {
+        // Unlock all hero & viewport tasks so the swarm constructs the complete interface smoothly without scroll freeze
+        this.frontier = Math.max(this.frontier, Math.max(this.viewBot * 2.5, this.env.scrollHeight()));
+      }
       const avail = this.started ? this.available() : [];
       this.tempo = clamp(2.1 + this.vel / 900 + (avail.length / Math.max(1, this.cursors.length)) * 0.5, 2.1, 4.5) * this.speed;
 
@@ -2327,15 +2343,31 @@
         }
       }
 
-      if (!this.flocking && this.started && this.waitCount === 0) {
-        for (const c of this.cursors)
-          if (!c.task && !c.follow) {
+      const buildDuration = this.time - (this.startTime || this.time);
+      const allDoneOrTimeout = this.waitCount === 0 || (avail.length === 0 && this.backlog() === 0) || buildDuration > 6.8;
+      if (!this.flocking && this.started && allDoneOrTimeout) {
+        if (this.waitCount > 0) {
+          for (const it of this.items || []) {
+            it.vis = true;
+            it.styled = true;
+            it.done = true;
+            if (it.kind === "text") it.shown = it.total || (it.seq ? it.seq.length : 0);
+            bump(it);
+          }
+          for (const t of this.tasks) {
+            t.state = "done";
+          }
+          this.waitCount = 0;
+        }
+        for (const c of this.cursors) {
+          if (!c.follow) {
             c.follow = true;
             c.gen = null;
             c.leaving = false;
             c.ov = null;
             c.shape = "arrow";
           }
+        }
         if (this.cursors.every((c) => c.follow)) {
           this.flocking = true;
           this.endTime = this.time;
@@ -4312,21 +4344,20 @@
           master.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
         }, 500);
 
-        // Remove the staging container and shield
-        if (this.overlay) {
-          this.overlay.classList.add('is-hidden');
+        // Keep the dark shield active during 2-second movable wait (ZERO flash of real website!)
+        if (codeOverlay) {
+          codeOverlay.style.opacity = '0';
+          codeOverlay.style.transform = 'scale(0.85) translateY(20px)';
           setTimeout(() => {
-            if (this.overlay && this.overlay.parentNode) this.overlay.parentNode.removeChild(this.overlay);
-          }, 350);
+            if (codeOverlay && codeOverlay.parentNode) codeOverlay.parentNode.removeChild(codeOverlay);
+          }, 400);
+        }
+        if (this.overlay) {
+          this.overlay.classList.add('is-canvas-only');
         }
 
-        // Grant control to user: user mouse is now operatable and visible!
+        // Grant control to user: user mouse is now operatable and visible on dark canvas!
         this.enableUserMouse();
-        if (this.stage) {
-          setTimeout(() => {
-            if (this.stage && this.stage.parentNode) this.stage.parentNode.removeChild(this.stage);
-          }, 450);
-        }
 
         // 2-Second Movable Wait Notification: User moves their newly forged mouse freely!
         this.startTwoSecondWait();
@@ -4358,6 +4389,17 @@
           if (window.SwarmRebuild && window.SwarmRebuild.start) {
             window.SwarmRebuild.start();
           }
+          // Handover: Remove initial shield only after SwarmRebuild has mounted its shadow root
+          setTimeout(() => {
+            if (this.overlay && this.overlay.parentNode) {
+              this.overlay.parentNode.removeChild(this.overlay);
+              this.overlay = null;
+            }
+            if (this.stage && this.stage.parentNode) {
+              this.stage.parentNode.removeChild(this.stage);
+              this.stage = null;
+            }
+          }, 350);
         }
       }, 100);
     }
