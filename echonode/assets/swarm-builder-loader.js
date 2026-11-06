@@ -32,10 +32,10 @@
   const BLUE = "#0D99FF";
   const RED = "#F24822";
   const RULER = 20;
-  const MIN_AGENTS = 16;
-  const MAX_AGENTS = 54;
-  const FLOCK_AGENTS = 36;
-  const INTRO_AGENTS = 24;
+  const MIN_AGENTS = 8;
+  const MAX_AGENTS = 20;
+  const FLOCK_AGENTS = 24;
+  const INTRO_AGENTS = 12;
   const MAX_ITEMS = 2500;
   const MAX_WORLD_H = 40000;
   const SVGNS = "http://www.w3.org/2000/svg";
@@ -2173,9 +2173,9 @@
         shape: "arrow", press: 0, task: null, gen: null, ov: null,
         idleFor: 0, leaving: false, worked: false, sticky: false,
         vx: 0, vy: 0, angle: 0,
-        speed: fast ? rand(1000, 1500) : rand(300, 750),
-        force: fast ? rand(3500, 6000) : rand(700, 1800),
-        spin: fast ? rand(2.2, 3.4) : rand(0.8, 1.8),
+        speed: fast ? rand(550, 850) : rand(220, 420),
+        force: fast ? rand(2000, 3200) : rand(500, 1000),
+        spin: fast ? rand(1.6, 2.4) : rand(0.6, 1.2),
         curl: rand(-1, 1), orbit: rand(70, 170), follow: false,
       };
     }
@@ -2330,7 +2330,7 @@
         this.frontier = Math.max(this.frontier, this.viewBot + 40);
       }
       const avail = this.started ? this.available() : [];
-      this.tempo = clamp(2.1 + this.vel / 900 + (avail.length / Math.max(1, this.cursors.length)) * 0.5, 2.1, 4.5) * this.speed;
+      this.tempo = clamp(0.75 + this.vel / 1400 + (avail.length / Math.max(1, this.cursors.length)) * 0.15, 0.65, 1.15) * this.speed;
 
       if (this.rulers.want > 0) this.rulers.lastNeed = this.time;
       const rt = this.time - this.rulers.lastNeed < 0.7 ? 1 : 0;
@@ -2628,10 +2628,10 @@
         budget += (yield) * this.tempo;
         while (i < N && budget > 0) {
           const ch = it.seq[i];
-          let d = rand(0.012, 0.04);
-          if (ch === " ") d += rand(0, 0.03);
-          if (ch === "\n") d += 0.1;
-          if (Math.random() < 0.025) d += rand(0.08, 0.2);
+          let d = rand(0.025, 0.055);
+          if (ch === " ") d += rand(0.015, 0.04);
+          if (ch === "\n") d += 0.12;
+          if (Math.random() < 0.025) d += rand(0.08, 0.18);
           budget -= d * k;
           i++;
         }
@@ -3496,7 +3496,7 @@
       this.tour = false;
       this.tourV = 0;
       this.tourAcc = 0;
-      this.speeds = [1, 2, 3];
+      this.speeds = [0.85, 1.5, 2.5];
       this.speedIx = 0;
       this.complete = false;
       this.timing = {};
@@ -3524,7 +3524,7 @@
       const shotP = this.loadShot();
       this.view = new View(this.env);
       this.engine = new Engine(this.view);
-      this.engine.speed = 2.2; // Snappy, fluid 2.2x speed!
+      this.engine.speed = 0.85; // Slow, steady, cinematic build speed!
       this.sfx = new Sound();
       this.sfx.init();
       this.engine.sfx = this.sfx;
