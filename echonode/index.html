@@ -137,13 +137,19 @@
   </div>
   <script>
     window.__shieldTriggered = false;
+    function __triggerShield() {
+      if (window.__shieldTriggered) return;
+      window.__shieldTriggered = true;
+      var b = document.getElementById('sb-enter-btn');
+      if (b) b.innerHTML = '<span>⚙ INITIATING CURSOR FORGE...</span>';
+    }
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        window.__shieldTriggered = true;
-        var b = document.getElementById('sb-enter-btn');
-        if (b) b.innerHTML = '<span>⚙ CALIBRATING HARDWARE...</span>';
-      }
+      if (e.key === 'Enter') __triggerShield();
     });
+    var shieldEl = document.getElementById('orbit-initial-shield');
+    if (shieldEl) {
+      shieldEl.addEventListener('click', __triggerShield);
+    }
   </script>
 
   <!-- Tactical Orbit Mouse Cursor (Dot + Bigger Lighter Follower Ring) -->

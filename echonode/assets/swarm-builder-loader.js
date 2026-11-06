@@ -2115,7 +2115,9 @@
   class Engine {
     constructor(view) {
       this.view = view;
+      this.env = view.env;
       this.vp = view.vp;
+      this.startTime = null;
       this.items = null;
       this.tasks = [];
       this.groups = [];
@@ -2321,7 +2323,9 @@
       this.vel = Math.max(this.vel * Math.exp(-dt * 1.2), this.vel * 0.7 + sv * 0.3);
       if (this.started) {
         // Unlock all hero & viewport tasks so the swarm constructs the complete interface smoothly without scroll freeze
-        this.frontier = Math.max(this.frontier, Math.max(this.viewBot * 2.5, this.env.scrollHeight()));
+        const env = this.env || (this.view && this.view.env);
+        const scrollH = env && typeof env.scrollHeight === "function" ? env.scrollHeight() : 4000;
+        this.frontier = Math.max(this.frontier, Math.max(this.viewBot * 2.5, scrollH));
       }
       const avail = this.started ? this.available() : [];
       this.tempo = clamp(2.1 + this.vel / 900 + (avail.length / Math.max(1, this.cursors.length)) * 0.5, 2.1, 4.5) * this.speed;
@@ -2343,8 +2347,10 @@
         }
       }
 
-      const buildDuration = this.time - (this.startTime || this.time);
-      const allDoneOrTimeout = this.waitCount === 0 || (avail.length === 0 && this.backlog() === 0) || buildDuration > 6.8;
+      const buildDuration = this.startTime != null ? (this.time - this.startTime) : 0;
+      const allDoneOrTimeout = (this.ready && this.tasks && this.tasks.length > 0 && this.waitCount === 0) ||
+                               (this.ready && this.tasks && this.tasks.length > 0 && avail.length === 0 && this.backlog() === 0 && buildDuration > 1.5) ||
+                               (this.startTime != null && buildDuration > 7.5);
       if (!this.flocking && this.started && allDoneOrTimeout) {
         if (this.waitCount > 0) {
           for (const it of this.items || []) {
@@ -4137,141 +4143,132 @@
         w.className = 'sb-click-wave';
         w.style.left = `${x}px`;
         w.style.top = `${y}px`;
-        this.stage.appendChild(w);
+        if (this.stage) this.stage.appendChild(w);
         setTimeout(() => w.remove(), 500);
       };
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 1: Master cursor swoops to center (0ms - 550ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 1: Master cursor swoops to center (50ms)
       this.schedule(() => {
-        master.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        if (master) master.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
         setBubble('Generating website mouse... 🛠️');
-      }, 100);
+      }, 50);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 2: Step 1 - Make the mouse a GREEN DOT (650ms - 1100ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 2: Step 1 - Make the mouse a GREEN DOT (450ms)
       this.schedule(() => {
-        master.style.transform = `translate3d(${cx + 4}px, ${cy + 4}px, 0)`;
+        if (master) master.style.transform = `translate3d(${cx + 4}px, ${cy + 4}px, 0)`;
         spawnWave(cx, cy);
         playSynthTone(720, 'sine', 0.12, 0.09);
 
-        dotEl.classList.add('is-visible');
+        if (dotEl) dotEl.classList.add('is-visible');
         setBubble('1. Creating core green dot 🟢');
-      }, 650);
+      }, 450);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 3: Step 2 - Trace CIRCLE AROUND THE DOT (1200ms - 2100ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 3: Step 2 - Trace CIRCLE AROUND THE DOT (800ms)
       this.schedule(() => {
         setBubble('2. Tracing follower circle ⭕');
-        ringEl.classList.add('is-visible', 'is-tracing');
-        playSynthTone(840, 'triangle', 0.2, 0.08);
+        if (ringEl) ringEl.classList.add('is-visible', 'is-tracing');
+        playSynthTone(840, 'triangle', 0.18, 0.08);
 
-        // Master cursor traces circle around green dot
         const r = 32;
-        master.style.transition = 'transform 0.22s ease-out';
-        master.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
-
-        this.schedule(() => {
-          master.style.transform = `translate3d(${cx}px, ${cy + r}px, 0)`;
-          playSynthTone(880, 'sine', 0.08);
-        }, 220);
-
-        this.schedule(() => {
-          master.style.transform = `translate3d(${cx - r}px, ${cy}px, 0)`;
-          playSynthTone(920, 'sine', 0.08);
-        }, 440);
-
-        this.schedule(() => {
-          master.style.transform = `translate3d(${cx}px, ${cy - r}px, 0)`;
-          playSynthTone(980, 'sine', 0.08);
-        }, 660);
-
-        this.schedule(() => {
+        if (master) {
+          master.style.transition = 'transform 0.16s ease-out';
           master.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
-          ringEl.classList.remove('is-tracing');
-          playSynthTone(1046, 'sine', 0.25, 0.1); // High C chime
-        }, 880);
+        }
 
-      }, 1200);
+        this.schedule(() => {
+          if (master) master.style.transform = `translate3d(${cx}px, ${cy + r}px, 0)`;
+          playSynthTone(880, 'sine', 0.07);
+        }, 160);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 4: Step 3 - DOUBLE CLICK IT (2200ms - 2600ms)
-      // -----------------------------------------------------------------------
+        this.schedule(() => {
+          if (master) master.style.transform = `translate3d(${cx - r}px, ${cy}px, 0)`;
+          playSynthTone(920, 'sine', 0.07);
+        }, 320);
+
+        this.schedule(() => {
+          if (master) master.style.transform = `translate3d(${cx}px, ${cy - r}px, 0)`;
+          playSynthTone(980, 'sine', 0.07);
+        }, 480);
+
+        this.schedule(() => {
+          if (master) master.style.transform = `translate3d(${cx + r}px, ${cy}px, 0)`;
+          if (ringEl) ringEl.classList.remove('is-tracing');
+          playSynthTone(1046, 'sine', 0.22, 0.1);
+        }, 640);
+
+      }, 800);
+
+      // TIMELINE 4: Step 3 - DOUBLE CLICK IT (1600ms)
       this.schedule(() => {
-        master.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
-        master.style.transform = `translate3d(${cx + 8}px, ${cy + 8}px, 0)`;
+        if (master) {
+          master.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+          master.style.transform = `translate3d(${cx + 8}px, ${cy + 8}px, 0)`;
+        }
         setBubble('3. Double-clicking cursor 🖱️');
 
         // Click 1
         this.schedule(() => {
           spawnWave(cx, cy);
           playSynthTone(440, 'square', 0.06, 0.08);
-          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(0.92)`;
+          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(0.92)`;
           setTimeout(() => {
-            createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
-          }, 80);
-        }, 300);
+            if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
+          }, 70);
+        }, 220);
 
         // Click 2 (Double click rapid succession)
         this.schedule(() => {
           spawnWave(cx, cy);
           playSynthTone(480, 'square', 0.08, 0.1);
-          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1.18)`;
+          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1.18)`;
           setTimeout(() => {
-            createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
-          }, 140);
-        }, 440);
+            if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0) scale(1)`;
+          }, 120);
+        }, 340);
 
-      }, 2200);
+      }, 1600);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 5: Step 4 - MENU OPENS (OVERLAY, NON-INTERACTABLE) (2700ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 5: Step 4 - MENU OPENS (OVERLAY, NON-INTERACTABLE) (2100ms)
       this.schedule(() => {
-        playSynthTone(580, 'triangle', 0.18, 0.08);
-        codeOverlay.classList.add('is-active');
+        playSynthTone(580, 'triangle', 0.16, 0.08);
+        if (codeOverlay) codeOverlay.classList.add('is-active');
         setBubble('Opening configuration overlay ⚙️');
-      }, 2750);
+      }, 2100);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 6: Step 5 - AUTO-MOVES RIGIDLY WITHOUT SMOOTH GLIDING (3100ms - 4200ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 6: Step 5 - AUTO-MOVES RIGIDLY WITHOUT SMOOTH GLIDING (2400ms)
       this.schedule(() => {
         setBubble('Testing kinematics: NO GLIDE ⚠️');
 
-        // Rigid, abrupt linear steps (zero lerp / smooth easing)
-        createdCur.style.transition = 'none'; // Absolutely zero smoothing!
-
-        createdCur.style.transform = `translate3d(${cx - 140}px, ${cy - 70}px, 0)`;
+        if (createdCur) {
+          createdCur.style.transition = 'none';
+          createdCur.style.transform = `translate3d(${cx - 130}px, ${cy - 60}px, 0)`;
+        }
         playSynthTone(320, 'sawtooth', 0.05, 0.04);
 
         this.schedule(() => {
-          createdCur.style.transform = `translate3d(${cx + 160}px, ${cy - 50}px, 0)`;
+          if (createdCur) createdCur.style.transform = `translate3d(${cx + 140}px, ${cy - 40}px, 0)`;
           playSynthTone(320, 'sawtooth', 0.05, 0.04);
-        }, 320);
+        }, 250);
 
         this.schedule(() => {
-          createdCur.style.transform = `translate3d(${cx - 80}px, ${cy + 80}px, 0)`;
+          if (createdCur) createdCur.style.transform = `translate3d(${cx - 70}px, ${cy + 70}px, 0)`;
           playSynthTone(320, 'sawtooth', 0.05, 0.04);
-        }, 640);
+        }, 500);
 
         this.schedule(() => {
-          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
           playSynthTone(320, 'sawtooth', 0.05, 0.04);
-        }, 960);
+        }, 750);
 
-      }, 3100);
+      }, 2400);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 7: Step 6 - MASTER CURSOR WRITES GLIDING CODE (4300ms - 5900ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 7: Step 6 - MASTER CURSOR WRITES GLIDING CODE (3350ms)
       this.schedule(() => {
-        const overlayRect = codeOverlay.getBoundingClientRect();
-        master.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1)';
-        master.style.transform = `translate3d(${overlayRect.left + 50}px, ${overlayRect.top + 90}px, 0)`;
+        if (codeOverlay && master) {
+          const overlayRect = codeOverlay.getBoundingClientRect();
+          master.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
+          master.style.transform = `translate3d(${overlayRect.left + 50}px, ${overlayRect.top + 90}px, 0)`;
+        }
         setBubble('Writing smooth gliding code... ✍️');
 
         const codeSnippet = '// Injecting Smooth Gliding\nfunction applyGlide(x, y) {\n  ring.x += (x - ring.x) * 0.16;\n  ring.y += (y - ring.y) * 0.16;\n}\ncursor.setSmoothGlide(true);';
@@ -4279,90 +4276,74 @@
 
         const typeInterval = setInterval(() => {
           if (charIdx < codeSnippet.length) {
-            charIdx += 2; // Fast, authentic typing
-            codeStream.textContent = codeSnippet.slice(0, charIdx);
-            playSynthTone(1100 + (charIdx * 18) % 350, 'triangle', 0.025, 0.025);
+            charIdx += 3;
+            if (codeStream) codeStream.textContent = codeSnippet.slice(0, charIdx);
+            playSynthTone(1100 + (charIdx * 18) % 350, 'triangle', 0.02, 0.025);
           } else {
             clearInterval(typeInterval);
-            codeStream.textContent = codeSnippet;
+            if (codeStream) codeStream.textContent = codeSnippet;
 
-            // Compilation success!
-            propGlide.textContent = 'SMOOTH GLIDING (ACTIVE) ✔';
-            propGlide.style.color = '#00f5b8';
-            playSynthTone(1046, 'sine', 0.28, 0.1);
+            if (propGlide) {
+              propGlide.textContent = 'SMOOTH GLIDING (ACTIVE) ✔';
+              propGlide.style.color = '#00f5b8';
+            }
+            playSynthTone(1046, 'sine', 0.25, 0.1);
             setBubble('Gliding compiled! 100% ✔');
           }
-        }, 28);
+        }, 20);
 
-      }, 4300);
+      }, 3350);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 8: Step 7 - MOUSE STARTS GLIDING SMOOTHLY! (6000ms - 7200ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 8: Step 7 - MOUSE STARTS GLIDING SMOOTHLY! (4600ms)
       this.schedule(() => {
         setBubble('Watch it glide! ✨');
 
-        // Activate fluid, drifting gliding physics on created cursor
-        createdCur.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
-        ringEl.style.transition = 'transform 0.55s cubic-bezier(0.25, 1, 0.5, 1)';
+        if (createdCur) createdCur.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        if (ringEl) ringEl.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
 
-        // Graceful infinity / curving sweep
-        createdCur.style.transform = `translate3d(${cx - 150}px, ${cy - 50}px, 0)`;
-        ringEl.style.transform = 'translate(-50%, -50%) scale(1.12)';
+        if (createdCur) createdCur.style.transform = `translate3d(${cx - 140}px, ${cy - 40}px, 0)`;
+        if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1.12)';
 
         this.schedule(() => {
-          createdCur.style.transform = `translate3d(${cx + 150}px, ${cy + 60}px, 0)`;
-          ringEl.style.transform = 'translate(-50%, -50%) scale(0.96)';
-          playSynthTone(660, 'sine', 0.15, 0.06);
-        }, 380);
+          if (createdCur) createdCur.style.transform = `translate3d(${cx + 140}px, ${cy + 50}px, 0)`;
+          if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(0.96)';
+          playSynthTone(660, 'sine', 0.12, 0.06);
+        }, 300);
 
         this.schedule(() => {
-          createdCur.style.transform = `translate3d(${cx - 80}px, ${cy + 80}px, 0)`;
-          ringEl.style.transform = 'translate(-50%, -50%) scale(1.08)';
-          playSynthTone(740, 'sine', 0.15, 0.06);
-        }, 760);
+          if (createdCur) createdCur.style.transform = `translate3d(${cx - 60}px, ${cy + 70}px, 0)`;
+          if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1.08)';
+          playSynthTone(740, 'sine', 0.12, 0.06);
+        }, 600);
 
         this.schedule(() => {
-          createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-          ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
-          playSynthTone(880, 'sine', 0.2, 0.08);
-        }, 1100);
+          if (createdCur) createdCur.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+          if (ringEl) ringEl.style.transform = 'translate(-50%, -50%) scale(1)';
+          playSynthTone(880, 'sine', 0.18, 0.08);
+        }, 900);
 
-      }, 6000);
+      }, 4600);
 
-      // -----------------------------------------------------------------------
-      // TIMELINE 9: Step 8 - MAKE MOUSE OPERABLE AND VISIBLE ON WEBSITE (7400ms)
-      // -----------------------------------------------------------------------
+      // TIMELINE 9: Step 8 - MAKE MOUSE OPERABLE AND VISIBLE ON WEBSITE (5800ms)
       this.schedule(() => {
-        // Fade out overlay menu
-        codeOverlay.classList.remove('is-active');
-        setTimeout(() => codeOverlay.remove(), 400);
+        if (codeOverlay) {
+          codeOverlay.classList.remove('is-active');
+          setTimeout(() => { if (codeOverlay.parentNode) codeOverlay.parentNode.removeChild(codeOverlay); }, 300);
+        }
 
-        // Master cursor waves goodbye and flies out
         setBubble('Control granted! Test your mouse 🎮');
         this.schedule(() => {
-          master.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
-        }, 500);
+          if (master) master.style.transform = `translate3d(${window.innerWidth + 200}px, -100px, 0)`;
+        }, 350);
 
-        // Keep the dark shield active during 2-second movable wait (ZERO flash of real website!)
-        if (codeOverlay) {
-          codeOverlay.style.opacity = '0';
-          codeOverlay.style.transform = 'scale(0.85) translateY(20px)';
-          setTimeout(() => {
-            if (codeOverlay && codeOverlay.parentNode) codeOverlay.parentNode.removeChild(codeOverlay);
-          }, 400);
-        }
         if (this.overlay) {
           this.overlay.classList.add('is-canvas-only');
         }
 
-        // Grant control to user: user mouse is now operatable and visible on dark canvas!
         this.enableUserMouse();
-
-        // 2-Second Movable Wait Notification: User moves their newly forged mouse freely!
         this.startTwoSecondWait();
 
-      }, 7400);
+      }, 5800);
     }
 
     startTwoSecondWait() {
