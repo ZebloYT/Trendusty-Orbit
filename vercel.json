@@ -100,19 +100,11 @@
       "dest": "/share/index.html"
     },
     {
-      "src": "^/share/shared/([^/]+)/?$",
-      "dest": "/share/shared/index.html?code=$1"
-    },
-    {
-      "src": "^/share/shared/?$",
+      "src": "^/share/shared(/.*)?$",
       "dest": "/share/shared/index.html"
     },
     {
-      "src": "^/share/shared/(.*)",
-      "dest": "/share/shared/index.html"
-    },
-    {
-      "src": "^/share/download/?$",
+      "src": "^/share/download(/.*)?$",
       "dest": "/share/download.html"
     },
     {

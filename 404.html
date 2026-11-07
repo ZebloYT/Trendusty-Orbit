@@ -19,11 +19,17 @@
         }
 
         if (clean.indexOf('/share/shared') !== -1) {
-          window.location.replace('/share/shared/index.html' + search + hash);
+          var code = clean.split('/share/shared/')[1] || '';
+          if (code) {
+            code = code.replace(/[()"' ]/g, '');
+            window.location.replace('/share/shared/?code=' + encodeURIComponent(code) + hash);
+          } else {
+            window.location.replace('/share/shared/' + search + hash);
+          }
           return;
         }
         if (clean === '/share') {
-          window.location.replace('/share/index.html' + search + hash);
+          window.location.replace('/share/' + search + hash);
           return;
         }
 
