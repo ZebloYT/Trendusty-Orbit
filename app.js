@@ -2067,6 +2067,16 @@ class EchoNodeApp {
 
     if (!dot || !ring || !customImg) return;
 
+    if (!ring.querySelector('.tc-bracket')) {
+      ring.innerHTML = `
+        <span class="tc-bracket tc-tl"></span>
+        <span class="tc-bracket tc-tr"></span>
+        <span class="tc-bracket tc-br"></span>
+        <span class="tc-bracket tc-bl"></span>
+        <span class="tc-hud-reticle"></span>
+      `;
+    }
+
     // Enable custom cursor mode: hide the OS default mouse so only the website cursor renders
     document.documentElement.classList.add("custom-cursor-active");
     if (document.body) document.body.classList.add("custom-cursor-active");

@@ -3283,39 +3283,104 @@
       animation-duration: 0.8s;
     }
 
-    /* Outer Ring */
+    /* Option 1: Tactical HUD Corner Brackets [ ⌖ ] */
     .orbit-cursor-ring {
       position: fixed; top: 0; left: 0;
-      width: 56px; height: 56px;
-      border: 1.5px solid rgba(168, 85, 247, 0.55);
-      background: rgba(168, 85, 247, 0.04);
-      border-radius: 50%;
+      width: 52px; height: 52px;
+      border: none !important;
+      background: rgba(168, 85, 247, 0.02) !important;
+      border-radius: 0 !important;
       pointer-events: none !important;
       z-index: 2147483648 !important;
-      box-shadow: 0 0 18px rgba(168, 85, 247, 0.35), 0 0 4px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(168, 85, 247, 0.12);
+      box-shadow: none !important;
       will-change: transform, width, height;
       opacity: 0;
       transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-      transition: width 0.5s cubic-bezier(0.25, 1, 0.25, 1), height 0.5s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.5s ease, border-color 0.5s ease, border-width 0.5s ease, box-shadow 0.5s ease, opacity 0.3s ease, border-radius 0.5s cubic-bezier(0.25, 1, 0.25, 1);
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
     }
 
-    /* Loading Spinner Pseudo-element */
-    .orbit-cursor-ring::after {
-      content: ""; position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      border-radius: 50%; border: 2px solid transparent;
-      transition: border-top-color 0.3s ease, border-right-color 0.3s ease;
+    /* 4 Tactical Corner L-Brackets */
+    .tc-bracket {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      pointer-events: none;
+      transition: all 0.25s ease;
     }
-    @keyframes orbit-spin { 100% { transform: rotate(360deg); } }
+    .tc-tl {
+      top: 0; left: 0;
+      border-top: 2px solid #a855f7;
+      border-left: 2px solid #a855f7;
+      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
+    }
+    .tc-tr {
+      top: 0; right: 0;
+      border-top: 2px solid #a855f7;
+      border-right: 2px solid #a855f7;
+      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
+    }
+    .tc-br {
+      bottom: 0; right: 0;
+      border-bottom: 2px solid #a855f7;
+      border-right: 2px solid #a855f7;
+      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
+    }
+    .tc-bl {
+      bottom: 0; left: 0;
+      border-bottom: 2px solid #a855f7;
+      border-left: 2px solid #a855f7;
+      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
+    }
+
+    .tc-hud-reticle {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 8px; height: 8px;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      border-radius: 50%;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Pure CSS Corner Brackets fallback before child elements mount */
+    #orbit-cursor-ring:empty,
+    .orbit-cursor-ring:empty {
+      background: 
+        linear-gradient(to right, #a855f7 2px, transparent 2px) 0 0,
+        linear-gradient(to bottom, #a855f7 2px, transparent 2px) 0 0,
+        linear-gradient(to left, #a855f7 2px, transparent 2px) 100% 0,
+        linear-gradient(to bottom, #a855f7 2px, transparent 2px) 100% 0,
+        linear-gradient(to left, #a855f7 2px, transparent 2px) 100% 100%,
+        linear-gradient(to top, #a855f7 2px, transparent 2px) 100% 100%,
+        linear-gradient(to right, #a855f7 2px, transparent 2px) 0 100%,
+        linear-gradient(to top, #a855f7 2px, transparent 2px) 0 100% !important;
+      background-repeat: no-repeat !important;
+      background-size: 12px 12px !important;
+      filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.65)) !important;
+    }
 
     /* --- STATES --- */
 
     /* HOVER (Clickable) */
     .orbit-cursor-ring.is-hovering {
-      width: 66px; height: 66px;
-      border: 1.5px solid rgba(168, 85, 247, 0.85);
-      background: rgba(168, 85, 247, 0.10);
-      box-shadow: 0 0 26px rgba(168, 85, 247, 0.55), 0 0 8px rgba(56, 189, 248, 0.45), inset 0 0 14px rgba(168, 85, 247, 0.2);
+      width: 66px !important;
+      height: 66px !important;
+    }
+    .orbit-cursor-ring.is-hovering .tc-bracket {
+      border-color: #c084fc !important;
+      width: 15px !important;
+      height: 15px !important;
+      filter: drop-shadow(0 0 10px #a855f7) drop-shadow(0 0 3px #38bdf8) !important;
+    }
+    .orbit-cursor-ring.is-hovering .tc-hud-reticle {
+      border-color: #38bdf8 !important;
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1.4) !important;
+    }
+    .orbit-cursor-ring.is-hovering:empty {
+      background-size: 15px 15px !important;
+      filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.9)) drop-shadow(0 0 3px #38bdf8) !important;
     }
     .orbit-cursor-dot.is-hovering {
       background: #ffffff;
@@ -3325,10 +3390,8 @@
 
     /* TEXT (I-beam) */
     .orbit-cursor-ring.is-text {
-      width: 24px; height: 44px;
-      border-radius: 6px;
-      border: 1px solid rgba(168, 85, 247, 0.45);
-      background: transparent; box-shadow: none;
+      width: 22px !important;
+      height: 44px !important;
     }
     .orbit-cursor-dot.is-text {
       width: 2px; height: 24px;
@@ -3338,13 +3401,8 @@
 
     /* LOADING (Wait) */
     .orbit-cursor-ring.is-loading {
-      width: 44px; height: 44px;
-      border-color: rgba(168, 85, 247, 0.15);
-      background: transparent; box-shadow: none;
-    }
-    .orbit-cursor-ring.is-loading::after {
-      border-top-color: #a855f7; border-right-color: rgba(56, 189, 248, 0.5);
-      animation: orbit-spin 0.8s linear infinite;
+      width: 44px !important;
+      height: 44px !important;
     }
     .orbit-cursor-dot.is-loading {
       background: #38bdf8; box-shadow: 0 0 10px #38bdf8;
@@ -3352,10 +3410,18 @@
 
     /* ACTIVE (Press/Click) */
     .orbit-cursor-ring.is-active {
-      width: 28px; height: 28px;
-      border: 1.5px solid #a855f7;
-      background: rgba(168, 85, 247, 0.25);
-      box-shadow: 0 0 24px rgba(168, 85, 247, 0.85), 0 0 10px rgba(56, 189, 248, 0.6);
+      width: 32px !important;
+      height: 32px !important;
+    }
+    .orbit-cursor-ring.is-active .tc-bracket {
+      border-color: #38bdf8 !important;
+      width: 9px !important;
+      height: 9px !important;
+      filter: drop-shadow(0 0 12px #38bdf8) !important;
+    }
+    .orbit-cursor-ring.is-active:empty {
+      background-size: 9px 9px !important;
+      filter: drop-shadow(0 0 12px #38bdf8) !important;
     }
     .orbit-cursor-dot.is-active {
       background: #38bdf8; box-shadow: 0 0 12px #38bdf8;
@@ -4422,15 +4488,12 @@
             );
           }
 
-          // Multi-octave procedural cloud density with planetary circulation bands
+          // Photorealistic cloud layer without artificial zebra-striped distortion
           float getCloudDensity(vec3 p) {
-            float lat = p.y;
-            float latBands = sin(lat * 6.28) * 0.18 + cos(lat * 14.0) * 0.12;
-            float c = noise3(p * 3.4) * 0.52 + 
-                      noise3(p * 6.8 + vec3(1.7, 2.3, 0.9)) * 0.30 + 
-                      noise3(p * 13.6 + vec3(3.1, 0.5, 2.2)) * 0.18;
-            c += latBands;
-            return smoothstep(0.48, 0.76, c);
+            float c = noise3(p * 3.8) * 0.55 + 
+                      noise3(p * 7.6 + vec3(1.7, 2.3, 0.9)) * 0.30 + 
+                      noise3(p * 15.2 + vec3(3.1, 0.5, 2.2)) * 0.15;
+            return smoothstep(0.52, 0.82, c) * 0.55;
           }
 
           void main() {
@@ -4439,38 +4502,38 @@
             float dy = (p.y - (u_res.y - u_center.y)) / u_radius;
             float distSq = dx * dx + dy * dy;
 
-            // Space boundary outside atmosphere
-            if (distSq > 1.36) {
+            // Crisp outer space boundary (delicate, realistic ~3.8% atmospheric thickness)
+            if (distSq > 1.078) {
               discard;
             }
 
-            // Simulated Sun direction in orbital view coordinates
+            // Direction to Sun in orbital view space (upper-left key light)
             vec3 sunDir = normalize(vec3(-0.64, 0.38, 0.66));
 
             // ----------------------------------------------------
-            // OUTER ATMOSPHERIC RAYLEIGH SCATTERING HALO
+            // DELICATE ATMOSPHERIC RAYLEIGH SCATTERING HALO
             // ----------------------------------------------------
             if (distSq > 1.0) {
               float dist = sqrt(distSq);
-              float h = (dist - 1.0) / 0.16;
-              float density = exp(-h * 4.4) * (1.0 - h);
+              float h = (dist - 1.0) / 0.038;
+              float density = exp(-h * 4.2) * (1.0 - h);
 
-              vec2 limbDir = vec2(dx, -dy) / dist;
+              vec2 limbDir = vec2(dx, dy) / dist;
               float sunFacing = dot(limbDir, sunDir.xy);
-              float sunLit = smoothstep(-0.35, 0.70, sunFacing);
+              float sunLit = smoothstep(-0.35, 0.65, sunFacing);
 
-              vec3 atmoDay = vec3(0.20, 0.56, 1.0);
-              vec3 atmoTwilight = vec3(0.96, 0.50, 0.16);
-              float twilightHorn = smoothstep(0.20, -0.15, sunFacing) * smoothstep(-0.40, 0.05, sunFacing);
-              vec3 atmoColor = mix(atmoDay, atmoTwilight, clamp(twilightHorn * 1.6, 0.0, 1.0));
+              vec3 atmoDay = vec3(0.22, 0.60, 1.0);
+              vec3 atmoTwilight = vec3(0.96, 0.52, 0.18);
+              float twilight = smoothstep(0.20, -0.15, sunFacing) * smoothstep(-0.40, 0.05, sunFacing);
+              vec3 atmoColor = mix(atmoDay, atmoTwilight, clamp(twilight * 1.5, 0.0, 1.0));
 
-              float alpha = density * (0.05 + 0.95 * sunLit) * 0.88;
+              float alpha = density * (0.08 + 0.92 * sunLit) * 0.95;
               gl_FragColor = vec4(atmoColor * alpha, alpha);
               return;
             }
 
             // ----------------------------------------------------
-            // ON-SPHERE PLANETARY SURFACE & CLOUDS
+            // ON-SPHERE PLANETARY SURFACE & PHOTOREALISTIC TEXTURING
             // ----------------------------------------------------
             float x1 = dx;
             float y2 = -dy;
@@ -4495,36 +4558,23 @@
             vec4 dayTex = texture2D(u_dayTexture, vec2(u, v));
             vec4 nightTex = texture2D(u_nightTexture, vec2(u, v));
 
-            vec3 normal = vec3(x1, -y2, z2);
+            vec3 normal = vec3(x1, dy, z2);
             float NdotL = dot(normal, sunDir);
             float NdotV = z2;
 
-            float dayLight = smoothstep(-0.12, 0.16, NdotL);
+            float dayLight = smoothstep(-0.10, 0.18, NdotL);
 
-            // ----------------------------------------------------
-            // DYNAMIC 3D CLOUDS & CLOUD SHADOWS
-            // ----------------------------------------------------
-            float cloudDrift = u_time * 0.012;
+            // Dynamic Clouds
+            float cloudDrift = u_time * 0.008;
             float cosD = cos(cloudDrift);
             float sinD = sin(cloudDrift);
             vec3 cloudGroundPos = vec3(x0 * cosD - z0 * sinD, y0, x0 * sinD + z0 * cosD);
-
             float clouds = getCloudDensity(cloudGroundPos);
 
-            vec3 sunGround = vec3(
-              sunDir.x * cosY + sunDir.z * sinY,
-              sunDir.y * cosX - (-sunDir.x * sinY + sunDir.z * cosY) * sinX,
-              sunDir.y * sinX + (-sunDir.x * sinY + sunDir.z * cosY) * cosX
-            );
-            vec3 shadowPos = cloudGroundPos - normalize(sunGround) * 0.024;
-            float shadow = getCloudDensity(shadowPos);
-
-            // ----------------------------------------------------
-            // WATER DETECTION & REAL FRESNEL SPECULAR GLINT
-            // ----------------------------------------------------
-            float oceanMask = clamp((dayTex.b * 1.6 - dayTex.r * 1.3 - dayTex.g * 0.3), 0.0, 1.0);
+            // Water detection & specular glint
+            float oceanMask = clamp((dayTex.b * 1.5 - dayTex.r * 1.2 - dayTex.g * 0.3), 0.0, 1.0);
             float albedo = dot(dayTex.rgb, vec3(0.299, 0.587, 0.114));
-            if (albedo > 0.40 || dayTex.r > 0.28) {
+            if (albedo > 0.42 || dayTex.r > 0.28) {
               oceanMask = 0.0;
             }
             oceanMask *= (1.0 - clouds);
@@ -4532,54 +4582,45 @@
             vec3 viewDir = vec3(0.0, 0.0, 1.0);
             vec3 halfDir = normalize(sunDir + viewDir);
             float NdotH = max(0.0, dot(normal, halfDir));
-            float specPower = 52.0;
-            float spec = pow(NdotH, specPower);
-            float fresnel = 0.03 + 0.97 * pow(1.0 - NdotV, 5.0);
-            vec3 sunGlint = vec3(1.0, 0.96, 0.90) * (spec * 2.8 + pow(NdotH, 14.0) * 0.45) * fresnel * oceanMask * smoothstep(0.0, 0.20, NdotL);
+            float spec = pow(NdotH, 48.0);
+            float fresnel = 0.04 + 0.96 * pow(1.0 - NdotV, 5.0);
+            vec3 sunGlint = vec3(1.0, 0.97, 0.92) * (spec * 2.4 + pow(NdotH, 12.0) * 0.35) * fresnel * oceanMask * smoothstep(0.0, 0.22, NdotL);
 
-            // ----------------------------------------------------
-            // SURFACE COLOR COMPOSITING (DAY + NIGHT + SHADOWS)
-            // ----------------------------------------------------
-            vec3 groundDay = dayTex.rgb * (1.0 - shadow * 0.45 * smoothstep(0.0, 0.2, NdotL));
-
-            float nightVisibility = smoothstep(0.10, -0.12, NdotL);
-            vec3 cityLights = nightTex.rgb * vec3(1.4, 1.15, 0.75) * 2.6;
-            cityLights *= (1.0 - clouds * 0.70);
-
-            vec3 earthshine = vec3(0.003, 0.006, 0.014);
+            // Surface Compositing
+            vec3 groundDay = dayTex.rgb;
+            float nightVisibility = smoothstep(0.12, -0.10, NdotL);
+            vec3 cityLights = nightTex.rgb * vec3(1.4, 1.15, 0.75) * 2.5 * (1.0 - clouds * 0.6);
+            vec3 earthshine = vec3(0.002, 0.004, 0.010);
 
             vec3 surface = mix(cityLights + earthshine, groundDay, dayLight);
 
-            // ----------------------------------------------------
-            // CLOUD LAYER LIGHTING (ILLUMINATED BY SUN & TWILIGHT)
-            // ----------------------------------------------------
+            // Cloud Lighting
             if (clouds > 0.01) {
-              vec3 cloudSun = vec3(0.98, 0.99, 1.0) * (max(0.0, NdotL) * 1.18 + 0.06);
-              float terminatorClouds = smoothstep(0.18, -0.05, abs(NdotL));
-              cloudSun += vec3(0.96, 0.52, 0.18) * terminatorClouds * 0.65;
-              surface = mix(surface, cloudSun, clouds * smoothstep(-0.15, 0.10, NdotL));
+              vec3 cloudSun = vec3(0.98, 0.99, 1.0) * (max(0.0, NdotL) * 1.15 + 0.08);
+              float term = smoothstep(0.18, -0.05, abs(NdotL));
+              cloudSun += vec3(0.96, 0.52, 0.18) * term * 0.60;
+              surface = mix(surface, cloudSun, clouds * smoothstep(-0.12, 0.12, NdotL));
             }
 
             surface += sunGlint;
 
-            // ----------------------------------------------------
-            // RAYLEIGH ATMOSPHERIC SCATTERING ON SURFACE DISK
-            // ----------------------------------------------------
-            float limb = pow(1.0 - NdotV, 2.6);
-            vec3 rayleighBlue = vec3(0.18, 0.54, 1.0);
-            surface += rayleighBlue * limb * smoothstep(-0.08, 0.35, NdotL) * 0.75;
+            // Rayleigh Scattering on Earth Horizon Limb
+            float limb = pow(1.0 - NdotV, 2.4);
+            vec3 rayleighBlue = vec3(0.20, 0.58, 1.0);
+            surface += rayleighBlue * limb * smoothstep(-0.05, 0.30, NdotL) * 0.70;
 
-            float sunsetRim = smoothstep(0.16, 0.0, abs(NdotL)) * pow(1.0 - NdotV, 1.6);
-            surface += vec3(0.96, 0.48, 0.14) * sunsetRim * 0.55;
+            float sunsetRim = smoothstep(0.16, 0.0, abs(NdotL)) * pow(1.0 - NdotV, 1.8);
+            surface += vec3(0.96, 0.48, 0.14) * sunsetRim * 0.50;
 
-            // ----------------------------------------------------
-            // FILMIC TONE MAPPING & VIBRANCY
-            // ----------------------------------------------------
-            surface = surface / (surface + vec3(0.85)) * 1.15;
+            // Subpixel Edge Anti-aliasing at sphere boundary
+            float edgeAA = smoothstep(1.000, 0.994, distSq);
+
+            // Filmic Tone Mapping
+            surface = surface / (surface + vec3(0.80)) * 1.14;
             float lum = dot(surface, vec3(0.2126, 0.7152, 0.0722));
-            surface = mix(vec3(lum), surface, 1.10);
+            surface = mix(vec3(lum), surface, 1.08);
 
-            gl_FragColor = vec4(surface, 1.0);
+            gl_FragColor = vec4(surface, edgeAA);
           }
         `;
 
@@ -4667,7 +4708,6 @@
 
         // Load 4K NASA Blue Marble Satellite Imagery
         const dayImg = new Image();
-        dayImg.crossOrigin = 'anonymous';
         dayImg.onload = function() {
           try {
             gl.bindTexture(gl.TEXTURE_2D, dayTex);
@@ -4679,11 +4719,16 @@
             console.warn('Satellite texture GPU upload error:', e);
           }
         };
+        dayImg.onerror = function() {
+          if (!dayImg.hasTriedAbsolute) {
+            dayImg.hasTriedAbsolute = true;
+            dayImg.src = '/assets/earth/earth-satellite.jpg';
+          }
+        };
         dayImg.src = '../assets/earth/earth-satellite.jpg';
 
         // Load 4K NASA Black Marble Night Lights
         const nightImg = new Image();
-        nightImg.crossOrigin = 'anonymous';
         nightImg.onload = function() {
           try {
             gl.bindTexture(gl.TEXTURE_2D, nightTex);
@@ -4692,6 +4737,12 @@
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
           } catch(e) {
             console.warn('Night texture GPU upload error:', e);
+          }
+        };
+        nightImg.onerror = function() {
+          if (!nightImg.hasTriedAbsolute) {
+            nightImg.hasTriedAbsolute = true;
+            nightImg.src = '/assets/earth/earth-night.jpg';
           }
         };
         nightImg.src = '../assets/earth/earth-night.jpg';
@@ -5586,7 +5637,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
           for (let star of STARS) {
             const sx = star.x * width;
             const sy = star.y * height;
-            if (Math.hypot(sx - cx, sy - cy) > radius * 1.08) {
+            if (Math.hypot(sx - cx, sy - cy) > radius * 1.04) {
               ctx.fillStyle = 'rgba(200, 230, 255, ' + star.alpha + ')';
               ctx.beginPath();
               ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
@@ -6240,6 +6291,16 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       const dot = document.getElementById('orbit-cursor-dot');
       const ring = document.getElementById('orbit-cursor-ring');
       if (!dot || !ring) return;
+
+      if (!ring.querySelector('.tc-bracket')) {
+        ring.innerHTML = `
+          <span class="tc-bracket tc-tl"></span>
+          <span class="tc-bracket tc-tr"></span>
+          <span class="tc-bracket tc-br"></span>
+          <span class="tc-bracket tc-bl"></span>
+          <span class="tc-hud-reticle"></span>
+        `;
+      }
 
       let mouseX = -100, mouseY = -100;
       let ringX = -100, ringY = -100;

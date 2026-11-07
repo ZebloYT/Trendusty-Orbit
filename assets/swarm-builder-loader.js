@@ -4152,6 +4152,19 @@
     }
   }
 
+  function ensureTacticalFollowerMarkup(ring) {
+    if (!ring) return;
+    if (!ring.querySelector('.tc-bracket')) {
+      ring.innerHTML = `
+        <span class="tc-bracket tc-tl"></span>
+        <span class="tc-bracket tc-tr"></span>
+        <span class="tc-bracket tc-br"></span>
+        <span class="tc-bracket tc-bl"></span>
+        <span class="tc-hud-reticle"></span>
+      `;
+    }
+  }
+
   class SwarmCoordinator {
     constructor() {
       this.isFromButton = false;
@@ -4250,6 +4263,7 @@
         document.body.appendChild(dot); // Bring to very top of body
       }
       if (ring) {
+        ensureTacticalFollowerMarkup(ring);
         ring.style.opacity = '1';
         ring.style.visibility = 'visible';
         ring.style.display = 'block';
