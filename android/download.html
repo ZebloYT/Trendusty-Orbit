@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Downloads — Trendusty Orbit &amp; EchoNode Android Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#06080e">
+  <link rel="icon" type="image/svg+xml" href="../assets/trendusty-orbit-icon.svg">
+  <style>
+    :root {
+      --bg: #06080e;
+      --card-bg: rgba(14, 20, 32, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --cyan: #38bdf8;
+      --purple: #a855f7;
+      --emerald: #00f5b8;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 20px 14px 40px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--cyan);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .download-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .btn-download {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      border: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-download.emerald {
+      background: linear-gradient(135deg, #00f5b8, #059669);
+      color: #06080e;
+    }
+
+    .btn-download.purple {
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-bar">
+    <a href="./" class="back-btn">&larr; Android Portal</a>
+    <span style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Downloads Hub</span>
+  </div>
+
+  <h1 style="font-size: 22px; font-weight: 900; margin-bottom: 6px;">Orbit &amp; EchoNode Downloads</h1>
+  <p style="font-size: 12.5px; color: var(--text-sub); margin-bottom: 20px;">
+    Official software packages, installers, browser extensions, and custom cursor collections.
+  </p>
+
+  <!-- Card 1: Windows App -->
+  <div class="download-card">
+    <div class="card-top">
+      <div class="card-icon">🛰️</div>
+      <div>
+        <div class="card-title">Trendusty Orbit Desktop</div>
+        <div style="font-size: 11px; color: var(--cyan); font-weight: 700;">Windows 10 / 11 (64-Bit) • v3.2</div>
+      </div>
+    </div>
+    <p class="card-desc">
+      Standalone desktop command application with 3D Real Earth Common Operating Picture, dual-display support, hardware acceleration, and system telemetry.
+    </p>
+    <a href="../assets/software/TrendustyOrbit-Setup.exe" class="btn-download" download>
+      ⬇️ Download Windows Installer (.exe)
+    </a>
+  </div>
+
+  <!-- Card 2: Chrome Extension -->
+  <div class="download-card">
+    <div class="card-top">
+      <div class="card-icon">🧩</div>
+      <div>
+        <div class="card-title">Retrosmart Chrome Extension</div>
+        <div style="font-size: 11px; color: var(--purple); font-weight: 700;">Chrome, Edge, Brave, Opera (MV3)</div>
+      </div>
+    </div>
+    <p class="card-desc">
+      Inject any of the 28 custom vintage Win95, Mac System 7, 3D Chrome, or pixel font cursors across all webpages in your browser.
+    </p>
+    <a href="../retrosmart/chrome-extension/popup.html" class="btn-download purple">
+      🧩 View Extension Details
+    </a>
+  </div>
+
+  <!-- Card 3: EchoNode Minecraft Launcher -->
+  <div class="download-card">
+    <div class="card-top">
+      <div class="card-icon">⛏️</div>
+      <div>
+        <div class="card-title">EchoNode Cloud Server Tool</div>
+        <div style="font-size: 11px; color: var(--emerald); font-weight: 700;">Sovereign Purpur Host Manager</div>
+      </div>
+    </div>
+    <p class="card-desc">
+      Manage 24/7 dedicated Minecraft server instances running on Java 25 LTS with live TPS/RAM gauges and playit-gg tunnels.
+    </p>
+    <a href="../echonode/" class="btn-download emerald">
+      💻 Open EchoNode Dashboard
+    </a>
+  </div>
+
+</body>
+</html>

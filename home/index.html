@@ -38,6 +38,19 @@
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Android Phone & Mobile Device Auto-Detection -->
+  <script>
+    (function() {
+      try {
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 850 && 'ontouchstart' in window);
+        var forceDesktop = localStorage.getItem('orbit_force_desktop') === 'true' || window.location.search.indexOf('view=desktop') !== -1;
+        if (isMobile && !forceDesktop) {
+          window.location.replace("../android/");
+        }
+      } catch(e) {}
+    })();
+  </script>
   
   <!-- Search Engine Optimization (SEO) -->
   <meta name="description" content="Trendusty Orbit provides real-time global monitoring, OSINT intelligence, and 3D satellite tracking in a unified Common Operating Picture (COP).">
@@ -3684,6 +3697,9 @@
           <option value="es">ES Español</option>
           <option value="ar">AR العربية</option>
         </select>
+        <a href="../android/" class="btn-ghost" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; display: inline-flex; align-items: center; gap: 5px;" title="Android Mobile Edition">
+          <span>📱</span> <span>Android Edition</span>
+        </a>
         <a href="#live-preview" class="btn-ghost" data-i18n="nav_sim">Live Simulation</a>
         <a href="../windows/download" onclick="openAuthModal(event)" class="btn-primary" data-i18n="nav_download">Download Setup &rarr;</a>
         <button type="button" class="btn-auth-corner" onclick="openAuthModal(event)" title="Sign Up / Login">

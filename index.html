@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Redirecting to Trendusty Orbit</title>
-  <meta http-equiv="refresh" content="0; url=home/">
-  <script>window.location.replace("home/");</script>
+  <script>
+    (function() {
+      var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 850 && 'ontouchstart' in window);
+      var forceDesktop = localStorage.getItem('orbit_force_desktop') === 'true' || window.location.search.indexOf('view=desktop') !== -1;
+      if (isMobile && !forceDesktop) {
+        window.location.replace("android/");
+      } else {
+        window.location.replace("home/");
+      }
+    })();
+  </script>
 </head>
 <body class="custom-cursor-active">
-  <p>Redirecting to <a href="home/">Trendusty Orbit</a>...</p>
+  <p>Redirecting to <a href="home/">Trendusty Orbit Desktop</a> or <a href="android/">Android Phone Edition</a>...</p>
 </body>
 </html>

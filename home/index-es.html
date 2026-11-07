@@ -37,7 +37,21 @@
     })();
   </script>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Android Phone & Mobile Device Auto-Detection -->
+  <script>
+    (function() {
+      try {
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 850 && "ontouchstart" in window);
+        var forceDesktop = localStorage.getItem("orbit_force_desktop") === "true" || window.location.search.indexOf("view=desktop") !== -1;
+        if (isMobile && !forceDesktop) {
+          var target = window.location.pathname.indexOf("/download") !== -1 ? "../android/download.html" : "../android/";
+          window.location.replace(target);
+        }
+      } catch(e) {}
+    })();
+  </script>
   
   <!-- Search Engine Optimization (SEO) -->
   <meta name="description" content="Trendusty Orbit provides real-time global monitoring, OSINT intelligence, and 3D satellite tracking in a unified Common Operating Picture (COP).">

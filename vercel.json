@@ -80,6 +80,22 @@
       "dest": "/echonode/server-icon.png"
     },
     {
+      "src": "^/android/?$",
+      "dest": "/android/index.html"
+    },
+    {
+      "src": "^/android/(.*)",
+      "dest": "/android/$1"
+    },
+    {
+      "src": "^/mobile/?$",
+      "dest": "/android/index.html"
+    },
+    {
+      "src": "^/m/?$",
+      "dest": "/android/index.html"
+    },
+    {
       "src": "^/$",
       "dest": "/home/index.html"
     },
