@@ -942,12 +942,16 @@
         <span class="status-pill pill-green" id="globe-status-pill">LIVE 60 FPS</span>
       </div>
 
-      <!-- Touch-Interactive Globe Canvas -->
+      <!-- Touch-Interactive Globe Canvas (Real Earth & Digital Earth) -->
       <div class="globe-stage" id="globe-touch-stage">
-        <canvas id="cop-webgl-canvas"></canvas>
+        <canvas id="cop-webgl-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block;"></canvas>
+        <canvas id="live-cop-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none;"></canvas>
 
         <!-- Floating Touch Controls -->
         <div class="globe-touch-controls">
+          <button class="globe-ctrl-btn" id="btn-earth-mode-mob" onclick="toggleMobileEarthMode()" title="Toggle Real Earth vs Digital Grid">
+            <span id="earth-mode-icon-mob">🌐</span> <span id="earth-mode-label-mob">DIGITAL EARTH</span>
+          </button>
           <button class="globe-ctrl-btn active" id="btn-orbit-spin" onclick="toggleAutoSpin()">
             <span>🔄</span> <span>Orbit Spin</span>
           </button>
@@ -1546,9 +1550,19 @@
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = () => {
-          gl.activeTexture(unit);
-          gl.bindTexture(gl.TEXTURE_2D, tex);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+          try {
+            gl.activeTexture(unit);
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+          } catch(e) {
+            console.warn("Texture upload error:", e);
+          }
+        };
+        img.onerror = () => {
+          if (!img.hasTriedAbsolute) {
+            img.hasTriedAbsolute = true;
+            img.src = url.replace(/^\.\.\//, '/');
+          }
         };
         img.src = url;
         return tex;
@@ -1574,19 +1588,198 @@
           touchVelocityY *= 0.92;
         }
 
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.uniform2f(uRes, canvas.width, canvas.height);
-        gl.uniform2f(uCenter, canvas.width * 0.5, canvas.height * 0.5);
-        gl.uniform1f(uRadius, Math.min(canvas.width, canvas.height) * 0.44);
-        gl.uniform1f(uRotX, rotX);
-        gl.uniform1f(uRotY, rotY);
-        gl.uniform1f(uTime, t);
+        if (mobileEarthMode === 'real') {
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.uniform2f(uRes, canvas.width, canvas.height);
+          gl.uniform2f(uCenter, canvas.width * 0.5, canvas.height * 0.5);
+          gl.uniform1f(uRadius, Math.min(canvas.width, canvas.height) * 0.44);
+          gl.uniform1f(uRotX, rotX);
+          gl.uniform1f(uRotY, rotY);
+          gl.uniform1f(uTime, t);
 
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        } else {
+          renderDigitalEarth();
+        }
+
         requestAnimationFrame(render);
       }
 
       requestAnimationFrame(render);
+    }
+
+    // ----------------------------------------------------
+    // DIGITAL CYBER EARTH ENGINE (2D VECTOR GRID & RADAR SWEEP)
+    // ----------------------------------------------------
+    const CONTINENTS = [
+      [ [70, -160], [71, -130], [68, -100], [58, -75], [52, -56], [45, -60], [30, -81], [25, -80], [18, -90], [15, -92], [22, -106], [32, -117], [38, -123], [48, -125], [58, -136], [60, -145], [65, -168], [70, -160] ],
+      [ [12, -72], [10, -62], [5, -52], [-5, -35], [-22, -41], [-35, -57], [-54, -67], [-52, -75], [-35, -73], [-18, -70], [-5, -81], [5, -77], [12, -72] ],
+      [ [71, 28], [69, 60], [60, 50], [55, 38], [44, 40], [37, 28], [36, -5], [43, -9], [48, -4], [54, 5], [58, 12], [63, 20], [71, 28] ],
+      [ [37, 10], [32, 32], [22, 37], [12, 51], [-4, 40], [-26, 33], [-34, 18], [-22, 14], [5, 10], [5, -1], [15, -17], [28, -13], [36, -5], [37, 10] ],
+      [ [75, 100], [72, 140], [66, 170], [60, 162], [50, 140], [38, 120], [22, 108], [8, 103], [12, 80], [24, 68], [25, 57], [40, 50], [50, 58], [60, 75], [75, 100] ],
+      [ [-12, 131], [-15, 145], [-24, 153], [-37, 150], [-38, 141], [-32, 116], [-22, 114], [-16, 123], [-12, 131] ],
+      [ [58, -5], [55, -2], [50, 1], [50, -5], [54, -5], [58, -5] ],
+      [ [44, 144], [38, 141], [33, 131], [35, 135], [40, 140], [44, 144] ]
+    ];
+
+    let mobileEarthMode = 'real';
+    const liveCanvas = document.getElementById('live-cop-canvas');
+    const liveCtx = liveCanvas ? liveCanvas.getContext('2d') : null;
+    let radarSweepAngle = 0;
+
+    function projectMob(latDeg, lonDeg, radius, cx, cy) {
+      const lat = (latDeg * Math.PI) / 180;
+      const lon = (lonDeg * Math.PI) / 180;
+      const x0 = Math.cos(lat) * Math.sin(lon);
+      const y0 = -Math.sin(lat);
+      const z0 = Math.cos(lat) * Math.cos(lon);
+      const x1 = x0 * Math.cos(rotY) + z0 * Math.sin(rotY);
+      const z1 = -x0 * Math.sin(rotY) + z0 * Math.cos(rotY);
+      const y1 = y0 * Math.cos(rotX) - z1 * Math.sin(rotX);
+      const z2 = y0 * Math.sin(rotX) + z1 * Math.cos(rotX);
+      return { x: cx + x1 * radius, y: cy + y1 * radius, visible: z2 > 0 };
+    }
+
+    function toggleMobileEarthMode() {
+      mobileEarthMode = (mobileEarthMode === 'real' ? 'digital' : 'real');
+      playCyberClick(1100, 0.05);
+
+      const btnIcon = document.getElementById('earth-mode-icon-mob');
+      const btnLabel = document.getElementById('earth-mode-label-mob');
+      const pill = document.getElementById('globe-status-pill');
+
+      if (mobileEarthMode === 'real') {
+        if (canvas) canvas.style.display = 'block';
+        if (liveCanvas) liveCanvas.style.display = 'none';
+        if (btnIcon) btnIcon.innerText = '🌐';
+        if (btnLabel) btnLabel.innerText = 'DIGITAL EARTH';
+        if (pill) { pill.innerText = 'REAL EARTH 60 FPS'; pill.className = 'status-pill pill-green'; }
+      } else {
+        if (canvas) canvas.style.display = 'none';
+        if (liveCanvas) liveCanvas.style.display = 'block';
+        if (btnIcon) btnIcon.innerText = '🌍';
+        if (btnLabel) btnLabel.innerText = 'REAL EARTH';
+        if (pill) { pill.innerText = 'DIGITAL CYBER GRID'; pill.className = 'status-pill pill-purple'; }
+      }
+    }
+
+    function renderDigitalEarth() {
+      if (!liveCanvas || !liveCtx || mobileEarthMode !== 'digital') return;
+      const rect = liveCanvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
+      const w = Math.floor(rect.width);
+      const h = Math.floor(rect.height);
+      if (liveCanvas.width !== w * dpr || liveCanvas.height !== h * dpr) {
+        liveCanvas.width = w * dpr;
+        liveCanvas.height = h * dpr;
+        liveCtx.scale(dpr, dpr);
+      }
+
+      liveCtx.clearRect(0, 0, w, h);
+      const cx = w * 0.5;
+      const cy = h * 0.5;
+      const radius = Math.min(w, h) * 0.42;
+
+      // Dark globe sphere
+      const globeGrad = liveCtx.createRadialGradient(cx - radius * 0.35, cy - radius * 0.35, radius * 0.1, cx, cy, radius);
+      globeGrad.addColorStop(0, '#0a1a2f');
+      globeGrad.addColorStop(0.8, '#04070e');
+      globeGrad.addColorStop(1, '#020306');
+      liveCtx.fillStyle = globeGrad;
+      liveCtx.beginPath();
+      liveCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+      liveCtx.fill();
+
+      // Atmospheric halo
+      const haloGrad = liveCtx.createRadialGradient(cx, cy, radius * 0.95, cx, cy, radius * 1.25);
+      haloGrad.addColorStop(0, 'rgba(0, 245, 184, 0.25)');
+      haloGrad.addColorStop(0.5, 'rgba(0, 245, 184, 0.04)');
+      haloGrad.addColorStop(1, 'transparent');
+      liveCtx.fillStyle = haloGrad;
+      liveCtx.beginPath();
+      liveCtx.arc(cx, cy, radius * 1.25, 0, Math.PI * 2);
+      liveCtx.fill();
+
+      // Border
+      liveCtx.strokeStyle = 'rgba(0, 245, 184, 0.45)';
+      liveCtx.lineWidth = 1.5;
+      liveCtx.stroke();
+
+      // Parallels
+      liveCtx.strokeStyle = 'rgba(0, 245, 184, 0.16)';
+      liveCtx.lineWidth = 1;
+      const parallels = [-60, -30, 0, 30, 60];
+      parallels.forEach(lat => {
+        liveCtx.beginPath();
+        let started = false;
+        for (let lon = -180; lon <= 180; lon += 6) {
+          const p = projectMob(lat, lon, radius, cx, cy);
+          if (p.visible) {
+            if (!started) { liveCtx.moveTo(p.x, p.y); started = true; }
+            else { liveCtx.lineTo(p.x, p.y); }
+          } else { started = false; }
+        }
+        liveCtx.stroke();
+      });
+
+      // Meridians
+      for (let lon = -180; lon < 180; lon += 30) {
+        liveCtx.beginPath();
+        let started = false;
+        for (let lat = -90; lat <= 90; lat += 5) {
+          const p = projectMob(lat, lon, radius, cx, cy);
+          if (p.visible) {
+            if (!started) { liveCtx.moveTo(p.x, p.y); started = true; }
+            else { liveCtx.lineTo(p.x, p.y); }
+          } else { started = false; }
+        }
+        liveCtx.stroke();
+      }
+
+      // Continents
+      CONTINENTS.forEach(poly => {
+        liveCtx.beginPath();
+        let first = true;
+        let anyVisible = false;
+        poly.forEach(([lat, lon]) => {
+          const p = projectMob(lat, lon, radius, cx, cy);
+          if (p.visible) anyVisible = true;
+          if (first) { liveCtx.moveTo(p.x, p.y); first = false; }
+          else { liveCtx.lineTo(p.x, p.y); }
+        });
+        if (anyVisible) {
+          liveCtx.fillStyle = 'rgba(0, 245, 184, 0.18)';
+          liveCtx.fill();
+          liveCtx.strokeStyle = 'rgba(0, 245, 184, 0.55)';
+          liveCtx.lineWidth = 1.2;
+          liveCtx.stroke();
+        }
+      });
+
+      // Radar sweep
+      radarSweepAngle += 0.025;
+      liveCtx.save();
+      liveCtx.beginPath();
+      liveCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+      liveCtx.clip();
+
+      const sweepX = cx + Math.cos(radarSweepAngle) * radius;
+      const sweepY = cy + Math.sin(radarSweepAngle) * radius;
+      liveCtx.strokeStyle = '#00f5b8';
+      liveCtx.lineWidth = 1.5;
+      liveCtx.beginPath();
+      liveCtx.moveTo(cx, cy);
+      liveCtx.lineTo(sweepX, sweepY);
+      liveCtx.stroke();
+
+      liveCtx.fillStyle = 'rgba(0, 245, 184, 0.15)';
+      liveCtx.beginPath();
+      liveCtx.moveTo(cx, cy);
+      liveCtx.arc(cx, cy, radius, radarSweepAngle - 0.4, radarSweepAngle, false);
+      liveCtx.lineTo(cx, cy);
+      liveCtx.fill();
+
+      liveCtx.restore();
     }
 
     function resizeCanvas() {
@@ -1824,10 +2017,19 @@
       document.getElementById('top-clock').innerText = 'UTC ' + now.toUTCString().split(' ')[4];
     }, 1000);
 
-    // Initialize Earth on Page Load
-    window.addEventListener('load', () => {
+    // Initialize Earth on Page Load & DOM Ready immediately
+    let earthStarted = false;
+    function startMobileEarth() {
+      if (earthStarted) return;
+      earthStarted = true;
       initRealEarth();
-    });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startMobileEarth);
+    } else {
+      startMobileEarth();
+    }
+    window.addEventListener('load', startMobileEarth);
   </script>
 </body>
 </html>
