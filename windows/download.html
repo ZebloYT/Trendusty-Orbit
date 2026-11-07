@@ -1071,6 +1071,12 @@
     }
 
     /* Ambient Circuit Background Traces (Image 2) */
+    .auth-circuit-bg,
+    .auth-circuit-node,
+    .auth-node-pins {
+      display: none !important;
+    }
+
     .auth-circuit-bg {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -2852,22 +2858,6 @@
 
   <!-- Login & Sign Up Screen Modal (Image 2 Dribbble Tech Design) -->
   <div id="auth-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleAuthBackdropClick(event)">
-    <!-- Ambient Tech Circuit Nodes (Image 2) -->
-    <div class="auth-circuit-bg">
-      <div class="auth-circuit-node top-left">
-        <div class="auth-node-pins"><span></span><span></span><span></span></div>
-      </div>
-      <div class="auth-circuit-node top-right">
-        <div class="auth-node-pins"><span></span><span></span><span></span></div>
-      </div>
-      <div class="auth-circuit-node bottom-left">
-        <div class="auth-node-pins"><span></span><span></span><span></span></div>
-      </div>
-      <div class="auth-circuit-node bottom-right">
-        <div class="auth-node-pins"><span></span><span></span><span></span></div>
-      </div>
-    </div>
-
     <div class="auth-modal-window" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
       <!-- Close Button Corner -->
       <button type="button" class="auth-modal-close-corner" onclick="closeAuthModal()" aria-label="Close Screen">
@@ -3031,7 +3021,6 @@
             </div>
           </div>
         </div>
-                </div>
 
         <!-- Google Identity Services (GIS) Initializer with Client ID -->
         <div id="g_id_onload"
