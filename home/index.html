@@ -3484,7 +3484,7 @@
 
     <button class="tcm-item" onclick="tcmAction('earthMode')">
       <span class="tcm-icon">🌍</span>
-      <span class="tcm-text">Toggle Google Earth Satellite View</span>
+      <span class="tcm-text">Toggle Real Earth Satellite View</span>
       <span class="tcm-key">SPACE</span>
     </button>
 
@@ -3687,9 +3687,9 @@
             <div class="cop-coords">
               LAT 37.7749 | LON -122.4194 | ALT 28,400 FT
             </div>
-            <button class="cop-fullscreen-btn" id="btn-earth-mode-nav" title="Toggle Google Earth Satellite vs Digital Mode" style="margin-right: 8px;">
+            <button class="cop-fullscreen-btn" id="btn-earth-mode-nav" title="Switch between Real Earth Satellite Imagery and Cyber Digital Grid" style="margin-right: 8px;">
               <span id="earth-mode-icon-nav" style="font-size: 13px; margin-right: 4px;">🌍</span>
-              <span id="earth-mode-text-nav">GOOGLE EARTH</span>
+              <span id="earth-mode-text-nav">REAL EARTH</span>
             </button>
             <button class="cop-fullscreen-btn" id="btn-fullscreen" onclick="toggleCopFullscreen()" title="Toggle Fullscreen Mode">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
@@ -3706,9 +3706,9 @@
           <canvas id="live-cop-canvas"></canvas>
 
           <!-- Corner Button: Toggle Real Earth vs Digital Mode -->
-          <button class="cop-earth-mode-btn" id="btn-earth-mode" title="Switch between Google Earth Satellite Imagery and Cyber Digital Grid">
+          <button class="cop-earth-mode-btn" id="btn-earth-mode" title="Switch between Real Earth Satellite Imagery and Cyber Digital Grid">
             <span class="earth-mode-icon" id="earth-mode-icon">🌍</span>
-            <span id="earth-mode-text">GOOGLE EARTH</span>
+            <span id="earth-mode-text">REAL EARTH</span>
           </button>
 
 
@@ -4426,9 +4426,10 @@
       const copWebglCanvas = document.getElementById('cop-webgl-canvas');
       const wrapper = document.getElementById('preview-wrapper');
 
-      // ----------------------------------------------------
-      // WEBGL REAL EARTH RENDERER (GOOGLE EARTH SATELLITE ENGINE)
-      // Genuine 4K satellite composite + Keyless Google Earth tile streaming
+            // ----------------------------------------------------
+      // WEBGL REAL EARTH RENDERER (TRUE-SATELLITE ATMOSPHERIC ENGINE)
+      // NASA Blue Marble 4K Composite + Black Marble Night Lights
+      // Atmospheric Rayleigh Scattering + Dynamic 3D Drifting Clouds
       // ----------------------------------------------------
       function createRealEarthRenderer(c) {
         if (!c) return null;
@@ -4455,10 +4456,48 @@
           uniform float u_radius;
           uniform float u_rotX;
           uniform float u_rotY;
+          uniform float u_time;
           uniform sampler2D u_dayTexture;
           uniform sampler2D u_nightTexture;
 
           const float PI = 3.14159265358979323846;
+
+          // Fast 3D procedural noise for volumetric cloud synthesis
+          float hash3(vec3 p) {
+            p = fract(p * 0.3183099 + vec3(0.1, 0.1, 0.1));
+            p *= 17.0;
+            return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+          }
+
+          float noise3(vec3 x) {
+            vec3 p = floor(x);
+            vec3 w = fract(x);
+            vec3 u = w * w * (3.0 - 2.0 * w);
+            float n000 = hash3(p);
+            float n100 = hash3(p + vec3(1.0, 0.0, 0.0));
+            float n010 = hash3(p + vec3(0.0, 1.0, 0.0));
+            float n110 = hash3(p + vec3(1.0, 1.0, 0.0));
+            float n001 = hash3(p + vec3(0.0, 0.0, 1.0));
+            float n101 = hash3(p + vec3(1.0, 0.0, 1.0));
+            float n011 = hash3(p + vec3(0.0, 1.0, 1.0));
+            float n111 = hash3(p + vec3(1.0, 1.0, 1.0));
+            return mix(
+              mix(mix(n000, n100, u.x), mix(n010, n110, u.x), u.y),
+              mix(mix(n001, n101, u.x), mix(n011, n111, u.x), u.y),
+              u.z
+            );
+          }
+
+          // Multi-octave procedural cloud density with planetary circulation bands
+          float getCloudDensity(vec3 p) {
+            float lat = p.y;
+            float latBands = sin(lat * 6.28) * 0.18 + cos(lat * 14.0) * 0.12;
+            float c = noise3(p * 3.4) * 0.52 + 
+                      noise3(p * 6.8 + vec3(1.7, 2.3, 0.9)) * 0.30 + 
+                      noise3(p * 13.6 + vec3(3.1, 0.5, 2.2)) * 0.18;
+            c += latBands;
+            return smoothstep(0.48, 0.76, c);
+          }
 
           void main() {
             vec2 p = gl_FragCoord.xy;
@@ -4466,25 +4505,43 @@
             float dy = (p.y - (u_res.y - u_center.y)) / u_radius;
             float distSq = dx * dx + dy * dy;
 
-            if (distSq > 1.34) {
+            // Space boundary outside atmosphere
+            if (distSq > 1.36) {
               discard;
             }
 
-            // Outer atmospheric Rayleigh scatter halo
+            // Simulated Sun direction in orbital view coordinates
+            vec3 sunDir = normalize(vec3(-0.64, 0.38, 0.66));
+
+            // ----------------------------------------------------
+            // OUTER ATMOSPHERIC RAYLEIGH SCATTERING HALO
+            // ----------------------------------------------------
             if (distSq > 1.0) {
               float dist = sqrt(distSq);
-              float alpha = smoothstep(1.32, 1.0, dist) * 0.48;
-              vec3 atmoColor = mix(vec3(0.04, 0.28, 0.75), vec3(0.25, 0.70, 1.0), smoothstep(1.22, 1.0, dist));
+              float h = (dist - 1.0) / 0.16;
+              float density = exp(-h * 4.4) * (1.0 - h);
+
+              vec2 limbDir = vec2(dx, -dy) / dist;
+              float sunFacing = dot(limbDir, sunDir.xy);
+              float sunLit = smoothstep(-0.35, 0.70, sunFacing);
+
+              vec3 atmoDay = vec3(0.20, 0.56, 1.0);
+              vec3 atmoTwilight = vec3(0.96, 0.50, 0.16);
+              float twilightHorn = smoothstep(0.20, -0.15, sunFacing) * smoothstep(-0.40, 0.05, sunFacing);
+              vec3 atmoColor = mix(atmoDay, atmoTwilight, clamp(twilightHorn * 1.6, 0.0, 1.0));
+
+              float alpha = density * (0.05 + 0.95 * sunLit) * 0.88;
               gl_FragColor = vec4(atmoColor * alpha, alpha);
               return;
             }
 
-            // On-sphere calculations (Orthographic camera matching canvas 2D project)
+            // ----------------------------------------------------
+            // ON-SPHERE PLANETARY SURFACE & CLOUDS
+            // ----------------------------------------------------
             float x1 = dx;
             float y2 = -dy;
             float z2 = sqrt(max(0.0, 1.0 - x1 * x1 - y2 * y2));
 
-            // Invert rotations to ground lat/lon
             float cosX = cos(u_rotX);
             float sinX = sin(u_rotX);
             float y0 = y2 * cosX + z2 * sinX;
@@ -4504,25 +4561,89 @@
             vec4 dayTex = texture2D(u_dayTexture, vec2(u, v));
             vec4 nightTex = texture2D(u_nightTexture, vec2(u, v));
 
-            // Sun illumination vector (simulated orbit sun angle)
             vec3 normal = vec3(x1, -y2, z2);
-            vec3 sunDir = normalize(vec3(-0.62, 0.42, 0.66));
             float NdotL = dot(normal, sunDir);
+            float NdotV = z2;
 
-            // Natural day / night transition across terminator
-            float dayFactor = smoothstep(-0.18, 0.22, NdotL);
-            vec3 surface = mix(nightTex.rgb * 1.7, dayTex.rgb * 1.08, dayFactor);
+            float dayLight = smoothstep(-0.12, 0.16, NdotL);
 
-            // Water specular reflection glint
-            float isWater = clamp((dayTex.b - dayTex.r) * 2.8, 0.0, 1.0);
+            // ----------------------------------------------------
+            // DYNAMIC 3D CLOUDS & CLOUD SHADOWS
+            // ----------------------------------------------------
+            float cloudDrift = u_time * 0.012;
+            float cosD = cos(cloudDrift);
+            float sinD = sin(cloudDrift);
+            vec3 cloudGroundPos = vec3(x0 * cosD - z0 * sinD, y0, x0 * sinD + z0 * cosD);
+
+            float clouds = getCloudDensity(cloudGroundPos);
+
+            vec3 sunGround = vec3(
+              sunDir.x * cosY + sunDir.z * sinY,
+              sunDir.y * cosX - (-sunDir.x * sinY + sunDir.z * cosY) * sinX,
+              sunDir.y * sinX + (-sunDir.x * sinY + sunDir.z * cosY) * cosX
+            );
+            vec3 shadowPos = cloudGroundPos - normalize(sunGround) * 0.024;
+            float shadow = getCloudDensity(shadowPos);
+
+            // ----------------------------------------------------
+            // WATER DETECTION & REAL FRESNEL SPECULAR GLINT
+            // ----------------------------------------------------
+            float oceanMask = clamp((dayTex.b * 1.6 - dayTex.r * 1.3 - dayTex.g * 0.3), 0.0, 1.0);
+            float albedo = dot(dayTex.rgb, vec3(0.299, 0.587, 0.114));
+            if (albedo > 0.40 || dayTex.r > 0.28) {
+              oceanMask = 0.0;
+            }
+            oceanMask *= (1.0 - clouds);
+
             vec3 viewDir = vec3(0.0, 0.0, 1.0);
             vec3 halfDir = normalize(sunDir + viewDir);
-            float spec = pow(max(0.0, dot(normal, halfDir)), 32.0) * isWater * max(0.0, NdotL);
-            surface += vec3(0.45, 0.78, 1.0) * spec * 0.95;
+            float NdotH = max(0.0, dot(normal, halfDir));
+            float specPower = 52.0;
+            float spec = pow(NdotH, specPower);
+            float fresnel = 0.03 + 0.97 * pow(1.0 - NdotV, 5.0);
+            vec3 sunGlint = vec3(1.0, 0.96, 0.90) * (spec * 2.8 + pow(NdotH, 14.0) * 0.45) * fresnel * oceanMask * smoothstep(0.0, 0.20, NdotL);
 
-            // Limb Rayleigh haze
-            float rim = pow(1.0 - z2, 3.0);
-            surface += vec3(0.12, 0.60, 1.0) * rim * max(0.0, NdotL + 0.35);
+            // ----------------------------------------------------
+            // SURFACE COLOR COMPOSITING (DAY + NIGHT + SHADOWS)
+            // ----------------------------------------------------
+            vec3 groundDay = dayTex.rgb * (1.0 - shadow * 0.45 * smoothstep(0.0, 0.2, NdotL));
+
+            float nightVisibility = smoothstep(0.10, -0.12, NdotL);
+            vec3 cityLights = nightTex.rgb * vec3(1.4, 1.15, 0.75) * 2.6;
+            cityLights *= (1.0 - clouds * 0.70);
+
+            vec3 earthshine = vec3(0.003, 0.006, 0.014);
+
+            vec3 surface = mix(cityLights + earthshine, groundDay, dayLight);
+
+            // ----------------------------------------------------
+            // CLOUD LAYER LIGHTING (ILLUMINATED BY SUN & TWILIGHT)
+            // ----------------------------------------------------
+            if (clouds > 0.01) {
+              vec3 cloudSun = vec3(0.98, 0.99, 1.0) * (max(0.0, NdotL) * 1.18 + 0.06);
+              float terminatorClouds = smoothstep(0.18, -0.05, abs(NdotL));
+              cloudSun += vec3(0.96, 0.52, 0.18) * terminatorClouds * 0.65;
+              surface = mix(surface, cloudSun, clouds * smoothstep(-0.15, 0.10, NdotL));
+            }
+
+            surface += sunGlint;
+
+            // ----------------------------------------------------
+            // RAYLEIGH ATMOSPHERIC SCATTERING ON SURFACE DISK
+            // ----------------------------------------------------
+            float limb = pow(1.0 - NdotV, 2.6);
+            vec3 rayleighBlue = vec3(0.18, 0.54, 1.0);
+            surface += rayleighBlue * limb * smoothstep(-0.08, 0.35, NdotL) * 0.75;
+
+            float sunsetRim = smoothstep(0.16, 0.0, abs(NdotL)) * pow(1.0 - NdotV, 1.6);
+            surface += vec3(0.96, 0.48, 0.14) * sunsetRim * 0.55;
+
+            // ----------------------------------------------------
+            // FILMIC TONE MAPPING & VIBRANCY
+            // ----------------------------------------------------
+            surface = surface / (surface + vec3(0.85)) * 1.15;
+            float lum = dot(surface, vec3(0.2126, 0.7152, 0.0722));
+            surface = mix(vec3(lum), surface, 1.10);
 
             gl_FragColor = vec4(surface, 1.0);
           }
@@ -4570,10 +4691,11 @@
         const uRadius = gl.getUniformLocation(prog, 'u_radius');
         const uRotX = gl.getUniformLocation(prog, 'u_rotX');
         const uRotY = gl.getUniformLocation(prog, 'u_rotY');
+        const uTime = gl.getUniformLocation(prog, 'u_time');
         const uDay = gl.getUniformLocation(prog, 'u_dayTexture');
         const uNight = gl.getUniformLocation(prog, 'u_nightTexture');
 
-        // Create initial fallback canvas texture
+        // Fallback procedural canvas texture if images are still loading
         function makeFallbackTexture(color) {
           const fbCanvas = document.createElement('canvas');
           fbCanvas.width = 512;
@@ -4609,7 +4731,7 @@
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
-        // Load 4K Satellite Imagery Composite
+        // Load 4K NASA Blue Marble Satellite Imagery
         const dayImg = new Image();
         dayImg.crossOrigin = 'anonymous';
         dayImg.onload = function() {
@@ -4618,14 +4740,14 @@
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dayImg);
             gl.generateMipmap(gl.TEXTURE_2D);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-            console.log('Real Earth 4K satellite texture successfully loaded in WebGL');
+            console.log('Real Earth 4K NASA satellite texture active in WebGL');
           } catch(e) {
             console.warn('Satellite texture GPU upload error:', e);
           }
         };
         dayImg.src = '../assets/earth/earth-satellite.jpg';
 
-        // Load 4K Night Lights
+        // Load 4K NASA Black Marble Night Lights
         const nightImg = new Image();
         nightImg.crossOrigin = 'anonymous';
         nightImg.onload = function() {
@@ -4640,43 +4762,8 @@
         };
         nightImg.src = '../assets/earth/earth-night.jpg';
 
-        // Live Google Earth Satellite Tile Stitching (Keyless Feed)
-        (function loadLiveGoogleEarthTiles() {
-          const z = 1;
-          const numTiles = 2;
-          const stitchCanvas = document.createElement('canvas');
-          stitchCanvas.width = numTiles * 256;
-          stitchCanvas.height = numTiles * 256;
-          const sCtx = stitchCanvas.getContext('2d');
-          let loadedCount = 0;
-          const totalTiles = numTiles * numTiles;
-
-          for (let tx = 0; tx < numTiles; tx++) {
-            for (let ty = 0; ty < numTiles; ty++) {
-              const tileImg = new Image();
-              tileImg.crossOrigin = 'anonymous';
-              const serverIdx = (tx + ty) % 4;
-              tileImg.onload = function() {
-                try {
-                  sCtx.drawImage(tileImg, tx * 256, ty * 256, 256, 256);
-                  loadedCount++;
-                  if (loadedCount === totalTiles) {
-                    gl.bindTexture(gl.TEXTURE_2D, dayTex);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, stitchCanvas);
-                    gl.generateMipmap(gl.TEXTURE_2D);
-                    console.log('Google Earth keyless live satellite feed synchronized to WebGL');
-                  }
-                } catch(err) {
-                  // Fallback to high-res local satellite texture
-                }
-              };
-              tileImg.src = 'https://mt' + serverIdx + '.google.com/vt/lyrs=s&x=' + tx + '&y=' + ty + '&z=' + z;
-            }
-          }
-        })();
-
         return {
-          render: function(cx, cy, radius, rotX, rotY, w, h, dpr) {
+          render: function(cx, cy, radius, rotX, rotY, w, h, dpr, time) {
             gl.viewport(0, 0, w * dpr, h * dpr);
             gl.clearColor(0.0, 0.0, 0.0, 0.0);
             gl.clear(gl.COLOR_BUFFER_BIT);
@@ -4692,6 +4779,7 @@
             gl.uniform1f(uRadius, radius * dpr);
             gl.uniform1f(uRotX, rotX);
             gl.uniform1f(uRotY, rotY);
+            gl.uniform1f(uTime, time || 0);
 
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, dayTex);
@@ -4708,8 +4796,7 @@
           }
         };
       }
-
-      const webglEarth = createRealEarthRenderer(copWebglCanvas);
+const webglEarth = createRealEarthRenderer(copWebglCanvas);
       const panel = document.querySelector('.preview-panel');
 
       const cctvCanvas = document.getElementById('cctv-stream-canvas');
@@ -5206,15 +5293,15 @@
           if (iconNav) iconNav.textContent = '🌐';
           if (textNav) textNav.textContent = 'DIGITAL GRID';
 
-          if (topCoords) topCoords.textContent = 'EARTH OBSERVATORY // GOOGLE EARTH TRUE-SATELLITE IMAGERY [KEYLESS FEED ACTIVE]';
+          if (topCoords) topCoords.textContent = 'EARTH OBSERVATORY // REAL EARTH SATELLITE SENSORS [4K COMPOSITE ACTIVE]';
         } else {
           if (btn) btn.classList.remove('is-real');
           if (icon) icon.textContent = '🌍';
-          if (text) text.textContent = 'GOOGLE EARTH';
+          if (text) text.textContent = 'REAL EARTH';
 
           if (btnNav) btnNav.classList.remove('is-real');
           if (iconNav) iconNav.textContent = '🌍';
-          if (textNav) textNav.textContent = 'GOOGLE EARTH';
+          if (textNav) textNav.textContent = 'REAL EARTH';
 
           if (topCoords) topCoords.textContent = 'LAT 37.7749 | LON -122.4194 | ALT 28,400 FT';
         }
@@ -5550,13 +5637,13 @@
 
         const dpr = window.devicePixelRatio || 1;
 
-        if (state.earthMode === 'real') {
+                if (state.earthMode === 'real') {
           // ==========================================
-          // GOOGLE EARTH TRUE-SATELLITE WEBGL RENDERER
+          // REAL EARTH PHOTOREALISTIC SATELLITE RENDERER
           // ==========================================
           if (copWebglCanvas) copWebglCanvas.style.display = 'block';
           if (webglEarth) {
-            webglEarth.render(cx, cy, radius, state.rotX, state.rotY, width, height, dpr);
+            webglEarth.render(cx, cy, radius, state.rotX, state.rotY, width, height, dpr, performance.now() * 0.001);
           }
 
           ctx.clearRect(0, 0, width, height);
@@ -5565,7 +5652,7 @@
           for (let star of STARS) {
             const sx = star.x * width;
             const sy = star.y * height;
-            if (Math.hypot(sx - cx, sy - cy) > radius * 1.04) {
+            if (Math.hypot(sx - cx, sy - cy) > radius * 1.08) {
               ctx.fillStyle = 'rgba(200, 230, 255, ' + star.alpha + ')';
               ctx.beginPath();
               ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
@@ -5614,42 +5701,6 @@
               }
             });
           }
-
-          // Photorealistic Atmospheric Cloud Formations Drifting Over Google Earth
-          if (!state.isPaused) {
-            state.cloudDrift += 0.00035 * state.timeWarp;
-          }
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.clip();
-
-          const cloudBands = [
-            { lat: 6, lonOff: 0, rad: 38, count: 8 },
-            { lat: 42, lonOff: 75, rad: 32, count: 7 },
-            { lat: -32, lonOff: 140, rad: 34, count: 7 },
-            { lat: 26, lonOff: 210, rad: 28, count: 6 },
-            { lat: -55, lonOff: 90, rad: 36, count: 8 }
-          ];
-
-          cloudBands.forEach((band) => {
-            const step = 360 / band.count;
-            for (let i = 0; i < band.count; i++) {
-              const lon = -180 + i * step + (state.cloudDrift * 160) + band.lonOff;
-              const cp = project(band.lat + Math.sin(i * 1.5) * 6, lon, radius * 1.012, cx, cy);
-              if (cp.visible) {
-                const cGrad = ctx.createRadialGradient(cp.x, cp.y, 0, cp.x, cp.y, band.rad * state.zoom);
-                cGrad.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
-                cGrad.addColorStop(0.50, 'rgba(240, 248, 255, 0.20)');
-                cGrad.addColorStop(1, 'transparent');
-                ctx.fillStyle = cGrad;
-                ctx.beginPath();
-                ctx.arc(cp.x, cp.y, band.rad * state.zoom, 0, Math.PI * 2);
-                ctx.fill();
-              }
-            }
-          });
-          ctx.restore();
 
         } else {
           // ==========================================
@@ -5792,24 +5843,26 @@
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.clip(); // Ensure everything below is clipped to the globe's edge so it doesn't bleed out
 
-        // 1. Radar Sweep Line
-        const sweepX = cx + Math.cos(radarAngle) * radius;
-        const sweepY = cy + Math.sin(radarAngle) * radius;
+        if (state.earthMode !== 'real') {
+          // 1. Radar Sweep Line
+          const sweepX = cx + Math.cos(radarAngle) * radius;
+          const sweepY = cy + Math.sin(radarAngle) * radius;
 
-        ctx.strokeStyle = pal.accentGlow;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(sweepX, sweepY);
-        ctx.stroke();
-        
-        // 2. Radar Sweep Glow Cone (The big green shape the user might be referring to!)
-        ctx.fillStyle = 'rgba(0, 245, 184, 0.15)';
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, radius, radarAngle - 0.4, radarAngle, false);
-        ctx.lineTo(cx, cy);
-        ctx.fill();
+          ctx.strokeStyle = pal.accentGlow;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(sweepX, sweepY);
+          ctx.stroke();
+          
+          // 2. Radar Sweep Glow Cone (The big green shape the user might be referring to!)
+          ctx.fillStyle = 'rgba(0, 245, 184, 0.15)';
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, radius, radarAngle - 0.4, radarAngle, false);
+          ctx.lineTo(cx, cy);
+          ctx.fill();
+        }
 
         // 3. Waypoint Ping (Clipped so it doesn't hang off the edge)
         if (state.userWaypoint) {
