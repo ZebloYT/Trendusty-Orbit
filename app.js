@@ -4634,6 +4634,7 @@ jobs:
       sidebarSelector.addEventListener("click", () => {
         sfx.playClick();
         this.openServerSwitcherModal();
+        this.switchSwitcherTab('servers');
       });
     }
 
@@ -4653,7 +4654,7 @@ jobs:
         if (!store.isLoggedIn()) {
           this.openAuthModal("signin");
         } else {
-          this.openServerSwitcherModal();
+          this.openAccountManagerModal();
         }
       });
     }
@@ -4662,7 +4663,7 @@ jobs:
     if (topbarUserPill) {
       topbarUserPill.addEventListener("click", () => {
         sfx.playClick();
-        this.openServerSwitcherModal();
+        this.openAccountManagerModal();
       });
     }
 
@@ -6845,6 +6846,193 @@ ${custom}
     localStorage.setItem('orbit_emailjs_config', JSON.stringify(cfg));
     this.showToast('EmailJS configuration saved successfully!', 'success');
     this.closeModal('modal-email-setup-guide');
+  }
+
+  // Open Dedicated Account Manager Modal
+  openAccountManagerModal() {
+    this.openServerSwitcherModal();
+    this.switchSwitcherTab('account');
+  }
+
+  // Switch between Account Manager and Cloud Servers tabs
+  switchSwitcherTab(tab = 'account') {
+    const tabAcctBtn = document.getElementById("tab-btn-account-mgr");
+    const tabSrvsBtn = document.getElementById("tab-btn-servers-mgr");
+    const viewAcct = document.getElementById("tab-view-account");
+    const viewSrvs = document.getElementById("tab-view-servers");
+    const title = document.getElementById("switcher-modal-title");
+    const sub = document.getElementById("switcher-modal-sub");
+
+    if (tab === 'account') {
+      if (tabAcctBtn) {
+        tabAcctBtn.style.background = "rgba(0, 245, 184, 0.12)";
+        tabAcctBtn.style.borderColor = "#00f5b8";
+        tabAcctBtn.style.color = "#00f5b8";
+      }
+      if (tabSrvsBtn) {
+        tabSrvsBtn.style.background = "rgba(255, 255, 255, 0.04)";
+        tabSrvsBtn.style.borderColor = "rgba(255, 255, 255, 0.1)";
+        tabSrvsBtn.style.color = "#cbd5e1";
+      }
+      if (viewAcct) viewAcct.style.display = "block";
+      if (viewSrvs) viewSrvs.style.display = "none";
+      if (title) title.textContent = "Account Manager";
+      if (sub) sub.textContent = "Manage your operator account profile, credentials, and saved accounts";
+      this.renderAccountManagerTab();
+    } else {
+      if (tabSrvsBtn) {
+        tabSrvsBtn.style.background = "rgba(0, 245, 184, 0.12)";
+        tabSrvsBtn.style.borderColor = "#00f5b8";
+        tabSrvsBtn.style.color = "#00f5b8";
+      }
+      if (tabAcctBtn) {
+        tabAcctBtn.style.background = "rgba(255, 255, 255, 0.04)";
+        tabAcctBtn.style.borderColor = "rgba(255, 255, 255, 0.1)";
+        tabAcctBtn.style.color = "#cbd5e1";
+      }
+      if (viewAcct) viewAcct.style.display = "none";
+      if (viewSrvs) viewSrvs.style.display = "block";
+      if (title) title.textContent = "Cloud Server Manager";
+      if (sub) sub.textContent = "Manage your cloud server instances • Maximum 3 servers allowed";
+    }
+  }
+
+  // Render Account Manager Tab in Modal
+  renderAccountManagerTab() {
+    const userName = store.getUserName();
+    const userEmail = store.getUserEmail();
+    const userAvatar = store.getUserAvatar();
+    const isOwner = store.isOwner();
+    const userInitial = (userName[0] || 'U').toUpperCase();
+
+    const avatarEl = document.getElementById("tab-acct-avatar");
+    const nameEl = document.getElementById("tab-acct-name");
+    const emailEl = document.getElementById("tab-acct-email");
+    const roleEl = document.getElementById("tab-acct-role");
+    const listEl = document.getElementById("tab-acct-saved-list");
+
+    if (avatarEl) {
+      if (userAvatar && userAvatar.startsWith("http")) {
+        avatarEl.innerHTML = `<img src="${userAvatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Avatar">`;
+      } else {
+        avatarEl.textContent = userInitial;
+      }
+    }
+    if (nameEl) nameEl.textContent = userName;
+    if (emailEl) emailEl.textContent = userEmail || "Local Operator Session";
+    if (roleEl) {
+      if (isOwner) {
+        roleEl.textContent = "👑 OWNER & OPERATOR";
+        roleEl.style.color = "#fbbf24";
+        roleEl.style.borderColor = "rgba(251, 191, 36, 0.4)";
+        roleEl.style.background = "rgba(251, 191, 36, 0.12)";
+      } else {
+        roleEl.textContent = "⚡ CLOUD OPERATOR";
+        roleEl.style.color = "#00f5b8";
+        roleEl.style.borderColor = "rgba(0, 245, 184, 0.4)";
+        roleEl.style.background = "rgba(0, 245, 184, 0.12)";
+      }
+    }
+
+    if (listEl) {
+      let saved = [];
+      try {
+        const raw = localStorage.getItem("orbit_saved_accounts");
+        if (raw) saved = JSON.parse(raw);
+      } catch (e) {}
+
+      if (!Array.isArray(saved) || saved.length === 0) {
+        listEl.innerHTML = `
+          <div style="padding: 16px; text-align: center; font-size: 12px; color: #64748b;">
+            No other accounts saved on this device.
+          </div>
+        `;
+      } else {
+        listEl.innerHTML = saved.map((acc) => {
+          const isCurrent = (acc.email && userEmail && acc.email.toLowerCase() === userEmail.toLowerCase()) || (acc.name === userName);
+          const initial = (acc.name ? acc.name[0] : 'U').toUpperCase();
+          const avatarHtml = acc.avatar && acc.avatar.startsWith('http')
+            ? `<img src="${acc.avatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
+            : `<span>${initial}</span>`;
+
+          return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #38bdf8; color: #07090e; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                  ${avatarHtml}
+                </div>
+                <div style="min-width: 0;">
+                  <div style="font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${acc.name || 'User'}</div>
+                  <div style="font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${acc.email || ''}</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                ${isCurrent
+                  ? `<span style="font-size: 10px; font-weight: 700; color: #00f5b8; background: rgba(0, 245, 184, 0.15); border: 1px solid #00f5b8; padding: 2px 8px; border-radius: 999px;">ACTIVE</span>`
+                  : `<button type="button" onclick="app.switchSavedAccount('${acc.email}')" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; border-radius: 6px; font-size: 11px; font-weight: 600; padding: 3px 10px; cursor: pointer;">Switch</button>`
+                }
+                <button type="button" onclick="app.removeSavedAccount('${acc.email}')" style="background: transparent; border: none; color: #64748b; font-size: 14px; cursor: pointer; padding: 2px 4px;" title="Remove from this device">&times;</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+  }
+
+  // Switch to another saved account
+  switchSavedAccount(email) {
+    if (sfx.playClick) sfx.playClick();
+    let saved = [];
+    try {
+      const raw = localStorage.getItem("orbit_saved_accounts");
+      if (raw) saved = JSON.parse(raw);
+    } catch(e) {}
+    const target = saved.find(a => a.email && a.email.toLowerCase() === (email || "").toLowerCase());
+    if (target) {
+      store.setSession(target);
+      this.renderUserSessionUI();
+      this.reloadServerData();
+      this.renderAccountManagerTab();
+      this.showToast(`Switched account to ${target.name}!`, "success");
+    }
+  }
+
+  // Remove saved account from device
+  removeSavedAccount(email) {
+    if (sfx.playClick) sfx.playClick();
+    let saved = [];
+    try {
+      const raw = localStorage.getItem("orbit_saved_accounts");
+      if (raw) saved = JSON.parse(raw);
+    } catch(e) {}
+    saved = saved.filter(a => !(a.email && a.email.toLowerCase() === (email || "").toLowerCase()));
+    localStorage.setItem("orbit_saved_accounts", JSON.stringify(saved));
+    this.renderAccountManagerTab();
+    this.showToast("Account removed from device list.", "info");
+  }
+
+  // Edit display name
+  promptEditDisplayName() {
+    if (sfx.playClick) sfx.playClick();
+    const current = store.getUserName();
+    const newName = prompt("Enter new operator display name:", current);
+    if (newName && newName.trim() && newName.trim() !== current) {
+      const updated = newName.trim();
+      localStorage.setItem("orbit_user_name", updated);
+      try {
+        const sess = localStorage.getItem("orbit_user_session");
+        if (sess) {
+          const parsed = JSON.parse(sess);
+          parsed.name = updated;
+          localStorage.setItem("orbit_user_session", JSON.stringify(parsed));
+          store.saveAccountToDevice(parsed);
+        }
+      } catch(e) {}
+      this.renderUserSessionUI();
+      this.renderAccountManagerTab();
+      this.showToast(`Display name updated to "${updated}"!`, "success");
+    }
   }
 
   openServerSwitcherModal() {

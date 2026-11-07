@@ -2092,73 +2092,135 @@
     <div class="modal-content-box" style="max-width: 620px;">
       <div class="modal-header-row">
         <div>
-          <h3>Cloud Server Manager</h3>
-          <span style="font-size: 11px; color: #94a3b8;">Manage your cloud server instances • Maximum 3 servers allowed</span>
+          <h3 id="switcher-modal-title">Account &amp; Cloud Server Manager</h3>
+          <span style="font-size: 11px; color: #94a3b8;" id="switcher-modal-sub">Manage your operator account profile, credentials, and cloud server instances</span>
         </div>
         <button class="modal-close-btn" onclick="app.closeModal('modal-server-switcher')">&times;</button>
       </div>
 
-      <!-- Account Profile & Quota Meter (Max 3 Servers) -->
-      <div class="server-quota-box" style="margin-top: 14px;">
-        <div class="quota-header-row">
-          <div class="quota-user-meta">
-            <div class="quota-user-avatar" id="modal-quota-avatar">👤</div>
-            <div>
-              <div class="quota-user-title" id="modal-quota-username">Guest User</div>
-              <div class="quota-user-sub" id="modal-quota-email">Not Signed In</div>
+      <!-- Segmented Navigation Tabs: Account Profile vs Cloud Servers -->
+      <div class="switcher-nav-tabs" style="display: flex; gap: 8px; margin-top: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;">
+        <button type="button" class="tab-btn" id="tab-btn-account-mgr" onclick="app.switchSwitcherTab('account')" style="background: rgba(0, 245, 184, 0.12); border: 1px solid #00f5b8; color: #00f5b8; border-radius: 8px; padding: 7px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+          <span>👤</span>
+          <span>Account Profile &amp; Identity</span>
+        </button>
+        <button type="button" class="tab-btn" id="tab-btn-servers-mgr" onclick="app.switchSwitcherTab('servers')" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); color: #cbd5e1; border-radius: 8px; padding: 7px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+          <span>☁</span>
+          <span>Cloud Servers (3 Slots)</span>
+        </button>
+      </div>
+
+      <!-- Tab View 1: Account Manager View -->
+      <div id="tab-view-account" style="display: block; margin-top: 14px;">
+        <!-- Account Profile Card -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(0, 245, 184, 0.25); border-radius: 14px; padding: 18px; margin-bottom: 14px; position: relative;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div id="tab-acct-avatar" style="width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, #00f5b8, #38bdf8); color: #07090e; font-size: 22px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 18px rgba(0, 245, 184, 0.35); overflow: hidden;">
+              👤
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="tab-acct-name" style="font-size: 16.5px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Guest User</span>
+                <button type="button" onclick="app.promptEditDisplayName()" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; border-radius: 6px; cursor: pointer; padding: 2px 7px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" title="Edit operator display name">
+                  <span>✎ Edit</span>
+                </button>
+              </div>
+              <div id="tab-acct-email" style="font-size: 12px; color: #94a3b8; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Not Signed In</div>
+              <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
+                <span id="tab-acct-role" style="font-size: 10px; font-weight: 700; background: rgba(0, 245, 184, 0.15); border: 1px solid rgba(0, 245, 184, 0.4); color: #00f5b8; padding: 2px 8px; border-radius: 999px;">OPERATOR</span>
+                <span id="tab-acct-status-pill" style="font-size: 10px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 8px; border-radius: 999px;">Active Session</span>
+              </div>
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="quota-slots-badge" id="modal-quota-badge">1 / 3 Servers</div>
-            <button type="button" class="btn-secondary" id="btn-quota-auth-action" style="font-size: 11px; padding: 4px 10px;">Sign In</button>
+        </div>
+
+        <!-- Saved Accounts Switcher on this Device -->
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">Switch Account On This Device</span>
+            <button type="button" onclick="app.closeModal('modal-server-switcher'); app.openAuthModal('signin');" style="background: transparent; border: none; color: #00f5b8; font-size: 11.5px; font-weight: 600; cursor: pointer; padding: 0;">+ Add Another Account</button>
+          </div>
+          <div id="tab-acct-saved-list" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; overflow: hidden; max-height: 180px; overflow-y: auto;">
+            <!-- Rendered dynamically -->
           </div>
         </div>
 
-        <!-- 3-Slot Visual Allocation Segments -->
-        <div class="server-quota-segments" id="modal-quota-segments">
-          <div class="quota-segment-slot filled active-slot" id="quota-slot-1">Slot 1 • Active</div>
-          <div class="quota-segment-slot empty" id="quota-slot-2">Slot 2 • Empty</div>
-          <div class="quota-segment-slot empty" id="quota-slot-3">Slot 3 • Empty</div>
+        <!-- Quick Links & Sign Out Action Row -->
+        <div style="display: flex; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap;">
+          <a href="../home/" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; border-radius: 10px; padding: 9px 16px; font-size: 12.5px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🛰️</span>
+            <span>Trendusty Orbit Home</span>
+          </a>
+          <button type="button" onclick="app.handleSignOut(); app.closeModal('modal-server-switcher');" style="flex: 1; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 10px; padding: 9px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+            Sign Out of EchoNode
+          </button>
         </div>
       </div>
 
-      <!-- Dynamic Server Instances Container -->
-      <div id="server-switcher-list" style="display: flex; flex-direction: column; gap: 12px;">
-        <!-- Dynamically rendered via app.renderServerSwitcherModal() -->
-      </div>
+      <!-- Tab View 2: Cloud Servers View -->
+      <div id="tab-view-servers" style="display: none; margin-top: 14px;">
+        <!-- Account Profile & Quota Meter (Max 3 Servers) -->
+        <div class="server-quota-box" style="margin-top: 6px;">
+          <div class="quota-header-row">
+            <div class="quota-user-meta">
+              <div class="quota-user-avatar" id="modal-quota-avatar">👤</div>
+              <div>
+                <div class="quota-user-title" id="modal-quota-username">Guest User</div>
+                <div class="quota-user-sub" id="modal-quota-email">Not Signed In</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="quota-slots-badge" id="modal-quota-badge">1 / 3 Servers</div>
+              <button type="button" class="btn-secondary" id="btn-quota-auth-action" style="font-size: 11px; padding: 4px 10px;">Sign In</button>
+            </div>
+          </div>
 
-      <!-- Owner Unlock Box (Shown if not yet authenticated) -->
-      <div id="owner-auth-box" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 14px 18px; margin-top: 10px;">
-        <div style="font-size: 12.5px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-          <span>🔐 Owner Authentication</span>
-          <span style="font-size: 11px; color: #64748b; font-weight: 400;">(Enter PIN 7473 to access Sky Heaven MC)</span>
+          <!-- 3-Slot Visual Allocation Segments -->
+          <div class="server-quota-segments" id="modal-quota-segments">
+            <div class="quota-segment-slot filled active-slot" id="quota-slot-1">Slot 1 • Active</div>
+            <div class="quota-segment-slot empty" id="quota-slot-2">Slot 2 • Empty</div>
+            <div class="quota-segment-slot empty" id="quota-slot-3">Slot 3 • Empty</div>
+          </div>
         </div>
-        <div style="display: flex; gap: 10px;">
-          <input type="password" class="form-input" id="input-owner-passkey" placeholder="Enter Owner PIN (7473) or Admin Token" style="font-size: 12.5px;">
-          <button class="btn-primary" id="btn-submit-owner-key" style="white-space: nowrap; font-size: 12.5px; padding: 0 18px;">Unlock 👑</button>
-        </div>
-        <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 10px;">
-          <span style="font-size: 11.5px; color: #94a3b8;">Or authenticate with Google:</span>
-          <div id="echonode-google-btn"></div>
-        </div>
-      </div>
 
-      <!-- Quota Limit Warning (Shown when 3/3 reached) -->
-      <div id="server-limit-banner" style="display: none; margin-top: 10px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #f59e0b; display: flex; align-items: center; gap: 8px;">
-        <span>⚠️</span>
-        <span>Maximum limit reached (3/3 servers). Delete an existing server below to free up a slot.</span>
-      </div>
+        <!-- Dynamic Server Instances Container -->
+        <div id="server-switcher-list" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Dynamically rendered via app.renderServerSwitcherModal() -->
+        </div>
 
-      <!-- Action Row: Create New Server + Import Server Folder -->
-      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; gap: 10px; flex-wrap: wrap;">
-        <button class="btn-create-server-pill" id="btn-open-create-server-modal" type="button">
-          <span>+ Create New Server</span>
-          <span style="font-size: 11px; opacity: 0.85;" id="btn-create-slot-indicator">(Slot 2/3)</span>
-        </button>
-        <button class="btn-secondary" id="btn-switcher-import-server" type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; padding: 10px 16px;">
-          <img src="assets/software/echonode.png" style="width: 16px; height: 16px; object-fit: contain;">
-          <span>📂 Import Folder</span>
-        </button>
+        <!-- Owner Unlock Box (Shown if not yet authenticated) -->
+        <div id="owner-auth-box" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 14px 18px; margin-top: 10px;">
+          <div style="font-size: 12.5px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span>🔐 Owner Authentication</span>
+            <span style="font-size: 11px; color: #64748b; font-weight: 400;">(Enter PIN 7473 to access Sky Heaven MC)</span>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <input type="password" class="form-input" id="input-owner-passkey" placeholder="Enter Owner PIN (7473) or Admin Token" style="font-size: 12.5px;">
+            <button class="btn-primary" id="btn-submit-owner-key" style="white-space: nowrap; font-size: 12.5px; padding: 0 18px;">Unlock 👑</button>
+          </div>
+          <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 10px;">
+            <span style="font-size: 11.5px; color: #94a3b8;">Or authenticate with Google:</span>
+            <div id="echonode-google-btn"></div>
+          </div>
+        </div>
+
+        <!-- Quota Limit Warning (Shown when 3/3 reached) -->
+        <div id="server-limit-banner" style="display: none; margin-top: 10px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #f59e0b; display: flex; align-items: center; gap: 8px;">
+          <span>⚠️</span>
+          <span>Maximum limit reached (3/3 servers). Delete an existing server below to free up a slot.</span>
+        </div>
+
+        <!-- Action Row: Create New Server + Import Server Folder -->
+        <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-create-server-pill" id="btn-open-create-server-modal" type="button">
+            <span>+ Create New Server</span>
+            <span style="font-size: 11px; opacity: 0.85;" id="btn-create-slot-indicator">(Slot 2/3)</span>
+          </button>
+          <button class="btn-secondary" id="btn-switcher-import-server" type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; padding: 10px 16px;">
+            <img src="assets/software/echonode.png" style="width: 16px; height: 16px; object-fit: contain;">
+            <span>📂 Import Folder</span>
+          </button>
+        </div>
       </div>
 
     </div>
