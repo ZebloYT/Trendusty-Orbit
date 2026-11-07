@@ -4433,7 +4433,7 @@
             <!-- Right wing carbon facet -->
             <path id="sb-f-wing" d="M4 2L21 9L13 13L4 2Z" fill="#070b14" stroke="#a855f7" stroke-width="1.2" stroke-linejoin="round" opacity="0"/>
             <!-- Welding laser trace -->
-            <path id="sb-f-trace" d="M4 2L21 9L13 13L9 21L4 2Z" fill="none" stroke="#00f5b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="64" stroke-dashoffset="64"/>
+            <path id="sb-f-trace" d="M4 2L21 9L13 13L9 21L4 2Z" fill="none" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="64" stroke-dashoffset="64"/>
 
             <!-- Reticle Ring -->
             <g id="sb-f-reticle-group" style="opacity: 0;">

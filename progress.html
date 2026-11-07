@@ -81,31 +81,32 @@
   .orbit-cursor-ring {
     position: fixed; top: 0; left: 0;
     width: 56px; height: 56px;
-    border: 1px solid rgba(0, 245, 184, 0.5);
-    background: rgba(0, 245, 184, 0.03);
+    border: 1.5px solid rgba(168, 85, 247, 0.55);
+    background: rgba(168, 85, 247, 0.04);
     border-radius: 50%;
     pointer-events: none !important;
-    z-index: 2147483646 !important;
-    box-shadow: 0 0 18px rgba(0, 245, 184, 0.3), inset 0 0 10px rgba(0, 245, 184, 0.1);
+    z-index: 2147483648 !important;
+    box-shadow: 0 0 18px rgba(168, 85, 247, 0.35), 0 0 4px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(168, 85, 247, 0.12);
     opacity: 0;
     transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
     transition: width 0.5s ease, height 0.5s ease, border-color 0.5s ease, opacity 0.3s ease;
   }
   .orbit-cursor-ring.is-hovering {
     width: 66px; height: 66px;
-    border: 1.5px solid var(--accent);
-    background: rgba(0, 245, 184, 0.08);
-    box-shadow: 0 0 26px var(--accent-glow);
+    border: 1.5px solid rgba(168, 85, 247, 0.85);
+    background: rgba(168, 85, 247, 0.10);
+    box-shadow: 0 0 26px rgba(168, 85, 247, 0.55), 0 0 8px rgba(56, 189, 248, 0.45), inset 0 0 14px rgba(168, 85, 247, 0.2);
   }
   .orbit-cursor-dot.is-hovering {
     background: #ffffff;
-    box-shadow: 0 0 14px var(--accent);
+    box-shadow: 0 0 12px #a855f7, 0 0 4px #38bdf8;
     width: 8px; height: 8px;
   }
   .orbit-cursor-ring.is-active {
     width: 28px; height: 28px;
-    border: 1.5px solid #00d2ff;
-    background: rgba(0, 210, 255, 0.25);
+    border: 1.5px solid #a855f7;
+    background: rgba(168, 85, 247, 0.25);
+    box-shadow: 0 0 24px rgba(168, 85, 247, 0.85);
   }
   .mouse-trail-dot {
     position: fixed; width: 4px; height: 4px;

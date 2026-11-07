@@ -77,6 +77,47 @@ body::-webkit-scrollbar,
 .orbit-cursor-ring {
   z-index: 2147483648 !important;
   pointer-events: none !important;
+  border-color: rgba(168, 85, 247, 0.55) !important;
+  background: rgba(168, 85, 247, 0.04) !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.35), 0 0 4px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(168, 85, 247, 0.12) !important;
+}
+
+#orbit-cursor-ring.is-hovering,
+.orbit-cursor-ring.is-hovering {
+  border-color: rgba(168, 85, 247, 0.85) !important;
+  background: rgba(168, 85, 247, 0.10) !important;
+  box-shadow: 0 0 26px rgba(168, 85, 247, 0.55), 0 0 8px rgba(56, 189, 248, 0.45), inset 0 0 14px rgba(168, 85, 247, 0.2) !important;
+}
+
+#orbit-cursor-ring.is-text,
+.orbit-cursor-ring.is-text {
+  border-color: rgba(168, 85, 247, 0.45) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#orbit-cursor-ring.is-loading,
+.orbit-cursor-ring.is-loading {
+  border-color: rgba(168, 85, 247, 0.15) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#orbit-cursor-ring.is-loading::after,
+.orbit-cursor-ring.is-loading::after {
+  border-top-color: #a855f7 !important;
+  border-right-color: rgba(56, 189, 248, 0.5) !important;
+}
+
+#orbit-cursor-ring.is-active,
+.orbit-cursor-ring.is-active {
+  border-color: #a855f7 !important;
+  background: rgba(168, 85, 247, 0.25) !important;
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.85), 0 0 10px rgba(56, 189, 248, 0.6) !important;
+}
+
+.mouse-trail-dot {
+  background: #a855f7 !important;
+  box-shadow: 0 0 6px #a855f7 !important;
 }
 
 swarm-rebuild {
@@ -332,12 +373,12 @@ html.sb-mouse-disconnected .mouse-trail-dot {
 
 @keyframes tactical-crosshair-pulse {
   0%, 100% { opacity: 0.75; stroke: #38bdf8; filter: drop-shadow(0 0 2px #38bdf8); }
-  50% { opacity: 1; stroke: #00f5b8; filter: drop-shadow(0 0 6px #00f5b8); }
+  50% { opacity: 1; stroke: #c084fc; filter: drop-shadow(0 0 6px #c084fc); }
 }
 
 @keyframes tactical-apex-pulse {
   0%, 100% { fill: #38bdf8; filter: drop-shadow(0 0 3px #38bdf8); transform: scale(1); }
-  50% { fill: #00f5b8; filter: drop-shadow(0 0 8px #00f5b8); transform: scale(1.3); }
+  50% { fill: #c084fc; filter: drop-shadow(0 0 8px #a855f7); transform: scale(1.3); }
 }
 
 .tc-reticle-group {
@@ -357,19 +398,19 @@ html.sb-mouse-disconnected .mouse-trail-dot {
 /* Hover, Active, and Text Interaction States */
 .orbit-cursor-dot.is-hovering .tc-reticle-group {
   animation-duration: 2.2s;
-  stroke: #00f5b8;
+  stroke: #c084fc;
 }
 .orbit-cursor-dot.is-hovering .tc-reticle-ring {
-  stroke: #00f5b8;
-  filter: drop-shadow(0 0 6px #00f5b8);
+  stroke: #a855f7;
+  filter: drop-shadow(0 0 6px #a855f7);
 }
 .orbit-cursor-dot.is-hovering .tc-crosshairs {
   animation-duration: 0.8s;
-  stroke: #00f5b8;
+  stroke: #38bdf8;
 }
 .orbit-cursor-dot.is-hovering .tc-apex-dot {
   fill: #ffffff;
-  filter: drop-shadow(0 0 10px #00f5b8);
+  filter: drop-shadow(0 0 10px #a855f7);
 }
 
 .orbit-cursor-dot.is-active .tactical-cursor-svg {
@@ -558,7 +599,7 @@ html.sb-mouse-disconnected .mouse-trail-dot {
 
 .orbit-cursor-dot.is-hovering .planet-track {
   opacity: 0.95;
-  filter: drop-shadow(0 0 3px rgba(0, 245, 184, 0.5));
+  filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.5));
 }
 .orbit-cursor-dot.is-hovering .planet-cyan {
   box-shadow: 0 0 10px #00f5b8, 0 0 20px rgba(0, 245, 184, 0.9);
@@ -595,7 +636,7 @@ html.sb-mouse-disconnected .mouse-trail-dot {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid #00f5b8;
+  border: 2px solid #a855f7;
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
   pointer-events: none;
