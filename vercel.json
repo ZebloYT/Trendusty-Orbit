@@ -96,6 +96,22 @@
       "dest": "/android/index.html"
     },
     {
+      "src": "^/share/?$",
+      "dest": "/share/index.html"
+    },
+    {
+      "src": "^/share/shared/([^/]+)/?$",
+      "dest": "/share/download.html?code=$1"
+    },
+    {
+      "src": "^/share/shared/(.*)",
+      "dest": "/share/download.html"
+    },
+    {
+      "src": "^/share/(.*)",
+      "dest": "/share/$1"
+    },
+    {
       "src": "^/$",
       "dest": "/home/index.html"
     },

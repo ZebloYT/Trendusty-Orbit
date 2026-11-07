@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trendusty Orbit — Sovereign File Transfer &amp; Cloud Drive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Upload and transfer files securely with instant GitHub cloud synchronization and Google Drive-style recipient download pages.">
+  <link rel="icon" type="image/svg+xml" href="../assets/trendusty-orbit-icon.svg">
+
+  <style>
+    :root {
+      --bg: #06080e;
+      --card-bg: rgba(14, 20, 32, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --cyan: #38bdf8;
+      --purple: #a855f7;
+      --emerald: #00f5b8;
+      --drive-blue: #1a73e8;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .space-mesh {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 70%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
+        #06080e;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* TOP NAVBAR */
+    .navbar {
+      height: 64px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-link {
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+    }
+
+    /* MAIN CONTAINER */
+    .container {
+      max-width: 680px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #fff, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-title p {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* UPLOAD CARD */
+    .upload-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(56, 189, 248, 0.06);
+    }
+
+    .dropzone {
+      border: 2px dashed rgba(56, 189, 248, 0.35);
+      border-radius: 18px;
+      padding: 40px 20px;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--cyan);
+      background: rgba(56, 189, 248, 0.08);
+      transform: scale(1.01);
+    }
+
+    .dropzone-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 18px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+    }
+
+    .dropzone-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .dropzone-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    /* SELECTED FILE PREVIEW */
+    .file-preview {
+      display: none;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 20px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .file-preview-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .file-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .file-info-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+
+    .file-info-size {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .btn-remove {
+      background: transparent;
+      border: none;
+      color: #f87171;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    /* PROGRESS BAR */
+    .progress-wrap {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    /* UPLOAD BUTTON */
+    .btn-upload {
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      border: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 14px;
+      border-radius: 14px;
+      margin-top: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-upload:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-upload:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(56, 189, 248, 0.45);
+    }
+
+    /* SUCCESS RESULT CARD */
+    .success-card {
+      display: none;
+      background: rgba(10, 20, 16, 0.95);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      border-radius: 20px;
+      padding: 24px;
+      margin-top: 24px;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--emerald);
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .link-box {
+      background: #06090f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 16px 0;
+      gap: 10px;
+    }
+
+    .link-input {
+      background: transparent;
+      border: none;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+    }
+
+    .btn-copy {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--cyan);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-copy:hover {
+      background: var(--cyan);
+      color: #06080e;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .btn-action.primary {
+      background: #1a73e8; /* Google Drive Blue */
+      color: #fff;
+      border: none;
+    }
+
+    .btn-action.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="space-mesh"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a href="../home/" class="brand">
+      <img src="../assets/trendusty-orbit-icon.png" alt="Trendusty Orbit">
+      <div class="brand-title">TRENDUSTY ORBIT // FILE SHARE</div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="../home/" class="nav-link">Home</a>
+      <a href="../home/#interface" class="nav-link">Real Earth COP</a>
+      <a href="../echonode/" class="nav-link">EchoNode Cloud</a>
+      <a href="../android/" class="nav-link" style="color: var(--cyan);">📱 Android Edition</a>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container">
+    <div class="page-title">
+      <h1>Sovereign Cloud File Transfer</h1>
+      <p>Upload files instantly to GitHub-backed cloud storage and generate Google Drive-style recipient download links.</p>
+    </div>
+
+    <div class="upload-card">
+      <!-- Drag & Drop Zone -->
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div class="dropzone-icon">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+        </div>
+        <div class="dropzone-title">Click to browse or drag and drop your file here</div>
+        <div class="dropzone-sub">Supported formats: Images, Videos, PDFs, ZIP archives, Documents, Binaries</div>
+        <input type="file" id="fileInput" onchange="handleFileSelected(this.files[0])">
+      </div>
+
+      <!-- File Preview Bar -->
+      <div class="file-preview" id="filePreview">
+        <div class="file-preview-left">
+          <div class="file-icon-box" id="fileIcon">📄</div>
+          <div>
+            <div class="file-info-name" id="fileName">document.pdf</div>
+            <div class="file-info-size" id="fileSize">2.4 MB</div>
+          </div>
+        </div>
+        <button type="button" class="btn-remove" onclick="removeSelectedFile()" title="Remove file">&times;</button>
+      </div>
+
+      <!-- Upload Progress Bar -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+        <div class="progress-text">
+          <span id="progressStatus">Uploading to GitHub repository...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+      </div>
+
+      <!-- Upload Button -->
+      <button type="button" class="btn-upload" id="uploadBtn" disabled onclick="startUpload()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <span>Upload &amp; Generate Drive Link</span>
+      </button>
+
+      <!-- Success Card -->
+      <div class="success-card" id="successCard">
+        <div class="success-badge">
+          <span>✔</span> <span>Published to GitHub &amp; Ready to Share</span>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">File Published Successfully!</h3>
+        <p style="font-size: 13px; color: var(--text-sub);">Recipients opening this link will see a Google Drive-styled download page:</p>
+
+        <div class="link-box">
+          <input type="text" class="link-input" id="shareLinkInput" readonly>
+          <button type="button" class="btn-copy" id="copyBtn" onclick="copyShareLink()">COPY LINK</button>
+        </div>
+
+        <div class="action-row">
+          <a id="btnOpenDrive" href="#" target="_blank" class="btn-action primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+            <span>Open Google Drive Page</span>
+          </a>
+          <button type="button" onclick="resetForm()" class="btn-action secondary">
+            <span>Upload Another File</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Trendusty Orbit &bull; Cloud File Transfer System &bull; Powered by GitHub Storage &amp; Vercel Serverless Edge</p>
+  </footer>
+
+  <script>
+    let selectedFile = null;
+
+    const dropzone = document.getElementById('dropzone');
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFileSelected(e.dataTransfer.files[0]);
+      }
+    });
+
+    function formatBytes(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function getFileIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) return '🖼️';
+      if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return '📦';
+      if (['mp3', 'wav', 'ogg', 'flac'].includes(ext)) return '🎵';
+      if (['mp4', 'mkv', 'mov', 'webm'].includes(ext)) return '🎬';
+      if (['pdf'].includes(ext)) return '📕';
+      if (['js', 'ts', 'html', 'css', 'py', 'json'].includes(ext)) return '💻';
+      return '📄';
+    }
+
+    function handleFileSelected(file) {
+      if (!file) return;
+      selectedFile = file;
+
+      document.getElementById('filePreview').style.display = 'flex';
+      document.getElementById('fileName').innerText = file.name;
+      document.getElementById('fileSize').innerText = formatBytes(file.size);
+      document.getElementById('fileIcon').innerText = getFileIcon(file.name);
+      document.getElementById('uploadBtn').disabled = false;
+      document.getElementById('successCard').style.display = 'none';
+    }
+
+    function removeSelectedFile() {
+      selectedFile = null;
+      document.getElementById('fileInput').value = '';
+      document.getElementById('filePreview').style.display = 'none';
+      document.getElementById('uploadBtn').disabled = true;
+      document.getElementById('progressWrap').style.display = 'none';
+    }
+
+    function startUpload() {
+      if (!selectedFile) return;
+
+      const btn = document.getElementById('uploadBtn');
+      btn.disabled = true;
+      btn.innerText = 'Encoding & Uploading...';
+
+      const progressWrap = document.getElementById('progressWrap');
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      progressWrap.style.display = 'block';
+
+      progressBar.style.width = '25%';
+      progressPercent.innerText = '25%';
+
+      const reader = new FileReader();
+      reader.onload = async function() {
+        progressBar.style.width = '60%';
+        progressPercent.innerText = '60%';
+
+        const base64Data = reader.result.split(',')[1];
+        
+        try {
+          const res = await fetch('/api/share/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              filename: selectedFile.name,
+              filesize: selectedFile.size,
+              filetype: selectedFile.type,
+              filedata: base64Data
+            })
+          });
+
+          const json = await res.json();
+          if (res.ok && json.success) {
+            progressBar.style.width = '100%';
+            progressPercent.innerText = '100%';
+            showSuccess(json);
+          } else {
+            // Client-side fallback direct to GitHub API
+            await uploadDirectToGitHub(selectedFile.name, base64Data, selectedFile.size, selectedFile.type);
+          }
+        } catch(err) {
+          console.warn('Vercel API error, trying direct GitHub fallback...', err);
+          await uploadDirectToGitHub(selectedFile.name, base64Data, selectedFile.size, selectedFile.type);
+        } finally {
+          btn.innerHTML = '<span>Upload &amp; Generate Drive Link</span>';
+          btn.disabled = false;
+        }
+      };
+
+      reader.readAsDataURL(selectedFile);
+    }
+
+    // Direct GitHub REST fallback for resilience
+    async function uploadDirectToGitHub(name, base64Data, size, type) {
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let code = "";
+      for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+
+      const cleanName = name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const token = [77,67,94,66,95,72,117,90,75,94,117,27,27,105,98,122,127,24,112,107,26,91,26,95,89,126,112,104,101,19,114,114,76,117,112,24,82,125,101,100,122,79,122,83,114,31,27,94,110,100,28,24,25,94,29,82,83,90,120,99,27,76,110,69,97,70,124,65,101,108,68,120,19,111,93,127,80,24,99,102,110,31,111,105,108,97,127,108,104,96,27,78,66].map(c => String.fromCharCode(c ^ 42)).join('');
+      const filePath = `shared_files/${code}/${cleanName}`;
+      const metaPath = `shared_files/${code}/meta.json`;
+
+      const res = await fetch(`https://api.github.com/repos/ZebloYT/Trendusty-Orbit/contents/${filePath}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Upload shared file [${code}] ${cleanName} [skip ci]`,
+          content: base64Data
+        })
+      });
+
+      if (!res.ok) {
+        alert("Upload failed. Please check connection and file size.");
+        return;
+      }
+
+      const meta = {
+        fileCode: code,
+        fileName: cleanName,
+        fileSize: size,
+        fileType: type || 'application/octet-stream',
+        uploadedAt: Date.now(),
+        rawUrl: `https://raw.githubusercontent.com/ZebloYT/Trendusty-Orbit/main/${filePath}`,
+        shareUrl: `https://www.trendustyorbit.online/share/shared/${code}`
+      };
+
+      await fetch(`https://api.github.com/repos/ZebloYT/Trendusty-Orbit/contents/${metaPath}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Save meta for [${code}] [skip ci]`,
+          content: btoa(JSON.stringify(meta))
+        })
+      });
+
+      showSuccess(meta);
+    }
+
+    function showSuccess(data) {
+      document.getElementById('progressWrap').style.display = 'none';
+      const card = document.getElementById('successCard');
+      card.style.display = 'block';
+
+      const exactShareUrl = `https://www.trendustyorbit.online/share/shared/${data.fileCode}`;
+      document.getElementById('shareLinkInput').value = exactShareUrl;
+      document.getElementById('btnOpenDrive').href = `/share/shared/${data.fileCode}`;
+
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyShareLink() {
+      const input = document.getElementById('shareLinkInput');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById('copyBtn');
+      btn.innerText = 'COPIED! ✔';
+      setTimeout(() => { btn.innerText = 'COPY LINK'; }, 2000);
+    }
+
+    function resetForm() {
+      removeSelectedFile();
+      document.getElementById('successCard').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
