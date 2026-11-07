@@ -18,6 +18,15 @@
           clean = clean.slice(0, -1);
         }
 
+        if (clean.indexOf('/share/shared') !== -1) {
+          window.location.replace('/share/shared/index.html' + search + hash);
+          return;
+        }
+        if (clean === '/share') {
+          window.location.replace('/share/index.html' + search + hash);
+          return;
+        }
+
         var routeMap = {
           '': '/home/',
           '/': '/home/',

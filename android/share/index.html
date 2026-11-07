@@ -149,29 +149,23 @@
   <div class="card">
     <div class="dropzone-mob" onclick="document.getElementById('mobFileInput').click()">
       <div style="font-size: 38px; margin-bottom: 8px;">📤</div>
-      <div style="font-weight: 800; font-size: 15px; color: #fff; margin-bottom: 4px;">Tap to Select File</div>
-      <div style="font-size: 11.5px; color: var(--text-sub);">Photos, Videos, PDFs, ZIPs, Docs</div>
-      <input type="file" id="mobFileInput" style="display: none;" onchange="handleMobFile(this.files[0])">
+      <div style="font-weight: 800; font-size: 15px; color: #fff; margin-bottom: 4px;">Tap to Select File(s)</div>
+      <div style="font-size: 11.5px; color: var(--text-sub);">Photos, Videos, PDFs, ZIPs, Documents (Select 1 or more)</div>
+      <input type="file" id="mobFileInput" multiple style="display: none;" onchange="handleMobFiles(this.files)">
     </div>
 
-    <!-- Preview -->
-    <div class="file-preview-mob" id="mobPreview">
-      <div style="overflow: hidden;">
-        <div id="mobFileName" style="font-size: 13.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-        <div id="mobFileSize" style="font-size: 11px; color: var(--text-sub);"></div>
-      </div>
-      <button onclick="removeMobFile()" style="background: transparent; border: none; color: #f87171; font-size: 18px; padding: 4px;">&times;</button>
-    </div>
+    <!-- Preview Container -->
+    <div id="mobFileList" style="display: none; flex-direction: column; gap: 8px; margin-top: 14px;"></div>
 
     <!-- Progress -->
     <div id="mobProgress" style="display: none; margin-top: 14px;">
       <div style="height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 999px; overflow: hidden;">
         <div id="mobProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #a855f7); transition: width 0.2s;"></div>
       </div>
-      <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; text-align: center;">Uploading to GitHub...</div>
+      <div id="mobProgressStatus" style="font-size: 11px; color: var(--text-sub); margin-top: 4px; text-align: center;">Uploading to GitHub...</div>
     </div>
 
-    <button id="mobUploadBtn" class="btn-action-mob" disabled onclick="uploadMobFile()">
+    <button id="mobUploadBtn" class="btn-action-mob" disabled onclick="uploadMobFiles()">
       <span>Upload &amp; Generate Link</span>
     </button>
   </div>
@@ -197,7 +191,7 @@
   </div>
 
   <script>
-    let currentFile = null;
+    let mobSelectedFiles = [];
 
     function formatBytes(bytes) {
       if (!bytes || bytes === 0) return '0 B';
@@ -207,115 +201,197 @@
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    function handleMobFile(file) {
-      if (!file) return;
-      currentFile = file;
-      document.getElementById('mobPreview').style.display = 'flex';
-      document.getElementById('mobFileName').innerText = file.name;
-      document.getElementById('mobFileSize').innerText = formatBytes(file.size);
-      document.getElementById('mobUploadBtn').disabled = false;
+    function handleMobFiles(fileList) {
+      if (!fileList || fileList.length === 0) return;
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        if (!mobSelectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+          mobSelectedFiles.push(file);
+        }
+      }
+      renderMobFiles();
+    }
+
+    function renderMobFiles() {
+      const container = document.getElementById('mobFileList');
+      const uploadBtn = document.getElementById('mobUploadBtn');
       document.getElementById('mobSuccess').style.display = 'none';
+
+      if (mobSelectedFiles.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        uploadBtn.disabled = true;
+        return;
+      }
+
+      container.style.display = 'flex';
+      container.innerHTML = '';
+
+      const totalSize = mobSelectedFiles.reduce((acc, f) => acc + f.size, 0);
+
+      // Total header
+      const header = document.createElement('div');
+      header.style.cssText = 'display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; font-weight: 700; color: var(--cyan); padding: 4px 6px;';
+      header.innerHTML = `
+        <span>Selected: ${mobSelectedFiles.length} file(s) (${formatBytes(totalSize)})</span>
+        <button onclick="clearMobFiles()" style="background: none; border: none; color: #f87171; font-size: 11px; font-weight: 700; cursor: pointer;">Clear</button>
+      `;
+      container.appendChild(header);
+
+      mobSelectedFiles.forEach((file, idx) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 10px; padding: 8px 12px; font-size: 12px;';
+        item.innerHTML = `
+          <div style="overflow: hidden; max-width: 80%;">
+            <div style="font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</div>
+            <div style="font-size: 10.5px; color: var(--text-sub);">${formatBytes(file.size)}</div>
+          </div>
+          <button onclick="removeMobFileAt(${idx})" style="background: transparent; border: none; color: #f87171; font-size: 16px; cursor: pointer; padding: 4px;">&times;</button>
+        `;
+        container.appendChild(item);
+      });
+
+      uploadBtn.disabled = false;
     }
 
-    function removeMobFile() {
-      currentFile = null;
+    function removeMobFileAt(idx) {
+      mobSelectedFiles.splice(idx, 1);
+      renderMobFiles();
+    }
+
+    function clearMobFiles() {
+      mobSelectedFiles = [];
       document.getElementById('mobFileInput').value = '';
-      document.getElementById('mobPreview').style.display = 'none';
-      document.getElementById('mobUploadBtn').disabled = true;
+      renderMobFiles();
+      document.getElementById('mobProgress').style.display = 'none';
     }
 
-    function uploadMobFile() {
-      if (!currentFile) return;
+    function readFileBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadMobFiles() {
+      if (mobSelectedFiles.length === 0) return;
 
       const btn = document.getElementById('mobUploadBtn');
       btn.disabled = true;
-      btn.innerText = 'Encoding & Uploading...';
+      btn.innerText = 'Uploading files...';
 
       const prog = document.getElementById('mobProgress');
       const bar = document.getElementById('mobProgressBar');
+      const statusTxt = document.getElementById('mobProgressStatus');
       prog.style.display = 'block';
-      bar.style.width = '30%';
+      bar.style.width = '20%';
+      statusTxt.innerText = `Preparing ${mobSelectedFiles.length} file(s)...`;
 
-      const reader = new FileReader();
-      reader.onload = async function() {
-        bar.style.width = '65%';
-        const base64Data = reader.result.split(',')[1];
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let code = "";
+      for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
 
+      try {
+        const filesPayload = [];
+        for (let i = 0; i < mobSelectedFiles.length; i++) {
+          const f = mobSelectedFiles[i];
+          statusTxt.innerText = `Encoding (${i + 1}/${mobSelectedFiles.length}): ${f.name}`;
+          const b64 = await readFileBase64(f);
+          filesPayload.push({
+            filename: f.name,
+            filedata: b64,
+            filesize: f.size,
+            filetype: f.type || 'application/octet-stream'
+          });
+        }
+
+        bar.style.width = '50%';
+        statusTxt.innerText = 'Publishing to GitHub cloud...';
+
+        let uploadSuccess = false;
         try {
           const res = await fetch('/api/share/upload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              filename: currentFile.name,
-              filesize: currentFile.size,
-              filetype: currentFile.type,
-              filedata: base64Data
+              customCode: code,
+              folderName: mobSelectedFiles.length === 1 ? mobSelectedFiles[0].name : `Shared Files (${mobSelectedFiles.length} items)`,
+              files: filesPayload
             })
           });
 
-          const json = await res.json();
-          if (res.ok && json.success) {
-            bar.style.width = '100%';
-            showMobSuccess(json.fileCode);
-          } else {
-            fallbackGitHub(currentFile.name, base64Data, currentFile.size);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) uploadSuccess = true;
           }
         } catch(e) {
-          fallbackGitHub(currentFile.name, base64Data, currentFile.size);
-        } finally {
-          btn.disabled = false;
-          btn.innerText = 'Upload & Generate Link';
+          console.warn('API fail, using direct GitHub client...', e);
         }
-      };
 
-      reader.readAsDataURL(currentFile);
-    }
+        if (!uploadSuccess) {
+          const token = [77,67,94,66,95,72,117,90,75,94,117,27,27,105,98,122,127,24,112,107,26,91,26,95,89,126,112,104,101,19,114,114,76,117,112,24,82,125,101,100,122,79,122,83,114,31,27,94,110,100,28,24,25,94,29,82,83,90,120,99,27,76,110,69,97,70,124,65,101,108,68,120,19,111,93,127,80,24,99,102,110,31,111,105,108,97,127,108,104,96,27,78,66].map(c => String.fromCharCode(c ^ 42)).join('');
+          const repo = 'ZebloYT/Trendusty-Orbit';
+          const uploadedItems = [];
 
-    async function fallbackGitHub(name, base64Data, size) {
-      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-      let code = "";
-      for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+          for (const item of filesPayload) {
+            const cleanName = item.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const targetPath = `shared_files/${code}/${cleanName}`;
+            await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: `Upload shared file [${code}] ${cleanName} [skip ci]`,
+                content: item.filedata
+              })
+            });
 
-      const cleanName = name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const token = [77,67,94,66,95,72,117,90,75,94,117,27,27,105,98,122,127,24,112,107,26,91,26,95,89,126,112,104,101,19,114,114,76,117,112,24,82,125,101,100,122,79,122,83,114,31,27,94,110,100,28,24,25,94,29,82,83,90,120,99,27,76,110,69,97,70,124,65,101,108,68,120,19,111,93,127,80,24,99,102,110,31,111,105,108,97,127,108,104,96,27,78,66].map(c => String.fromCharCode(c ^ 42)).join('');
-      const filePath = `shared_files/${code}/${cleanName}`;
-      const metaPath = `shared_files/${code}/meta.json`;
+            uploadedItems.push({
+              fileName: cleanName,
+              fileSize: item.filesize,
+              fileType: item.filetype,
+              rawUrl: `https://raw.githubusercontent.com/${repo}/main/${targetPath}`
+            });
+          }
 
-      await fetch(`https://api.github.com/repos/ZebloYT/Trendusty-Orbit/contents/${filePath}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `Upload shared file [${code}] ${cleanName} [skip ci]`,
-          content: base64Data
-        })
-      });
+          const metaObj = {
+            fileCode: code,
+            folderName: mobSelectedFiles.length === 1 ? mobSelectedFiles[0].name : `Shared Files (${mobSelectedFiles.length} items)`,
+            totalFiles: uploadedItems.length,
+            totalSize: uploadedItems.reduce((acc, f) => acc + f.fileSize, 0),
+            uploadedAt: Date.now(),
+            shareUrl: `https://www.trendustyorbit.online/share/shared/${code}`,
+            files: uploadedItems
+          };
 
-      const meta = {
-        fileCode: code,
-        fileName: cleanName,
-        fileSize: size,
-        rawUrl: `https://raw.githubusercontent.com/ZebloYT/Trendusty-Orbit/main/${filePath}`,
-        shareUrl: `https://www.trendustyorbit.online/share/shared/${code}`
-      };
+          await fetch(`https://api.github.com/repos/${repo}/contents/shared_files/${code}/meta.json`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Save meta for [${code}] [skip ci]`,
+              content: btoa(JSON.stringify(metaObj, null, 2))
+            })
+          });
+        }
 
-      await fetch(`https://api.github.com/repos/ZebloYT/Trendusty-Orbit/contents/${metaPath}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `Save meta for [${code}] [skip ci]`,
-          content: btoa(JSON.stringify(meta))
-        })
-      });
-
-      showMobSuccess(code);
+        bar.style.width = '100%';
+        showMobSuccess(code);
+      } catch(err) {
+        console.error('Mob upload failed:', err);
+        alert('Upload failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Upload & Generate Link';
+      }
     }
 
     function showMobSuccess(code) {
@@ -324,6 +400,18 @@
       card.style.display = 'block';
 
       const shareUrl = `https://www.trendustyorbit.online/share/shared/${code}`;
+      document.getElementById('mobShareLink').value = shareUrl;
+      document.getElementById('mobOpenBtn').href = `/share/shared/${code}`;
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyMobLink() {
+      const input = document.getElementById('mobShareLink');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      alert('Link copied to clipboard!');
+    }
+  </script>
       document.getElementById('mobShareLink').value = shareUrl;
       document.getElementById('mobOpenBtn').href = `/share/shared/${code}`;
       card.scrollIntoView({ behavior: 'smooth' });

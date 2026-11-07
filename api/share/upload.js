@@ -24,52 +24,82 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { filename, filedata, filesize, filetype, customCode } = req.body || {};
-    if (!filename || !filedata) {
-      return res.status(400).json({ error: 'Missing filename or filedata (base64 string required)' });
+    const { customCode, folderName } = req.body || {};
+    let fileList = [];
+
+    if (Array.isArray(req.body.files) && req.body.files.length > 0) {
+      fileList = req.body.files;
+    } else if (req.body.filename && req.body.filedata) {
+      fileList = [{
+        filename: req.body.filename,
+        filedata: req.body.filedata,
+        filesize: req.body.filesize,
+        filetype: req.body.filetype
+      }];
+    } else {
+      return res.status(400).json({ error: 'Missing file data. Provide filename/filedata or files array.' });
     }
 
     const code = customCode || generateCode();
-    const cleanFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filePath = `shared_files/${code}/${cleanFilename}`;
-    const metaPath = `shared_files/${code}/meta.json`;
+    const uploadedFiles = [];
 
-    // 1. Upload File to GitHub repository
-    const fileRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Trendusty-Orbit-FileShare',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: `Upload shared file [${code}] ${cleanFilename} [skip ci]`,
-        content: filedata
-      })
-    });
+    for (const f of fileList) {
+      if (!f.filename || !f.filedata) continue;
+      const cleanFilename = f.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const filePath = `shared_files/${code}/${cleanFilename}`;
 
-    const fileJson = await fileRes.json();
-    if (!fileRes.ok) {
-      console.error('GitHub API error:', fileJson);
-      return res.status(fileRes.status).json({ error: fileJson.message || 'Failed to upload file to GitHub' });
+      const fileRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'Trendusty-Orbit-FileShare',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Upload shared file [${code}] ${cleanFilename} [skip ci]`,
+          content: f.filedata
+        })
+      });
+
+      if (fileRes.ok) {
+        const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${filePath}`;
+        uploadedFiles.push({
+          fileName: cleanFilename,
+          originalName: f.filename,
+          fileSize: f.filesize || Buffer.from(f.filedata, 'base64').length,
+          fileType: f.filetype || 'application/octet-stream',
+          rawUrl: rawUrl
+        });
+      } else {
+        const errJson = await fileRes.json().catch(() => ({}));
+        console.error('Failed to upload file to GitHub:', cleanFilename, errJson);
+      }
     }
 
-    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${filePath}`;
-    const shareUrl = `https://www.trendustyorbit.online/share/shared/${code}`;
+    if (uploadedFiles.length === 0) {
+      return res.status(500).json({ error: 'Failed to upload files to GitHub repository' });
+    }
 
-    // 2. Upload Meta JSON
+    const shareUrl = `https://www.trendustyorbit.online/share/shared/${code}`;
+    const nameOfFolder = folderName || (uploadedFiles.length === 1 ? uploadedFiles[0].fileName : `Shared Files (${uploadedFiles.length} items)`);
+    const totalBytes = uploadedFiles.reduce((acc, it) => acc + (it.fileSize || 0), 0);
+
     const metaData = {
       fileCode: code,
-      fileName: cleanFilename,
-      originalName: filename,
-      fileSize: filesize || Buffer.from(filedata, 'base64').length,
-      fileType: filetype || 'application/octet-stream',
+      folderName: nameOfFolder,
+      totalFiles: uploadedFiles.length,
+      totalSize: totalBytes,
       uploadedAt: Date.now(),
-      rawUrl: rawUrl,
-      shareUrl: shareUrl
+      rawUrl: uploadedFiles[0].rawUrl,
+      fileName: uploadedFiles[0].fileName,
+      fileSize: uploadedFiles[0].fileSize,
+      fileType: uploadedFiles[0].fileType,
+      shareUrl: shareUrl,
+      files: uploadedFiles
     };
 
+    const metaPath = `shared_files/${code}/meta.json`;
     await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${metaPath}`, {
       method: 'PUT',
       headers: {
@@ -88,10 +118,10 @@ module.exports = async (req, res) => {
       success: true,
       fileCode: code,
       shareUrl: shareUrl,
-      rawUrl: rawUrl,
-      fileName: cleanFilename,
-      fileSize: metaData.fileSize,
-      fileType: metaData.fileType
+      folderName: nameOfFolder,
+      totalFiles: uploadedFiles.length,
+      totalSize: totalBytes,
+      files: uploadedFiles
     });
   } catch(err) {
     console.error('Server error in upload:', err);

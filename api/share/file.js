@@ -22,6 +22,15 @@ module.exports = async (req, res) => {
 
     if (rawRes.ok) {
       const meta = await rawRes.json();
+      if (!meta.files) {
+        meta.files = [{
+          fileName: meta.fileName,
+          originalName: meta.originalName || meta.fileName,
+          fileSize: meta.fileSize,
+          fileType: meta.fileType || 'application/octet-stream',
+          rawUrl: meta.rawUrl
+        }];
+      }
       return res.status(200).json({ success: true, ...meta });
     }
 
@@ -35,7 +44,7 @@ module.exports = async (req, res) => {
     });
 
     if (!apiRes.ok) {
-      return res.status(404).json({ error: 'Shared file not found or expired' });
+      return res.status(404).json({ error: 'Shared files not found or expired' });
     }
 
     const items = await apiRes.json();
@@ -43,17 +52,29 @@ module.exports = async (req, res) => {
       return res.status(404).json({ error: 'Invalid shared directory' });
     }
 
-    const targetFile = items.find(i => i.name !== 'meta.json');
-    if (!targetFile) {
+    const validFiles = items.filter(i => i.name !== 'meta.json');
+    if (validFiles.length === 0) {
       return res.status(404).json({ error: 'File data not found in share directory' });
     }
+
+    const files = validFiles.map(i => ({
+      fileName: i.name,
+      fileSize: i.size,
+      rawUrl: i.download_url,
+      fileType: 'application/octet-stream'
+    }));
 
     return res.status(200).json({
       success: true,
       fileCode: code,
-      fileName: targetFile.name,
-      fileSize: targetFile.size,
-      rawUrl: targetFile.download_url,
+      folderName: `Shared Folder (${files.length} items)`,
+      totalFiles: files.length,
+      totalSize: files.reduce((acc, f) => acc + (f.fileSize || 0), 0),
+      rawUrl: files[0].rawUrl,
+      fileName: files[0].fileName,
+      fileSize: files[0].fileSize,
+      fileType: files[0].fileType,
+      files: files,
       shareUrl: `https://www.trendustyorbit.online/share/shared/${code}`
     });
   } catch(err) {

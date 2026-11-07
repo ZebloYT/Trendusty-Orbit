@@ -448,22 +448,13 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
           </svg>
         </div>
-        <div class="dropzone-title">Click to browse or drag and drop your file here</div>
-        <div class="dropzone-sub">Supported formats: Images, Videos, PDFs, ZIP archives, Documents, Binaries</div>
-        <input type="file" id="fileInput" onchange="handleFileSelected(this.files[0])">
+        <div class="dropzone-title">Click to browse or drag &amp; drop file(s) here</div>
+        <div class="dropzone-sub">Upload single or multiple files • Supported: ZIP, Images, PDFs, Videos, Documents, Binaries</div>
+        <input type="file" id="fileInput" multiple onchange="handleFilesSelected(this.files)">
       </div>
 
-      <!-- File Preview Bar -->
-      <div class="file-preview" id="filePreview">
-        <div class="file-preview-left">
-          <div class="file-icon-box" id="fileIcon">📄</div>
-          <div>
-            <div class="file-info-name" id="fileName">document.pdf</div>
-            <div class="file-info-size" id="fileSize">2.4 MB</div>
-          </div>
-        </div>
-        <button type="button" class="btn-remove" onclick="removeSelectedFile()" title="Remove file">&times;</button>
-      </div>
+      <!-- Multiple Files Preview Container -->
+      <div id="filesListContainer" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 24px;"></div>
 
       <!-- Upload Progress Bar -->
       <div class="progress-wrap" id="progressWrap">
@@ -515,7 +506,7 @@
   </footer>
 
   <script>
-    let selectedFile = null;
+    let selectedFiles = [];
 
     const dropzone = document.getElementById('dropzone');
     dropzone.addEventListener('dragover', (e) => {
@@ -526,8 +517,8 @@
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropzone.classList.remove('dragover');
-      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleFileSelected(e.dataTransfer.files[0]);
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFilesSelected(e.dataTransfer.files);
       }
     });
 
@@ -550,134 +541,215 @@
       return '📄';
     }
 
-    function handleFileSelected(file) {
-      if (!file) return;
-      selectedFile = file;
-
-      document.getElementById('filePreview').style.display = 'flex';
-      document.getElementById('fileName').innerText = file.name;
-      document.getElementById('fileSize').innerText = formatBytes(file.size);
-      document.getElementById('fileIcon').innerText = getFileIcon(file.name);
-      document.getElementById('uploadBtn').disabled = false;
-      document.getElementById('successCard').style.display = 'none';
+    function handleFilesSelected(fileList) {
+      if (!fileList || fileList.length === 0) return;
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+          selectedFiles.push(file);
+        }
+      }
+      renderSelectedFiles();
     }
 
-    function removeSelectedFile() {
-      selectedFile = null;
+    function renderSelectedFiles() {
+      const container = document.getElementById('filesListContainer');
+      const uploadBtn = document.getElementById('uploadBtn');
+      document.getElementById('successCard').style.display = 'none';
+
+      if (selectedFiles.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        uploadBtn.disabled = true;
+        return;
+      }
+
+      container.style.display = 'flex';
+      container.innerHTML = '';
+
+      const totalSize = selectedFiles.reduce((acc, f) => acc + f.size, 0);
+
+      // Header summary
+      const summaryBar = document.createElement('div');
+      summaryBar.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(0, 245, 184, 0.08); border: 1px solid rgba(0, 245, 184, 0.2); border-radius: 10px; font-size: 13px; font-weight: 700; color: #00f5b8;';
+      summaryBar.innerHTML = `
+        <span>Selected: ${selectedFiles.length} file(s) (${formatBytes(totalSize)})</span>
+        <button type="button" onclick="removeAllFiles()" style="background: transparent; border: none; color: #ef4444; font-size: 12px; font-weight: 700; cursor: pointer;">Clear All</button>
+      `;
+      container.appendChild(summaryBar);
+
+      // Individual file pills
+      selectedFiles.forEach((file, idx) => {
+        const pill = document.createElement('div');
+        pill.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; font-size: 13px;';
+        pill.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <span style="font-size: 18px;">${getFileIcon(file.name)}</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; font-weight: 600; color: #fff;">${file.name}</span>
+            <span style="color: var(--text-sub); font-size: 12px;">(${formatBytes(file.size)})</span>
+          </div>
+          <button type="button" onclick="removeFileAt(${idx})" style="background: transparent; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 0 4px;" title="Remove file">&times;</button>
+        `;
+        container.appendChild(pill);
+      });
+
+      uploadBtn.disabled = false;
+    }
+
+    function removeFileAt(idx) {
+      selectedFiles.splice(idx, 1);
+      renderSelectedFiles();
+    }
+
+    function removeAllFiles() {
+      selectedFiles = [];
       document.getElementById('fileInput').value = '';
-      document.getElementById('filePreview').style.display = 'none';
-      document.getElementById('uploadBtn').disabled = true;
+      renderSelectedFiles();
       document.getElementById('progressWrap').style.display = 'none';
     }
 
-    function startUpload() {
-      if (!selectedFile) return;
+    // Read File as Base64 Promise
+    function readFileBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function startUpload() {
+      if (selectedFiles.length === 0) return;
 
       const btn = document.getElementById('uploadBtn');
       btn.disabled = true;
-      btn.innerText = 'Encoding & Uploading...';
+      btn.innerHTML = '<span>Uploading files...</span>';
 
       const progressWrap = document.getElementById('progressWrap');
       const progressBar = document.getElementById('progressBar');
       const progressPercent = document.getElementById('progressPercent');
+      const progressStatus = document.getElementById('progressStatus');
       progressWrap.style.display = 'block';
 
-      progressBar.style.width = '25%';
-      progressPercent.innerText = '25%';
+      progressBar.style.width = '20%';
+      progressPercent.innerText = '20%';
+      progressStatus.innerText = `Preparing ${selectedFiles.length} file(s)...`;
 
-      const reader = new FileReader();
-      reader.onload = async function() {
-        progressBar.style.width = '60%';
-        progressPercent.innerText = '60%';
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let code = "";
+      for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
 
-        const base64Data = reader.result.split(',')[1];
-        
+      try {
+        const filesPayload = [];
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const f = selectedFiles[i];
+          progressStatus.innerText = `Reading file (${i + 1}/${selectedFiles.length}): ${f.name}`;
+          const b64 = await readFileBase64(f);
+          filesPayload.push({
+            filename: f.name,
+            filedata: b64,
+            filesize: f.size,
+            filetype: f.type || 'application/octet-stream'
+          });
+        }
+
+        progressBar.style.width = '50%';
+        progressPercent.innerText = '50%';
+        progressStatus.innerText = 'Uploading to GitHub cloud storage...';
+
+        let uploadSuccess = false;
+        let responseData = null;
+
         try {
           const res = await fetch('/api/share/upload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              filename: selectedFile.name,
-              filesize: selectedFile.size,
-              filetype: selectedFile.type,
-              filedata: base64Data
+              customCode: code,
+              folderName: selectedFiles.length === 1 ? selectedFiles[0].name : `Shared Files (${selectedFiles.length} items)`,
+              files: filesPayload
             })
           });
 
-          const json = await res.json();
-          if (res.ok && json.success) {
-            progressBar.style.width = '100%';
-            progressPercent.innerText = '100%';
-            showSuccess(json);
-          } else {
-            // Client-side fallback direct to GitHub API
-            await uploadDirectToGitHub(selectedFile.name, base64Data, selectedFile.size, selectedFile.type);
+          if (res.ok) {
+            responseData = await res.json();
+            if (responseData.success) uploadSuccess = true;
           }
-        } catch(err) {
-          console.warn('Vercel API error, trying direct GitHub fallback...', err);
-          await uploadDirectToGitHub(selectedFile.name, base64Data, selectedFile.size, selectedFile.type);
-        } finally {
-          btn.innerHTML = '<span>Upload &amp; Generate Drive Link</span>';
-          btn.disabled = false;
+        } catch(apiErr) {
+          console.warn('API route failed, running direct GitHub client upload...', apiErr);
         }
-      };
 
-      reader.readAsDataURL(selectedFile);
-    }
+        // Direct GitHub client upload fallback
+        if (!uploadSuccess) {
+          progressStatus.innerText = 'Direct GitHub cloud sync in progress...';
+          const token = [77,67,94,66,95,72,117,90,75,94,117,27,27,105,98,122,127,24,112,107,26,91,26,95,89,126,112,104,101,19,114,114,76,117,112,24,82,125,101,100,122,79,122,83,114,31,27,94,110,100,28,24,25,94,29,82,83,90,120,99,27,76,110,69,97,70,124,65,101,108,68,120,19,111,93,127,80,24,99,102,110,31,111,105,108,97,127,108,104,96,27,78,66].map(c => String.fromCharCode(c ^ 42)).join('');
+          const repo = 'ZebloYT/Trendusty-Orbit';
+          const uploadedItems = [];
 
-    // Direct GitHub REST fallback for resilience
-    async function uploadDirectToGitHub(name, base64Data, size, type) {
-      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-      let code = "";
-      for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+          for (const item of filesPayload) {
+            const cleanName = item.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const targetPath = `shared_files/${code}/${cleanName}`;
+            await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: `Upload shared file [${code}] ${cleanName} [skip ci]`,
+                content: item.filedata
+              })
+            });
 
-      const cleanName = name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const token = [77,67,94,66,95,72,117,90,75,94,117,27,27,105,98,122,127,24,112,107,26,91,26,95,89,126,112,104,101,19,114,114,76,117,112,24,82,125,101,100,122,79,122,83,114,31,27,94,110,100,28,24,25,94,29,82,83,90,120,99,27,76,110,69,97,70,124,65,101,108,68,120,19,111,93,127,80,24,99,102,110,31,111,105,108,97,127,108,104,96,27,78,66].map(c => String.fromCharCode(c ^ 42)).join('');
-      const filePath = `shared_files/${code}/${cleanName}`;
-      const metaPath = `shared_files/${code}/meta.json`;
+            uploadedItems.push({
+              fileName: cleanName,
+              originalName: item.filename,
+              fileSize: item.filesize,
+              fileType: item.filetype,
+              rawUrl: `https://raw.githubusercontent.com/${repo}/main/${targetPath}`
+            });
+          }
 
-      const res = await fetch(`https://api.github.com/repos/ZebloYT/Trendusty-Orbit/contents/${filePath}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `Upload shared file [${code}] ${cleanName} [skip ci]`,
-          content: base64Data
-        })
-      });
+          const metaObj = {
+            fileCode: code,
+            folderName: selectedFiles.length === 1 ? selectedFiles[0].name : `Shared Files (${selectedFiles.length} items)`,
+            totalFiles: uploadedItems.length,
+            totalSize: uploadedItems.reduce((acc, f) => acc + f.fileSize, 0),
+            uploadedAt: Date.now(),
+            shareUrl: `https://www.trendustyorbit.online/share/shared/${code}`,
+            files: uploadedItems
+          };
 
-      if (!res.ok) {
-        alert("Upload failed. Please check connection and file size.");
-        return;
+          await fetch(`https://api.github.com/repos/${repo}/contents/shared_files/${code}/meta.json`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Save meta for [${code}] [skip ci]`,
+              content: btoa(JSON.stringify(metaObj, null, 2))
+            })
+          });
+
+          responseData = metaObj;
+          uploadSuccess = true;
+        }
+
+        progressBar.style.width = '100%';
+        progressPercent.innerText = '100%';
+        progressStatus.innerText = 'Files published successfully!';
+
+        showSuccess(responseData);
+      } catch(err) {
+        console.error('Upload failed:', err);
+        alert('Upload failed: ' + err.message);
+      } finally {
+        btn.innerHTML = '<span>Upload &amp; Generate Drive Link</span>';
+        btn.disabled = false;
       }
-
-      const meta = {
-        fileCode: code,
-        fileName: cleanName,
-        fileSize: size,
-        fileType: type || 'application/octet-stream',
-        uploadedAt: Date.now(),
-        rawUrl: `https://raw.githubusercontent.com/ZebloYT/Trendusty-Orbit/main/${filePath}`,
-        shareUrl: `https://www.trendustyorbit.online/share/shared/${code}`
-      };
-
-      await fetch(`https://api.github.com/repos/ZebloYT/Trendusty-Orbit/contents/${metaPath}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `Save meta for [${code}] [skip ci]`,
-          content: btoa(JSON.stringify(meta))
-        })
-      });
-
-      showSuccess(meta);
     }
 
     function showSuccess(data) {
@@ -687,6 +759,25 @@
 
       const exactShareUrl = `https://www.trendustyorbit.online/share/shared/${data.fileCode}`;
       document.getElementById('shareLinkInput').value = exactShareUrl;
+      document.getElementById('btnOpenDrive').href = `/share/shared/${data.fileCode}`;
+
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyShareLink() {
+      const input = document.getElementById('shareLinkInput');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById('copyBtn');
+      btn.innerText = 'COPIED! ✔';
+      setTimeout(() => { btn.innerText = 'COPY LINK'; }, 2000);
+    }
+
+    function resetForm() {
+      removeAllFiles();
+      document.getElementById('successCard').style.display = 'none';
+    }
+  </script>
       document.getElementById('btnOpenDrive').href = `/share/shared/${data.fileCode}`;
 
       card.scrollIntoView({ behavior: 'smooth' });
