@@ -1244,7 +1244,7 @@
         };
 
         const previewContent = isImage
-          ? `<img src="${file.rawUrl}" alt="${file.fileName}" loading="lazy">`
+          ? `<img src="${getFastCdnUrl(file.rawUrl)}" alt="${file.fileName}" loading="lazy">`
           : `<div class="big-icon">${iconSvg}</div>`;
 
         card.innerHTML = `
@@ -1279,35 +1279,47 @@
       });
     }
 
-    // ----------------------------------------------------
-    // DOWNLOAD SINGLE FILE (ONE BY ONE)
-    // ----------------------------------------------------
-    async function downloadSingleFile(url, filename) {
-      showToast(`Downloading ${filename}...`, true);
-      try {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error('Download failed');
-        const blob = await resp.blob();
-        const a = document.createElement('a');
-        const blobUrl = URL.createObjectURL(blob);
-        a.href = blobUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-        showToast(`Downloaded: ${filename}`, false);
-        setTimeout(hideToast, 2500);
-      } catch (err) {
-        console.error('Download error:', err);
-        // Fallback open in new tab
-        window.open(url, '_blank');
-        hideToast();
+    // Convert slow raw.githubusercontent.com URLs into high-speed Cloudflare CDN URLs
+    function getFastCdnUrl(url) {
+      if (!url) return url;
+      if (url.includes('raw.githubusercontent.com/ZebloYT/Trendusty-Orbit/main/')) {
+        return url.replace(
+          'https://raw.githubusercontent.com/ZebloYT/Trendusty-Orbit/main/',
+          'https://cdn.jsdelivr.net/gh/ZebloYT/Trendusty-Orbit@main/'
+        );
       }
+      return url;
     }
 
     // ----------------------------------------------------
-    // DOWNLOAD ALL AS ZIP (USING FFLATE)
+    // HIGH-SPEED INSTANT SINGLE FILE DOWNLOAD
+    // ----------------------------------------------------
+    function downloadSingleFile(url, filename) {
+      const code = getFileCode();
+      const cleanName = encodeURIComponent(filename);
+      // High-speed streaming attachment endpoint
+      const downloadApiUrl = `/api/share/download?code=${encodeURIComponent(code || '')}&file=${cleanName}`;
+      const fastCdnUrl = getFastCdnUrl(url);
+
+      showToast(`⚡ Starting instant download: ${filename}...`, false);
+
+      // Trigger immediate native browser download without blocking JS thread
+      const a = document.createElement('a');
+      a.href = downloadApiUrl;
+      a.setAttribute('download', filename);
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+        if (a.parentNode) document.body.removeChild(a);
+      }, 1500);
+
+      setTimeout(hideToast, 2500);
+    }
+
+    // ----------------------------------------------------
+    // PARALLEL HIGH-SPEED DOWNLOAD ALL AS ZIP (USING FFLATE)
     // ----------------------------------------------------
     async function downloadAllAsZip() {
       if (!activeFiles || activeFiles.length === 0) {
@@ -1315,26 +1327,39 @@
         return;
       }
 
-      // If only 1 file, download it directly without zipping
+      // If only 1 file, download it instantly without zipping
       if (activeFiles.length === 1) {
         return downloadSingleFile(activeFiles[0].rawUrl, activeFiles[0].fileName);
       }
 
-      showToast(`Downloading & compressing files into ZIP (0/${activeFiles.length})...`, true);
+      showToast(`⚡ Multi-threaded CDN download started (0/${activeFiles.length})...`, true);
 
       try {
         const zipData = {};
-        for (let i = 0; i < activeFiles.length; i++) {
-          const f = activeFiles[i];
-          showToast(`Compressing (${i + 1}/${activeFiles.length}): ${f.fileName}...`, true);
+        let doneCount = 0;
 
-          const resp = await fetch(f.rawUrl);
-          if (!resp.ok) throw new Error(`Could not fetch ${f.fileName}`);
-          const buffer = await resp.arrayBuffer();
-          zipData[f.fileName] = new Uint8Array(buffer);
-        }
+        // Fetch all files in parallel via high-speed edge CDN
+        const tasks = activeFiles.map(async (file) => {
+          const fastUrl = getFastCdnUrl(file.rawUrl);
+          try {
+            const resp = await fetch(fastUrl);
+            if (!resp.ok) throw new Error('CDN error');
+            const buffer = await resp.arrayBuffer();
+            zipData[file.fileName] = new Uint8Array(buffer);
+          } catch (e) {
+            // Fallback to direct raw URL
+            const fallbackResp = await fetch(file.rawUrl);
+            if (!fallbackResp.ok) throw new Error(`Could not fetch ${file.fileName}`);
+            const buffer = await fallbackResp.arrayBuffer();
+            zipData[file.fileName] = new Uint8Array(buffer);
+          }
+          doneCount++;
+          showToast(`⚡ Downloaded & cached ${doneCount}/${activeFiles.length} files...`, true);
+        });
 
-        showToast("Generating ZIP package...", true);
+        await Promise.all(tasks);
+
+        showToast("⚡ Compressing files into ZIP at maximum speed...", true);
 
         if (window.fflate && typeof window.fflate.zip === 'function') {
           window.fflate.zip(zipData, (err, out) => {
@@ -1353,13 +1378,13 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(blobUrl);
 
-            showToast("ZIP Downloaded successfully!", false);
+            showToast("✔ ZIP Downloaded successfully!", false);
             setTimeout(hideToast, 2500);
           });
         } else {
-          // If fflate didn't load, download one by one in parallel
+          // Fallback if fflate missing
           for (const f of activeFiles) {
-            await downloadSingleFile(f.rawUrl, f.fileName);
+            downloadSingleFile(f.rawUrl, f.fileName);
           }
           hideToast();
         }
@@ -1388,15 +1413,16 @@
 
       const ext = (file.fileName.split('.').pop() || '').toLowerCase();
       const type = file.fileType || '';
+      const fastUrl = getFastCdnUrl(file.rawUrl);
 
       if (type.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].includes(ext)) {
-        body.innerHTML = `<img src="${file.rawUrl}" alt="${file.fileName}">`;
+        body.innerHTML = `<img src="${fastUrl}" alt="${file.fileName}">`;
       } else if (type.startsWith('video/') || ['mp4', 'webm', 'mov'].includes(ext)) {
-        body.innerHTML = `<video src="${file.rawUrl}" controls autoplay></video>`;
+        body.innerHTML = `<video src="${fastUrl}" controls autoplay></video>`;
       } else if (type.startsWith('audio/') || ['mp3', 'wav', 'ogg'].includes(ext)) {
-        body.innerHTML = `<audio src="${file.rawUrl}" controls autoplay></audio>`;
+        body.innerHTML = `<audio src="${fastUrl}" controls autoplay></audio>`;
       } else if (ext === 'pdf') {
-        body.innerHTML = `<iframe src="${file.rawUrl}"></iframe>`;
+        body.innerHTML = `<iframe src="${fastUrl}"></iframe>`;
       } else {
         body.innerHTML = `
           <div class="preview-unsupported">
