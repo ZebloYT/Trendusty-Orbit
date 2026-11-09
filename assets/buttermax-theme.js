@@ -434,7 +434,7 @@
   }
 
   // ==========================================================================
-  // BACKGROUND LIQUID FLUID & MOLTEN LAVA BLOB ENGINE
+  // BACKGROUND VISCOUS LIQUID TRAIL & MOLTEN RIBBON ENGINE
   // ==========================================================================
   let bgCanvas = null;
   let bgCtx = null;
@@ -442,28 +442,21 @@
   let bgHeight = 0;
   let bgBlobClipPath = null;
 
-  // Blob physics & magnetism
-  let bX = 0, bY = 0;
-  let targetBX = 0, targetBY = 0;
-  let bVelX = 0, bVelY = 0;
-  let prevPointerX = 0, prevPointerY = 0;
+  // Liquid trail history
+  const liquidTrail = [];
+  const MAX_TRAIL_LENGTH = 75;
+  let lastRecordedX = 0, lastRecordedY = 0;
   let lastMoveTime = performance.now();
+  let idleTimer = 0;
 
   // Click shockwave ripples
   const bgRipples = [];
 
-  // Viscous floating micro-embers
+  // Viscous micro-droplets
   const bgEmbers = [];
-  const TOTAL_EMBERS = 36;
+  const TOTAL_EMBERS = 30;
 
-  // Orbiting satellite droplets
-  const bgSatellites = [
-    { angle: 0.3, distFactor: 0.75, radiusFactor: 0.18, speed: 0.012, phase: 0 },
-    { angle: 2.2, distFactor: 0.88, radiusFactor: 0.14, speed: -0.015, phase: 1.8 },
-    { angle: 4.4, distFactor: 0.70, radiusFactor: 0.12, speed: 0.020, phase: 3.5 }
-  ];
-
-  // Tactical starfield for Obsidian Cyber Mode
+  // Tactical starfield for Obsidian Mode
   const obsidianStars = [];
   const TOTAL_STARS = 65;
 
@@ -475,7 +468,6 @@
     bgCtx = bgCanvas.getContext('2d');
     if (!bgCtx) return;
 
-    // Initialize dimensions
     function resizeBg() {
       if (!curtainEl || !bgCanvas) return;
       const rect = curtainEl.getBoundingClientRect();
@@ -486,22 +478,49 @@
       bgCanvas.height = bgHeight * dpr;
       bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      if (bX === 0 && bY === 0) {
-        bX = targetBX = bgWidth * 0.48;
-        bY = targetBY = bgHeight * 0.42;
+      // Seed initial baseline S-curve liquid trail if empty
+      if (liquidTrail.length === 0) {
+        initBaselineTrail();
       }
+    }
+
+    // Seed continuous natural molten butter ribbon across center
+    function initBaselineTrail() {
+      liquidTrail.length = 0;
+      const count = 42;
+      const startX = bgWidth * 0.18;
+      const endX = bgWidth * 0.82;
+      const cy = bgHeight * 0.40;
+
+      for (let i = 0; i < count; i++) {
+        const u = i / (count - 1);
+        const x = startX + (endX - startX) * u;
+        const y = cy + Math.sin(u * Math.PI * 2.1) * (bgHeight * 0.13) + Math.cos(u * Math.PI * 1.2) * (bgHeight * 0.05);
+        const rad = 65 - Math.abs(u - 0.45) * 28;
+        liquidTrail.push({
+          x: x,
+          y: y,
+          baseX: x,
+          baseY: y,
+          radius: Math.max(38, rad),
+          wobblePhase: i * 0.42,
+          isIdle: true
+        });
+      }
+      lastRecordedX = liquidTrail[0].x;
+      lastRecordedY = liquidTrail[0].y;
     }
 
     window.addEventListener('resize', resizeBg);
     resizeBg();
 
-    // Initialize embers
+    // Initialize micro-droplets
     for (let i = 0; i < TOTAL_EMBERS; i++) {
       bgEmbers.push({
         x: Math.random() * bgWidth,
         y: Math.random() * bgHeight,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: 0.4 + Math.random() * 0.8,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: 0.3 + Math.random() * 0.7,
         radius: 1.5 + Math.random() * 2.5,
         alpha: 0.2 + Math.random() * 0.6,
         phase: Math.random() * Math.PI * 2,
@@ -521,38 +540,75 @@
       });
     }
 
-    // Mouse Tracking for Fluid Drag & Magnetism
-    function handlePointerMove(clientX, clientY) {
+    // Add point to liquid ribbon trail with Hermite interpolation
+    function addLiquidTrailPoint(targetX, targetY) {
+      idleTimer = 0;
+      const now = performance.now();
+      const dt = Math.max(1, now - lastMoveTime);
+      const dist = Math.hypot(targetX - lastRecordedX, targetY - lastRecordedY);
+      const speed = dist / dt;
+      lastMoveTime = now;
+
+      // Dynamic viscous thickness based on speed
+      const pointRadius = Math.max(42, Math.min(82, 78 - speed * 10));
+
+      if (dist > 12) {
+        // Interpolate smooth intermediate points so there are no angular breaks
+        const steps = Math.min(5, Math.floor(dist / 14));
+        for (let s = 1; s <= steps; s++) {
+          const t = s / (steps + 1);
+          liquidTrail.unshift({
+            x: lastRecordedX + (targetX - lastRecordedX) * t,
+            y: lastRecordedY + (targetY - lastRecordedY) * t,
+            baseX: targetX,
+            baseY: targetY,
+            radius: pointRadius,
+            wobblePhase: Math.random() * Math.PI * 2,
+            isIdle: false
+          });
+        }
+
+        liquidTrail.unshift({
+          x: targetX,
+          y: targetY,
+          baseX: targetX,
+          baseY: targetY,
+          radius: pointRadius,
+          wobblePhase: Math.random() * Math.PI * 2,
+          isIdle: false
+        });
+
+        lastRecordedX = targetX;
+        lastRecordedY = targetY;
+
+        // Maintain maximum trail length
+        if (liquidTrail.length > MAX_TRAIL_LENGTH) {
+          liquidTrail.pop();
+        }
+      }
+    }
+
+    // Pointer move listener across hero curtain
+    function onPointerMove(clientX, clientY) {
       if (isCurtainPeeled) return;
       const rect = curtainEl.getBoundingClientRect();
       const mX = clientX - rect.left;
       const mY = clientY - rect.top;
-
-      const now = performance.now();
-      const dt = Math.max(1, now - lastMoveTime);
-      bVelX = Math.max(-45, Math.min(45, (mX - prevPointerX) / dt * 18));
-      bVelY = Math.max(-45, Math.min(45, (mY - prevPointerY) / dt * 18));
-      prevPointerX = mX;
-      prevPointerY = mY;
-      lastMoveTime = now;
-
-      // Elastic pull towards cursor
-      targetBX = mX * 0.42 + (bgWidth * 0.5) * 0.58;
-      targetBY = mY * 0.42 + (bgHeight * 0.40) * 0.58;
+      addLiquidTrailPoint(mX, mY);
     }
 
     window.addEventListener('mousemove', function(e) {
-      handlePointerMove(e.clientX, e.clientY);
+      onPointerMove(e.clientX, e.clientY);
     });
 
     if (curtainEl) {
       curtainEl.addEventListener('touchmove', function(e) {
         if (e.touches[0]) {
-          handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+          onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
         }
       }, { passive: true });
 
-      // Click / Tap Shockwave Ripple
+      // Click / Tap Ripple
       curtainEl.addEventListener('pointerdown', function(e) {
         if (e.target.closest('button, a, input, select, .bm-controls-row')) return;
         const rect = curtainEl.getBoundingClientRect();
@@ -560,20 +616,19 @@
           x: e.clientX - rect.left,
           y: e.clientY - rect.top,
           radius: 0,
-          maxRadius: Math.max(bgWidth, bgHeight) * 0.55,
-          amplitude: 28,
+          maxRadius: Math.max(bgWidth, bgHeight) * 0.5,
+          amplitude: 25,
           speed: 8
         });
       });
     }
 
-    // --- MAIN FLUID ANIMATION LOOP ---
-    const NUM_VERTICES = 32;
-    let animStartTime = performance.now();
+    // --- ANIMATION LOOP ---
+    const animStartTime = performance.now();
 
-    function renderFluidBackground(timestamp) {
+    function renderLiquidTrail(timestamp) {
       if (isCurtainPeeled) {
-        requestAnimationFrame(renderFluidBackground);
+        requestAnimationFrame(renderLiquidTrail);
         return;
       }
 
@@ -581,130 +636,176 @@
       bgCtx.clearRect(0, 0, bgWidth, bgHeight);
 
       if (isThemeButtermax) {
-        // --- BUTTERMAX MOLTEN BUTTER / INK LAVA BLOB ---
-        // Lerp anchor
-        bX += (targetBX - bX) * 0.065;
-        bY += (targetBY - bY) * 0.065;
-        bVelX *= 0.92;
-        bVelY *= 0.92;
+        idleTimer++;
 
-        const baseR = Math.min(bgWidth, bgHeight) * 0.28;
-        const points = [];
-
-        // Compute 32 harmonic vertices
-        for (let i = 0; i < NUM_VERTICES; i++) {
-          const theta = (i / NUM_VERTICES) * Math.PI * 2;
-          let r = baseR;
-
-          // Multi-frequency harmonic fluid waves
-          r += Math.sin(theta * 2 + time * 0.0016) * (baseR * 0.18);
-          r += Math.cos(theta * 3 - time * 0.0022) * (baseR * 0.14);
-          r += Math.sin(theta * 5 + time * 0.0031) * (baseR * 0.07);
-
-          // Velocity shear (stretching with cursor movement)
-          const shear = (Math.cos(theta) * bVelX + Math.sin(theta) * bVelY) * 0.22;
-          r += shear;
-
-          // Ripple shockwave impact
-          for (let k = 0; k < bgRipples.length; k++) {
-            const rip = bgRipples[k];
-            const pX = bX + Math.cos(theta) * r;
-            const pY = bY + Math.sin(theta) * r;
-            const dist = Math.hypot(pX - rip.x, pY - rip.y);
-            const delta = Math.abs(dist - rip.radius);
-            if (delta < 60) {
-              r += rip.amplitude * Math.cos(delta * 0.1);
-            }
+        // Age active trail points gracefully
+        for (let i = 0; i < liquidTrail.length; i++) {
+          const pt = liquidTrail[i];
+          if (!pt.isIdle) {
+            pt.radius *= 0.993;
+            // Float gently
+            pt.y += Math.sin(time * 0.0025 + pt.wobblePhase) * 0.35;
+          } else {
+            // Harmonic wave float for idle baseline ribbon
+            pt.y = pt.baseY + Math.sin(time * 0.002 + pt.wobblePhase) * 14;
+            pt.x = pt.baseX + Math.cos(time * 0.0016 + pt.wobblePhase) * 8;
           }
-
-          points.push({
-            x: bX + Math.cos(theta) * r,
-            y: bY + Math.sin(theta) * r
-          });
         }
 
-        // Draw smooth closed bezier curve
-        bgCtx.beginPath();
-        let pathD = '';
-        if (points.length > 0) {
-          const firstMidX = (points[0].x + points[points.length - 1].x) / 2;
-          const firstMidY = (points[0].y + points[points.length - 1].y) / 2;
-          bgCtx.moveTo(firstMidX, firstMidY);
-          pathD = `M ${firstMidX.toFixed(1)} ${firstMidY.toFixed(1)}`;
+        // Clean up withered tail points if user has drawn active trail
+        while (liquidTrail.length > 32 && liquidTrail[liquidTrail.length - 1].radius < 12) {
+          liquidTrail.pop();
+        }
 
-          for (let i = 0; i < points.length; i++) {
-            const curr = points[i];
-            const next = points[(i + 1) % points.length];
-            const midX = (curr.x + next.x) / 2;
-            const midY = (curr.y + next.y) / 2;
-            bgCtx.quadraticCurveTo(curr.x, curr.y, midX, midY);
-            pathD += ` Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${midX.toFixed(1)} ${midY.toFixed(1)}`;
+        // If trail withered down in idle, replenish baseline curve smoothly
+        if (idleTimer > 180 && liquidTrail.length < 35) {
+          initBaselineTrail();
+        }
+
+        const len = liquidTrail.length;
+        if (len > 1) {
+          const leftSide = [];
+          const rightSide = [];
+
+          // Compute continuous ribbon normals along the liquid path
+          for (let i = 0; i < len; i++) {
+            const curr = liquidTrail[i];
+            let tx = 0, ty = 0;
+
+            if (i === 0) {
+              tx = curr.x - liquidTrail[1].x;
+              ty = curr.y - liquidTrail[1].y;
+            } else if (i === len - 1) {
+              tx = liquidTrail[len - 2].x - curr.x;
+              ty = liquidTrail[len - 2].y - curr.y;
+            } else {
+              tx = liquidTrail[i - 1].x - liquidTrail[i + 1].x;
+              ty = liquidTrail[i - 1].y - liquidTrail[i + 1].y;
+            }
+
+            const mag = Math.hypot(tx, ty) || 1;
+            const nx = -ty / mag;
+            const ny = tx / mag;
+
+            // Fluid surface tension harmonics
+            const wave = Math.sin(time * 0.0035 + curr.wobblePhase) * (curr.radius * 0.16)
+                       + Math.cos(time * 0.0024 + i * 0.3) * (curr.radius * 0.10);
+            
+            // Taper tail naturally
+            const taper = Math.max(0.2, 1 - (i / len) * 0.65);
+            let r = Math.max(8, (curr.radius + wave) * taper);
+
+            // Apply ripples
+            for (let k = 0; k < bgRipples.length; k++) {
+              const rip = bgRipples[k];
+              const d = Math.hypot(curr.x - rip.x, curr.y - rip.y);
+              const diff = Math.abs(d - rip.radius);
+              if (diff < 50) {
+                r += rip.amplitude * Math.cos(diff * 0.12);
+              }
+            }
+
+            leftSide.push({ x: curr.x + nx * r, y: curr.y + ny * r });
+            rightSide.push({ x: curr.x - nx * r, y: curr.y - ny * r });
           }
+
+          // Build Smooth Closed Liquid Ribbon Polygon
+          bgCtx.beginPath();
+          let pathD = '';
+
+          const headLeft = leftSide[0];
+          const headRight = rightSide[0];
+          const headCenter = liquidTrail[0];
+
+          bgCtx.moveTo(headLeft.x, headLeft.y);
+          pathD = `M ${headLeft.x.toFixed(1)} ${headLeft.y.toFixed(1)}`;
+
+          // Left spline (head -> tail)
+          for (let i = 0; i < leftSide.length - 1; i++) {
+            const curr = leftSide[i];
+            const next = leftSide[i + 1];
+            const mx = (curr.x + next.x) / 2;
+            const my = (curr.y + next.y) / 2;
+            bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
+            pathD += ` Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+          }
+
+          // Tail cap
+          const lastLeft = leftSide[leftSide.length - 1];
+          const lastRight = rightSide[rightSide.length - 1];
+          const tailCenter = liquidTrail[len - 1];
+          bgCtx.quadraticCurveTo(lastLeft.x, lastLeft.y, tailCenter.x, tailCenter.y);
+          bgCtx.quadraticCurveTo(tailCenter.x, tailCenter.y, lastRight.x, lastRight.y);
+          pathD += ` Q ${lastLeft.x.toFixed(1)} ${lastLeft.y.toFixed(1)} ${tailCenter.x.toFixed(1)} ${tailCenter.y.toFixed(1)}`;
+          pathD += ` Q ${tailCenter.x.toFixed(1)} ${tailCenter.y.toFixed(1)} ${lastRight.x.toFixed(1)} ${lastRight.y.toFixed(1)}`;
+
+          // Right spline (tail -> head)
+          for (let i = rightSide.length - 1; i > 0; i--) {
+            const curr = rightSide[i];
+            const prev = rightSide[i - 1];
+            const mx = (curr.x + prev.x) / 2;
+            const my = (curr.y + prev.y) / 2;
+            bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
+            pathD += ` Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+          }
+
+          // Round head cap connecting back to headLeft
+          bgCtx.quadraticCurveTo(headRight.x, headRight.y, headCenter.x, headCenter.y);
+          bgCtx.quadraticCurveTo(headCenter.x, headCenter.y, headLeft.x, headLeft.y);
+          pathD += ` Q ${headRight.x.toFixed(1)} ${headRight.y.toFixed(1)} ${headCenter.x.toFixed(1)} ${headCenter.y.toFixed(1)}`;
+          pathD += ` Q ${headCenter.x.toFixed(1)} ${headCenter.y.toFixed(1)} ${headLeft.x.toFixed(1)} ${headLeft.y.toFixed(1)}`;
           bgCtx.closePath();
           pathD += ' Z';
-        }
 
-        // Update Typography Inversion Mask via SVG ClipPath
-        if (bgBlobClipPath) {
-          bgBlobClipPath.setAttribute('d', pathD);
-        }
+          // Update Typography Inversion Mask in SVG
+          if (bgBlobClipPath) {
+            bgBlobClipPath.setAttribute('d', pathD);
+          }
 
-        // Fill with deep glossy charcoal radial gradient
-        const grad = bgCtx.createRadialGradient(
-          bX - baseR * 0.35, bY - baseR * 0.35, baseR * 0.1,
-          bX, bY, baseR * 1.45
-        );
-        grad.addColorStop(0, '#222222');
-        grad.addColorStop(0.65, '#121212');
-        grad.addColorStop(1, '#090909');
+          // Liquid Gradient Fill
+          const trailGrad = bgCtx.createLinearGradient(
+            liquidTrail[0].x, liquidTrail[0].y,
+            liquidTrail[len - 1].x, liquidTrail[len - 1].y
+          );
+          trailGrad.addColorStop(0, '#222222');
+          trailGrad.addColorStop(0.5, '#121212');
+          trailGrad.addColorStop(1, '#080808');
 
-        bgCtx.fillStyle = grad;
-        bgCtx.fill();
-
-        // Outer Fiery Molten Rim
-        bgCtx.save();
-        bgCtx.shadowColor = '#ff6b4a';
-        bgCtx.shadowBlur = 28;
-        bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.92)';
-        bgCtx.lineWidth = 4;
-        bgCtx.stroke();
-
-        // Inner Butter Yellow Flare
-        bgCtx.shadowColor = 'transparent';
-        bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.85)';
-        bgCtx.lineWidth = 1.8;
-        bgCtx.stroke();
-        bgCtx.restore();
-
-        // Draw Orbiting Satellite Droplets
-        bgSatellites.forEach(sat => {
-          sat.angle += sat.speed;
-          const sDist = baseR * sat.distFactor + Math.sin(time * 0.002 + sat.phase) * 18;
-          const sX = bX + Math.cos(sat.angle) * sDist;
-          const sY = bY + Math.sin(sat.angle) * (sDist * 0.72);
-          const sR = baseR * sat.radiusFactor + Math.cos(time * 0.003 + sat.phase) * 6;
-
-          bgCtx.save();
-          bgCtx.beginPath();
-          bgCtx.arc(sX, sY, Math.max(10, sR), 0, Math.PI * 2);
-          bgCtx.fillStyle = '#121212';
-          bgCtx.shadowColor = '#ff6b4a';
-          bgCtx.shadowBlur = 16;
+          bgCtx.fillStyle = trailGrad;
           bgCtx.fill();
-          bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.85)';
-          bgCtx.lineWidth = 2.5;
+
+          // Luminous Fiery Molten Rim
+          bgCtx.save();
+          bgCtx.shadowColor = '#ff6b4a';
+          bgCtx.shadowBlur = 26;
+          bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.92)';
+          bgCtx.lineWidth = 4;
+          bgCtx.stroke();
+
+          // Inner Golden Flare
+          bgCtx.shadowColor = 'transparent';
+          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.85)';
+          bgCtx.lineWidth = 1.8;
           bgCtx.stroke();
           bgCtx.restore();
-        });
 
-        // Draw & Update Floating Micro-Embers
+          // Head Droplet Specular Reflection
+          bgCtx.save();
+          bgCtx.beginPath();
+          bgCtx.arc(headCenter.x - 8, headCenter.y - 8, 14, 0, Math.PI * 2);
+          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+          bgCtx.fill();
+          bgCtx.restore();
+        }
+
+        // Floating Viscous Micro-Embers
         bgEmbers.forEach(emb => {
           emb.y -= emb.vy;
           emb.x += Math.sin(time * 0.002 + emb.phase) * 0.7 + emb.vx;
 
           if (emb.y < -20) {
             emb.y = bgHeight + 10;
-            emb.x = bX + (Math.random() - 0.5) * (baseR * 1.8);
+            emb.x = (liquidTrail[0] ? liquidTrail[0].x : bgWidth * 0.5) + (Math.random() - 0.5) * 220;
           }
 
           bgCtx.beginPath();
@@ -714,8 +815,7 @@
         });
 
       } else {
-        // --- OBSIDIAN CYBER TACTICAL STARFIELD & LASER MATRIX ---
-        // Update and draw cyber nodes
+        // --- OBSIDIAN CYBER RADAR MATRIX ---
         for (let i = 0; i < obsidianStars.length; i++) {
           const s = obsidianStars[i];
           s.x += s.vx;
@@ -730,7 +830,6 @@
           bgCtx.fillStyle = `rgba(0, 245, 184, ${s.alpha})`;
           bgCtx.fill();
 
-          // Connect nearby nodes with laser lines
           for (let j = i + 1; j < obsidianStars.length; j++) {
             const s2 = obsidianStars[j];
             const dist = Math.hypot(s.x - s2.x, s.y - s2.y);
@@ -745,7 +844,6 @@
           }
         }
 
-        // Radar Sweep Circle around center
         const rCx = bgWidth * 0.5;
         const rCy = bgHeight * 0.42;
         const rRadius = Math.min(bgWidth, bgHeight) * 0.32;
@@ -756,7 +854,6 @@
         bgCtx.lineWidth = 1;
         bgCtx.stroke();
 
-        // Spinning beam
         const sweepAngle = (time * 0.0018) % (Math.PI * 2);
         bgCtx.beginPath();
         bgCtx.moveTo(rCx, rCy);
@@ -767,7 +864,7 @@
         bgCtx.restore();
       }
 
-      // Update & clean ripples
+      // Update shockwave ripples
       for (let i = bgRipples.length - 1; i >= 0; i--) {
         const rip = bgRipples[i];
         rip.radius += rip.speed;
@@ -777,10 +874,10 @@
         }
       }
 
-      requestAnimationFrame(renderFluidBackground);
+      requestAnimationFrame(renderLiquidTrail);
     }
 
-    requestAnimationFrame(renderFluidBackground);
+    requestAnimationFrame(renderLiquidTrail);
   }
 
   // --- CLOSE BUTTON ---
