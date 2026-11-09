@@ -81,7 +81,19 @@
   <link rel="icon" type="image/x-icon" href="../favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Buttermax Inspired Theme Engine -->
+  <link rel="stylesheet" href="../assets/buttermax-theme.css">
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('orbit_theme');
+        if (savedTheme !== 'obsidian') {
+          document.documentElement.classList.add('theme-buttermax');
+        }
+      } catch(e) {}
+    })();
+  </script>
   <!-- Swarm Cursor Website Builder Loading Animation -->
   <link rel="stylesheet" href="../assets/swarm-builder-loader.css">
   <script>
@@ -3670,6 +3682,128 @@
     
 
 
+  <!-- =====================================================================
+       BUTTERMAX HERO CURTAIN (AWWWARDS / BUTTERMAX.NET STUDIO THEME)
+       ===================================================================== -->
+  <div id="buttermax-hero-curtain">
+    <!-- Top Bar -->
+    <div class="bm-top-bar">
+      <div class="bm-left-action">
+        <button type="button" class="bm-close-btn" id="bm-close-btn" title="Toggle Full Tactical View">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Center Audio Synthesizer Pill -->
+      <button type="button" class="bm-audio-pill" id="bm-audio-pill" title="Toggle Ambient Audio Telemetry">
+        <div class="bm-soundwave-bars">
+          <span class="bm-wave-bar"></span>
+          <span class="bm-wave-bar"></span>
+          <span class="bm-wave-bar"></span>
+          <span class="bm-wave-bar"></span>
+          <span class="bm-wave-bar"></span>
+        </div>
+      </button>
+
+      <!-- Right Nav Pills -->
+      <div class="bm-nav-pills">
+        <a href="#interface" class="bm-pill-btn" onclick="document.getElementById('bm-peel-btn').click()">COP RADAR</a>
+        <a href="../echonode" class="bm-pill-btn">ECHONODE</a>
+        <a href="../share/" class="bm-pill-btn">FILE TRANSFER</a>
+        <a href="../windows/download" class="bm-pill-btn" onclick="openAuthModal(event)">DOWNLOAD</a>
+        <button type="button" class="bm-pill-btn theme-toggle-btn" onclick="toggleOrbitTheme()">🟡 BUTTERMAX</button>
+      </div>
+    </div>
+
+    <!-- Centerstage -->
+    <div class="bm-hero-centerstage">
+      <div class="bm-headline-wrap">
+        <h1 class="bm-hero-title">
+          <span class="bm-title-grotesk">TRENDUSTY</span>
+          <span class="bm-title-script">Orbit</span>
+        </h1>
+        <div class="bm-tagline">THE GOLD STANDARD IN SOVEREIGN SATELLITE COP &amp; INTELLIGENCE</div>
+      </div>
+
+      <!-- 3D Floating Console Viewport -->
+      <div class="bm-console-viewport" id="bm-console-viewport">
+        <!-- Dynamic Floor Contact Shadow -->
+        <div class="bm-drop-shadow" id="bm-drop-shadow"></div>
+
+        <!-- 3D Hardware Shell -->
+        <div class="bm-device-3d" id="bm-device-3d">
+          <div class="bm-device-pcb"></div>
+
+          <!-- Active Glowing Screen -->
+          <div class="bm-screen-bezel">
+            <div class="bm-screen-hud">
+              <span>● LIVE_FEED</span>
+              <span>ORBIT//SYS.01</span>
+            </div>
+            <canvas class="bm-screen-canvas" id="bm-screen-canvas"></canvas>
+          </div>
+
+          <!-- Hardware Controls -->
+          <div class="bm-controls-row">
+            <div class="bm-dpad">
+              <div class="bm-dpad-center"></div>
+              <div class="bm-dpad-btn up"></div>
+              <div class="bm-dpad-btn down"></div>
+              <div class="bm-dpad-btn left"></div>
+              <div class="bm-dpad-btn right"></div>
+            </div>
+
+            <div class="bm-action-buttons">
+              <button type="button" class="bm-btn-round" title="Action A">A</button>
+              <button type="button" class="bm-btn-round" title="Action B">B</button>
+            </div>
+          </div>
+
+          <div class="bm-speaker-grille">
+            <div class="bm-grille-slot"></div>
+            <div class="bm-grille-slot"></div>
+            <div class="bm-grille-slot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Studio Manifesto Statement -->
+      <p class="bm-manifesto-text">
+        TRENDUSTY ORBIT IS A GLOBAL INTELLIGENCE STUDIO FOUNDED ON A CULTURE OF EXPLORATION. WE MELT FOR LOVINGLY CRAFTED GEOSPATIAL VISUALIZATION, SATELLITE MOTION AND TECHNOLOGY.
+      </p>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bm-bottom-bar">
+      <div class="bm-page-indicator">
+        <div class="bm-colon-dots">
+          <span class="bm-dot"></span>
+          <span class="bm-dot"></span>
+        </div>
+        <span>COP // 60,000+ ENTITIES</span>
+      </div>
+
+      <!-- Curtain Peel Trigger -->
+      <div class="bm-peel-trigger-wrap">
+        <button type="button" class="bm-peel-btn" id="bm-peel-btn">
+          <span>MELT &amp; REVEAL</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="bm-status-right">
+        <span class="bm-green-pulse"></span>
+        <span>DEFCON 5 // ORBITAL SYNC</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Unpeel Pill Button when curtain is rolled up -->
+  <button type="button" id="buttermax-unpeel-btn" title="Return to Buttermax Studio Curtain">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+    <span>▲ BUTTERMAX STUDIO</span>
+  </button>
+
   <!-- Header -->
   <header>
     <div class="container nav-inner">
@@ -3698,6 +3832,9 @@
           <option value="es">ES Español</option>
           <option value="ar">AR العربية</option>
         </select>
+        <button type="button" class="btn-ghost theme-toggle-btn" onclick="toggleOrbitTheme()" title="Switch Theme (Buttermax Yellow / Obsidian Dark)" style="border-color: rgba(18, 18, 18, 0.4); display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; font-weight: 800; font-family: 'Syne', sans-serif;">
+          <span>🟡</span> <span>BUTTERMAX</span>
+        </button>
         <a href="../android/" class="btn-ghost" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; display: inline-flex; align-items: center; gap: 5px;" title="Android Mobile Edition">
           <span>📱</span> <span>Android Edition</span>
         </a>
@@ -7458,5 +7595,6 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
     };
   </script>
 
+  <script src="../assets/buttermax-theme.js" defer></script>
 </body>
 </html>

@@ -10,6 +10,18 @@
   <meta name="description" content="Trendusty Orbit Android Mobile Edition — Global OSINT Common Operating Picture, Real Earth 3D, EchoNode Minecraft Cloud & Retrosmart Cursors.">
   <link rel="icon" type="image/svg+xml" href="../assets/trendusty-orbit-icon.svg">
   <link rel="alternate icon" href="../assets/trendusty-orbit-icon.png">
+  <!-- Buttermax Inspired Theme Engine -->
+  <link rel="stylesheet" href="../assets/buttermax-theme.css">
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('orbit_theme');
+        if (savedTheme !== 'obsidian') {
+          document.documentElement.classList.add('theme-buttermax');
+        }
+      } catch(e) {}
+    })();
+  </script>
 
   <!-- Google Identity Services (GIS) Library -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -866,6 +878,68 @@
       justify-content: space-between;
       margin-top: 8px;
     }
+  
+    /* Buttermax Mobile Overrides */
+    body.theme-buttermax {
+      background-color: #ffdb15 !important;
+      color: #121212 !important;
+    }
+    body.theme-buttermax .top-app-bar {
+      background: rgba(255, 219, 21, 0.95) !important;
+      border-bottom: 1.5px solid #121212 !important;
+      color: #121212 !important;
+    }
+    body.theme-buttermax .brand-name span {
+      color: #121212 !important;
+    }
+    body.theme-buttermax .brand-sub {
+      color: rgba(18, 18, 18, 0.7) !important;
+    }
+    body.theme-buttermax .bottom-nav-bar {
+      background: rgba(255, 219, 21, 0.96) !important;
+      border-top: 1.5px solid #121212 !important;
+    }
+    body.theme-buttermax .nav-tab {
+      color: #121212 !important;
+    }
+    body.theme-buttermax .nav-tab.active {
+      color: #000000 !important;
+      font-weight: 800 !important;
+    }
+    body.theme-buttermax .nav-tab.active::after {
+      background: #121212 !important;
+      box-shadow: 0 0 6px rgba(18, 18, 18, 0.4) !important;
+    }
+    body.theme-buttermax .mobile-card {
+      background: #ffffff !important;
+      border: 2px solid #121212 !important;
+      box-shadow: 4px 4px 0px #121212 !important;
+      color: #121212 !important;
+    }
+    body.theme-buttermax .card-title {
+      color: #121212 !important;
+      font-family: 'Syne', sans-serif !important;
+      font-weight: 800 !important;
+    }
+    body.theme-buttermax .card-sub {
+      color: rgba(18, 18, 18, 0.7) !important;
+    }
+    body.theme-buttermax .icon-btn {
+      background: #121212 !important;
+      color: #ffdb15 !important;
+      border: 1px solid #121212 !important;
+    }
+    body.theme-buttermax .drawer-panel {
+      background: #ffdb15 !important;
+      color: #121212 !important;
+      border-left: 2px solid #121212 !important;
+    }
+    body.theme-buttermax .drawer-link {
+      background: #ffffff !important;
+      color: #121212 !important;
+      border: 1.5px solid #121212 !important;
+      box-shadow: 2px 2px 0px #121212 !important;
+    }
   </style>
 </head>
 <body>
@@ -891,6 +965,10 @@
     </a>
 
     <div class="top-actions">
+      <!-- Theme Switcher (Buttermax Yellow / Obsidian Dark) -->
+      <button class="icon-btn theme-toggle-btn" onclick="toggleOrbitTheme()" title="Switch Theme (Buttermax Yellow / Obsidian Dark)" style="font-size: 13px;">
+        🟡
+      </button>
       <!-- Audio Toggle -->
       <button class="icon-btn" id="audioToggleBtn" onclick="toggleAudio()" title="Sound Effects">
         <svg id="audioIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -2034,5 +2112,6 @@
     }
     window.addEventListener('load', startMobileEarth);
   </script>
+  <script src="../assets/buttermax-theme.js" defer></script>
 </body>
 </html>

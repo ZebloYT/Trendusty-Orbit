@@ -147,7 +147,7 @@
 
   const SKIP = new Set([
     "script", "style", "noscript", "template", "head", "meta", "link", "title",
-    "base", "datalist", "area", "map", "source", "track", "param", "swarm-rebuild", "orbit-initial-shield", "orbit-calibration-overlay", "sb-replay-pill", "sb-wait-banner", "sb-forge-stage", "sb-code-overlay",
+    "base", "datalist", "area", "map", "source", "track", "param", "swarm-rebuild", "orbit-initial-shield", "orbit-calibration-overlay", "sb-replay-pill", "sb-wait-banner", "sb-forge-stage", "sb-code-overlay", "buttermax-hero-curtain", "buttermax-unpeel-btn",
   ]);
   const DROP_IN_CLONE = new Set(["script", "style", "noscript", "template", "iframe", "object", "embed", "link", "meta"]);
   const REPLACED = new Set(["img", "svg", "video", "canvas", "iframe", "embed", "object", "picture"]);

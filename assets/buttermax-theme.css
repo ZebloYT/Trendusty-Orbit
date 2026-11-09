@@ -1,0 +1,811 @@
+/* ==========================================================================
+   TRENDUSTY ORBIT — BUTTERMAX INSPIRED STUDIO THEME
+   Aesthetic: Vibrant Butter Yellow, Deep Charcoal, Expressive Typography,
+   3D Floating Hardware Centerpiece, and Buttery Curtain Peel Reveal.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Syne:wght@700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;600;700;900&display=swap');
+
+/* --- ROOT THEME VARIABLES --- */
+:root.theme-buttermax,
+body.theme-buttermax {
+  --bm-yellow: #ffdb15;
+  --bm-yellow-light: #ffea5c;
+  --bm-yellow-dark: #ebc600;
+  --bm-black: #121212;
+  --bm-charcoal: #1a1a1a;
+  --bm-card-bg: rgba(255, 255, 255, 0.92);
+  --bm-card-dark: #121212;
+  --bm-border: 1.5px solid #121212;
+  --bm-border-thin: 1px solid rgba(18, 18, 18, 0.15);
+  --bm-shadow: 5px 5px 0px #121212;
+  --bm-shadow-lg: 8px 8px 0px #121212;
+  --bm-accent-lime: #10b981;
+  --bm-accent-coral: #ff4757;
+  --bm-accent-cyan: #00d2d3;
+
+  /* Overwrite standard Orbit variables in Buttermax Mode */
+  --bg: #ffdb15;
+  --bg-surface: #ffea5c;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(18, 18, 18, 0.2);
+  --glass-border-hover: rgba(18, 18, 18, 0.6);
+  --accent: #121212;
+  --accent-dim: rgba(18, 18, 18, 0.08);
+  --accent-glow: rgba(255, 219, 21, 0.8);
+  --accent-blue: #0284c7;
+  --text: #121212;
+  --text-muted: rgba(18, 18, 18, 0.75);
+  --text-dim: rgba(18, 18, 18, 0.5);
+}
+
+body.theme-buttermax {
+  background-color: var(--bm-yellow) !important;
+  color: var(--bm-black) !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 65%),
+    linear-gradient(to bottom, #ffdb15, #ffd000) !important;
+  background-attachment: fixed !important;
+}
+
+body.theme-buttermax::before {
+  background-image: linear-gradient(rgba(18, 18, 18, 0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(18, 18, 18, 0.04) 1px, transparent 1px) !important;
+  opacity: 0.7 !important;
+}
+
+/* ==========================================================================
+   BUTTERMAX HERO CURTAIN (TOP SCREEN EXPERIENCE)
+   ========================================================================== */
+#buttermax-hero-curtain {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bm-yellow);
+  color: var(--bm-black);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 32px 30px;
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 1000;
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+  will-change: transform;
+}
+
+/* Curtain Peeled State */
+#buttermax-hero-curtain.peeled {
+  transform: translateY(-100%);
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Sticky Unpeel Pill Button when curtain is rolled up */
+#buttermax-unpeel-btn {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  z-index: 9999;
+  background: var(--bm-yellow);
+  color: var(--bm-black);
+  border: 1.5px solid var(--bm-black);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 3px 3px 0px #121212;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
+}
+
+#buttermax-unpeel-btn.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+#buttermax-unpeel-btn:hover {
+  background: #ffffff;
+}
+
+/* --- HERO TOP BAR --- */
+.bm-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  z-index: 10;
+}
+
+.bm-left-action {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bm-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--bm-black);
+  background: transparent;
+  color: var(--bm-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.2s ease;
+}
+
+.bm-close-btn:hover {
+  background: var(--bm-black);
+  color: var(--bm-yellow);
+  transform: rotate(90deg);
+}
+
+.bm-close-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+}
+
+/* Audio Visualizer Pill (Center of Top Bar) */
+.bm-audio-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1.5px solid var(--bm-black);
+  border-radius: 999px;
+  padding: 7px 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bm-audio-pill:hover {
+  background: rgba(18, 18, 18, 0.08);
+}
+
+.bm-soundwave-bars {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  height: 14px;
+}
+
+.bm-wave-bar {
+  width: 2.5px;
+  height: 6px;
+  background-color: var(--bm-black);
+  border-radius: 2px;
+  transition: height 0.15s ease;
+}
+
+.bm-audio-pill.playing .bm-wave-bar:nth-child(1) { animation: bmSoundWave 0.7s infinite alternate ease-in-out; }
+.bm-audio-pill.playing .bm-wave-bar:nth-child(2) { animation: bmSoundWave 0.5s infinite alternate ease-in-out 0.15s; }
+.bm-audio-pill.playing .bm-wave-bar:nth-child(3) { animation: bmSoundWave 0.9s infinite alternate ease-in-out 0.3s; }
+.bm-audio-pill.playing .bm-wave-bar:nth-child(4) { animation: bmSoundWave 0.6s infinite alternate ease-in-out 0.1s; }
+.bm-audio-pill.playing .bm-wave-bar:nth-child(5) { animation: bmSoundWave 0.8s infinite alternate ease-in-out 0.25s; }
+
+@keyframes bmSoundWave {
+  0% { height: 4px; }
+  100% { height: 16px; }
+}
+
+/* Nav Pills (Right of Top Bar) */
+.bm-nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bm-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 18px;
+  border: 1.5px solid var(--bm-black);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bm-black);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.bm-pill-btn:hover {
+  background: var(--bm-black);
+  color: var(--bm-yellow);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(18, 18, 18, 0.15);
+}
+
+.bm-pill-btn.theme-toggle-btn {
+  background: var(--bm-black);
+  color: var(--bm-yellow);
+}
+
+.bm-pill-btn.theme-toggle-btn:hover {
+  background: #ffffff;
+  color: var(--bm-black);
+}
+
+/* ==========================================================================
+   HERO CENTERSTAGE & TYPOGRAPHY
+   ========================================================================== */
+.bm-hero-centerstage {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* Massive Headline Typography */
+.bm-headline-wrap {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 24px;
+  user-select: none;
+}
+
+.bm-hero-title {
+  font-family: 'Syne', 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(3.8rem, 12vw, 11rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--bm-black);
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.bm-title-grotesk {
+  display: inline-block;
+  transform: scaleY(1.02);
+}
+
+.bm-title-script {
+  display: inline-block;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.15em;
+  letter-spacing: -0.01em;
+  margin-left: -0.08em;
+  color: var(--bm-black);
+  transform: rotate(-6deg) translateY(0.04em);
+  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.4);
+}
+
+.bm-tagline {
+  font-family: 'Syne', 'Inter', sans-serif;
+  font-size: clamp(9px, 1.2vw, 13px);
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bm-black);
+  margin-top: 14px;
+  opacity: 0.9;
+}
+
+/* Studio Statement Manifesto */
+.bm-manifesto-text {
+  max-width: 680px;
+  font-family: 'Syne', 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(12px, 1.3vw, 15px);
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bm-black);
+  margin: 16px auto 0;
+  opacity: 0.85;
+}
+
+/* ==========================================================================
+   3D FLOATING CONSOLE & CONTACT SHADOW
+   ========================================================================== */
+.bm-console-viewport {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  height: 380px;
+  margin: 0 auto;
+  perspective: 1400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  z-index: 5;
+}
+
+.bm-console-viewport:active {
+  cursor: grabbing;
+}
+
+/* Soft Dynamic Contact Shadow on Yellow Floor */
+.bm-drop-shadow {
+  position: absolute;
+  bottom: 20px;
+  width: 320px;
+  height: 60px;
+  background: radial-gradient(ellipse at center, rgba(18, 18, 18, 0.6) 0%, rgba(18, 18, 18, 0.25) 45%, transparent 75%);
+  border-radius: 50%;
+  filter: blur(12px);
+  transform-origin: center center;
+  transition: transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 3D Hardware Shell */
+.bm-device-3d {
+  position: relative;
+  width: 250px;
+  height: 330px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.45) 0%, rgba(220, 220, 220, 0.15) 100%);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    inset 0 0 0 1.5px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8),
+    0 24px 48px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 36px 36px 42px 42px;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transform-style: preserve-3d;
+  will-change: transform;
+  z-index: 2;
+  transition: transform 0.12s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+/* Internal PCB Circuit Elements */
+.bm-device-pcb {
+  position: absolute;
+  inset: 8px;
+  border-radius: 28px;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(18, 18, 18, 0.08) 2px, transparent 2px),
+    radial-gradient(circle at 80% 70%, rgba(18, 18, 18, 0.08) 2px, transparent 2px);
+  background-size: 16px 16px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Glowing Screen Bezel */
+.bm-screen-bezel {
+  position: relative;
+  width: 100%;
+  height: 165px;
+  background: #090d14;
+  border-radius: 20px;
+  border: 2px solid #1a2230;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 245, 184, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+}
+
+/* Active Screen Canvas */
+.bm-screen-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Screen HUD Overlay */
+.bm-screen-hud {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  color: #00f5b8;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 6px #00f5b8;
+  pointer-events: none;
+}
+
+/* Hardware Controls Section */
+.bm-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding: 0 8px;
+  z-index: 3;
+}
+
+/* D-Pad Cross */
+.bm-dpad {
+  position: relative;
+  width: 58px;
+  height: 58px;
+}
+
+.bm-dpad-center {
+  position: absolute;
+  top: 19px;
+  left: 19px;
+  width: 20px;
+  height: 20px;
+  background: #2a2a2a;
+}
+
+.bm-dpad-btn {
+  position: absolute;
+  background: linear-gradient(180deg, #383838 0%, #1f1f1f 100%);
+  border: 1px solid #111;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.bm-dpad-btn.up { top: 0; left: 19px; width: 20px; height: 20px; border-radius: 5px 5px 0 0; }
+.bm-dpad-btn.down { bottom: 0; left: 19px; width: 20px; height: 20px; border-radius: 0 0 5px 5px; }
+.bm-dpad-btn.left { top: 19px; left: 0; width: 20px; height: 20px; border-radius: 5px 0 0 5px; }
+.bm-dpad-btn.right { top: 19px; right: 0; width: 20px; height: 20px; border-radius: 0 5px 5px 0; }
+
+/* Action Buttons (Diagonal Pair) */
+.bm-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform: rotate(-25deg);
+}
+
+.bm-btn-round {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ff4757, #c0392b);
+  border: 1.5px solid #111;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 6px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  color: #fff;
+  transition: transform 0.1s ease;
+}
+
+.bm-btn-round:nth-child(2) {
+  background: linear-gradient(145deg, #00d2d3, #0abde3);
+}
+
+.bm-btn-round:active {
+  transform: scale(0.92);
+}
+
+/* Sound Grille Slots */
+.bm-speaker-grille {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-right: 14px;
+}
+
+.bm-grille-slot {
+  width: 4px;
+  height: 18px;
+  background: #1a1a1a;
+  border-radius: 3px;
+  transform: rotate(-28deg);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
+}
+
+/* ==========================================================================
+   HERO BOTTOM BAR & CURTAIN REVEAL MECHANIC
+   ========================================================================= */
+.bm-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  z-index: 10;
+}
+
+.bm-page-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bm-black);
+}
+
+.bm-colon-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bm-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--bm-black);
+}
+
+/* Center Down Arrow (Curtain Peel Trigger) */
+.bm-peel-trigger-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.bm-peel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: 1.5px solid var(--bm-black);
+  border-radius: 999px;
+  padding: 8px 22px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bm-black);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bm-peel-btn svg {
+  width: 14px;
+  height: 14px;
+  animation: bmBounce 1.6s infinite ease-in-out;
+}
+
+.bm-peel-btn:hover {
+  background: var(--bm-black);
+  color: var(--bm-yellow);
+  transform: translateY(3px);
+  box-shadow: 0 6px 16px rgba(18, 18, 18, 0.2);
+}
+
+@keyframes bmBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+.bm-status-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--bm-black);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bm-green-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+/* ==========================================================================
+   RESTYLED SITE SECTIONS FOR BUTTERMAX THEME
+   High-contrast, brutalist-editorial design with butter yellow cards
+   ========================================================================== */
+body.theme-buttermax header {
+  background: rgba(255, 219, 21, 0.95) !important;
+  border-bottom: 1.5px solid #121212 !important;
+  color: #121212 !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.theme-buttermax .nav-links a {
+  color: #121212 !important;
+  font-weight: 700 !important;
+}
+
+body.theme-buttermax .nav-links a:hover {
+  color: #000000 !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-radius: 999px !important;
+}
+
+body.theme-buttermax .btn-ghost {
+  border-color: #121212 !important;
+  color: #121212 !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+}
+
+body.theme-buttermax .btn-ghost:hover {
+  background: #121212 !important;
+  color: var(--bm-yellow) !important;
+}
+
+body.theme-buttermax .btn-primary {
+  background: #121212 !important;
+  color: var(--bm-yellow) !important;
+  border: 1.5px solid #121212 !important;
+  font-weight: 800 !important;
+  border-radius: 999px !important;
+  box-shadow: 3px 3px 0px #121212 !important;
+}
+
+body.theme-buttermax .btn-primary:hover {
+  background: #ffffff !important;
+  color: #121212 !important;
+  box-shadow: 1px 1px 0px #121212 !important;
+  transform: translate(2px, 2px) !important;
+}
+
+body.theme-buttermax .btn-auth-corner {
+  background: #121212 !important;
+  color: var(--bm-yellow) !important;
+  border-radius: 999px !important;
+}
+
+/* Feature & Capability Cards */
+body.theme-buttermax .why-card,
+body.theme-buttermax .cap-card,
+body.theme-buttermax .other-card,
+body.theme-buttermax .stat-item,
+body.theme-buttermax .feed-card,
+body.theme-buttermax .feature-card {
+  background: #ffffff !important;
+  border: 2px solid #121212 !important;
+  border-radius: 20px !important;
+  box-shadow: 5px 5px 0px #121212 !important;
+  color: #121212 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+body.theme-buttermax .why-card:hover,
+body.theme-buttermax .cap-card:hover,
+body.theme-buttermax .other-card:hover {
+  transform: translate(-3px, -3px) !important;
+  box-shadow: 8px 8px 0px #121212 !important;
+}
+
+body.theme-buttermax .why-card h3,
+body.theme-buttermax .cap-card h3,
+body.theme-buttermax .other-card h3,
+body.theme-buttermax .section-title {
+  color: #121212 !important;
+  font-family: 'Syne', sans-serif !important;
+  font-weight: 800 !important;
+}
+
+body.theme-buttermax .section-tag {
+  background: #121212 !important;
+  color: var(--bm-yellow) !important;
+  border-radius: 999px !important;
+  padding: 4px 14px !important;
+  font-weight: 800 !important;
+}
+
+body.theme-buttermax .why-card p,
+body.theme-buttermax .cap-card p,
+body.theme-buttermax .section-desc {
+  color: rgba(18, 18, 18, 0.78) !important;
+}
+
+/* Common Operating Picture Frame in Buttermax Mode */
+body.theme-buttermax .preview-panel {
+  border: 2px solid #121212 !important;
+  border-radius: 24px !important;
+  box-shadow: 8px 8px 0px #121212 !important;
+}
+
+body.theme-buttermax .preview-panel-header {
+  background: #121212 !important;
+  color: var(--bm-yellow) !important;
+}
+
+body.theme-buttermax .cop-fullscreen-btn,
+body.theme-buttermax .cop-earth-mode-btn {
+  background: var(--bm-yellow) !important;
+  color: #121212 !important;
+  border: 1.5px solid #121212 !important;
+  font-weight: 800 !important;
+  border-radius: 999px !important;
+}
+
+/* Footer */
+body.theme-buttermax footer {
+  background: #121212 !important;
+  color: #ffffff !important;
+  border-top: 2px solid #121212 !important;
+}
+
+body.theme-buttermax footer a {
+  color: var(--bm-yellow) !important;
+}
+
+/* ==========================================================================
+   MOBILE & RESPONSIVE ADJUSTMENTS
+   ========================================================================== */
+@media (max-width: 850px) {
+  #buttermax-hero-curtain {
+    padding: 16px 16px 20px;
+  }
+
+  .bm-nav-pills .bm-pill-btn:not(.theme-toggle-btn) {
+    display: none;
+  }
+
+  .bm-hero-title {
+    font-size: clamp(3rem, 14vw, 5.5rem);
+  }
+
+  .bm-manifesto-text {
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .bm-console-viewport {
+    height: 320px;
+    max-width: 320px;
+  }
+
+  .bm-device-3d {
+    width: 210px;
+    height: 280px;
+    border-radius: 28px;
+    padding: 12px;
+  }
+
+  .bm-screen-bezel {
+    height: 135px;
+  }
+
+  .bm-drop-shadow {
+    width: 250px;
+    height: 45px;
+    bottom: 15px;
+  }
+
+  .bm-bottom-bar {
+    font-size: 10px;
+  }
+}
