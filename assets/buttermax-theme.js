@@ -86,8 +86,11 @@
   }
 
   function updateThemeButtons(label) {
+    const isObsidian = label.includes('OBSIDIAN');
+    const icon = isObsidian ? '🌌' : '🟡';
+    const text = isObsidian ? 'OBSIDIAN' : 'BUTTERMAX';
     document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
-      btn.textContent = label;
+      btn.innerHTML = `<span>${icon}</span> <span class="theme-btn-label">${text}</span>`;
     });
   }
 
