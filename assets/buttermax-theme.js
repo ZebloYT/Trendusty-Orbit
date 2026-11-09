@@ -53,6 +53,8 @@
     setupAudioSynthesizer();
     setupCloseButton();
     setupFluidBackground();
+    setupBgTheme();
+    setupPageTransitions();
 
     // Check saved curtain peel state
     const savedPeeled = sessionStorage.getItem('orbit_curtain_peeled');
@@ -72,7 +74,7 @@
       document.documentElement.classList.add('theme-buttermax');
       document.body.classList.add('theme-buttermax');
       if (curtainEl) curtainEl.style.display = 'flex';
-      updateThemeButtons('🟡 BUTTERMAX');
+      updateThemeButtons('🟡 ORBIT GOLD');
     } else {
       document.documentElement.classList.remove('theme-buttermax');
       document.body.classList.remove('theme-buttermax');
@@ -88,11 +90,136 @@
   function updateThemeButtons(label) {
     const isObsidian = label.includes('OBSIDIAN');
     const icon = isObsidian ? '🌌' : '🟡';
-    const text = isObsidian ? 'OBSIDIAN' : 'BUTTERMAX';
+    const text = isObsidian ? 'OBSIDIAN' : 'ORBIT GOLD';
     document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
       btn.innerHTML = `<span>${icon}</span> <span class="theme-btn-label">${text}</span>`;
     });
   }
+
+  // --- BACKGROUND THEME ENGINE (NOIR / BUTTER / AMBER) ---
+  let currentBgTheme = localStorage.getItem('orbit_bg_theme') || 'noir';
+
+  function setupBgTheme() {
+    setBgTheme(currentBgTheme, false);
+  }
+
+  window.cycleBgTheme = function() {
+    const themes = ['noir', 'butter', 'amber'];
+    const nextIdx = (themes.indexOf(currentBgTheme) + 1) % themes.length;
+    const nextTheme = themes[nextIdx];
+    window.triggerPageTransition(null, function() {
+      setBgTheme(nextTheme, true);
+    });
+  };
+
+  function setBgTheme(theme, save) {
+    currentBgTheme = theme;
+    ['bg-noir', 'bg-butter', 'bg-amber'].forEach(cls => {
+      if (curtainEl) curtainEl.classList.remove(cls);
+      document.body.classList.remove(cls);
+      document.documentElement.classList.remove(cls);
+    });
+
+    const activeCls = 'bg-' + theme;
+    if (curtainEl) curtainEl.classList.add(activeCls);
+    document.body.classList.add(activeCls);
+    document.documentElement.classList.add(activeCls);
+
+    const nameEl = document.getElementById('bm-bg-name');
+    if (nameEl) {
+      nameEl.textContent = theme.toUpperCase();
+    }
+
+    if (save) {
+      localStorage.setItem('orbit_bg_theme', theme);
+    }
+  }
+
+  // --- BUTTERY PAGE & SECTION TRANSITION ENGINE ---
+  let transitionOverlay = null;
+
+  function setupPageTransitions() {
+    transitionOverlay = document.getElementById('orbit-page-transition');
+    if (!transitionOverlay) {
+      transitionOverlay = document.createElement('div');
+      transitionOverlay.id = 'orbit-page-transition';
+      transitionOverlay.className = 'orbit-page-transition';
+      transitionOverlay.innerHTML = `
+        <div class="opt-curtain-layer">
+          <div class="opt-brand-wrap">
+            <div class="opt-symbol">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9" stroke="#ffd600" stroke-dasharray="4 2"/>
+                <path d="M12 3v18M3 12h18" stroke="#ffd600" opacity="0.6"/>
+                <circle cx="12" cy="12" r="3" fill="#ffd600"/>
+              </svg>
+            </div>
+            <div class="opt-title">ORBIT STUDIO</div>
+            <div class="opt-sub">SOVEREIGN COMMON OPERATING PICTURE</div>
+            <div class="opt-loader-bar"><span></span></div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(transitionOverlay);
+    }
+
+    // Intercept navigation links
+    document.addEventListener('click', function(e) {
+      const link = e.target.closest('a');
+      if (!link) return;
+
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('javascript:')) return;
+      if (link.getAttribute('download') || link.getAttribute('target') === '_blank') return;
+      if (link.hasAttribute('onclick') && (link.getAttribute('onclick').includes('openAuthModal') || link.getAttribute('onclick').includes('openChromeExtensionModal'))) return;
+
+      // Section anchor jumps
+      if (href.startsWith('#')) {
+        const targetEl = document.querySelector(href);
+        if (targetEl) {
+          e.preventDefault();
+          window.triggerPageTransition(null, function() {
+            if (curtainEl && !isCurtainPeeled && href !== '#') {
+              peelCurtain(false);
+            }
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+        return;
+      }
+
+      // Internal page changes
+      if (href.startsWith('/') || href.startsWith('../') || href.startsWith('./') || !href.includes('://')) {
+        e.preventDefault();
+        window.triggerPageTransition(href, null);
+      }
+    });
+  }
+
+  window.triggerPageTransition = function(targetUrl, callback) {
+    if (!transitionOverlay) return;
+    transitionOverlay.classList.remove('leaving');
+    transitionOverlay.classList.add('active');
+    void transitionOverlay.offsetWidth;
+    transitionOverlay.classList.add('entering');
+
+    setTimeout(() => {
+      if (callback) callback();
+      if (targetUrl) {
+        window.location.href = targetUrl;
+        return;
+      }
+
+      setTimeout(() => {
+        transitionOverlay.classList.remove('entering');
+        transitionOverlay.classList.add('leaving');
+
+        setTimeout(() => {
+          transitionOverlay.classList.remove('active', 'leaving');
+        }, 500);
+      }, 150);
+    }, 360);
+  };
 
   // --- CURTAIN PEEL REVEAL MECHANIC ---
   function setupPeelTriggers() {
@@ -746,29 +873,73 @@
           bgBlobClipPath.setAttribute('d', pathD);
         }
 
-        // Molten Viscous Charcoal-to-Black Gradient Fill
+        // Dynamic Viscous Liquid Fill based on Background Theme
         const trailGrad = bgCtx.createLinearGradient(centerX, centerY, pointerX, pointerY);
-        trailGrad.addColorStop(0, '#222222');
-        trailGrad.addColorStop(0.5, '#121212');
-        trailGrad.addColorStop(1, '#080808');
 
-        bgCtx.fillStyle = trailGrad;
-        bgCtx.fill();
+        if (currentBgTheme === 'noir') {
+          // Molten Solar Gold liquid on Velvet Noir canvas
+          trailGrad.addColorStop(0, '#ffd600');
+          trailGrad.addColorStop(0.5, '#ffaa00');
+          trailGrad.addColorStop(1, '#ff6b4a');
 
-        // Luminous Fiery Molten Coral Rim
-        bgCtx.save();
-        bgCtx.shadowColor = '#ff6b4a';
-        bgCtx.shadowBlur = 28;
-        bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.92)';
-        bgCtx.lineWidth = 4;
-        bgCtx.stroke();
+          bgCtx.fillStyle = trailGrad;
+          bgCtx.fill();
 
-        // Inner Golden Flare
-        bgCtx.shadowColor = 'transparent';
-        bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.85)';
-        bgCtx.lineWidth = 1.8;
-        bgCtx.stroke();
-        bgCtx.restore();
+          bgCtx.save();
+          bgCtx.shadowColor = '#ffd600';
+          bgCtx.shadowBlur = 32;
+          bgCtx.strokeStyle = 'rgba(255, 214, 0, 0.95)';
+          bgCtx.lineWidth = 4;
+          bgCtx.stroke();
+
+          bgCtx.shadowColor = 'transparent';
+          bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+          bgCtx.lineWidth = 1.8;
+          bgCtx.stroke();
+          bgCtx.restore();
+        } else if (currentBgTheme === 'amber') {
+          // Molten Honey Amber liquid on Roast Amber canvas
+          trailGrad.addColorStop(0, '#ffb703');
+          trailGrad.addColorStop(0.5, '#fb8500');
+          trailGrad.addColorStop(1, '#d90429');
+
+          bgCtx.fillStyle = trailGrad;
+          bgCtx.fill();
+
+          bgCtx.save();
+          bgCtx.shadowColor = '#fb8500';
+          bgCtx.shadowBlur = 28;
+          bgCtx.strokeStyle = 'rgba(251, 133, 0, 0.95)';
+          bgCtx.lineWidth = 4;
+          bgCtx.stroke();
+
+          bgCtx.shadowColor = 'transparent';
+          bgCtx.strokeStyle = 'rgba(255, 220, 100, 0.9)';
+          bgCtx.lineWidth = 1.8;
+          bgCtx.stroke();
+          bgCtx.restore();
+        } else {
+          // Molten Charcoal liquid on Solar Butter canvas
+          trailGrad.addColorStop(0, '#222222');
+          trailGrad.addColorStop(0.5, '#121212');
+          trailGrad.addColorStop(1, '#080808');
+
+          bgCtx.fillStyle = trailGrad;
+          bgCtx.fill();
+
+          bgCtx.save();
+          bgCtx.shadowColor = '#ff6b4a';
+          bgCtx.shadowBlur = 28;
+          bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.92)';
+          bgCtx.lineWidth = 4;
+          bgCtx.stroke();
+
+          bgCtx.shadowColor = 'transparent';
+          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.85)';
+          bgCtx.lineWidth = 1.8;
+          bgCtx.stroke();
+          bgCtx.restore();
+        }
 
         // Specular highlight on Center Anchor
         bgCtx.save();
