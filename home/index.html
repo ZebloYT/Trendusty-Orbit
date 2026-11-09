@@ -3686,6 +3686,18 @@
        BUTTERMAX HERO CURTAIN (AWWWARDS / BUTTERMAX.NET STUDIO THEME)
        ===================================================================== -->
   <div id="buttermax-hero-curtain">
+    <!-- Interactive Molten Liquid Butter Fluid Background Canvas -->
+    <canvas id="bm-bg-fluid-canvas" class="bm-bg-fluid-canvas"></canvas>
+
+    <!-- SVG Inversion Mask Definitions -->
+    <svg class="bm-blob-svg-defs" width="0" height="0" style="position: absolute; pointer-events: none;">
+      <defs>
+        <clipPath id="bm-blob-clip" clipPathUnits="userSpaceOnUse">
+          <path id="bm-blob-clip-path" d="" />
+        </clipPath>
+      </defs>
+    </svg>
+
     <!-- Top Bar -->
     <div class="bm-top-bar">
       <div class="bm-left-action">
@@ -3718,7 +3730,13 @@
     <!-- Centerstage -->
     <div class="bm-hero-centerstage">
       <div class="bm-headline-wrap">
-        <h1 class="bm-hero-title">
+        <!-- Base Dark Headline (Visible on canary yellow canvas) -->
+        <h1 class="bm-hero-title bm-title-dark">
+          <span class="bm-title-grotesk">TRENDUSTY</span>
+          <span class="bm-title-script">Orbit</span>
+        </h1>
+        <!-- Inverted Light Headline (Dynamically revealed wherever the molten fluid blob flows) -->
+        <h1 class="bm-hero-title bm-title-light" aria-hidden="true" style="clip-path: url(#bm-blob-clip); -webkit-clip-path: url(#bm-blob-clip);">
           <span class="bm-title-grotesk">TRENDUSTY</span>
           <span class="bm-title-script">Orbit</span>
         </h1>

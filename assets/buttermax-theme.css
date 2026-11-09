@@ -259,10 +259,34 @@ body.theme-buttermax::before {
   text-align: center;
 }
 
-/* Massive Headline Typography */
+/* Background Liquid Fluid Canvas */
+.bm-bg-fluid-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bm-blob-svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#buttermax-hero-curtain > *:not(.bm-bg-fluid-canvas):not(.bm-blob-svg-defs) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Massive Headline Typography & Inversion Dual-Layer */
 .bm-headline-wrap {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   margin-bottom: 24px;
   user-select: none;
 }
@@ -279,6 +303,32 @@ body.theme-buttermax::before {
   align-items: baseline;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.bm-title-dark {
+  position: relative;
+  z-index: 1;
+  color: var(--bm-black) !important;
+}
+
+.bm-title-light {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  color: #ffffff !important;
+  pointer-events: none;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.45);
+}
+
+.bm-title-light .bm-title-grotesk {
+  color: #ffffff !important;
+}
+
+.bm-title-light .bm-title-script {
+  color: #ffffff !important;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.7);
 }
 
 .bm-title-grotesk {
