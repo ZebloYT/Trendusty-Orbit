@@ -6546,8 +6546,23 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       }
 
       let mouseX = -100, mouseY = -100;
+      let dotX = -100, dotY = -100;
       let ringX = -100, ringY = -100;
       let isVisible = false;
+
+      // Mouse Trail Particle System
+      const trails = [];
+      const MAX_TRAILS = 12;
+      let trailIndex = 0;
+      let lastTrailX = -100, lastTrailY = -100;
+
+      for (let i = 0; i < MAX_TRAILS; i++) {
+        const t = document.createElement('div');
+        t.className = 'mouse-trail-dot';
+        t.style.opacity = '0';
+        document.body.appendChild(t);
+        trails.push(t);
+      }
 
       window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
@@ -6556,35 +6571,32 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
           isVisible = true;
           dot.style.opacity = '1';
           ring.style.opacity = '1';
+          dotX = mouseX;
+          dotY = mouseY;
           ringX = mouseX;
           ringY = mouseY;
         }
-        dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-4px, -2px)';
       }, { passive: true });
 
-      // Mouse Trail Logic
-      const trails = [];
-      const MAX_TRAILS = 12;
-      let trailIndex = 0;
-      for (let i = 0; i < MAX_TRAILS; i++) {
-        const t = document.createElement('div');
-        t.className = 'mouse-trail-dot';
-        t.style.opacity = '0';
-        document.body.appendChild(t);
-        trails.push(t);
+      function dropTrail(x, y) {
+        const distSq = (x - lastTrailX) ** 2 + (y - lastTrailY) ** 2;
+        if (distSq > 120) {
+          lastTrailX = x;
+          lastTrailY = y;
+          const t = trails[trailIndex];
+          if (t) {
+            t.style.left = x + 'px';
+            t.style.top = y + 'px';
+            t.style.opacity = '0.6';
+            t.style.transform = 'translate(-50%, -50%) scale(1)';
+            setTimeout(() => {
+              t.style.opacity = '0';
+              t.style.transform = 'translate(-50%, -50%) scale(0.2)';
+            }, 60);
+          }
+          trailIndex = (trailIndex + 1) % MAX_TRAILS;
+        }
       }
-      window.addEventListener('mousemove', (e) => {
-        const t = trails[trailIndex];
-        t.style.left = e.clientX + 'px';
-        t.style.top = e.clientY + 'px';
-        t.style.opacity = '0.6';
-        t.style.transform = 'translate(-50%, -50%) scale(1)';
-        setTimeout(() => {
-          t.style.opacity = '0';
-          t.style.transform = 'translate(-50%, -50%) scale(0.2)';
-        }, 50);
-        trailIndex = (trailIndex + 1) % MAX_TRAILS;
-      }, { passive: true });
 
       window.addEventListener('mousedown', () => {
         ring.classList.add('is-active');
@@ -6598,6 +6610,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         isVisible = false;
         dot.style.opacity = '0';
         ring.style.opacity = '0';
+        trails.forEach(t => t.style.opacity = '0');
       });
       document.addEventListener('mouseenter', () => {
         isVisible = true;
@@ -6605,12 +6618,23 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         ring.style.opacity = '1';
       });
 
+      // Smooth Gliding Floating Physics Engine (Dual Lerp Deceleration)
       function renderFollower() {
         if (isVisible) {
-          const ease = 0.18;
-          ringX += (mouseX - ringX) * ease;
-          ringY += (mouseY - ringY) * ease;
+          // Responsive fluid glide for the cursor pointer
+          const dotEase = 0.28;
+          dotX += (mouseX - dotX) * dotEase;
+          dotY += (mouseY - dotY) * dotEase;
+          dot.style.transform = 'translate3d(' + dotX + 'px, ' + dotY + 'px, 0) translate(-4px, -2px)';
+
+          // Smooth aerodynamic trailing follower ring
+          const ringEase = 0.14;
+          ringX += (mouseX - ringX) * ringEase;
+          ringY += (mouseY - ringY) * ringEase;
           ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
+
+          // Emit trail particles along the smoothed flight path
+          dropTrail(dotX, dotY);
         }
         requestAnimationFrame(renderFollower);
       }
