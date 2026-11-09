@@ -55,6 +55,8 @@
     setupFluidBackground();
     setupBgTheme();
     setupPageTransitions();
+    setupSmoothScroll();
+    setupButtermaxCursor();
 
     // Check saved curtain peel state
     const savedPeeled = sessionStorage.getItem('orbit_curtain_peeled');
@@ -564,7 +566,7 @@
   }
 
   // ==========================================================================
-  // BACKGROUND VISCOUS LIQUID TRAIL ENGINE (PERMANENT CENTER ANCHOR)
+  // FREE-FLOWING VISCOUS LIQUID BUTTER TRAIL (BUTTERMAX ORGANIC PHYSICS)
   // ==========================================================================
   let bgCanvas = null;
   let bgCtx = null;
@@ -572,16 +574,12 @@
   let bgHeight = 0;
   let bgBlobClipPath = null;
 
-  // Center starting point & dynamic pointer
-  let centerX = 0, centerY = 0;
-  let pointerX = 0, pointerY = 0;
-  let targetPointerX = 0, targetPointerY = 0;
-  let idleTimer = 0;
+  // Free-flowing trail history (untethered)
+  const liquidTrail = [];
+  const MAX_TRAIL_LENGTH = 65;
+  let lastRecordedX = 0, lastRecordedY = 0;
   let lastMoveTime = performance.now();
-
-  // Viscous node chain permanently anchored at center
-  const NUM_TRAIL_NODES = 24;
-  const trailNodes = [];
+  let idleTimer = 0;
 
   // Click shockwave ripples
   const bgRipples = [];
@@ -612,49 +610,52 @@
       bgCanvas.height = bgHeight * dpr;
       bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      centerX = bgWidth * 0.5;
-      centerY = bgHeight * 0.40;
-
-      if (pointerX === 0 && pointerY === 0) {
-        pointerX = centerX;
-        pointerY = centerY;
-        targetPointerX = centerX;
-        targetPointerY = centerY;
+      if (liquidTrail.length === 0) {
+        initBaselineTrail();
       }
-
-      initCenterChain();
     }
 
-    // Initialize chain anchored permanently at center origin
-    function initCenterChain() {
-      trailNodes.length = 0;
-      const baseR = Math.min(bgWidth, bgHeight) * 0.20;
-      for (let i = 0; i < NUM_TRAIL_NODES; i++) {
-        const u = i / (NUM_TRAIL_NODES - 1);
-        trailNodes.push({
-          x: centerX + (pointerX - centerX) * u,
-          y: centerY + (pointerY - centerY) * u,
-          baseRadius: baseR * (1 - u * 0.62) + 24,
-          radius: baseR * (1 - u * 0.62) + 24,
-          wobblePhase: i * 0.48
+    // Seed continuous natural molten butter ribbon across center under headline
+    function initBaselineTrail() {
+      liquidTrail.length = 0;
+      const count = 38;
+      const startX = bgWidth * 0.16;
+      const endX = bgWidth * 0.84;
+      const cy = bgHeight * 0.40;
+
+      for (let i = 0; i < count; i++) {
+        const u = i / (count - 1);
+        const x = startX + (endX - startX) * u;
+        const y = cy + Math.sin(u * Math.PI * 2.2) * (bgHeight * 0.12) + Math.cos(u * Math.PI * 1.1) * (bgHeight * 0.04);
+        const rad = 72 - Math.abs(u - 0.5) * 32;
+        liquidTrail.push({
+          x: x,
+          y: y,
+          baseX: x,
+          baseY: y,
+          radius: Math.max(42, rad),
+          wobblePhase: i * 0.44,
+          isIdle: true
         });
       }
+      lastRecordedX = liquidTrail[0].x;
+      lastRecordedY = liquidTrail[0].y;
     }
 
     window.addEventListener('resize', resizeBg);
     resizeBg();
 
-    // Initialize viscous floating micro-droplets
+    // Initialize micro-droplets
     for (let i = 0; i < TOTAL_EMBERS; i++) {
       bgEmbers.push({
-        x: centerX + (Math.random() - 0.5) * (bgWidth * 0.4),
-        y: centerY + (Math.random() - 0.5) * (bgHeight * 0.35),
+        x: Math.random() * bgWidth,
+        y: Math.random() * bgHeight,
         vx: (Math.random() - 0.5) * 0.4,
         vy: -0.4 - Math.random() * 0.8,
-        radius: 1.5 + Math.random() * 2.8,
+        radius: 1.5 + Math.random() * 2.6,
         alpha: 0.2 + Math.random() * 0.6,
         phase: Math.random() * Math.PI * 2,
-        color: Math.random() > 0.4 ? 'rgba(255, 107, 74,' : 'rgba(255, 219, 21,'
+        color: Math.random() > 0.4 ? 'rgba(255, 107, 74,' : 'rgba(255, 214, 0,'
       });
     }
 
@@ -670,14 +671,57 @@
       });
     }
 
-    // Handle pointer movements
+    // Add point to free-flowing liquid trail with Hermite interpolation
+    function addLiquidTrailPoint(targetX, targetY) {
+      idleTimer = 0;
+      const now = performance.now();
+      const dt = Math.max(1, now - lastMoveTime);
+      const dist = Math.hypot(targetX - lastRecordedX, targetY - lastRecordedY);
+      const speed = dist / dt;
+      lastMoveTime = now;
+
+      // Dynamic viscous thickness based on speed (stretches thin at high velocity, thickens when slow)
+      const pointRadius = Math.max(44, Math.min(92, 86 - speed * 10));
+
+      if (dist > 12) {
+        // Interpolate smooth intermediate points so there are no angular breaks
+        const steps = Math.min(4, Math.floor(dist / 14));
+        for (let s = 1; s <= steps; s++) {
+          const t = s / (steps + 1);
+          liquidTrail.unshift({
+            x: lastRecordedX + (targetX - lastRecordedX) * t,
+            y: lastRecordedY + (targetY - lastRecordedY) * t,
+            baseX: targetX,
+            baseY: targetY,
+            radius: pointRadius,
+            wobblePhase: Math.random() * Math.PI * 2,
+            isIdle: false
+          });
+        }
+
+        liquidTrail.unshift({
+          x: targetX,
+          y: targetY,
+          baseX: targetX,
+          baseY: targetY,
+          radius: pointRadius,
+          wobblePhase: Math.random() * Math.PI * 2,
+          isIdle: false
+        });
+
+        lastRecordedX = targetX;
+        lastRecordedY = targetY;
+
+        if (liquidTrail.length > MAX_TRAIL_LENGTH) {
+          liquidTrail.pop();
+        }
+      }
+    }
+
     function onPointerMove(clientX, clientY) {
       if (isCurtainPeeled) return;
       const rect = curtainEl.getBoundingClientRect();
-      targetPointerX = clientX - rect.left;
-      targetPointerY = clientY - rect.top;
-      idleTimer = 0;
-      lastMoveTime = performance.now();
+      addLiquidTrailPoint(clientX - rect.left, clientY - rect.top);
     }
 
     window.addEventListener('mousemove', function(e) {
@@ -721,239 +765,205 @@
       if (isThemeButtermax) {
         idleTimer++;
 
-        // Idle organic sway from center if user hasn't moved mouse recently
-        if (idleTimer > 100) {
-          const swayRadiusX = Math.min(bgWidth * 0.22, 240);
-          const swayRadiusY = Math.min(bgHeight * 0.12, 130);
-          targetPointerX = centerX + Math.sin(time * 0.0014) * swayRadiusX + Math.cos(time * 0.0009) * 40;
-          targetPointerY = centerY + Math.cos(time * 0.0018) * swayRadiusY + Math.sin(time * 0.0011) * 25;
-        }
-
-        // Pointer lerp toward target with smooth gliding deceleration
-        pointerX += (targetPointerX - pointerX) * 0.16;
-        pointerY += (targetPointerY - pointerY) * 0.16;
-
-        // Base central molten pool radius with breathing harmonics
-        const basePoolRadius = Math.min(bgWidth, bgHeight) * 0.20;
-        const rBase = basePoolRadius + Math.sin(time * 0.0022) * 12 + Math.cos(time * 0.0031) * 6;
-
-        // Anchor node 0 permanently to center
-        if (trailNodes.length === 0) initCenterChain();
-        trailNodes[0].x = centerX;
-        trailNodes[0].y = centerY;
-        trailNodes[0].radius = rBase;
-
-        // Pointer head is the final node
-        const headNodeIdx = NUM_TRAIL_NODES - 1;
-        trailNodes[headNodeIdx].x = pointerX;
-        trailNodes[headNodeIdx].y = pointerY;
-        trailNodes[headNodeIdx].radius = Math.max(34, rBase * 0.36);
-
-        // Chain relaxation: intermediate nodes stretch elastically from center to pointer
-        for (let i = headNodeIdx - 1; i > 0; i--) {
-          const u = i / headNodeIdx;
-          const targetNodeX = trailNodes[i + 1].x;
-          const targetNodeY = trailNodes[i + 1].y;
-          const anchorX = centerX + (pointerX - centerX) * u;
-          const anchorY = centerY + (pointerY - centerY) * u;
-
-          // Blend of direct line tension and trailing node ease
-          trailNodes[i].x += ((targetNodeX + anchorX) * 0.5 - trailNodes[i].x) * 0.38;
-          trailNodes[i].y += ((targetNodeY + anchorY) * 0.5 - trailNodes[i].y) * 0.38;
-
-          // Multi-harmonic fluid wave undulations along the liquid body
-          const wave = Math.sin(time * 0.0032 + trailNodes[i].wobblePhase) * 11
-                     + Math.cos(time * 0.0021 + i * 0.42) * 7;
-          const taper = 1 - u * 0.60;
-          trailNodes[i].radius = Math.max(26, (rBase * taper) + wave);
-        }
-
-        // Build continuous watertight fluid boundary
-        const phi = Math.atan2(trailNodes[1].y - trailNodes[0].y, trailNodes[1].x - trailNodes[0].x);
-
-        // 1. Center base harmonic arc (32-vertex organic molten waves around center anchor)
-        const baseArcPoints = [];
-        const baseArcSteps = 20;
-        const startAngle = phi + Math.PI * 0.45;
-        const endAngle = phi + Math.PI * 1.55;
-
-        for (let s = 0; s <= baseArcSteps; s++) {
-          const theta = startAngle + (endAngle - startAngle) * (s / baseArcSteps);
-          const waveUndulation = Math.sin(theta * 2 + time * 0.0018) * 16
-                               + Math.cos(theta * 3 - time * 0.0024) * 12
-                               + Math.sin(theta * 5 + time * 0.0035) * 8;
-          const rad = rBase + waveUndulation;
-          baseArcPoints.push({
-            x: centerX + Math.cos(theta) * rad,
-            y: centerY + Math.sin(theta) * rad
-          });
-        }
-
-        // 2. Left and right flanks along the extending liquid trail
-        const leftSide = [];
-        const rightSide = [];
-
-        for (let i = 0; i < NUM_TRAIL_NODES; i++) {
-          const curr = trailNodes[i];
-          let tx = 0, ty = 0;
-          if (i === 0) {
-            tx = trailNodes[1].x - curr.x;
-            ty = trailNodes[1].y - curr.y;
-          } else if (i === NUM_TRAIL_NODES - 1) {
-            tx = curr.x - trailNodes[i - 1].x;
-            ty = curr.y - trailNodes[i - 1].y;
+        // Melt & dissipate older points like real butter
+        for (let i = 0; i < liquidTrail.length; i++) {
+          const pt = liquidTrail[i];
+          if (!pt.isIdle) {
+            pt.radius *= 0.992;
+            pt.y += Math.sin(time * 0.0022 + pt.wobblePhase) * 0.3;
           } else {
-            tx = trailNodes[i + 1].x - trailNodes[i - 1].x;
-            ty = trailNodes[i + 1].y - trailNodes[i - 1].y;
+            pt.y = pt.baseY + Math.sin(time * 0.002 + pt.wobblePhase) * 12;
+            pt.x = pt.baseX + Math.cos(time * 0.0016 + pt.wobblePhase) * 7;
+          }
+        }
+
+        while (liquidTrail.length > 28 && liquidTrail[liquidTrail.length - 1].radius < 10) {
+          liquidTrail.pop();
+        }
+
+        // Replenish baseline ribbon if user is idle
+        if (idleTimer > 180 && liquidTrail.length < 32) {
+          initBaselineTrail();
+        }
+
+        const len = liquidTrail.length;
+        if (len > 1) {
+          const leftSide = [];
+          const rightSide = [];
+
+          // Compute continuous ribbon normals along the liquid path
+          for (let i = 0; i < len; i++) {
+            const curr = liquidTrail[i];
+            let tx = 0, ty = 0;
+
+            if (i === 0) {
+              tx = curr.x - liquidTrail[1].x;
+              ty = curr.y - liquidTrail[1].y;
+            } else if (i === len - 1) {
+              tx = liquidTrail[len - 2].x - curr.x;
+              ty = liquidTrail[len - 2].y - curr.y;
+            } else {
+              tx = liquidTrail[i - 1].x - liquidTrail[i + 1].x;
+              ty = liquidTrail[i - 1].y - liquidTrail[i + 1].y;
+            }
+
+            const mag = Math.hypot(tx, ty) || 1;
+            const nx = -ty / mag;
+            const ny = tx / mag;
+
+            // Fluid surface tension harmonics
+            const wave = Math.sin(time * 0.0035 + curr.wobblePhase) * (curr.radius * 0.16)
+                       + Math.cos(time * 0.0024 + i * 0.3) * (curr.radius * 0.10);
+            
+            const taper = Math.max(0.25, 1 - (i / len) * 0.60);
+            let r = Math.max(10, (curr.radius + wave) * taper);
+
+            // Apply ripples
+            for (let k = 0; k < bgRipples.length; k++) {
+              const rip = bgRipples[k];
+              const d = Math.hypot(curr.x - rip.x, curr.y - rip.y);
+              const diff = Math.abs(d - rip.radius);
+              if (diff < 50) {
+                r += rip.amplitude * Math.cos(diff * 0.12);
+              }
+            }
+
+            leftSide.push({ x: curr.x + nx * r, y: curr.y + ny * r });
+            rightSide.push({ x: curr.x - nx * r, y: curr.y - ny * r });
           }
 
-          const mag = Math.hypot(tx, ty) || 1;
-          const nx = -ty / mag;
-          const ny = tx / mag;
-          const r = curr.radius;
+          // Build Smooth Closed Liquid Ribbon Polygon
+          bgCtx.beginPath();
+          let pathD = '';
 
-          leftSide.push({ x: curr.x + nx * r, y: curr.y + ny * r });
-          rightSide.push({ x: curr.x - nx * r, y: curr.y - ny * r });
-        }
+          const headLeft = leftSide[0];
+          const headRight = rightSide[0];
+          const headCenter = liquidTrail[0];
 
-        // 3. Assemble Unified Fluid Hull Path (Canvas & SVG ClipPath)
-        bgCtx.beginPath();
-        let pathD = '';
+          bgCtx.moveTo(headLeft.x, headLeft.y);
+          pathD = 'M ' + headLeft.x.toFixed(1) + ' ' + headLeft.y.toFixed(1);
 
-        // Start at first base arc point
-        const p0 = baseArcPoints[0];
-        bgCtx.moveTo(p0.x, p0.y);
-        pathD = 'M ' + p0.x.toFixed(1) + ' ' + p0.y.toFixed(1);
+          // Left spline (head -> tail)
+          for (let i = 0; i < leftSide.length - 1; i++) {
+            const curr = leftSide[i];
+            const next = leftSide[i + 1];
+            const mx = (curr.x + next.x) * 0.5;
+            const my = (curr.y + next.y) * 0.5;
+            bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
+            pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
+          }
 
-        // Arc around center pool
-        for (let i = 1; i < baseArcPoints.length; i++) {
-          const curr = baseArcPoints[i];
-          bgCtx.lineTo(curr.x, curr.y);
-          pathD += ' L ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1);
-        }
+          // Tail cap
+          const lastLeft = leftSide[leftSide.length - 1];
+          const lastRight = rightSide[rightSide.length - 1];
+          const tailCenter = liquidTrail[len - 1];
+          bgCtx.quadraticCurveTo(lastLeft.x, lastLeft.y, tailCenter.x, tailCenter.y);
+          bgCtx.quadraticCurveTo(tailCenter.x, tailCenter.y, lastRight.x, lastRight.y);
+          pathD += ' Q ' + lastLeft.x.toFixed(1) + ' ' + lastLeft.y.toFixed(1) + ' ' + tailCenter.x.toFixed(1) + ' ' + tailCenter.y.toFixed(1);
+          pathD += ' Q ' + tailCenter.x.toFixed(1) + ' ' + tailCenter.y.toFixed(1) + ' ' + lastRight.x.toFixed(1) + ' ' + lastRight.y.toFixed(1);
 
-        // Left flank from center pool to cursor head
-        for (let i = 0; i < leftSide.length - 1; i++) {
-          const curr = leftSide[i];
-          const next = leftSide[i + 1];
-          const mx = (curr.x + next.x) * 0.5;
-          const my = (curr.y + next.y) * 0.5;
-          bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
-          pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
-        }
+          // Right spline (tail -> head)
+          for (let i = rightSide.length - 1; i > 0; i--) {
+            const curr = rightSide[i];
+            const prev = rightSide[i - 1];
+            const mx = (curr.x + prev.x) * 0.5;
+            const my = (curr.y + prev.y) * 0.5;
+            bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
+            pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
+          }
 
-        // Pointer Head Rounded Cap
-        const headLeft = leftSide[leftSide.length - 1];
-        const headRight = rightSide[rightSide.length - 1];
-        const headCenter = trailNodes[headNodeIdx];
+          // Round head cap connecting back to headLeft
+          bgCtx.quadraticCurveTo(headRight.x, headRight.y, headCenter.x, headCenter.y);
+          bgCtx.quadraticCurveTo(headCenter.x, headCenter.y, headLeft.x, headLeft.y);
+          pathD += ' Q ' + headRight.x.toFixed(1) + ' ' + headRight.y.toFixed(1) + ' ' + headCenter.x.toFixed(1) + ' ' + headCenter.y.toFixed(1);
+          pathD += ' Q ' + headCenter.x.toFixed(1) + ' ' + headCenter.y.toFixed(1) + ' ' + headLeft.x.toFixed(1) + ' ' + headLeft.y.toFixed(1);
+          bgCtx.closePath();
+          pathD += ' Z';
 
-        bgCtx.quadraticCurveTo(headLeft.x, headLeft.y, headCenter.x, headCenter.y);
-        bgCtx.quadraticCurveTo(headCenter.x, headCenter.y, headRight.x, headRight.y);
-        pathD += ' Q ' + headLeft.x.toFixed(1) + ' ' + headLeft.y.toFixed(1) + ' ' + headCenter.x.toFixed(1) + ' ' + headCenter.y.toFixed(1);
-        pathD += ' Q ' + headCenter.x.toFixed(1) + ' ' + headCenter.y.toFixed(1) + ' ' + headRight.x.toFixed(1) + ' ' + headRight.y.toFixed(1);
+          // Update Typography Inversion Mask in SVG in real-time
+          if (bgBlobClipPath) {
+            bgBlobClipPath.setAttribute('d', pathD);
+          }
 
-        // Right flank from cursor head back to center pool
-        for (let i = rightSide.length - 1; i > 0; i--) {
-          const curr = rightSide[i];
-          const prev = rightSide[i - 1];
-          const mx = (curr.x + prev.x) * 0.5;
-          const my = (curr.y + prev.y) * 0.5;
-          bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
-          pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
-        }
+          // Liquid Gradient Fill based on Background Palette
+          const trailGrad = bgCtx.createLinearGradient(
+            liquidTrail[0].x, liquidTrail[0].y,
+            liquidTrail[len - 1].x, liquidTrail[len - 1].y
+          );
 
-        // Close smoothly back to p0
-        bgCtx.quadraticCurveTo(rightSide[0].x, rightSide[0].y, p0.x, p0.y);
-        pathD += ' Q ' + rightSide[0].x.toFixed(1) + ' ' + rightSide[0].y.toFixed(1) + ' ' + p0.x.toFixed(1) + ' ' + p0.y.toFixed(1);
-        bgCtx.closePath();
-        pathD += ' Z';
+          if (currentBgTheme === 'noir') {
+            // Molten Solar Gold liquid on Velvet Noir canvas
+            trailGrad.addColorStop(0, '#ffd600');
+            trailGrad.addColorStop(0.5, '#ffaa00');
+            trailGrad.addColorStop(1, '#ff6b4a');
 
-        // Synchronize SVG ClipPath in real-time for Headline Typography Inversion
-        if (bgBlobClipPath) {
-          bgBlobClipPath.setAttribute('d', pathD);
-        }
+            bgCtx.fillStyle = trailGrad;
+            bgCtx.fill();
 
-        // Dynamic Viscous Liquid Fill based on Background Theme
-        const trailGrad = bgCtx.createLinearGradient(centerX, centerY, pointerX, pointerY);
+            bgCtx.save();
+            bgCtx.shadowColor = '#ffd600';
+            bgCtx.shadowBlur = 32;
+            bgCtx.strokeStyle = 'rgba(255, 214, 0, 0.95)';
+            bgCtx.lineWidth = 4;
+            bgCtx.stroke();
 
-        if (currentBgTheme === 'noir') {
-          // Molten Solar Gold liquid on Velvet Noir canvas
-          trailGrad.addColorStop(0, '#ffd600');
-          trailGrad.addColorStop(0.5, '#ffaa00');
-          trailGrad.addColorStop(1, '#ff6b4a');
+            bgCtx.shadowColor = 'transparent';
+            bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+            bgCtx.lineWidth = 1.8;
+            bgCtx.stroke();
+            bgCtx.restore();
+          } else if (currentBgTheme === 'amber') {
+            // Molten Honey Amber on Roast Amber canvas
+            trailGrad.addColorStop(0, '#ffb703');
+            trailGrad.addColorStop(0.5, '#fb8500');
+            trailGrad.addColorStop(1, '#d90429');
 
-          bgCtx.fillStyle = trailGrad;
-          bgCtx.fill();
+            bgCtx.fillStyle = trailGrad;
+            bgCtx.fill();
 
+            bgCtx.save();
+            bgCtx.shadowColor = '#fb8500';
+            bgCtx.shadowBlur = 28;
+            bgCtx.strokeStyle = 'rgba(251, 133, 0, 0.95)';
+            bgCtx.lineWidth = 4;
+            bgCtx.stroke();
+
+            bgCtx.shadowColor = 'transparent';
+            bgCtx.strokeStyle = 'rgba(255, 220, 100, 0.9)';
+            bgCtx.lineWidth = 1.8;
+            bgCtx.stroke();
+            bgCtx.restore();
+          } else {
+            // Molten Charcoal liquid on Solar Butter canvas
+            trailGrad.addColorStop(0, '#222222');
+            trailGrad.addColorStop(0.5, '#121212');
+            trailGrad.addColorStop(1, '#080808');
+
+            bgCtx.fillStyle = trailGrad;
+            bgCtx.fill();
+
+            bgCtx.save();
+            bgCtx.shadowColor = '#ff6b4a';
+            bgCtx.shadowBlur = 28;
+            bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.92)';
+            bgCtx.lineWidth = 4;
+            bgCtx.stroke();
+
+            bgCtx.shadowColor = 'transparent';
+            bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.85)';
+            bgCtx.lineWidth = 1.8;
+            bgCtx.stroke();
+            bgCtx.restore();
+          }
+
+          // Specular Reflection on Leading Head Droplet
           bgCtx.save();
-          bgCtx.shadowColor = '#ffd600';
-          bgCtx.shadowBlur = 32;
-          bgCtx.strokeStyle = 'rgba(255, 214, 0, 0.95)';
-          bgCtx.lineWidth = 4;
-          bgCtx.stroke();
-
-          bgCtx.shadowColor = 'transparent';
-          bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
-          bgCtx.lineWidth = 1.8;
-          bgCtx.stroke();
-          bgCtx.restore();
-        } else if (currentBgTheme === 'amber') {
-          // Molten Honey Amber liquid on Roast Amber canvas
-          trailGrad.addColorStop(0, '#ffb703');
-          trailGrad.addColorStop(0.5, '#fb8500');
-          trailGrad.addColorStop(1, '#d90429');
-
-          bgCtx.fillStyle = trailGrad;
+          bgCtx.beginPath();
+          bgCtx.arc(headCenter.x - 8, headCenter.y - 8, 14, 0, Math.PI * 2);
+          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.15)';
           bgCtx.fill();
-
-          bgCtx.save();
-          bgCtx.shadowColor = '#fb8500';
-          bgCtx.shadowBlur = 28;
-          bgCtx.strokeStyle = 'rgba(251, 133, 0, 0.95)';
-          bgCtx.lineWidth = 4;
-          bgCtx.stroke();
-
-          bgCtx.shadowColor = 'transparent';
-          bgCtx.strokeStyle = 'rgba(255, 220, 100, 0.9)';
-          bgCtx.lineWidth = 1.8;
-          bgCtx.stroke();
-          bgCtx.restore();
-        } else {
-          // Molten Charcoal liquid on Solar Butter canvas
-          trailGrad.addColorStop(0, '#222222');
-          trailGrad.addColorStop(0.5, '#121212');
-          trailGrad.addColorStop(1, '#080808');
-
-          bgCtx.fillStyle = trailGrad;
-          bgCtx.fill();
-
-          bgCtx.save();
-          bgCtx.shadowColor = '#ff6b4a';
-          bgCtx.shadowBlur = 28;
-          bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.92)';
-          bgCtx.lineWidth = 4;
-          bgCtx.stroke();
-
-          bgCtx.shadowColor = 'transparent';
-          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.85)';
-          bgCtx.lineWidth = 1.8;
-          bgCtx.stroke();
           bgCtx.restore();
         }
-
-        // Specular highlight on Center Anchor
-        bgCtx.save();
-        bgCtx.beginPath();
-        bgCtx.arc(centerX - 14, centerY - 14, 20, 0, Math.PI * 2);
-        bgCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-        bgCtx.fill();
-
-        // Specular highlight on Pointer Head
-        bgCtx.beginPath();
-        bgCtx.arc(pointerX - 7, pointerY - 7, 12, 0, Math.PI * 2);
-        bgCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-        bgCtx.fill();
-        bgCtx.restore();
 
         // Floating Viscous Micro-Embers
         bgEmbers.forEach(emb => {
@@ -963,7 +973,7 @@
 
           if (emb.y < -20) {
             emb.y = bgHeight + 10;
-            emb.x = centerX + (Math.random() - 0.5) * (basePoolRadius * 2);
+            emb.x = (liquidTrail[0] ? liquidTrail[0].x : bgWidth * 0.5) + (Math.random() - 0.5) * 200;
           }
 
           bgCtx.beginPath();
@@ -973,7 +983,7 @@
         });
 
       } else {
-        // --- OBSIDIAN MODE: TACTICAL STARFIELD & RADAR SWEEP ---
+        // Obsidian Mode: Tactical Starfield & Radar Sweep
         obsidianStars.forEach((s, i) => {
           s.x += s.vx;
           s.y += s.vy;
@@ -1058,6 +1068,121 @@
         peelCurtain(true);
       });
     }
+  }
+
+
+  // ==========================================================================
+  // BUTTERMAX-GRADE LENIS SMOOTH MOMENTUM SCROLL ENGINE
+  // ==========================================================================
+  let smoothScrollTarget = window.scrollY;
+  let smoothScrollCurrent = window.scrollY;
+  let isSmoothScrolling = false;
+  const SCROLL_LERP = 0.088; // Silky butter momentum
+
+  function setupSmoothScroll() {
+    window.addEventListener('wheel', function(e) {
+      if (document.body.classList.contains('auth-modal-open')) return;
+
+      // When over curtain: scroll peels curtain smoothly
+      if (curtainEl && !isCurtainPeeled && e.deltaY > 15) {
+        e.preventDefault();
+        peelCurtain(true);
+        return;
+      }
+
+      e.preventDefault();
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      smoothScrollTarget = Math.max(0, Math.min(maxScroll, smoothScrollTarget + e.deltaY * 1.05));
+
+      if (!isSmoothScrolling) {
+        isSmoothScrolling = true;
+        requestAnimationFrame(updateSmoothScrollPhysics);
+      }
+    }, { passive: false });
+
+    window.addEventListener('scroll', function() {
+      if (!isSmoothScrolling) {
+        smoothScrollCurrent = window.scrollY;
+        smoothScrollTarget = window.scrollY;
+      }
+    }, { passive: true });
+  }
+
+  function updateSmoothScrollPhysics() {
+    const diff = smoothScrollTarget - smoothScrollCurrent;
+    if (Math.abs(diff) < 0.6) {
+      smoothScrollCurrent = smoothScrollTarget;
+      window.scrollTo(0, smoothScrollCurrent);
+      isSmoothScrolling = false;
+      return;
+    }
+
+    smoothScrollCurrent += diff * SCROLL_LERP;
+    window.scrollTo(0, smoothScrollCurrent);
+    requestAnimationFrame(updateSmoothScrollPhysics);
+  }
+
+  // ==========================================================================
+  // BUTTERMAX VELOCITY-DEFORMING MOLTEN FLUID CURSOR & MAGNETIC LENS
+  // ==========================================================================
+  let cursorDot = null;
+  let cursorRing = null;
+  let mouseScreenX = -100, mouseScreenY = -100;
+  let followerX = -100, followerY = -100;
+  let isCursorActive = false;
+
+  function setupButtermaxCursor() {
+    cursorDot = document.getElementById('orbit-cursor-dot');
+    cursorRing = document.getElementById('orbit-cursor-ring');
+    if (!cursorRing) return;
+
+    window.addEventListener('mousemove', function(e) {
+      mouseScreenX = e.clientX;
+      mouseScreenY = e.clientY;
+      if (!isCursorActive) {
+        isCursorActive = true;
+        followerX = mouseScreenX;
+        followerY = mouseScreenY;
+      }
+    }, { passive: true });
+
+    // Magnetic lens hover effect
+    document.addEventListener('mouseover', function(e) {
+      const target = e.target.closest('a, button, .btn, .app-rect-card, .cop-btn, .theme-toggle-btn');
+      if (target && cursorRing) {
+        cursorRing.classList.add('is-hovering');
+      }
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      const target = e.target.closest('a, button, .btn, .app-rect-card, .cop-btn, .theme-toggle-btn');
+      if (target && cursorRing) {
+        cursorRing.classList.remove('is-hovering');
+      }
+    });
+
+    function renderGooeyCursor() {
+      if (isCursorActive && cursorRing) {
+        const vx = mouseScreenX - followerX;
+        const vy = mouseScreenY - followerY;
+        
+        // Elastic spring lag
+        followerX += vx * 0.22;
+        followerY += vy * 0.22;
+
+        const speed = Math.hypot(vx, vy);
+        const angle = Math.atan2(vy, vx) * (180 / Math.PI);
+
+        // Elastic molten droplet deformation along movement vector
+        const stretch = Math.min(speed * 0.016, 0.72);
+        const scaleX = 1 + stretch;
+        const scaleY = Math.max(0.48, 1 - stretch * 0.52);
+
+        cursorRing.style.transform = 'translate3d(' + followerX.toFixed(1) + 'px, ' + followerY.toFixed(1) + 'px, 0) translate(-50%, -50%) rotate(' + angle.toFixed(1) + 'deg) scale(' + scaleX.toFixed(3) + ', ' + scaleY.toFixed(3) + ')';
+      }
+      requestAnimationFrame(renderGooeyCursor);
+    }
+    requestAnimationFrame(renderGooeyCursor);
   }
 
   // Auto-init when document ready

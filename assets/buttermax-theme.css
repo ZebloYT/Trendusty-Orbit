@@ -1697,3 +1697,48 @@ body.theme-buttermax footer a {
   50% { transform: translateX(150%); }
   100% { transform: translateX(350%); }
 }
+
+/* ==========================================================================
+   BUTTERMAX GOOEY MOLTEN FLUID CURSOR (ORGANIC BUTTERY DROPLET)
+   ========================================================================== */
+body.theme-buttermax #orbit-cursor-dot {
+  width: 10px !important;
+  height: 10px !important;
+  background: #ffd600 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 16px rgba(255, 214, 0, 0.85) !important;
+  pointer-events: none !important;
+  transition: transform 0.08s ease-out, opacity 0.2s ease !important;
+}
+
+body.theme-buttermax #orbit-cursor-ring {
+  width: 44px !important;
+  height: 44px !important;
+  border: 2px solid #ffd600 !important;
+  border-radius: 50% !important;
+  background: rgba(255, 214, 0, 0.08) !important;
+  box-shadow: 0 0 24px rgba(255, 214, 0, 0.3) !important;
+  pointer-events: none !important;
+  transform-origin: center center !important;
+  transition: border-color 0.25s ease, background-color 0.25s ease, width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Hide rigid tactical HUD reticles in Buttermax mode */
+body.theme-buttermax #orbit-cursor-ring .tc-bracket,
+body.theme-buttermax #orbit-cursor-ring .tc-hud-reticle {
+  display: none !important;
+}
+
+/* Hovering over clickable items: Expanded Molten Lens */
+body.theme-buttermax #orbit-cursor-ring.is-hovering {
+  width: 68px !important;
+  height: 68px !important;
+  background: rgba(255, 214, 0, 0.22) !important;
+  border-color: #ffd600 !important;
+  box-shadow: 0 0 35px rgba(255, 214, 0, 0.55) !important;
+}
+
+/* Smooth HTML scroll momentum */
+html.has-butter-smooth {
+  scroll-behavior: smooth !important;
+}
