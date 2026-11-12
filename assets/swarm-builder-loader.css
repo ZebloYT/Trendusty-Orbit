@@ -440,6 +440,52 @@ html.sb-mouse-disconnected .mouse-trail-dot {
    OPTION 4: TACTICAL OSINT RETICLE ARROW (WEBSITE DEFAULT & FORGE STAGE)
    ========================================================================== */
 
+/* ==========================================================================
+   BUTTERMAX CIRCLE MOUSE FORGE STAGE (WHITE -> SMOOTH SPECTRUM TRANSITION)
+   ========================================================================== */
+
+.sb-created-circle-mouse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  margin-left: -25px;
+  margin-top: -25px;
+  pointer-events: none;
+  z-index: 2147483644;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sb-forge-ring {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.95), 0 0 45px rgba(255, 255, 255, 0.5);
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, border-color 0.45s ease, background-color 0.45s ease, box-shadow 0.45s ease;
+}
+
+.sb-forge-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 16px #ffffff, 0 0 4px #ffffff;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease, background-color 0.45s ease, box-shadow 0.45s ease;
+}
+
 .sb-created-tactical {
   position: absolute;
   top: 0;

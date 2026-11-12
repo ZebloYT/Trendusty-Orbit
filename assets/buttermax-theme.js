@@ -587,12 +587,12 @@
   let bgHeight = 0;
   let bgBlobClipPath = null;
 
-  const CHAIN_LENGTH = 14;
-  const liquidChain = [];
-  let pointerTargetX = -1000;
-  let pointerTargetY = -1000;
+  let leadX = -1000;
+  let leadY = -1000;
   let prevLeadX = -1000;
   let prevLeadY = -1000;
+  let pointerTargetX = -1000;
+  let pointerTargetY = -1000;
   let isPointerActive = false;
   let idleTimer = 0;
 
@@ -640,20 +640,13 @@
     }
 
     function initChain() {
-      liquidChain.length = 0;
       const anchor = getConsoleCenter();
-      const idleLeadX = anchor.x - 190;
-      const idleLeadY = anchor.y + 60;
-
-      for (let i = 0; i < CHAIN_LENGTH; i++) {
-        const u = i / (CHAIN_LENGTH - 1);
-        liquidChain.push({
-          x: idleLeadX * (1 - u) + anchor.x * u,
-          y: idleLeadY * (1 - u) + anchor.y * u
-        });
-      }
-      prevLeadX = liquidChain[0].x;
-      prevLeadY = liquidChain[0].y;
+      leadX = anchor.x - 180;
+      leadY = anchor.y + 60;
+      prevLeadX = leadX;
+      prevLeadY = leadY;
+      pointerTargetX = leadX;
+      pointerTargetY = leadY;
     }
 
     window.addEventListener('resize', resizeBg);
@@ -735,125 +728,94 @@
         const rootX = anchor.x + currentTransX * 0.25;
         const rootY = anchor.y + currentTransY * 0.20;
 
-        // Anchor root point
-        liquidChain[CHAIN_LENGTH - 1].x = rootX;
-        liquidChain[CHAIN_LENGTH - 1].y = rootY;
+        // Base pool radius around console
+        const baseRadius = Math.min(145, Math.max(105, bgWidth * 0.10));
 
-        // Leading head target (follows mouse or settles into resting puddle like 00:07)
+        // Leading head target (follows mouse or settles into resting puddle like Image 1)
+        let targetX = rootX - 180;
+        let targetY = rootY + 60;
+
         if (isPointerActive && idleTimer < 240) {
-          liquidChain[0].x += (pointerTargetX - liquidChain[0].x) * 0.22;
-          liquidChain[0].y += (pointerTargetY - liquidChain[0].y) * 0.22;
+          targetX = pointerTargetX;
+          targetY = pointerTargetY;
         } else {
-          // Natural resting molten puddle position behind console (matching Image 1 & video)
-          const restingLeadX = rootX - 190 + Math.sin(time * 0.0016) * 14;
-          const restingLeadY = rootY + 60 + Math.cos(time * 0.0022) * 8;
-          liquidChain[0].x += (restingLeadX - liquidChain[0].x) * 0.06;
-          liquidChain[0].y += (restingLeadY - liquidChain[0].y) * 0.06;
+          // Natural resting molten puddle position behind console (matching Image 1)
+          targetX = rootX - 180 + Math.sin(time * 0.0016) * 14;
+          targetY = rootY + 60 + Math.cos(time * 0.0022) * 8;
         }
 
-        // Kinematic fluid chain relaxation (viscous honey / molten chocolate physics)
-        for (let i = 1; i < CHAIN_LENGTH - 1; i++) {
-          const prev = liquidChain[i - 1];
-          const next = liquidChain[i + 1];
-          const midX = (prev.x + next.x) * 0.5;
-          const midY = (prev.y + next.y) * 0.5;
-          liquidChain[i].x += (midX - liquidChain[i].x) * 0.44;
-          liquidChain[i].y += (midY - liquidChain[i].y) * 0.44;
-        }
+        // Viscous exponential smoothing (buttery smooth gliding, zero wiggle/squiggly line)
+        if (leadX === -1000) { leadX = targetX; leadY = targetY; prevLeadX = leadX; prevLeadY = leadY; }
+        leadX += (targetX - leadX) * 0.12;
+        leadY += (targetY - leadY) * 0.12;
 
-        // Speed of leading head
-        const leadSpeed = Math.hypot(liquidChain[0].x - prevLeadX, liquidChain[0].y - prevLeadY);
-        prevLeadX = liquidChain[0].x;
-        prevLeadY = liquidChain[0].y;
+        const leadSpeed = Math.hypot(leadX - prevLeadX, leadY - prevLeadY);
+        prevLeadX = leadX;
+        prevLeadY = leadY;
 
-        // Thick Buttermax fluid proportions matching OBS video
-        const baseRadius = Math.min(150, Math.max(105, bgWidth * 0.11));
-        const leadRadius = Math.min(88, Math.max(58, 76 - leadSpeed * 0.32));
-        const stretchDist = Math.hypot(liquidChain[0].x - rootX, liquidChain[0].y - rootY);
-        const waistDip = Math.min(38, stretchDist * 0.075);
+        const leadRadius = Math.min(84, Math.max(54, 72 - leadSpeed * 0.32));
 
-        const leftSide = [];
-        const rightSide = [];
+        // Distance & angle between anchor pool and lead blob
+        const dx = leadX - rootX;
+        const dy = leadY - rootY;
+        const dist = Math.hypot(dx, dy) || 1;
+        const angle = Math.atan2(dy, dx);
+        const perpX = -Math.sin(angle);
+        const perpY = Math.cos(angle);
 
-        // Compute smooth normal offsets along the relaxed kinematic spine
-        for (let i = 0; i < CHAIN_LENGTH; i++) {
-          const curr = liquidChain[i];
-          let tx = 0, ty = 0;
+        // Smooth tangential contact points on base pool (C1) and lead blob (C2)
+        const p1LeftX = rootX + perpX * baseRadius;
+        const p1LeftY = rootY + perpY * baseRadius;
+        const p1RightX = rootX - perpX * baseRadius;
+        const p1RightY = rootY - perpY * baseRadius;
 
-          if (i === 0) {
-            tx = curr.x - liquidChain[1].x;
-            ty = curr.y - liquidChain[1].y;
-          } else if (i === CHAIN_LENGTH - 1) {
-            tx = liquidChain[CHAIN_LENGTH - 2].x - curr.x;
-            ty = liquidChain[CHAIN_LENGTH - 2].y - curr.y;
-          } else {
-            tx = liquidChain[i - 1].x - liquidChain[i + 1].x;
-            ty = liquidChain[i - 1].y - liquidChain[i + 1].y;
-          }
+        const p2LeftX = leadX + perpX * leadRadius;
+        const p2LeftY = leadY + perpY * leadRadius;
+        const p2RightX = leadX - perpX * leadRadius;
+        const p2RightY = leadY - perpY * leadRadius;
 
-          const mag = Math.hypot(tx, ty) || 1;
-          const nx = -ty / mag;
-          const ny = tx / mag;
+        // Organic inward neck waist (elastic liquid surface tension)
+        const maxWaist = (baseRadius + leadRadius) * 0.5;
+        const waistRadius = Math.max(24, maxWaist - dist * 0.08);
 
-          const u = i / (CHAIN_LENGTH - 1);
-          // Parabolic waist blend: wide base, wide lead, smooth elastic neck
-          const parabola = 1.0 - 4.0 * Math.pow(u - 0.5, 2);
-          const r = Math.max(22, (leadRadius * (1 - u) + baseRadius * u) - parabola * waistDip);
+        // Control points for the left and right waist curves
+        const midX = (rootX + leadX) * 0.5;
+        const midY = (rootY + leadY) * 0.5;
+        const cLeftX = midX + perpX * waistRadius;
+        const cLeftY = midY + perpY * waistRadius;
+        const cRightX = midX - perpX * waistRadius;
+        const cRightY = midY - perpY * waistRadius;
 
-          leftSide.push({ x: curr.x + nx * r, y: curr.y + ny * r });
-          rightSide.push({ x: curr.x - nx * r, y: curr.y - ny * r });
-        }
+        // Leading nose cap and trailing base cap
+        const leadNoseX = leadX + Math.cos(angle) * leadRadius;
+        const leadNoseY = leadY + Math.sin(angle) * leadRadius;
+        const rootCapX = rootX - Math.cos(angle) * baseRadius;
+        const rootCapY = rootY - Math.sin(angle) * baseRadius;
 
-        // Build continuous closed liquid trail contour
+        // Build continuous, smooth closed contour
         bgCtx.beginPath();
-        let pathD = 'M ' + leftSide[0].x.toFixed(1) + ' ' + leftSide[0].y.toFixed(1);
+        let pathD = 'M ' + p2LeftX.toFixed(1) + ' ' + p2LeftY.toFixed(1);
 
-        // Left side spline (lead -> root)
-        for (let i = 0; i < leftSide.length - 1; i++) {
-          const curr = leftSide[i];
-          const next = leftSide[i + 1];
-          const mx = (curr.x + next.x) * 0.5;
-          const my = (curr.y + next.y) * 0.5;
-          bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
-          pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
-        }
+        // Waist curve from lead head to base pool (left side)
+        bgCtx.quadraticCurveTo(cLeftX, cLeftY, p1LeftX, p1LeftY);
+        pathD += ' Q ' + cLeftX.toFixed(1) + ' ' + cLeftY.toFixed(1) + ' ' + p1LeftX.toFixed(1) + ' ' + p1LeftY.toFixed(1);
 
-        // Root rounded base cap around console anchor
-        const rootPt = liquidChain[CHAIN_LENGTH - 1];
-        const tailTx = rootPt.x - liquidChain[CHAIN_LENGTH - 2].x;
-        const tailTy = rootPt.y - liquidChain[CHAIN_LENGTH - 2].y;
-        const tailAng = Math.atan2(tailTy, tailTx);
-        const rootCapX = rootPt.x + Math.cos(tailAng) * baseRadius;
-        const rootCapY = rootPt.y + Math.sin(tailAng) * baseRadius;
+        // Base rounded cap around console
+        bgCtx.quadraticCurveTo(rootCapX, rootCapY, p1RightX, p1RightY);
+        pathD += ' Q ' + rootCapX.toFixed(1) + ' ' + rootCapY.toFixed(1) + ' ' + p1RightX.toFixed(1) + ' ' + p1RightY.toFixed(1);
 
-        bgCtx.quadraticCurveTo(rootCapX, rootCapY, rightSide[CHAIN_LENGTH - 1].x, rightSide[CHAIN_LENGTH - 1].y);
-        pathD += ' Q ' + rootCapX.toFixed(1) + ' ' + rootCapY.toFixed(1) + ' ' + rightSide[CHAIN_LENGTH - 1].x.toFixed(1) + ' ' + rightSide[CHAIN_LENGTH - 1].y.toFixed(1);
-
-        // Right side spline (root -> lead)
-        for (let i = rightSide.length - 1; i > 0; i--) {
-          const curr = rightSide[i];
-          const prev = rightSide[i - 1];
-          const mx = (curr.x + prev.x) * 0.5;
-          const my = (curr.y + prev.y) * 0.5;
-          bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
-          pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
-        }
+        // Waist curve from base pool back to lead head (right side)
+        bgCtx.quadraticCurveTo(cRightX, cRightY, p2RightX, p2RightY);
+        pathD += ' Q ' + cRightX.toFixed(1) + ' ' + cRightY.toFixed(1) + ' ' + p2RightX.toFixed(1) + ' ' + p2RightY.toFixed(1);
 
         // Leading head rounded cap
-        const headPt = liquidChain[0];
-        const headTx = headPt.x - liquidChain[1].x;
-        const headTy = headPt.y - liquidChain[1].y;
-        const headAng = Math.atan2(headTy, headTx);
-        const leadNoseX = headPt.x + Math.cos(headAng) * leadRadius;
-        const leadNoseY = headPt.y + Math.sin(headAng) * leadRadius;
-
-        bgCtx.quadraticCurveTo(leadNoseX, leadNoseY, leftSide[0].x, leftSide[0].y);
-        pathD += ' Q ' + leadNoseX.toFixed(1) + ' ' + leadNoseY.toFixed(1) + ' ' + leftSide[0].x.toFixed(1) + ' ' + leftSide[0].y.toFixed(1) + ' Z';
+        bgCtx.quadraticCurveTo(leadNoseX, leadNoseY, p2LeftX, p2LeftY);
+        pathD += ' Q ' + leadNoseX.toFixed(1) + ' ' + leadNoseY.toFixed(1) + ' ' + p2LeftX.toFixed(1) + ' ' + p2LeftY.toFixed(1) + ' Z';
         bgCtx.closePath();
 
         // Palette rendering
         if (currentBgTheme === 'noir') {
-          const noirGrad = bgCtx.createLinearGradient(headPt.x, headPt.y, rootPt.x, rootPt.y);
+          const noirGrad = bgCtx.createLinearGradient(leadX, leadY, rootX, rootY);
           noirGrad.addColorStop(0, '#ffd600');
           noirGrad.addColorStop(0.6, '#ffaa00');
           noirGrad.addColorStop(1, '#ff6b4a');
@@ -867,7 +829,7 @@
           bgCtx.stroke();
           bgCtx.restore();
         } else if (currentBgTheme === 'amber') {
-          const amberGrad = bgCtx.createLinearGradient(headPt.x, headPt.y, rootPt.x, rootPt.y);
+          const amberGrad = bgCtx.createLinearGradient(leadX, leadY, rootX, rootY);
           amberGrad.addColorStop(0, '#ffb703');
           amberGrad.addColorStop(0.6, '#fb8500');
           amberGrad.addColorStop(1, '#d90429');
@@ -882,7 +844,7 @@
           bgCtx.restore();
         } else {
           // Canonical Buttermax Yellow Mode: solid rich glossy molten charcoal on solar yellow
-          const butterGrad = bgCtx.createRadialGradient(rootPt.x, rootPt.y, 25, rootPt.x, rootPt.y, baseRadius * 1.5);
+          const butterGrad = bgCtx.createRadialGradient(rootX, rootY, 25, rootX, rootY, baseRadius * 1.5);
           butterGrad.addColorStop(0, '#1c1c1c');
           butterGrad.addColorStop(0.6, '#121212');
           butterGrad.addColorStop(1, '#090909');
@@ -896,7 +858,7 @@
           // Specular gloss highlight on leading head
           bgCtx.save();
           bgCtx.beginPath();
-          bgCtx.arc(headPt.x - leadRadius * 0.22, headPt.y - leadRadius * 0.22, leadRadius * 0.32, 0, Math.PI * 2);
+          bgCtx.arc(leadX - leadRadius * 0.22, leadY - leadRadius * 0.22, leadRadius * 0.32, 0, Math.PI * 2);
           bgCtx.fillStyle = 'rgba(255, 255, 255, 0.16)';
           bgCtx.fill();
           bgCtx.restore();
@@ -906,8 +868,8 @@
         // SIGNATURE DETACHED SATELLITE BEADS & PINCH-OFF TRAIL (EXACT IMAGE 1)
         // ====================================================================
         const beadGap = leadRadius * 1.5 + 40;
-        const beadX = headPt.x + Math.cos(headAng) * beadGap;
-        const beadY = headPt.y + Math.sin(headAng) * beadGap;
+        const beadX = leadX + Math.cos(angle) * beadGap;
+        const beadY = leadY + Math.sin(angle) * beadGap;
         const beadR = 13.5;
 
         // Primary detached satellite droplet (●)
@@ -938,8 +900,8 @@
           { frac: 0.68, r: 2.4 }
         ];
         microDroplets.forEach(function(m) {
-          const mx = headPt.x + Math.cos(headAng) * (beadGap * m.frac);
-          const my = headPt.y + Math.sin(headAng) * (beadGap * m.frac);
+          const mx = leadX + Math.cos(angle) * (beadGap * m.frac);
+          const my = leadY + Math.sin(angle) * (beadGap * m.frac);
           bgCtx.beginPath();
           bgCtx.arc(mx, my, m.r, 0, Math.PI * 2);
           bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#121212' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
@@ -1095,7 +1057,57 @@
   // ==========================================================================
   // BUTTERMAX SILKY CIRCULAR LENS & MAGNETIC HOVER CONTROLLER (ZERO JITTER)
   // ==========================================================================
+  function applyActiveCursorColor() {
+    let hex = '#992DCA';
+    try {
+      const stored = localStorage.getItem('orbit_temp_cursor_color');
+      if (stored && stored.startsWith('#')) hex = stored.toUpperCase();
+    } catch(e) {}
+
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const r = parseInt(c.substring(0, 2), 16) || 153;
+    const g = parseInt(c.substring(2, 4), 16) || 45;
+    const b = parseInt(c.substring(4, 6), 16) || 202;
+
+    let styleEl = document.getElementById('orbit-cursor-color-dynamic');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'orbit-cursor-color-dynamic';
+      document.head.appendChild(styleEl);
+    }
+    styleEl.innerHTML = `
+      body.theme-buttermax #orbit-cursor-dot, #orbit-cursor-dot {
+        background: ${hex} !important;
+        box-shadow: 0 0 16px rgba(${r}, ${g}, ${b}, 0.95), 0 0 4px #ffffff !important;
+      }
+      body.theme-buttermax #orbit-cursor-ring {
+        border-color: ${hex} !important;
+        background: rgba(${r}, ${g}, ${b}, 0.12) !important;
+        box-shadow: 0 0 24px rgba(${r}, ${g}, ${b}, 0.45) !important;
+      }
+      body.theme-buttermax #orbit-cursor-ring.is-hovering {
+        border-color: ${hex} !important;
+        background: rgba(${r}, ${g}, ${b}, 0.26) !important;
+        box-shadow: 0 0 35px rgba(${r}, ${g}, ${b}, 0.75) !important;
+      }
+      body.theme-buttermax #orbit-cursor-ring.is-active {
+        border-color: ${hex} !important;
+        background: rgba(${r}, ${g}, ${b}, 0.45) !important;
+      }
+      body.theme-buttermax #orbit-cursor-dot.is-active {
+        background: ${hex} !important;
+        box-shadow: 0 0 22px rgba(${r}, ${g}, ${b}, 1) !important;
+      }
+    `;
+  }
+
   function setupButtermaxCursor() {
+    applyActiveCursorColor();
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'orbit_temp_cursor_color') applyActiveCursorColor();
+    });
+
     const cursorRing = document.getElementById('orbit-cursor-ring');
     const cursorDot = document.getElementById('orbit-cursor-dot');
     if (!cursorRing) return;
