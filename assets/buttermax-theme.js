@@ -731,18 +731,24 @@
         // Base pool radius around console
         const baseRadius = Math.min(145, Math.max(105, bgWidth * 0.10));
 
-        // Leading head target (follows mouse or settles into resting puddle like Image 1)
-        let targetX = rootX - 180;
-        let targetY = rootY + 60;
+        // Canonical Buttermax Puddle (Image 1): A cohesive molten pool behind & to the left of the console.
+        // It does NOT follow the cursor across the screen like a line!
+        // Instead, it stays anchored under the hardware and subtly sloshes with fluid inertia.
+        const mouseOffsetX = (pointerTargetX - rootX);
+        const mouseOffsetY = (pointerTargetY - rootY);
+        // Bounded fluid slosh reaction (max ±32px horizontal, ±22px vertical - never leaving console area)
+        const sloshX = Math.max(-32, Math.min(32, mouseOffsetX * 0.05));
+        const sloshY = Math.max(-22, Math.min(22, mouseOffsetY * 0.05));
 
-        if (isPointerActive && idleTimer < 240) {
-          targetX = pointerTargetX;
-          targetY = pointerTargetY;
-        } else {
-          // Natural resting molten puddle position behind console (matching Image 1)
-          targetX = rootX - 180 + Math.sin(time * 0.0016) * 14;
-          targetY = rootY + 60 + Math.cos(time * 0.0022) * 8;
-        }
+        // Organic idle surface-tension breathing oscillation
+        const breathingX = Math.sin(time * 0.0016) * 10;
+        const breathingY = Math.cos(time * 0.0022) * 6;
+
+        // Puddle lobe rests naturally to the lower-left behind console (exact match to Image 1)
+        const puddleOffsetX = Math.min(195, Math.max(120, bgWidth * 0.14));
+        const puddleOffsetY = Math.min(65, Math.max(35, bgHeight * 0.07));
+        const targetX = rootX - puddleOffsetX + sloshX + breathingX;
+        const targetY = rootY + puddleOffsetY + sloshY + breathingY;
 
         // Viscous exponential smoothing (buttery smooth gliding, zero wiggle/squiggly line)
         if (leadX === -1000) { leadX = targetX; leadY = targetY; prevLeadX = leadX; prevLeadY = leadY; }
