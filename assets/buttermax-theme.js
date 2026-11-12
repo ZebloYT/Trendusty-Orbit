@@ -572,13 +572,14 @@
   }
 
   // ==========================================================================
-  // BUTTERMAX SIGNATURE MOLTEN PUDDLE ENGINE (IMAGE 1 AUTHENTIC FIDELITY)
+  // BUTTERMAX CENTER-ANCHORED VISCOUS MOLTEN FLUID TRAIL
   // Features:
-  // 1. Console-Grounded Molten Black Puddle resting on the floor beneath the 3D console
-  // 2. Viscous inertia deformation reacting elastically to device tilt and cursor
-  // 3. Pinch-off trailing droplet beads (● · · · · ·) matching buttermax.net
-  // 4. Zero infinite looping worms/caterpillars (evaporating transient wake)
-  // 5. Real-time SVG typography clipping & color inversion (#bm-blob-clip)
+  // 1. Rooted at canvas center (underneath headline / around console)
+  // 2. Continuous kinematic fluid trail stretching towards the mouse
+  // 3. Natural resting molten puddle when pointer is idle (Image 1 style)
+  // 4. Zero random floating ember dots (100% clean solid liquid body)
+  // 5. Signature detached molten bead (●) floating ahead of the lead
+  // 6. Real-time SVG typography clipping & color inversion (#bm-blob-clip)
   // ==========================================================================
   let bgCanvas = null;
   let bgCtx = null;
@@ -586,26 +587,17 @@
   let bgHeight = 0;
   let bgBlobClipPath = null;
 
-  // Elastic puddle state
-  let currentStretchX = -135;
-  let currentStretchY = 12;
-  let targetStretchX = -135;
-  let targetStretchY = 12;
+  const CHAIN_LENGTH = 18;
+  const liquidChain = [];
   let pointerTargetX = -1000;
   let pointerTargetY = -1000;
-  let prevPointerX = -1000;
-  let prevPointerY = -1000;
+  let prevLeadX = -1000;
+  let prevLeadY = -1000;
   let isPointerActive = false;
-
-  // Transient evaporating mouse splashes (max life 14 frames, dissolves into canvas)
-  const transientSplashes = [];
+  let idleTimer = 0;
 
   // Click shockwave ripples
   const bgRipples = [];
-
-  // Viscous micro-droplets
-  const bgEmbers = [];
-  const TOTAL_EMBERS = 22;
 
   // Tactical starfield for Obsidian Mode
   const obsidianStars = [];
@@ -628,24 +620,30 @@
       bgCanvas.width = bgWidth * dpr;
       bgCanvas.height = bgHeight * dpr;
       bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      initChain();
+    }
+
+    function initChain() {
+      liquidChain.length = 0;
+      const rootX = bgWidth * 0.5;
+      const rootY = bgHeight * 0.44;
+      const idleLeadX = rootX - 160;
+      const idleLeadY = rootY + 15;
+
+      for (let i = 0; i < CHAIN_LENGTH; i++) {
+        const u = i / (CHAIN_LENGTH - 1);
+        liquidChain.push({
+          x: idleLeadX * (1 - u) + rootX * u,
+          y: idleLeadY * (1 - u) + rootY * u
+        });
+      }
+      prevLeadX = liquidChain[0].x;
+      prevLeadY = liquidChain[0].y;
     }
 
     window.addEventListener('resize', resizeBg);
     resizeBg();
-
-    // Initialize micro-droplets
-    for (let i = 0; i < TOTAL_EMBERS; i++) {
-      bgEmbers.push({
-        x: Math.random() * bgWidth,
-        y: Math.random() * bgHeight,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: -0.35 - Math.random() * 0.65,
-        radius: 1.5 + Math.random() * 2.2,
-        alpha: 0.2 + Math.random() * 0.45,
-        phase: Math.random() * Math.PI * 2,
-        color: 'rgba(18, 18, 18,'
-      });
-    }
 
     // Initialize Obsidian stars
     for (let i = 0; i < TOTAL_STARS; i++) {
@@ -659,33 +657,13 @@
       });
     }
 
-    function addTransientSplash(x, y) {
-      if (transientSplashes.length > 5) transientSplashes.shift();
-      transientSplashes.push({
-        x: x,
-        y: y,
-        r: 16,
-        life: 14,
-        maxLife: 14
-      });
-    }
-
     function onPointerMove(clientX, clientY) {
       if (isCurtainPeeled) return;
       const rect = curtainEl.getBoundingClientRect();
       pointerTargetX = clientX - rect.left;
       pointerTargetY = clientY - rect.top;
       isPointerActive = true;
-
-      // Spawn subtle transient splash on fast movement
-      if (prevPointerX !== -1000) {
-        const dist = Math.hypot(pointerTargetX - prevPointerX, pointerTargetY - prevPointerY);
-        if (dist > 32 && Math.random() > 0.5) {
-          addTransientSplash(pointerTargetX, pointerTargetY);
-        }
-      }
-      prevPointerX = pointerTargetX;
-      prevPointerY = pointerTargetY;
+      idleTimer = 0;
     }
 
     window.addEventListener('mousemove', function(e) {
@@ -699,18 +677,17 @@
         }
       }, { passive: true });
 
-      // Click / Tap Ripple & Splash
+      // Click / Tap Ripple
       curtainEl.addEventListener('pointerdown', function(e) {
         if (e.target.closest('button, a, input, select, .bm-controls-row')) return;
         const rect = curtainEl.getBoundingClientRect();
         const px = e.clientX - rect.left;
         const py = e.clientY - rect.top;
-        addTransientSplash(px, py);
         bgRipples.push({
           x: px,
           y: py,
           radius: 0,
-          maxRadius: Math.max(bgWidth, bgHeight) * 0.4,
+          maxRadius: Math.max(bgWidth, bgHeight) * 0.38,
           amplitude: 22,
           speed: 6.5
         });
@@ -724,23 +701,7 @@
              ' a ' + r.toFixed(1) + ',' + r.toFixed(1) + ' 0 1,0 -' + (r * 2).toFixed(1) + ',0';
     }
 
-    // Dynamic console anchor getter (grounds puddle directly under floating device)
-    function getConsoleAnchor() {
-      if (deviceEl && curtainEl) {
-        const dRect = deviceEl.getBoundingClientRect();
-        const cRect = curtainEl.getBoundingClientRect();
-        return {
-          x: (dRect.left + dRect.width * 0.5) - cRect.left,
-          y: (dRect.top + dRect.height * 0.86) - cRect.top
-        };
-      }
-      return {
-        x: bgWidth * 0.5,
-        y: bgHeight * 0.525
-      };
-    }
-
-    // --- BUTTERY LIQUID PUDDLE ANIMATION LOOP ---
+    // --- BUTTERY LIQUID TRAIL ANIMATION LOOP ---
     const animStartTime = performance.now();
 
     function renderLiquidTrail(timestamp) {
@@ -753,104 +714,133 @@
       bgCtx.clearRect(0, 0, bgWidth, bgHeight);
 
       if (isThemeButtermax) {
-        const anchor = getConsoleAnchor();
+        idleTimer++;
 
-        // Base ellipse dimensions
-        const baseRx = Math.min(220, Math.max(140, bgWidth * 0.17));
-        const baseRy = Math.min(65, Math.max(38, bgHeight * 0.075));
+        // Root position anchored at center of hero stage
+        const rootAnchorX = bgWidth * 0.5;
+        const rootAnchorY = bgHeight * 0.44;
+        const rootX = rootAnchorX + currentTransX * 0.35;
+        const rootY = rootAnchorY + currentTransY * 0.25;
 
-        // Puddle center shifts with device float translation
-        const pCenterX = anchor.x + currentTransX * 0.45;
-        const pCenterY = anchor.y + currentTransY * 0.35;
+        // Anchor root point
+        liquidChain[CHAIN_LENGTH - 1].x = rootX;
+        liquidChain[CHAIN_LENGTH - 1].y = rootY;
 
-        // Target stretch offset (natural left-leaning signature puddle from Image 1)
-        let targetX = -135 + (-currentRotY * 5.2) + (isPointerActive ? (pointerTargetX - anchor.x) * 0.14 : 0);
-        let targetY = 12 + (currentRotX * 3.4) + (isPointerActive ? (pointerTargetY - anchor.y) * 0.08 : 0);
-
-        // Organic harmonic breathing when resting
-        targetX += Math.sin(time * 0.0016) * 14;
-        targetY += Math.cos(time * 0.0022) * 6;
-
-        // Viscous spring lerp
-        currentStretchX += (targetX - currentStretchX) * 0.085;
-        currentStretchY += (targetY - currentStretchY) * 0.085;
-
-        // Neck tip parameters
-        const neckTipX = pCenterX + currentStretchX;
-        const neckTipY = pCenterY + currentStretchY;
-        const stretchDist = Math.hypot(currentStretchX, currentStretchY);
-        const stretchAngle = Math.atan2(currentStretchY, currentStretchX);
-        const neckRadius = Math.max(13, Math.min(26, 22 - stretchDist * 0.035));
-
-        // Perpendicular unit vector
-        const perpAngle = stretchAngle + Math.PI / 2;
-        const nx = Math.cos(perpAngle);
-        const ny = Math.sin(perpAngle);
-
-        // Base ellipse tangent anchors
-        const topAngle = stretchAngle + 1.25;
-        const botAngle = stretchAngle - 1.25;
-        const topBaseX = pCenterX + Math.cos(topAngle) * baseRx;
-        const topBaseY = pCenterY + Math.sin(topAngle) * baseRy;
-        const botBaseX = pCenterX + Math.cos(botAngle) * baseRx;
-        const botBaseY = pCenterY + Math.sin(botAngle) * baseRy;
-
-        // Neck tip boundaries
-        const neckTopX = neckTipX + nx * neckRadius;
-        const neckTopY = neckTipY + ny * neckRadius;
-        const neckBotX = neckTipX - nx * neckRadius;
-        const neckBotY = neckTipY - ny * neckRadius;
-
-        // Waist interpolation
-        const waistT = 0.48;
-        const waistX = neckTipX * (1 - waistT) + pCenterX * waistT;
-        const waistY = neckTipY * (1 - waistT) + pCenterY * waistT;
-        const waistRadius = neckRadius * 0.82;
-        const waistTopX = waistX + nx * waistRadius;
-        const waistTopY = waistY + ny * waistRadius;
-        const waistBotX = waistX - nx * waistRadius;
-        const waistBotY = waistY - ny * waistRadius;
-
-        // Rounded forward nose
-        const forwardNoseX = neckTipX + Math.cos(stretchAngle) * (neckRadius * 1.35);
-        const forwardNoseY = neckTipY + Math.sin(stretchAngle) * (neckRadius * 1.35);
-
-        // Build continuous closed puddle path
-        bgCtx.beginPath();
-        bgCtx.moveTo(topBaseX, topBaseY);
-        let pathD = 'M ' + topBaseX.toFixed(1) + ' ' + topBaseY.toFixed(1);
-
-        const sweepEnd = botAngle + 2 * Math.PI;
-        const N = 12;
-        for (let i = 1; i <= N; i++) {
-          const ang = topAngle + (sweepEnd - topAngle) * (i / N);
-          const ex = pCenterX + Math.cos(ang) * baseRx;
-          const ey = pCenterY + Math.sin(ang) * baseRy;
-          bgCtx.lineTo(ex, ey);
-          pathD += ' L ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+        // Leading head target
+        if (isPointerActive && idleTimer < 180) {
+          liquidChain[0].x += (pointerTargetX - liquidChain[0].x) * 0.20;
+          liquidChain[0].y += (pointerTargetY - liquidChain[0].y) * 0.20;
+        } else {
+          // Natural resting molten puddle when pointer is idle (Image 1 style)
+          const restingLeadX = rootX - 150 + Math.sin(time * 0.0016) * 16;
+          const restingLeadY = rootY + 18 + Math.cos(time * 0.0022) * 8;
+          liquidChain[0].x += (restingLeadX - liquidChain[0].x) * 0.06;
+          liquidChain[0].y += (restingLeadY - liquidChain[0].y) * 0.06;
         }
 
-        // Curve to neck bottom
-        bgCtx.quadraticCurveTo(waistBotX, waistBotY, neckBotX, neckBotY);
-        pathD += ' Q ' + waistBotX.toFixed(1) + ' ' + waistBotY.toFixed(1) + ' ' + neckBotX.toFixed(1) + ' ' + neckBotY.toFixed(1);
+        // Kinematic fluid chain relaxation
+        for (let i = 1; i < CHAIN_LENGTH - 1; i++) {
+          const prev = liquidChain[i - 1];
+          const next = liquidChain[i + 1];
+          const midX = (prev.x + next.x) * 0.5;
+          const midY = (prev.y + next.y) * 0.5;
+          liquidChain[i].x += (midX - liquidChain[i].x) * 0.45;
+          liquidChain[i].y += (midY - liquidChain[i].y) * 0.45;
+        }
 
-        // Rounded nose forward cap
-        bgCtx.quadraticCurveTo(forwardNoseX, forwardNoseY, neckTopX, neckTopY);
-        pathD += ' Q ' + forwardNoseX.toFixed(1) + ' ' + forwardNoseY.toFixed(1) + ' ' + neckTopX.toFixed(1) + ' ' + neckTopY.toFixed(1);
+        // Speed of leading head
+        const leadSpeed = Math.hypot(liquidChain[0].x - prevLeadX, liquidChain[0].y - prevLeadY);
+        prevLeadX = liquidChain[0].x;
+        prevLeadY = liquidChain[0].y;
 
-        // Curve back to top base
-        bgCtx.quadraticCurveTo(waistTopX, waistTopY, topBaseX, topBaseY);
-        pathD += ' Q ' + waistTopX.toFixed(1) + ' ' + waistTopY.toFixed(1) + ' ' + topBaseX.toFixed(1) + ' ' + topBaseY.toFixed(1) + ' Z';
+        // Dynamic base and lead radii
+        const baseRadius = Math.min(135, Math.max(90, bgWidth * 0.095));
+        const leadRadius = Math.min(54, Math.max(34, 48 - leadSpeed * 0.25));
+
+        const leftSide = [];
+        const rightSide = [];
+
+        // Compute smooth normal offsets along the relaxed kinematic spine
+        for (let i = 0; i < CHAIN_LENGTH; i++) {
+          const curr = liquidChain[i];
+          let tx = 0, ty = 0;
+
+          if (i === 0) {
+            tx = curr.x - liquidChain[1].x;
+            ty = curr.y - liquidChain[1].y;
+          } else if (i === CHAIN_LENGTH - 1) {
+            tx = liquidChain[CHAIN_LENGTH - 2].x - curr.x;
+            ty = liquidChain[CHAIN_LENGTH - 2].y - curr.y;
+          } else {
+            tx = liquidChain[i - 1].x - liquidChain[i + 1].x;
+            ty = liquidChain[i - 1].y - liquidChain[i + 1].y;
+          }
+
+          const mag = Math.hypot(tx, ty) || 1;
+          const nx = -ty / mag;
+          const ny = tx / mag;
+
+          const u = i / (CHAIN_LENGTH - 1);
+          const r = leadRadius * (1 - u) + baseRadius * Math.pow(u, 1.35);
+
+          leftSide.push({ x: curr.x + nx * r, y: curr.y + ny * r });
+          rightSide.push({ x: curr.x - nx * r, y: curr.y - ny * r });
+        }
+
+        // Build continuous closed liquid trail contour
+        bgCtx.beginPath();
+        let pathD = 'M ' + leftSide[0].x.toFixed(1) + ' ' + leftSide[0].y.toFixed(1);
+
+        // Left side spline (lead -> root)
+        for (let i = 0; i < leftSide.length - 1; i++) {
+          const curr = leftSide[i];
+          const next = leftSide[i + 1];
+          const mx = (curr.x + next.x) * 0.5;
+          const my = (curr.y + next.y) * 0.5;
+          bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
+          pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
+        }
+
+        // Root rounded base cap
+        const rootPt = liquidChain[CHAIN_LENGTH - 1];
+        const tailTx = rootPt.x - liquidChain[CHAIN_LENGTH - 2].x;
+        const tailTy = rootPt.y - liquidChain[CHAIN_LENGTH - 2].y;
+        const tailAng = Math.atan2(tailTy, tailTx);
+        const rootCapX = rootPt.x + Math.cos(tailAng) * baseRadius;
+        const rootCapY = rootPt.y + Math.sin(tailAng) * baseRadius;
+
+        bgCtx.quadraticCurveTo(rootCapX, rootCapY, rightSide[CHAIN_LENGTH - 1].x, rightSide[CHAIN_LENGTH - 1].y);
+        pathD += ' Q ' + rootCapX.toFixed(1) + ' ' + rootCapY.toFixed(1) + ' ' + rightSide[CHAIN_LENGTH - 1].x.toFixed(1) + ' ' + rightSide[CHAIN_LENGTH - 1].y.toFixed(1);
+
+        // Right side spline (root -> lead)
+        for (let i = rightSide.length - 1; i > 0; i--) {
+          const curr = rightSide[i];
+          const prev = rightSide[i - 1];
+          const mx = (curr.x + prev.x) * 0.5;
+          const my = (curr.y + prev.y) * 0.5;
+          bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
+          pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
+        }
+
+        // Leading head rounded cap
+        const headPt = liquidChain[0];
+        const headTx = headPt.x - liquidChain[1].x;
+        const headTy = headPt.y - liquidChain[1].y;
+        const headAng = Math.atan2(headTy, headTx);
+        const leadNoseX = headPt.x + Math.cos(headAng) * leadRadius;
+        const leadNoseY = headPt.y + Math.sin(headAng) * leadRadius;
+
+        bgCtx.quadraticCurveTo(leadNoseX, leadNoseY, leftSide[0].x, leftSide[0].y);
+        pathD += ' Q ' + leadNoseX.toFixed(1) + ' ' + leadNoseY.toFixed(1) + ' ' + leftSide[0].x.toFixed(1) + ' ' + leftSide[0].y.toFixed(1) + ' Z';
         bgCtx.closePath();
 
-        // Render puddle body according to current background palette
-        let puddleFill = '#111111';
-        let rimColor = 'rgba(255, 219, 21, 0.35)';
-
+        // Palette rendering
         if (currentBgTheme === 'noir') {
-          puddleFill = '#ffd600';
-          rimColor = 'rgba(255, 255, 255, 0.7)';
-          bgCtx.fillStyle = puddleFill;
+          const noirGrad = bgCtx.createLinearGradient(headPt.x, headPt.y, rootPt.x, rootPt.y);
+          noirGrad.addColorStop(0, '#ffd600');
+          noirGrad.addColorStop(0.6, '#ffaa00');
+          noirGrad.addColorStop(1, '#ff6b4a');
+          bgCtx.fillStyle = noirGrad;
           bgCtx.fill();
           bgCtx.save();
           bgCtx.shadowColor = '#ffd600';
@@ -860,9 +850,11 @@
           bgCtx.stroke();
           bgCtx.restore();
         } else if (currentBgTheme === 'amber') {
-          puddleFill = '#fb8500';
-          rimColor = 'rgba(255, 220, 100, 0.8)';
-          bgCtx.fillStyle = puddleFill;
+          const amberGrad = bgCtx.createLinearGradient(headPt.x, headPt.y, rootPt.x, rootPt.y);
+          amberGrad.addColorStop(0, '#ffb703');
+          amberGrad.addColorStop(0.6, '#fb8500');
+          amberGrad.addColorStop(1, '#d90429');
+          bgCtx.fillStyle = amberGrad;
           bgCtx.fill();
           bgCtx.save();
           bgCtx.shadowColor = '#fb8500';
@@ -872,118 +864,58 @@
           bgCtx.stroke();
           bgCtx.restore();
         } else {
-          // Canonical Solar Butter: deep rich molten charcoal on butter yellow (#ffdb15)
-          const radGrad = bgCtx.createRadialGradient(pCenterX, pCenterY - 10, 15, pCenterX, pCenterY, baseRx * 1.15);
-          radGrad.addColorStop(0, '#1c1c1c');
-          radGrad.addColorStop(0.7, '#111111');
-          radGrad.addColorStop(1, '#090909');
-          puddleFill = radGrad;
-          bgCtx.fillStyle = puddleFill;
+          // Canonical Solar Butter: glossy molten charcoal on canary yellow
+          const butterGrad = bgCtx.createRadialGradient(rootPt.x, rootPt.y, 20, rootPt.x, rootPt.y, baseRadius * 1.5);
+          butterGrad.addColorStop(0, '#1c1c1c');
+          butterGrad.addColorStop(0.6, '#111111');
+          butterGrad.addColorStop(1, '#080808');
+          bgCtx.fillStyle = butterGrad;
           bgCtx.fill();
 
-          bgCtx.strokeStyle = rimColor;
+          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.4)';
           bgCtx.lineWidth = 1.4;
           bgCtx.stroke();
 
-          // Subtle gloss arc on puddle body
+          // Subtle gloss specular highlight along fluid spine
           bgCtx.save();
           bgCtx.beginPath();
-          bgCtx.arc(pCenterX - baseRx * 0.18, pCenterY - baseRy * 0.22, baseRy * 0.42, 0, Math.PI * 2);
-          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+          bgCtx.arc(headPt.x - leadRadius * 0.25, headPt.y - leadRadius * 0.25, leadRadius * 0.35, 0, Math.PI * 2);
+          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.16)';
           bgCtx.fill();
           bgCtx.restore();
         }
 
         // ====================================================================
-        // PINCH-OFF TRAILING DROPLET BEADS (● · · · · ·) — MATCHING IMAGE 1
+        // SIGNATURE DETACHED SATELLITE BEAD (●) — PINCH-OFF AHEAD OF LEAD
         // ====================================================================
-        const beadDirX = Math.cos(stretchAngle);
-        const beadDirY = Math.sin(stretchAngle);
-        const primaryGap = 58 + Math.min(42, stretchDist * 0.26);
-
-        // Primary Detached Satellite Bead ●
-        const primaryBeadX = neckTipX + beadDirX * primaryGap;
-        const primaryBeadY = neckTipY + beadDirY * primaryGap;
-        const primaryBeadR = 12.5 + Math.sin(time * 0.0028) * 1.4;
+        const beadGap = leadRadius * 1.5 + 20;
+        const beadX = headPt.x + Math.cos(headAng) * beadGap;
+        const beadY = headPt.y + Math.sin(headAng) * beadGap;
+        const beadR = 12.5 + Math.sin(time * 0.0028) * 1.4;
 
         bgCtx.beginPath();
-        bgCtx.arc(primaryBeadX, primaryBeadY, primaryBeadR, 0, Math.PI * 2);
+        bgCtx.arc(beadX, beadY, beadR, 0, Math.PI * 2);
         bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#111111' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
         bgCtx.fill();
 
         if (currentBgTheme === 'butter') {
-          bgCtx.strokeStyle = rimColor;
+          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.4)';
           bgCtx.lineWidth = 1.4;
           bgCtx.stroke();
 
-          // Specular reflection on primary bead
           bgCtx.save();
           bgCtx.beginPath();
-          bgCtx.arc(primaryBeadX - primaryBeadR * 0.3, primaryBeadY - primaryBeadR * 0.3, primaryBeadR * 0.32, 0, Math.PI * 2);
+          bgCtx.arc(beadX - beadR * 0.3, beadY - beadR * 0.3, beadR * 0.32, 0, Math.PI * 2);
           bgCtx.fillStyle = 'rgba(255, 255, 255, 0.18)';
           bgCtx.fill();
           bgCtx.restore();
         }
-        pathD += addCircleToSvg(primaryBeadX, primaryBeadY, primaryBeadR);
-
-        // Chain of Micro-Bead Droplets · · · · ·
-        const numMicroBeads = 5;
-        for (let k = 0; k < numMicroBeads; k++) {
-          const t = (k + 1) / (numMicroBeads + 1.2);
-          const mx = neckTipX + beadDirX * (primaryGap * t);
-          const my = neckTipY + beadDirY * (primaryGap * t);
-          const mr = 2.2 + Math.sin(t * Math.PI) * 2.3;
-
-          bgCtx.beginPath();
-          bgCtx.arc(mx, my, mr, 0, Math.PI * 2);
-          bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#111111' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
-          bgCtx.fill();
-          pathD += addCircleToSvg(mx, my, mr);
-        }
-
-        // ====================================================================
-        // TRANSIENT EVAPORATING MOUSE SPLASHES (Dissolves in 0.25s)
-        // ====================================================================
-        for (let i = transientSplashes.length - 1; i >= 0; i--) {
-          const sp = transientSplashes[i];
-          sp.life--;
-          if (sp.life <= 0) {
-            transientSplashes.splice(i, 1);
-            continue;
-          }
-          const t = sp.life / sp.maxLife;
-          const curR = sp.r * Math.pow(t, 1.4);
-          bgCtx.beginPath();
-          bgCtx.arc(sp.x, sp.y, curR, 0, Math.PI * 2);
-          bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#111111' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
-          bgCtx.fill();
-          pathD += addCircleToSvg(sp.x, sp.y, curR);
-        }
+        pathD += addCircleToSvg(beadX, beadY, beadR);
 
         // Update Typography Inversion Mask in SVG in real-time
         if (bgBlobClipPath) {
           bgBlobClipPath.setAttribute('d', pathD);
         }
-
-        // Floating Viscous Micro-Embers
-        bgEmbers.forEach(emb => {
-          emb.y += emb.vy;
-          emb.x += emb.vx + Math.sin(time * 0.0018 + emb.phase) * 0.4;
-          emb.alpha = 0.22 + Math.sin(time * 0.0025 + emb.phase) * 0.18;
-
-          if (emb.y < -20) {
-            emb.y = bgHeight + 10;
-            emb.x = (primaryBeadX || bgWidth * 0.5) + (Math.random() - 0.5) * 200;
-          }
-
-          bgCtx.beginPath();
-          bgCtx.arc(emb.x, emb.y, emb.radius, 0, Math.PI * 2);
-          const colorBase = (currentBgTheme === 'butter')
-            ? 'rgba(18, 18, 18,'
-            : ((currentBgTheme === 'amber') ? 'rgba(255, 183, 3,' : 'rgba(255, 214, 0,');
-          bgCtx.fillStyle = colorBase + emb.alpha + ')';
-          bgCtx.fill();
-        });
 
       } else {
         // Obsidian Mode: Tactical Starfield & Radar Sweep
