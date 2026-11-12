@@ -6622,20 +6622,26 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       // Smooth Gliding Floating Physics Engine (Dual Lerp Deceleration)
       function renderFollower() {
         if (isVisible) {
+          const isButter = document.body.classList.contains('theme-buttermax');
+
           // Responsive fluid glide for the cursor pointer
-          const dotEase = 0.28;
+          const dotEase = isButter ? 0.36 : 0.28;
           dotX += (mouseX - dotX) * dotEase;
           dotY += (mouseY - dotY) * dotEase;
-          dot.style.transform = 'translate3d(' + dotX + 'px, ' + dotY + 'px, 0) translate(-4px, -2px)';
+          dot.style.transform = isButter
+            ? 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)'
+            : 'translate3d(' + dotX + 'px, ' + dotY + 'px, 0) translate(-4px, -2px)';
 
-          // Smooth aerodynamic trailing follower ring
-          const ringEase = 0.14;
+          // Smooth aerodynamic trailing follower ring (weightless Buttermax glide)
+          const ringEase = isButter ? 0.12 : 0.14;
           ringX += (mouseX - ringX) * ringEase;
           ringY += (mouseY - ringY) * ringEase;
-          ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
 
-          // Emit trail particles along the smoothed flight path
-          dropTrail(dotX, dotY);
+          // Emit trail particles along the smoothed flight path (Tactical mode only)
+          if (!isButter) {
+            dropTrail(dotX, dotY);
+          }
         }
         requestAnimationFrame(renderFollower);
       }

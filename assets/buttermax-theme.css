@@ -1699,16 +1699,23 @@ body.theme-buttermax footer a {
 }
 
 /* ==========================================================================
-   BUTTERMAX GOOEY MOLTEN FLUID CURSOR (ORGANIC BUTTERY DROPLET)
+   BUTTERMAX SILKY CIRCULAR CURSOR & MAGNETIC LENS (ZERO JITTER / ZERO ROTATION)
    ========================================================================== */
+body.theme-buttermax #orbit-cursor-dot .tactical-cursor-svg,
+body.theme-buttermax #orbit-cursor-dot .cursor-solar-system,
+body.theme-buttermax .mouse-trail-dot {
+  display: none !important;
+}
+
 body.theme-buttermax #orbit-cursor-dot {
   width: 10px !important;
   height: 10px !important;
   background: #ffd600 !important;
   border-radius: 50% !important;
-  box-shadow: 0 0 16px rgba(255, 214, 0, 0.85) !important;
+  box-shadow: 0 0 16px rgba(255, 214, 0, 0.95) !important;
   pointer-events: none !important;
-  transition: transform 0.08s ease-out, opacity 0.2s ease !important;
+  transform-origin: center center !important;
+  transition: opacity 0.2s ease !important;
 }
 
 body.theme-buttermax #orbit-cursor-ring {
@@ -1717,10 +1724,10 @@ body.theme-buttermax #orbit-cursor-ring {
   border: 2px solid #ffd600 !important;
   border-radius: 50% !important;
   background: rgba(255, 214, 0, 0.08) !important;
-  box-shadow: 0 0 24px rgba(255, 214, 0, 0.3) !important;
+  box-shadow: 0 0 24px rgba(255, 214, 0, 0.35) !important;
   pointer-events: none !important;
   transform-origin: center center !important;
-  transition: border-color 0.25s ease, background-color 0.25s ease, width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 /* Hide rigid tactical HUD reticles in Buttermax mode */
@@ -1735,7 +1742,18 @@ body.theme-buttermax #orbit-cursor-ring.is-hovering {
   height: 68px !important;
   background: rgba(255, 214, 0, 0.22) !important;
   border-color: #ffd600 !important;
-  box-shadow: 0 0 35px rgba(255, 214, 0, 0.55) !important;
+  box-shadow: 0 0 35px rgba(255, 214, 0, 0.6) !important;
+}
+
+/* Active click press response */
+body.theme-buttermax #orbit-cursor-ring.is-active {
+  width: 36px !important;
+  height: 36px !important;
+  background: rgba(255, 214, 0, 0.35) !important;
+}
+
+body.theme-buttermax #orbit-cursor-dot.is-active {
+  transform: translate(-50%, -50%) scale(0.8) !important;
 }
 
 /* Smooth HTML scroll momentum */

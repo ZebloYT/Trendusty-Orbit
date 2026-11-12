@@ -566,7 +566,7 @@
   }
 
   // ==========================================================================
-  // FREE-FLOWING VISCOUS LIQUID BUTTER TRAIL (BUTTERMAX ORGANIC PHYSICS)
+  // BUTTERMAX HYDRO-DYNAMIC MOLTEN BUTTER LIQUID TRAIL (ZERO SQUIGGLES / 100% SILK)
   // ==========================================================================
   let bgCanvas = null;
   let bgCtx = null;
@@ -574,11 +574,13 @@
   let bgHeight = 0;
   let bgBlobClipPath = null;
 
-  // Free-flowing trail history (untethered)
+  const FLUID_TRAIL_LENGTH = 26;
   const liquidTrail = [];
-  const MAX_TRAIL_LENGTH = 65;
-  let lastRecordedX = 0, lastRecordedY = 0;
-  let lastMoveTime = performance.now();
+  let fluidLeadX = -1000, fluidLeadY = -1000;
+  let targetLeadX = -1000, targetLeadY = -1000;
+  let prevFluidLeadX = -1000, prevFluidLeadY = -1000;
+  let currentFluidRadius = 56;
+  let isFluidActive = false;
   let idleTimer = 0;
 
   // Click shockwave ripples
@@ -586,7 +588,7 @@
 
   // Viscous micro-droplets
   const bgEmbers = [];
-  const TOTAL_EMBERS = 32;
+  const TOTAL_EMBERS = 28;
 
   // Tactical starfield for Obsidian Mode
   const obsidianStars = [];
@@ -615,31 +617,26 @@
       }
     }
 
-    // Seed continuous natural molten butter ribbon across center under headline
+    // Initialize smooth baseline fluid ribbon under the headline
     function initBaselineTrail() {
       liquidTrail.length = 0;
-      const count = 38;
-      const startX = bgWidth * 0.16;
-      const endX = bgWidth * 0.84;
+      const startX = bgWidth * 0.22;
+      const endX = bgWidth * 0.78;
       const cy = bgHeight * 0.40;
 
-      for (let i = 0; i < count; i++) {
-        const u = i / (count - 1);
+      for (let i = 0; i < FLUID_TRAIL_LENGTH; i++) {
+        const u = i / (FLUID_TRAIL_LENGTH - 1);
         const x = startX + (endX - startX) * u;
-        const y = cy + Math.sin(u * Math.PI * 2.2) * (bgHeight * 0.12) + Math.cos(u * Math.PI * 1.1) * (bgHeight * 0.04);
-        const rad = 72 - Math.abs(u - 0.5) * 32;
-        liquidTrail.push({
-          x: x,
-          y: y,
-          baseX: x,
-          baseY: y,
-          radius: Math.max(42, rad),
-          wobblePhase: i * 0.44,
-          isIdle: true
-        });
+        const y = cy + Math.sin(u * Math.PI) * 20;
+        liquidTrail.push({ x: x, y: y });
       }
-      lastRecordedX = liquidTrail[0].x;
-      lastRecordedY = liquidTrail[0].y;
+
+      fluidLeadX = liquidTrail[0].x;
+      fluidLeadY = liquidTrail[0].y;
+      targetLeadX = fluidLeadX;
+      targetLeadY = fluidLeadY;
+      prevFluidLeadX = fluidLeadX;
+      prevFluidLeadY = fluidLeadY;
     }
 
     window.addEventListener('resize', resizeBg);
@@ -652,8 +649,8 @@
         y: Math.random() * bgHeight,
         vx: (Math.random() - 0.5) * 0.4,
         vy: -0.4 - Math.random() * 0.8,
-        radius: 1.5 + Math.random() * 2.6,
-        alpha: 0.2 + Math.random() * 0.6,
+        radius: 1.5 + Math.random() * 2.4,
+        alpha: 0.2 + Math.random() * 0.5,
         phase: Math.random() * Math.PI * 2,
         color: Math.random() > 0.4 ? 'rgba(255, 107, 74,' : 'rgba(255, 214, 0,'
       });
@@ -671,62 +668,29 @@
       });
     }
 
-    // Add point to free-flowing liquid trail with Hermite interpolation
-    function addLiquidTrailPoint(targetX, targetY) {
+    function onPointerMove(clientX, clientY) {
+      if (isCurtainPeeled) return;
+      const rect = curtainEl.getBoundingClientRect();
+      targetLeadX = clientX - rect.left;
+      targetLeadY = clientY - rect.top;
       idleTimer = 0;
-      const now = performance.now();
-      const dt = Math.max(1, now - lastMoveTime);
-      const dist = Math.hypot(targetX - lastRecordedX, targetY - lastRecordedY);
-      const speed = dist / dt;
-      lastMoveTime = now;
 
-      // Dynamic viscous thickness based on speed (stretches thin at high velocity, thickens when slow)
-      const pointRadius = Math.max(44, Math.min(92, 86 - speed * 10));
-
-      if (dist > 12) {
-        // Interpolate smooth intermediate points so there are no angular breaks
-        const steps = Math.min(4, Math.floor(dist / 14));
-        for (let s = 1; s <= steps; s++) {
-          const t = s / (steps + 1);
-          liquidTrail.unshift({
-            x: lastRecordedX + (targetX - lastRecordedX) * t,
-            y: lastRecordedY + (targetY - lastRecordedY) * t,
-            baseX: targetX,
-            baseY: targetY,
-            radius: pointRadius,
-            wobblePhase: Math.random() * Math.PI * 2,
-            isIdle: false
-          });
-        }
-
-        liquidTrail.unshift({
-          x: targetX,
-          y: targetY,
-          baseX: targetX,
-          baseY: targetY,
-          radius: pointRadius,
-          wobblePhase: Math.random() * Math.PI * 2,
-          isIdle: false
-        });
-
-        lastRecordedX = targetX;
-        lastRecordedY = targetY;
-
-        if (liquidTrail.length > MAX_TRAIL_LENGTH) {
-          liquidTrail.pop();
+      if (!isFluidActive) {
+        isFluidActive = true;
+        fluidLeadX = targetLeadX;
+        fluidLeadY = targetLeadY;
+        prevFluidLeadX = targetLeadX;
+        prevFluidLeadY = targetLeadY;
+        for (let i = 0; i < FLUID_TRAIL_LENGTH; i++) {
+          liquidTrail[i].x = targetLeadX;
+          liquidTrail[i].y = targetLeadY;
         }
       }
     }
 
-    function onPointerMove(clientX, clientY) {
-      if (isCurtainPeeled) return;
-      const rect = curtainEl.getBoundingClientRect();
-      addLiquidTrailPoint(clientX - rect.left, clientY - rect.top);
-    }
-
     window.addEventListener('mousemove', function(e) {
       onPointerMove(e.clientX, e.clientY);
-    });
+    }, { passive: true });
 
     if (curtainEl) {
       curtainEl.addEventListener('touchmove', function(e) {
@@ -750,7 +714,7 @@
       });
     }
 
-    // --- ANIMATION LOOP ---
+    // --- BUTTERY LIQUID ANIMATION LOOP ---
     const animStartTime = performance.now();
 
     function renderLiquidTrail(timestamp) {
@@ -765,33 +729,47 @@
       if (isThemeButtermax) {
         idleTimer++;
 
-        // Melt & dissipate older points like real butter
-        for (let i = 0; i < liquidTrail.length; i++) {
-          const pt = liquidTrail[i];
-          if (!pt.isIdle) {
-            pt.radius *= 0.992;
-            pt.y += Math.sin(time * 0.0022 + pt.wobblePhase) * 0.3;
-          } else {
-            pt.y = pt.baseY + Math.sin(time * 0.002 + pt.wobblePhase) * 12;
-            pt.x = pt.baseX + Math.cos(time * 0.0016 + pt.wobblePhase) * 7;
+        // Smoothly track pointer with viscous low-pass damping
+        if (isFluidActive) {
+          fluidLeadX += (targetLeadX - fluidLeadX) * 0.22;
+          fluidLeadY += (targetLeadY - fluidLeadY) * 0.22;
+          liquidTrail[0].x = fluidLeadX;
+          liquidTrail[0].y = fluidLeadY;
+        }
+
+        // Kinematic fluid chain: each point smoothly relaxed toward predecessor
+        for (let i = 1; i < FLUID_TRAIL_LENGTH; i++) {
+          const prev = liquidTrail[i - 1];
+          const curr = liquidTrail[i];
+          curr.x += (prev.x - curr.x) * 0.38;
+          curr.y += (prev.y - curr.y) * 0.38;
+        }
+
+        // Velocity of leading droplet
+        const speed = Math.hypot(fluidLeadX - prevFluidLeadX, fluidLeadY - prevFluidLeadY);
+        prevFluidLeadX = fluidLeadX;
+        prevFluidLeadY = fluidLeadY;
+
+        // Dynamic base radius: stretches thin at speed, thickens into puddle at rest
+        const targetRadius = Math.max(38, Math.min(65, 58 - speed * 0.42));
+        currentFluidRadius += (targetRadius - currentFluidRadius) * 0.12;
+
+        // Idle harmonic breathing when pointer is resting
+        if (idleTimer > 200) {
+          const cy = bgHeight * 0.40;
+          for (let i = 0; i < FLUID_TRAIL_LENGTH; i++) {
+            const u = i / (FLUID_TRAIL_LENGTH - 1);
+            const ambientY = cy + Math.sin(time * 0.0016 + u * Math.PI * 1.5) * 18;
+            liquidTrail[i].y += (ambientY - liquidTrail[i].y) * 0.02;
           }
         }
 
-        while (liquidTrail.length > 28 && liquidTrail[liquidTrail.length - 1].radius < 10) {
-          liquidTrail.pop();
-        }
-
-        // Replenish baseline ribbon if user is idle
-        if (idleTimer > 180 && liquidTrail.length < 32) {
-          initBaselineTrail();
-        }
-
         const len = liquidTrail.length;
-        if (len > 1) {
+        if (len > 2) {
           const leftSide = [];
           const rightSide = [];
 
-          // Compute continuous ribbon normals along the liquid path
+          // Compute continuous ribbon normals along the relaxed liquid path
           for (let i = 0; i < len; i++) {
             const curr = liquidTrail[i];
             let tx = 0, ty = 0;
@@ -811,39 +789,19 @@
             const nx = -ty / mag;
             const ny = tx / mag;
 
-            // Fluid surface tension harmonics
-            const wave = Math.sin(time * 0.0035 + curr.wobblePhase) * (curr.radius * 0.16)
-                       + Math.cos(time * 0.0024 + i * 0.3) * (curr.radius * 0.10);
-            
-            const taper = Math.max(0.25, 1 - (i / len) * 0.60);
-            let r = Math.max(10, (curr.radius + wave) * taper);
-
-            // Apply ripples
-            for (let k = 0; k < bgRipples.length; k++) {
-              const rip = bgRipples[k];
-              const d = Math.hypot(curr.x - rip.x, curr.y - rip.y);
-              const diff = Math.abs(d - rip.radius);
-              if (diff < 50) {
-                r += rip.amplitude * Math.cos(diff * 0.12);
-              }
-            }
+            // Pure monotonic teardrop taper (100% smooth, ZERO squiggly jitter)
+            const u = i / (len - 1);
+            const r = Math.max(1, currentFluidRadius * Math.pow(1 - u, 0.70));
 
             leftSide.push({ x: curr.x + nx * r, y: curr.y + ny * r });
             rightSide.push({ x: curr.x - nx * r, y: curr.y - ny * r });
           }
 
-          // Build Smooth Closed Liquid Ribbon Polygon
+          // Build Smooth Closed Liquid Polygon
           bgCtx.beginPath();
-          let pathD = '';
+          let pathD = 'M ' + leftSide[0].x.toFixed(1) + ' ' + leftSide[0].y.toFixed(1);
 
-          const headLeft = leftSide[0];
-          const headRight = rightSide[0];
-          const headCenter = liquidTrail[0];
-
-          bgCtx.moveTo(headLeft.x, headLeft.y);
-          pathD = 'M ' + headLeft.x.toFixed(1) + ' ' + headLeft.y.toFixed(1);
-
-          // Left spline (head -> tail)
+          // Left spline (head -> tail) using midpoint quadratic curves
           for (let i = 0; i < leftSide.length - 1; i++) {
             const curr = leftSide[i];
             const next = leftSide[i + 1];
@@ -853,16 +811,12 @@
             pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
           }
 
-          // Tail cap
-          const lastLeft = leftSide[leftSide.length - 1];
-          const lastRight = rightSide[rightSide.length - 1];
-          const tailCenter = liquidTrail[len - 1];
-          bgCtx.quadraticCurveTo(lastLeft.x, lastLeft.y, tailCenter.x, tailCenter.y);
-          bgCtx.quadraticCurveTo(tailCenter.x, tailCenter.y, lastRight.x, lastRight.y);
-          pathD += ' Q ' + lastLeft.x.toFixed(1) + ' ' + lastLeft.y.toFixed(1) + ' ' + tailCenter.x.toFixed(1) + ' ' + tailCenter.y.toFixed(1);
-          pathD += ' Q ' + tailCenter.x.toFixed(1) + ' ' + tailCenter.y.toFixed(1) + ' ' + lastRight.x.toFixed(1) + ' ' + lastRight.y.toFixed(1);
+          // Tail closure
+          const tailPt = liquidTrail[len - 1];
+          bgCtx.lineTo(tailPt.x, tailPt.y);
+          pathD += ' L ' + tailPt.x.toFixed(1) + ' ' + tailPt.y.toFixed(1);
 
-          // Right spline (tail -> head)
+          // Right spline (tail -> head) using midpoint quadratic curves
           for (let i = rightSide.length - 1; i > 0; i--) {
             const curr = rightSide[i];
             const prev = rightSide[i - 1];
@@ -871,12 +825,20 @@
             bgCtx.quadraticCurveTo(curr.x, curr.y, mx, my);
             pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
           }
+          bgCtx.lineTo(rightSide[0].x, rightSide[0].y);
+          pathD += ' L ' + rightSide[0].x.toFixed(1) + ' ' + rightSide[0].y.toFixed(1);
 
-          // Round head cap connecting back to headLeft
-          bgCtx.quadraticCurveTo(headRight.x, headRight.y, headCenter.x, headCenter.y);
-          bgCtx.quadraticCurveTo(headCenter.x, headCenter.y, headLeft.x, headLeft.y);
-          pathD += ' Q ' + headRight.x.toFixed(1) + ' ' + headRight.y.toFixed(1) + ' ' + headCenter.x.toFixed(1) + ' ' + headCenter.y.toFixed(1);
-          pathD += ' Q ' + headCenter.x.toFixed(1) + ' ' + headCenter.y.toFixed(1) + ' ' + headLeft.x.toFixed(1) + ' ' + headLeft.y.toFixed(1);
+          // Smooth rounded leading head cap
+          const headPt = liquidTrail[0];
+          const headTx = headPt.x - liquidTrail[1].x;
+          const headTy = headPt.y - liquidTrail[1].y;
+          const headAngle = Math.atan2(headTy, headTx);
+          const forwardNoseX = headPt.x + Math.cos(headAngle) * currentFluidRadius;
+          const forwardNoseY = headPt.y + Math.sin(headAngle) * currentFluidRadius;
+
+          bgCtx.quadraticCurveTo(forwardNoseX, forwardNoseY, leftSide[0].x, leftSide[0].y);
+          pathD += ' Q ' + forwardNoseX.toFixed(1) + ' ' + forwardNoseY.toFixed(1) + ' ' + leftSide[0].x.toFixed(1) + ' ' + leftSide[0].y.toFixed(1);
+
           bgCtx.closePath();
           pathD += ' Z';
 
@@ -902,14 +864,14 @@
 
             bgCtx.save();
             bgCtx.shadowColor = '#ffd600';
-            bgCtx.shadowBlur = 32;
+            bgCtx.shadowBlur = 24;
             bgCtx.strokeStyle = 'rgba(255, 214, 0, 0.95)';
-            bgCtx.lineWidth = 4;
+            bgCtx.lineWidth = 3.5;
             bgCtx.stroke();
 
             bgCtx.shadowColor = 'transparent';
             bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
-            bgCtx.lineWidth = 1.8;
+            bgCtx.lineWidth = 1.6;
             bgCtx.stroke();
             bgCtx.restore();
           } else if (currentBgTheme === 'amber') {
@@ -923,14 +885,14 @@
 
             bgCtx.save();
             bgCtx.shadowColor = '#fb8500';
-            bgCtx.shadowBlur = 28;
+            bgCtx.shadowBlur = 24;
             bgCtx.strokeStyle = 'rgba(251, 133, 0, 0.95)';
-            bgCtx.lineWidth = 4;
+            bgCtx.lineWidth = 3.5;
             bgCtx.stroke();
 
             bgCtx.shadowColor = 'transparent';
             bgCtx.strokeStyle = 'rgba(255, 220, 100, 0.9)';
-            bgCtx.lineWidth = 1.8;
+            bgCtx.lineWidth = 1.6;
             bgCtx.stroke();
             bgCtx.restore();
           } else {
@@ -944,14 +906,14 @@
 
             bgCtx.save();
             bgCtx.shadowColor = '#ff6b4a';
-            bgCtx.shadowBlur = 28;
+            bgCtx.shadowBlur = 24;
             bgCtx.strokeStyle = 'rgba(255, 107, 74, 0.92)';
-            bgCtx.lineWidth = 4;
+            bgCtx.lineWidth = 3.5;
             bgCtx.stroke();
 
             bgCtx.shadowColor = 'transparent';
             bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.85)';
-            bgCtx.lineWidth = 1.8;
+            bgCtx.lineWidth = 1.6;
             bgCtx.stroke();
             bgCtx.restore();
           }
@@ -959,8 +921,8 @@
           // Specular Reflection on Leading Head Droplet
           bgCtx.save();
           bgCtx.beginPath();
-          bgCtx.arc(headCenter.x - 8, headCenter.y - 8, 14, 0, Math.PI * 2);
-          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          bgCtx.arc(headPt.x - 6, headPt.y - 6, 12, 0, Math.PI * 2);
+          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.16)';
           bgCtx.fill();
           bgCtx.restore();
         }
@@ -968,8 +930,8 @@
         // Floating Viscous Micro-Embers
         bgEmbers.forEach(emb => {
           emb.y += emb.vy;
-          emb.x += emb.vx + Math.sin(time * 0.002 + emb.phase) * 0.5;
-          emb.alpha = 0.25 + Math.sin(time * 0.003 + emb.phase) * 0.2;
+          emb.x += emb.vx + Math.sin(time * 0.0018 + emb.phase) * 0.4;
+          emb.alpha = 0.22 + Math.sin(time * 0.0025 + emb.phase) * 0.18;
 
           if (emb.y < -20) {
             emb.y = bgHeight + 10;
@@ -1123,66 +1085,40 @@
   }
 
   // ==========================================================================
-  // BUTTERMAX VELOCITY-DEFORMING MOLTEN FLUID CURSOR & MAGNETIC LENS
+  // BUTTERMAX SILKY CIRCULAR LENS & MAGNETIC HOVER CONTROLLER (ZERO JITTER)
   // ==========================================================================
-  let cursorDot = null;
-  let cursorRing = null;
-  let mouseScreenX = -100, mouseScreenY = -100;
-  let followerX = -100, followerY = -100;
-  let isCursorActive = false;
-
   function setupButtermaxCursor() {
-    cursorDot = document.getElementById('orbit-cursor-dot');
-    cursorRing = document.getElementById('orbit-cursor-ring');
+    const cursorRing = document.getElementById('orbit-cursor-ring');
+    const cursorDot = document.getElementById('orbit-cursor-dot');
     if (!cursorRing) return;
 
-    window.addEventListener('mousemove', function(e) {
-      mouseScreenX = e.clientX;
-      mouseScreenY = e.clientY;
-      if (!isCursorActive) {
-        isCursorActive = true;
-        followerX = mouseScreenX;
-        followerY = mouseScreenY;
+    // Magnetic lens hover expansion over interactive targets
+    document.addEventListener('mouseover', function(e) {
+      const target = e.target.closest('a, button, .btn, .app-rect-card, .cop-btn, .theme-toggle-btn, .bm-pill-btn, .bm-peel-btn');
+      if (target && cursorRing) {
+        cursorRing.classList.add('is-hovering');
+        if (cursorDot) cursorDot.classList.add('is-hovering');
       }
     }, { passive: true });
 
-    // Magnetic lens hover effect
-    document.addEventListener('mouseover', function(e) {
-      const target = e.target.closest('a, button, .btn, .app-rect-card, .cop-btn, .theme-toggle-btn');
-      if (target && cursorRing) {
-        cursorRing.classList.add('is-hovering');
-      }
-    });
-
     document.addEventListener('mouseout', function(e) {
-      const target = e.target.closest('a, button, .btn, .app-rect-card, .cop-btn, .theme-toggle-btn');
+      const target = e.target.closest('a, button, .btn, .app-rect-card, .cop-btn, .theme-toggle-btn, .bm-pill-btn, .bm-peel-btn');
       if (target && cursorRing) {
         cursorRing.classList.remove('is-hovering');
+        if (cursorDot) cursorDot.classList.remove('is-hovering');
       }
-    });
+    }, { passive: true });
 
-    function renderGooeyCursor() {
-      if (isCursorActive && cursorRing) {
-        const vx = mouseScreenX - followerX;
-        const vy = mouseScreenY - followerY;
-        
-        // Elastic spring lag
-        followerX += vx * 0.22;
-        followerY += vy * 0.22;
+    // Active click response
+    window.addEventListener('mousedown', function() {
+      if (cursorRing) cursorRing.classList.add('is-active');
+      if (cursorDot) cursorDot.classList.add('is-active');
+    }, { passive: true });
 
-        const speed = Math.hypot(vx, vy);
-        const angle = Math.atan2(vy, vx) * (180 / Math.PI);
-
-        // Elastic molten droplet deformation along movement vector
-        const stretch = Math.min(speed * 0.016, 0.72);
-        const scaleX = 1 + stretch;
-        const scaleY = Math.max(0.48, 1 - stretch * 0.52);
-
-        cursorRing.style.transform = 'translate3d(' + followerX.toFixed(1) + 'px, ' + followerY.toFixed(1) + 'px, 0) translate(-50%, -50%) rotate(' + angle.toFixed(1) + 'deg) scale(' + scaleX.toFixed(3) + ', ' + scaleY.toFixed(3) + ')';
-      }
-      requestAnimationFrame(renderGooeyCursor);
-    }
-    requestAnimationFrame(renderGooeyCursor);
+    window.addEventListener('mouseup', function() {
+      if (cursorRing) cursorRing.classList.remove('is-active');
+      if (cursorDot) cursorDot.classList.remove('is-active');
+    }, { passive: true });
   }
 
   // Auto-init when document ready
