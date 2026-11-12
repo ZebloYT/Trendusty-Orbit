@@ -1794,9 +1794,9 @@ body.theme-buttermax .mouse-trail-dot {
 body.theme-buttermax #orbit-cursor-dot {
   width: 10px !important;
   height: 10px !important;
-  background: #ffd600 !important;
+  background: #992DCA !important;
   border-radius: 50% !important;
-  box-shadow: 0 0 16px rgba(255, 214, 0, 0.95) !important;
+  box-shadow: 0 0 16px rgba(153, 45, 202, 0.95), 0 0 4px #ffffff !important;
   pointer-events: none !important;
   transform-origin: center center !important;
   transition: opacity 0.2s ease !important;
@@ -1805,10 +1805,10 @@ body.theme-buttermax #orbit-cursor-dot {
 body.theme-buttermax #orbit-cursor-ring {
   width: 44px !important;
   height: 44px !important;
-  border: 2px solid #ffd600 !important;
+  border: 2px solid #992DCA !important;
   border-radius: 50% !important;
-  background: rgba(255, 214, 0, 0.08) !important;
-  box-shadow: 0 0 24px rgba(255, 214, 0, 0.35) !important;
+  background: rgba(153, 45, 202, 0.12) !important;
+  box-shadow: 0 0 24px rgba(153, 45, 202, 0.45) !important;
   pointer-events: none !important;
   transform-origin: center center !important;
   transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
@@ -1824,20 +1824,23 @@ body.theme-buttermax #orbit-cursor-ring .tc-hud-reticle {
 body.theme-buttermax #orbit-cursor-ring.is-hovering {
   width: 68px !important;
   height: 68px !important;
-  background: rgba(255, 214, 0, 0.22) !important;
-  border-color: #ffd600 !important;
-  box-shadow: 0 0 35px rgba(255, 214, 0, 0.6) !important;
+  background: rgba(153, 45, 202, 0.26) !important;
+  border-color: #992DCA !important;
+  box-shadow: 0 0 35px rgba(153, 45, 202, 0.7) !important;
 }
 
 /* Active click press response */
 body.theme-buttermax #orbit-cursor-ring.is-active {
   width: 36px !important;
   height: 36px !important;
-  background: rgba(255, 214, 0, 0.35) !important;
+  background: rgba(153, 45, 202, 0.42) !important;
+  border-color: #992DCA !important;
 }
 
 body.theme-buttermax #orbit-cursor-dot.is-active {
   transform: translate(-50%, -50%) scale(0.8) !important;
+  background: #992DCA !important;
+  box-shadow: 0 0 20px rgba(153, 45, 202, 1) !important;
 }
 
 /* Smooth HTML scroll momentum */

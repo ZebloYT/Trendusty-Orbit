@@ -496,8 +496,8 @@ html.sb-mouse-disconnected .mouse-trail-dot {
   stroke: #c084fc;
 }
 .orbit-cursor-dot.is-hovering .tc-reticle-ring {
-  stroke: #a855f7;
-  filter: drop-shadow(0 0 6px #a855f7);
+  stroke: #992DCA;
+  filter: drop-shadow(0 0 6px #992DCA);
 }
 .orbit-cursor-dot.is-hovering .tc-crosshairs {
   animation-duration: 0.8s;
@@ -505,7 +505,7 @@ html.sb-mouse-disconnected .mouse-trail-dot {
 }
 .orbit-cursor-dot.is-hovering .tc-apex-dot {
   fill: #ffffff;
-  filter: drop-shadow(0 0 10px #a855f7);
+  filter: drop-shadow(0 0 10px #992DCA);
 }
 
 .orbit-cursor-dot.is-active .tactical-cursor-svg {
