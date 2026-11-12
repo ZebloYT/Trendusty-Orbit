@@ -271,41 +271,24 @@ body.bg-amber #buttermax-hero-curtain {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Curtain Peeled State */
+/* Orbit Studio is the permanent First Scene of the website */
+#buttermax-hero-curtain,
 #buttermax-hero-curtain.peeled {
-  transform: translateY(-100%);
-  position: absolute;
-  pointer-events: none;
+  position: relative !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  transform: none !important;
+  pointer-events: auto !important;
 }
 
-/* Floating Bottom Dock Unpeel Button when curtain is rolled up */
-#buttermax-unpeel-btn {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(120px);
-  z-index: 9999;
-  background: var(--bm-yellow, #ffdb15);
-  color: var(--bm-black, #121212);
-  border: 2px solid var(--bm-black, #121212);
-  border-radius: 999px;
-  padding: 10px 24px;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 3px 3px 0px #121212;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, box-shadow 0.2s ease;
-  white-space: nowrap;
-}
-
+/* Unpeel button is hidden because Orbit Studio is always right at the top as the first scene */
+#buttermax-unpeel-btn,
 #buttermax-unpeel-btn.visible {
-  transform: translateX(-50%) translateY(0);
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
 #buttermax-unpeel-btn:hover {

@@ -38,6 +38,19 @@
     canvasEl = document.getElementById('bm-screen-canvas');
     audioBtn = document.getElementById('bm-audio-pill');
 
+    // Orbit Studio is always the permanent First Scene of the page!
+    isCurtainPeeled = false;
+    sessionStorage.removeItem('orbit_curtain_peeled');
+    if (curtainEl) {
+      curtainEl.classList.remove('peeled');
+      curtainEl.style.display = 'flex';
+      curtainEl.style.transform = 'none';
+    }
+    if (unpeelBtn) {
+      unpeelBtn.classList.remove('visible');
+      unpeelBtn.style.display = 'none';
+    }
+
     // Check saved theme preference
     const savedTheme = localStorage.getItem('orbit_theme');
     if (savedTheme === 'obsidian') {
@@ -57,12 +70,6 @@
     setupPageTransitions();
     setupSmoothScroll();
     setupButtermaxCursor();
-
-    // Check saved curtain peel state
-    const savedPeeled = sessionStorage.getItem('orbit_curtain_peeled');
-    if (savedPeeled === 'true' && curtainEl) {
-      peelCurtain(false);
-    }
   }
 
   // --- THEME SWITCHER ---
@@ -229,61 +236,33 @@
     }, 360);
   };
 
-  // --- CURTAIN PEEL REVEAL MECHANIC ---
+  // --- FIRST SCENE / SCROLL NAVIGATION (ORBIT STUDIO NEVER PEELS AWAY) ---
   function setupPeelTriggers() {
     const peelBtn = document.getElementById('bm-peel-btn');
     if (peelBtn) {
       peelBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        peelCurtain(true);
+        const nextTarget = document.querySelector('header') || document.getElementById('features') || document.getElementById('interface');
+        if (nextTarget) nextTarget.scrollIntoView({ behavior: 'smooth' });
+        else window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       });
     }
 
     if (unpeelBtn) {
-      unpeelBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        unpeelCurtain();
-      });
-    }
-
-    // Wheel/Scroll over curtain trigger
-    let wheelAcc = 0;
-    if (curtainEl) {
-      curtainEl.addEventListener('wheel', function(e) {
-        if (!isCurtainPeeled && e.deltaY > 25) {
-          wheelAcc += e.deltaY;
-          if (wheelAcc > 70) {
-            peelCurtain(true);
-            wheelAcc = 0;
-          }
-        }
-      }, { passive: true });
+      unpeelBtn.style.display = 'none';
     }
   }
 
   function peelCurtain(smoothScroll) {
-    if (!curtainEl) return;
-    isCurtainPeeled = true;
-    curtainEl.classList.add('peeled');
-    if (unpeelBtn) unpeelBtn.classList.add('visible');
-    sessionStorage.setItem('orbit_curtain_peeled', 'true');
-
+    // Orbit Studio is the permanent first scene of the page, never hidden or peeled away!
     if (smoothScroll) {
-      const interfaceSection = document.getElementById('interface') || document.querySelector('.showcase');
-      if (interfaceSection) {
-        setTimeout(() => {
-          interfaceSection.scrollIntoView({ behavior: 'smooth' });
-        }, 150);
-      }
+      const nextTarget = document.querySelector('header') || document.getElementById('features') || document.getElementById('interface');
+      if (nextTarget) nextTarget.scrollIntoView({ behavior: 'smooth' });
+      else window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     }
   }
 
   function unpeelCurtain() {
-    if (!curtainEl) return;
-    isCurtainPeeled = false;
-    curtainEl.classList.remove('peeled');
-    if (unpeelBtn) unpeelBtn.classList.remove('visible');
-    sessionStorage.setItem('orbit_curtain_peeled', 'false');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -1020,13 +999,6 @@
   function setupSmoothScroll() {
     window.addEventListener('wheel', function(e) {
       if (document.body.classList.contains('auth-modal-open')) return;
-
-      // When over curtain: scroll peels curtain smoothly
-      if (curtainEl && !isCurtainPeeled && e.deltaY > 15) {
-        e.preventDefault();
-        peelCurtain(true);
-        return;
-      }
 
       e.preventDefault();
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
