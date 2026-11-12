@@ -75,6 +75,90 @@ body.theme-buttermax::before {
 }
 
 /* Background Theme Variants for Hero Curtain */
+
+/* Solar Butter Theme (Default Buttermax Yellow - Image 1 Authentic Aesthetic) */
+#buttermax-hero-curtain.bg-butter,
+body.bg-butter #buttermax-hero-curtain,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) {
+  background-color: #ffdb15 !important;
+  color: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-headline-wrap .bm-title-dark,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-headline-wrap .bm-title-dark {
+  color: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-headline-wrap .bm-title-dark .bm-title-script,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-headline-wrap .bm-title-dark .bm-title-script {
+  color: #121212 !important;
+  text-shadow: none !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-headline-wrap .bm-title-light,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-headline-wrap .bm-title-light {
+  color: #ffdb15 !important;
+  text-shadow: 0 0 16px rgba(255, 219, 21, 0.6) !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-headline-wrap .bm-title-light .bm-title-grotesk,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-headline-wrap .bm-title-light .bm-title-grotesk {
+  color: #ffdb15 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-headline-wrap .bm-title-light .bm-title-script,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-headline-wrap .bm-title-light .bm-title-script {
+  color: #ffdb15 !important;
+  text-shadow: 0 0 16px rgba(255, 219, 21, 0.8) !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-tagline,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-tagline {
+  color: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-pill-btn,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-pill-btn {
+  background: transparent !important;
+  border: 1.5px solid #121212 !important;
+  color: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-pill-btn:hover,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-pill-btn:hover {
+  background: #121212 !important;
+  color: #ffdb15 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-close-btn,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-close-btn {
+  border-color: #121212 !important;
+  color: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-audio-pill,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-audio-pill {
+  border-color: #121212 !important;
+  color: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-wave-bar,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-wave-bar {
+  background: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-peel-btn,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-peel-btn {
+  background: #121212 !important;
+  color: #ffdb15 !important;
+  border-color: #121212 !important;
+}
+
+#buttermax-hero-curtain.bg-butter .bm-manifesto-text,
+#buttermax-hero-curtain:not(.bg-noir):not(.bg-amber) .bm-manifesto-text {
+  color: #121212 !important;
+}
+
 #buttermax-hero-curtain.bg-noir,
 body.bg-noir #buttermax-hero-curtain {
   background-color: #101010 !important;
