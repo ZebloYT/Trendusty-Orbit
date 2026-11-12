@@ -3723,7 +3723,7 @@
         <a href="#interface" class="bm-pill-btn" onclick="document.getElementById('bm-peel-btn').click()">COP RADAR</a>
         <a href="../echonode" class="bm-pill-btn">ECHONODE</a>
         <a href="../share/" class="bm-pill-btn">FILE TRANSFER</a>
-        <button type="button" class="bm-pill-btn" style="background: #992DCA !important; color: #ffffff !important; border-color: #992DCA !important; font-weight: 800;" onclick="toggleCursorLab(true)">🎯 CURSOR LAB ACTIVE</button>
+        <button type="button" class="bm-pill-btn" style="background: #EE00FF !important; color: #ffffff !important; border-color: #EE00FF !important; font-weight: 800;" onclick="toggleCursorLab(true)">🎯 CURSOR LAB ACTIVE</button>
         <button type="button" class="bm-pill-btn theme-toggle-btn" onclick="toggleOrbitTheme()">🟡 ORBIT GOLD</button>
         <button type="button" class="bm-pill-btn bg-theme-btn" id="bm-bg-cycle-btn" onclick="cycleBgTheme()" title="Switch Studio Background Theme (Solar Butter / Velvet Noir / Honey Amber)">🎨 BG: <span id="bm-bg-name">BUTTER</span></button>
       </div>
@@ -7653,7 +7653,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
     <!-- Minimized Pill -->
     <div id="cursor-lab-minimized" class="cursor-lab-min-pill" style="display: none;" onclick="toggleCursorLab(true)">
       <span class="cl-dot-preview" id="cl-min-dot"></span>
-      <span class="cl-min-label">🎯 Cursor Lab (<span id="cl-min-hex">#992DCA</span>)</span>
+      <span class="cl-min-label">🎯 Cursor Lab (<span id="cl-min-hex">#EE00FF</span>)</span>
       <span class="cl-expand-icon">▲</span>
     </div>
 
@@ -7677,7 +7677,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
           <div class="cl-swatch-large" id="cl-active-swatch"></div>
           <div class="cl-active-text">
             <span class="cl-sub">SELECTED HEX</span>
-            <span class="cl-hex-code" id="cl-active-hex">#992DCA</span>
+            <span class="cl-hex-code" id="cl-active-hex">#EE00FF</span>
           </div>
         </div>
 
@@ -7696,11 +7696,11 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       <!-- Custom HTML5 Color Picker & Custom HEX Input Row -->
       <div class="cl-custom-row">
         <div class="cl-color-picker-input-wrap">
-          <input type="color" id="cl-native-picker" value="#992DCA" title="Click to pick ANY custom color">
+          <input type="color" id="cl-native-picker" value="#EE00FF" title="Click to pick ANY custom color">
           <span class="cl-picker-label">🎨 Custom Rainbow Picker</span>
         </div>
         <div class="cl-hex-input-wrap">
-          <input type="text" id="cl-hex-manual" placeholder="#HEXCODE" maxlength="9" value="#992DCA">
+          <input type="text" id="cl-hex-manual" placeholder="#HEXCODE" maxlength="9" value="#EE00FF">
           <button type="button" class="cl-apply-btn" onclick="applyManualHex()">Apply</button>
         </div>
       </div>
@@ -7725,7 +7725,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       gap: 10px;
       padding: 10px 18px;
       background: rgba(18, 18, 18, 0.94);
-      border: 1.5px solid #992DCA;
+      border: 1.5px solid #EE00FF;
       border-radius: 999px;
       color: #ffffff;
       font-size: 13px;
@@ -7743,8 +7743,8 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background: #992DCA;
-      box-shadow: 0 0 10px #992DCA;
+      background: #EE00FF;
+      box-shadow: 0 0 10px #EE00FF;
     }
     .cl-expand-icon {
       font-size: 10px;
@@ -7781,7 +7781,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       letter-spacing: 0.1em;
       padding: 3px 7px;
       border-radius: 6px;
-      background: #992DCA;
+      background: #EE00FF;
       color: #ffffff;
     }
     .cl-title {
@@ -7836,7 +7836,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: #992DCA;
+      background: #EE00FF;
       border: 2px solid #ffffff;
       box-shadow: 0 0 16px rgba(153, 45, 202, 0.8);
       transition: background 0.2s, box-shadow 0.2s;
@@ -7863,7 +7863,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       align-items: center;
       gap: 6px;
       padding: 8px 14px;
-      background: #992DCA;
+      background: #EE00FF;
       border: none;
       border-radius: 8px;
       color: #ffffff;
@@ -7972,7 +7972,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
     }
     .cl-hex-input-wrap input:focus {
       outline: none;
-      border-color: #992DCA;
+      border-color: #EE00FF;
     }
     .cl-apply-btn {
       padding: 6px 10px;
@@ -7986,7 +7986,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       transition: background 0.15s;
     }
     .cl-apply-btn:hover {
-      background: #992DCA;
+      background: #EE00FF;
     }
 
     .cl-toast {
@@ -8012,7 +8012,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
   <script>
     (function() {
       const PRESETS = [
-        { name: "Electric Violet (Current)", hex: "#992DCA" },
+        { name: "Neon Magenta (Current)", hex: "#EE00FF" },
         { name: "Solar Butter Gold", hex: "#FFD600" },
         { name: "Cyber Neon Crimson", hex: "#FF3366" },
         { name: "Matrix Hyper Emerald", hex: "#00F5B8" },
@@ -8028,7 +8028,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         { name: "Obsidian Stealth", hex: "#121212" }
       ];
 
-      let currentColor = localStorage.getItem('orbit_temp_cursor_color') || '#992DCA';
+      let currentColor = localStorage.getItem('orbit_temp_cursor_color') || '#EE00FF';
 
       function hexToRgb(hex) {
         let c = hex.replace('#', '');
@@ -8147,7 +8147,7 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         if (/^#?[0-9A-Fa-f]{3,8}$/.test(val)) {
           applyCursorColor(val);
         } else {
-          alert('Please enter a valid hex code (e.g. #992DCA)');
+          alert('Please enter a valid hex code (e.g. #EE00FF)');
         }
       };
 

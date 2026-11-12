@@ -1058,7 +1058,7 @@
   // BUTTERMAX SILKY CIRCULAR LENS & MAGNETIC HOVER CONTROLLER (ZERO JITTER)
   // ==========================================================================
   function applyActiveCursorColor() {
-    let hex = '#992DCA';
+    let hex = '#EE00FF';
     try {
       const stored = localStorage.getItem('orbit_temp_cursor_color');
       if (stored && stored.startsWith('#')) hex = stored.toUpperCase();
@@ -1066,9 +1066,9 @@
 
     let c = hex.replace('#', '');
     if (c.length === 3) c = c.split('').map(x => x + x).join('');
-    const r = parseInt(c.substring(0, 2), 16) || 153;
-    const g = parseInt(c.substring(2, 4), 16) || 45;
-    const b = parseInt(c.substring(4, 6), 16) || 202;
+    const r = parseInt(c.substring(0, 2), 16) || 238;
+    const g = parseInt(c.substring(2, 4), 16) || 0;
+    const b = parseInt(c.substring(4, 6), 16) || 255;
 
     let styleEl = document.getElementById('orbit-cursor-color-dynamic');
     if (!styleEl) {

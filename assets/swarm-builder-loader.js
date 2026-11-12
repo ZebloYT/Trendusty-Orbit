@@ -4389,8 +4389,8 @@
       const cx = window.innerWidth / 2;
       const cy = window.innerHeight / 2 - 30;
 
-      // Active cursor color (defaults to #992DCA or user selection from /temp)
-      let targetHex = '#992DCA';
+      // Active cursor color (defaults to #EE00FF or user selection from /temp)
+      let targetHex = '#EE00FF';
       try {
         const stored = localStorage.getItem('orbit_temp_cursor_color');
         if (stored && stored.startsWith('#')) targetHex = stored;
@@ -4398,9 +4398,9 @@
 
       const hexClean = targetHex.replace('#', '');
       const rgb = {
-        r: parseInt(hexClean.substring(0, 2), 16) || 153,
-        g: parseInt(hexClean.substring(2, 4), 16) || 45,
-        b: parseInt(hexClean.substring(4, 6), 16) || 202
+        r: parseInt(hexClean.substring(0, 2), 16) || 238,
+        g: parseInt(hexClean.substring(2, 4), 16) || 0,
+        b: parseInt(hexClean.substring(4, 6), 16) || 255
       };
 
       this.stage = document.createElement('div');
