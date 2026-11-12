@@ -572,13 +572,13 @@
   }
 
   // ==========================================================================
-  // BUTTERMAX CENTER-ANCHORED VISCOUS MOLTEN FLUID TRAIL
+  // BUTTERMAX SIGNATURE MOLTEN LIQUID PSEUDOPOD (EXACT OBS VIDEO FIDELITY)
   // Features:
-  // 1. Rooted at canvas center (underneath headline / around console)
-  // 2. Continuous kinematic fluid trail stretching towards the mouse
-  // 3. Natural resting molten puddle when pointer is idle (Image 1 style)
+  // 1. Rooted directly at 3D console center (behind hardware centerpiece)
+  // 2. Thick, luscious molten black liquid lobe stretching directly to cursor
+  // 3. Resting puddle extending across title when idle (matching 00:07 of video)
   // 4. Zero random floating ember dots (100% clean solid liquid body)
-  // 5. Signature detached molten bead (●) floating ahead of the lead
+  // 5. Signature detached satellite beads (● ·) ahead of the leading tip
   // 6. Real-time SVG typography clipping & color inversion (#bm-blob-clip)
   // ==========================================================================
   let bgCanvas = null;
@@ -587,7 +587,7 @@
   let bgHeight = 0;
   let bgBlobClipPath = null;
 
-  const CHAIN_LENGTH = 18;
+  const CHAIN_LENGTH = 14;
   const liquidChain = [];
   let pointerTargetX = -1000;
   let pointerTargetY = -1000;
@@ -624,18 +624,32 @@
       initChain();
     }
 
+    function getConsoleCenter() {
+      if (deviceEl && curtainEl) {
+        const dRect = deviceEl.getBoundingClientRect();
+        const cRect = curtainEl.getBoundingClientRect();
+        return {
+          x: (dRect.left + dRect.width * 0.5) - cRect.left,
+          y: (dRect.top + dRect.height * 0.48) - cRect.top
+        };
+      }
+      return {
+        x: bgWidth * 0.5,
+        y: bgHeight * 0.46
+      };
+    }
+
     function initChain() {
       liquidChain.length = 0;
-      const rootX = bgWidth * 0.5;
-      const rootY = bgHeight * 0.44;
-      const idleLeadX = rootX - 160;
-      const idleLeadY = rootY + 15;
+      const anchor = getConsoleCenter();
+      const idleLeadX = anchor.x - 190;
+      const idleLeadY = anchor.y + 60;
 
       for (let i = 0; i < CHAIN_LENGTH; i++) {
         const u = i / (CHAIN_LENGTH - 1);
         liquidChain.push({
-          x: idleLeadX * (1 - u) + rootX * u,
-          y: idleLeadY * (1 - u) + rootY * u
+          x: idleLeadX * (1 - u) + anchor.x * u,
+          y: idleLeadY * (1 - u) + anchor.y * u
         });
       }
       prevLeadX = liquidChain[0].x;
@@ -716,36 +730,35 @@
       if (isThemeButtermax) {
         idleTimer++;
 
-        // Root position anchored at center of hero stage
-        const rootAnchorX = bgWidth * 0.5;
-        const rootAnchorY = bgHeight * 0.44;
-        const rootX = rootAnchorX + currentTransX * 0.35;
-        const rootY = rootAnchorY + currentTransY * 0.25;
+        // Root position anchored at 3D console center
+        const anchor = getConsoleCenter();
+        const rootX = anchor.x + currentTransX * 0.25;
+        const rootY = anchor.y + currentTransY * 0.20;
 
         // Anchor root point
         liquidChain[CHAIN_LENGTH - 1].x = rootX;
         liquidChain[CHAIN_LENGTH - 1].y = rootY;
 
-        // Leading head target
-        if (isPointerActive && idleTimer < 180) {
-          liquidChain[0].x += (pointerTargetX - liquidChain[0].x) * 0.20;
-          liquidChain[0].y += (pointerTargetY - liquidChain[0].y) * 0.20;
+        // Leading head target (follows mouse or settles into resting puddle like 00:07)
+        if (isPointerActive && idleTimer < 240) {
+          liquidChain[0].x += (pointerTargetX - liquidChain[0].x) * 0.22;
+          liquidChain[0].y += (pointerTargetY - liquidChain[0].y) * 0.22;
         } else {
-          // Natural resting molten puddle when pointer is idle (Image 1 style)
-          const restingLeadX = rootX - 150 + Math.sin(time * 0.0016) * 16;
-          const restingLeadY = rootY + 18 + Math.cos(time * 0.0022) * 8;
+          // Natural resting molten puddle position behind console (matching Image 1 & video)
+          const restingLeadX = rootX - 190 + Math.sin(time * 0.0016) * 14;
+          const restingLeadY = rootY + 60 + Math.cos(time * 0.0022) * 8;
           liquidChain[0].x += (restingLeadX - liquidChain[0].x) * 0.06;
           liquidChain[0].y += (restingLeadY - liquidChain[0].y) * 0.06;
         }
 
-        // Kinematic fluid chain relaxation
+        // Kinematic fluid chain relaxation (viscous honey / molten chocolate physics)
         for (let i = 1; i < CHAIN_LENGTH - 1; i++) {
           const prev = liquidChain[i - 1];
           const next = liquidChain[i + 1];
           const midX = (prev.x + next.x) * 0.5;
           const midY = (prev.y + next.y) * 0.5;
-          liquidChain[i].x += (midX - liquidChain[i].x) * 0.45;
-          liquidChain[i].y += (midY - liquidChain[i].y) * 0.45;
+          liquidChain[i].x += (midX - liquidChain[i].x) * 0.44;
+          liquidChain[i].y += (midY - liquidChain[i].y) * 0.44;
         }
 
         // Speed of leading head
@@ -753,9 +766,11 @@
         prevLeadX = liquidChain[0].x;
         prevLeadY = liquidChain[0].y;
 
-        // Dynamic base and lead radii
-        const baseRadius = Math.min(135, Math.max(90, bgWidth * 0.095));
-        const leadRadius = Math.min(54, Math.max(34, 48 - leadSpeed * 0.25));
+        // Thick Buttermax fluid proportions matching OBS video
+        const baseRadius = Math.min(150, Math.max(105, bgWidth * 0.11));
+        const leadRadius = Math.min(88, Math.max(58, 76 - leadSpeed * 0.32));
+        const stretchDist = Math.hypot(liquidChain[0].x - rootX, liquidChain[0].y - rootY);
+        const waistDip = Math.min(38, stretchDist * 0.075);
 
         const leftSide = [];
         const rightSide = [];
@@ -781,7 +796,9 @@
           const ny = tx / mag;
 
           const u = i / (CHAIN_LENGTH - 1);
-          const r = leadRadius * (1 - u) + baseRadius * Math.pow(u, 1.35);
+          // Parabolic waist blend: wide base, wide lead, smooth elastic neck
+          const parabola = 1.0 - 4.0 * Math.pow(u - 0.5, 2);
+          const r = Math.max(22, (leadRadius * (1 - u) + baseRadius * u) - parabola * waistDip);
 
           leftSide.push({ x: curr.x + nx * r, y: curr.y + ny * r });
           rightSide.push({ x: curr.x - nx * r, y: curr.y - ny * r });
@@ -801,7 +818,7 @@
           pathD += ' Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
         }
 
-        // Root rounded base cap
+        // Root rounded base cap around console anchor
         const rootPt = liquidChain[CHAIN_LENGTH - 1];
         const tailTx = rootPt.x - liquidChain[CHAIN_LENGTH - 2].x;
         const tailTy = rootPt.y - liquidChain[CHAIN_LENGTH - 2].y;
@@ -864,11 +881,11 @@
           bgCtx.stroke();
           bgCtx.restore();
         } else {
-          // Canonical Solar Butter: glossy molten charcoal on canary yellow
-          const butterGrad = bgCtx.createRadialGradient(rootPt.x, rootPt.y, 20, rootPt.x, rootPt.y, baseRadius * 1.5);
+          // Canonical Buttermax Yellow Mode: solid rich glossy molten charcoal on solar yellow
+          const butterGrad = bgCtx.createRadialGradient(rootPt.x, rootPt.y, 25, rootPt.x, rootPt.y, baseRadius * 1.5);
           butterGrad.addColorStop(0, '#1c1c1c');
-          butterGrad.addColorStop(0.6, '#111111');
-          butterGrad.addColorStop(1, '#080808');
+          butterGrad.addColorStop(0.6, '#121212');
+          butterGrad.addColorStop(1, '#090909');
           bgCtx.fillStyle = butterGrad;
           bgCtx.fill();
 
@@ -876,26 +893,27 @@
           bgCtx.lineWidth = 1.4;
           bgCtx.stroke();
 
-          // Subtle gloss specular highlight along fluid spine
+          // Specular gloss highlight on leading head
           bgCtx.save();
           bgCtx.beginPath();
-          bgCtx.arc(headPt.x - leadRadius * 0.25, headPt.y - leadRadius * 0.25, leadRadius * 0.35, 0, Math.PI * 2);
+          bgCtx.arc(headPt.x - leadRadius * 0.22, headPt.y - leadRadius * 0.22, leadRadius * 0.32, 0, Math.PI * 2);
           bgCtx.fillStyle = 'rgba(255, 255, 255, 0.16)';
           bgCtx.fill();
           bgCtx.restore();
         }
 
         // ====================================================================
-        // SIGNATURE DETACHED SATELLITE BEAD (●) — PINCH-OFF AHEAD OF LEAD
+        // SIGNATURE DETACHED SATELLITE BEADS & PINCH-OFF TRAIL (EXACT IMAGE 1)
         // ====================================================================
-        const beadGap = leadRadius * 1.5 + 20;
+        const beadGap = leadRadius * 1.5 + 40;
         const beadX = headPt.x + Math.cos(headAng) * beadGap;
         const beadY = headPt.y + Math.sin(headAng) * beadGap;
-        const beadR = 12.5 + Math.sin(time * 0.0028) * 1.4;
+        const beadR = 13.5;
 
+        // Primary detached satellite droplet (●)
         bgCtx.beginPath();
         bgCtx.arc(beadX, beadY, beadR, 0, Math.PI * 2);
-        bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#111111' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
+        bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#121212' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
         bgCtx.fill();
 
         if (currentBgTheme === 'butter') {
@@ -903,14 +921,31 @@
           bgCtx.lineWidth = 1.4;
           bgCtx.stroke();
 
+          // Specular reflection on primary bead
           bgCtx.save();
           bgCtx.beginPath();
           bgCtx.arc(beadX - beadR * 0.3, beadY - beadR * 0.3, beadR * 0.32, 0, Math.PI * 2);
-          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.18)';
+          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.22)';
           bgCtx.fill();
           bgCtx.restore();
         }
         pathD += addCircleToSvg(beadX, beadY, beadR);
+
+        // Pinch-off micro-droplet sequence between head and satellite bead (exact Image 1 detail)
+        const microDroplets = [
+          { frac: 0.28, r: 4.8 },
+          { frac: 0.48, r: 3.6 },
+          { frac: 0.68, r: 2.4 }
+        ];
+        microDroplets.forEach(function(m) {
+          const mx = headPt.x + Math.cos(headAng) * (beadGap * m.frac);
+          const my = headPt.y + Math.sin(headAng) * (beadGap * m.frac);
+          bgCtx.beginPath();
+          bgCtx.arc(mx, my, m.r, 0, Math.PI * 2);
+          bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#121212' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
+          bgCtx.fill();
+          pathD += addCircleToSvg(mx, my, m.r);
+        });
 
         // Update Typography Inversion Mask in SVG in real-time
         if (bgBlobClipPath) {

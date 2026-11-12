@@ -487,7 +487,7 @@ body.bg-amber #buttermax-hero-curtain {
 .bm-headline-wrap {
   position: relative;
   z-index: 3;
-  margin-bottom: 24px;
+  margin-bottom: 0px;
   user-select: none;
 }
 
@@ -582,7 +582,7 @@ body.bg-amber #buttermax-hero-curtain {
   width: 100%;
   max-width: 520px;
   height: 380px;
-  margin: 0 auto;
+  margin: -65px auto 0;
   perspective: 1400px;
   display: flex;
   align-items: center;
