@@ -94,20 +94,6 @@
       } catch(e) {}
     })();
   </script>
-  <!-- Swarm Cursor Website Builder Loading Animation -->
-  <link rel="stylesheet" href="../assets/swarm-builder-loader.css">
-  <script>
-    (function() {
-      try {
-        if (sessionStorage.getItem('orbit_nav_from_button') === 'true') {
-          document.documentElement.classList.add('sb-from-button');
-        } else {
-          document.documentElement.classList.add('sb-mouse-disconnected');
-        }
-      } catch(e) {}
-    })();
-  </script>
-  <script src="../assets/swarm-builder-loader.js" defer></script>
   <!-- Auto-Scroll Middle Mouse Button (MMB) Cursor -->
   <link rel="stylesheet" href="../assets/orbit-autoscroll.css">
   <script src="../assets/orbit-autoscroll.js" defer></script>
@@ -3513,36 +3499,6 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-
-  <!-- Immediate Preloader Shield: Completely blocks page view on first paint with zero flash -->
-  <div id="orbit-initial-shield" class="sb-enter-overlay">
-    <div class="sb-enter-box">
-      <span class="sb-enter-tag">HARDWARE LINK REQUIRED</span>
-      <button id="sb-enter-btn" class="sb-enter-pill" type="button">
-        <span>⚡ CLICK OR PRESS <kbd>ENTER</kbd> TO START</span>
-      </button>
-      <div class="sb-enter-status">
-        <span class="sb-status-dot-blink" id="sb-enter-dot"></span>
-        <span id="sb-status-desc">MOUSE DISCONNECTED • PENDING CALIBRATION</span>
-      </div>
-    </div>
-  </div>
-  <script>
-    window.__shieldTriggered = false;
-    function __triggerShield() {
-      if (window.__shieldTriggered) return;
-      window.__shieldTriggered = true;
-      var b = document.getElementById('sb-enter-btn');
-      if (b) b.innerHTML = '<span>⚙ INITIATING CURSOR FORGE...</span>';
-    }
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') __triggerShield();
-    });
-    var shieldEl = document.getElementById('orbit-initial-shield');
-    if (shieldEl) {
-      shieldEl.addEventListener('click', __triggerShield);
-    }
-  </script>
 
   <!-- Tactical Right-Click Shortcuts Menu UI -->
   <div class="tactical-context-menu" id="tactical-context-menu" aria-hidden="true">

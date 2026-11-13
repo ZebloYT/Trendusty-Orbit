@@ -94,20 +94,6 @@
       } catch(e) {}
     })();
   </script>
-  <!-- Swarm Cursor Website Builder Loading Animation -->
-  <link rel="stylesheet" href="../assets/swarm-builder-loader.css">
-  <script>
-    (function() {
-      try {
-        if (sessionStorage.getItem('orbit_nav_from_button') === 'true') {
-          document.documentElement.classList.add('sb-from-button');
-        } else {
-          document.documentElement.classList.add('sb-mouse-disconnected');
-        }
-      } catch(e) {}
-    })();
-  </script>
-  <script src="../assets/swarm-builder-loader.js" defer></script>
   <!-- Auto-Scroll Middle Mouse Button (MMB) Cursor -->
   <link rel="stylesheet" href="../assets/orbit-autoscroll.css">
   <script src="../assets/orbit-autoscroll.js" defer></script>
@@ -3032,7 +3018,7 @@
     
 <style id="custom-cursor-style">
     /* ==========================================================================
-       TACTICAL ORBIT CURSOR - ADVANCED STATES
+       TACTICAL ORBIT BUTTERMAX CIRCLE CURSOR — #EE00FF
        ========================================================================== */
     html, body, *, *::before, *::after { cursor: none !important; }
     a, button, input, textarea, select, canvas, [role="button"], label { cursor: none !important; }
@@ -3051,498 +3037,91 @@
       background: transparent !important;
     }
 
-        /* Option 4: Tactical OSINT Reticle Arrow */
+    /* Precision Center Dot */
     .orbit-cursor-dot {
-      position: fixed; top: 0; left: 0;
-      width: 36px; height: 36px;
-      background: transparent !important;
-      border-radius: 0 !important;
-      pointer-events: none !important;
-      z-index: 2147483649 !important;
-      box-shadow: none !important;
-      will-change: transform;
-      opacity: 0;
-      transform: translate3d(-100px, -100px, 0) translate(-4px, -2px);
-      transition: opacity 0.3s ease;
-    }
-
-    .tactical-cursor-svg {
-      width: 36px;
-      height: 36px;
-      overflow: visible;
-      pointer-events: none;
-      filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85));
-    }
-
-    @keyframes tactical-reticle-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes tactical-crosshair-pulse {
-      0%, 100% { opacity: 0.75; stroke: #38bdf8; filter: drop-shadow(0 0 2px #38bdf8); }
-      50% { opacity: 1; stroke: #00f5b8; filter: drop-shadow(0 0 6px #00f5b8); }
-    }
-
-    @keyframes tactical-apex-pulse {
-      0%, 100% { fill: #38bdf8; filter: drop-shadow(0 0 3px #38bdf8); transform: scale(1); }
-      50% { fill: #00f5b8; filter: drop-shadow(0 0 8px #00f5b8); transform: scale(1.3); }
-    }
-
-    .tc-reticle-group {
-      transform-origin: 16px 16px;
-      animation: tactical-reticle-spin 10s linear infinite;
-    }
-
-    .tc-crosshairs {
-      animation: tactical-crosshair-pulse 2s ease-in-out infinite alternate;
-    }
-
-    .tc-apex-dot {
-      transform-origin: 4px 2px;
-      animation: tactical-apex-pulse 1.6s ease-in-out infinite alternate;
-    }
-
-    .orbit-cursor-dot.is-hovering .tc-reticle-group {
-      animation-duration: 2.2s;
-      stroke: #00f5b8;
-    }
-    .orbit-cursor-dot.is-hovering .tc-reticle-ring {
-      stroke: #00f5b8;
-      filter: drop-shadow(0 0 6px #00f5b8);
-    }
-    .orbit-cursor-dot.is-hovering .tc-crosshairs {
-      animation-duration: 0.8s;
-      stroke: #00f5b8;
-    }
-    .orbit-cursor-dot.is-hovering .tc-apex-dot {
-      fill: #ffffff;
-      filter: drop-shadow(0 0 10px #00f5b8);
-    }
-
-    .orbit-cursor-dot.is-active .tactical-cursor-svg {
-      transform: scale(0.92);
-      transition: transform 0.08s ease;
-    }
-    .orbit-cursor-dot.is-active .tc-crosshairs {
-      transform: scale(0.75);
-      transform-origin: 16px 16px;
-      transition: transform 0.08s ease;
-    }
-
-    /* ==========================================================================
-       PLANETARY CURSOR SOLAR SYSTEM (4 REVOLVING CELESTIAL BODIES)
-       ========================================================================== */
-
-    .cursor-solar-system {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      width: 0;
-      height: 0;
-      pointer-events: none !important;
-      z-index: -1;
-      transform: translate(0, 0);
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-    }
-
-    @keyframes solar-orbit-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes solar-orbit-counter-spin {
-      0% { transform: rotate(360deg); }
-      100% { transform: rotate(0deg); }
-    }
-
-    @keyframes planet-pulse-glow {
-      0%, 100% { filter: drop-shadow(0 0 2px currentColor) brightness(1); }
-      50% { filter: drop-shadow(0 0 7px currentColor) brightness(1.25); }
-    }
-
-    .planet-orbit {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
+      width: 8px;
+      height: 8px;
+      background: #EE00FF !important;
+      border-radius: 50% !important;
       pointer-events: none !important;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-    }
-
-    .planet-track {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      pointer-events: none;
-      opacity: 0.65;
-      transition: border-color 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
-    }
-
-    .planet-spinner {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      pointer-events: none;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF, 0 0 3px #ffffff !important;
       will-change: transform;
-    }
-
-    .planet-body {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: planet-pulse-glow 2.4s ease-in-out infinite alternate;
-    }
-
-    /* ORBIT 1: MERCURY / CYAN PLASMA CORE (Radius: 22px) */
-    .orbit-1 { width: 44px; height: 44px; }
-    .orbit-1 .planet-track {
-      border: 1px dotted rgba(0, 245, 184, 0.35);
-    }
-    .orbit-1 .planet-spinner {
-      animation: solar-orbit-spin 2.6s linear infinite;
-    }
-    .planet-cyan {
-      width: 5px;
-      height: 5px;
-      background: radial-gradient(circle at 35% 35%, #ffffff, #00f5b8 55%, #059669 100%);
-      color: #00f5b8;
-      box-shadow: 0 0 6px #00f5b8, 0 0 12px rgba(0, 245, 184, 0.7);
-    }
-
-    /* ORBIT 2: TERRA / CYBER AZURE OCEAN WORLD + MOON (Radius: 38px) */
-    .orbit-2 { width: 76px; height: 76px; }
-    .orbit-2 .planet-track {
-      border: 1px dashed rgba(56, 189, 248, 0.28);
-    }
-    .orbit-2 .planet-spinner {
-      animation: solar-orbit-spin 5.4s linear infinite;
-    }
-    .planet-azure {
-      width: 7px;
-      height: 7px;
-      background: radial-gradient(circle at 30% 30%, #bae6fd, #38bdf8 55%, #0284c7 100%);
-      color: #38bdf8;
-      box-shadow: 0 0 8px #38bdf8, 0 0 14px rgba(56, 189, 248, 0.6);
-    }
-    .planet-moon-orbit {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 15px;
-      height: 15px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      animation: solar-orbit-spin 1.25s linear infinite;
-      pointer-events: none;
-    }
-    .planet-moon {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: 2.2px;
-      height: 2.2px;
-      background: #ffffff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 3px #ffffff, 0 0 6px #38bdf8;
-    }
-
-    /* ORBIT 3: SATURN / GOLDEN RINGED GAS GIANT (Radius: 58px) */
-    .orbit-3 { width: 116px; height: 116px; }
-    .orbit-3 .planet-track {
-      border: 1px dotted rgba(245, 158, 11, 0.25);
-    }
-    .orbit-3 .planet-spinner {
-      animation: solar-orbit-counter-spin 9.6s linear infinite;
-    }
-    .planet-gold {
-      width: 9px;
-      height: 9px;
-      background: radial-gradient(circle at 35% 35%, #fef3c7, #fbbf24 50%, #b45309 100%);
-      color: #fbbf24;
-      box-shadow: 0 0 8px #fbbf24, 0 0 16px rgba(245, 158, 11, 0.65);
-    }
-    .planet-rings {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 19px;
-      height: 6px;
-      border: 1.5px solid rgba(251, 191, 36, 0.9);
-      border-radius: 50%;
-      transform: translate(-50%, -50%) rotate(-28deg);
-      box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
-      pointer-events: none;
-    }
-
-    /* ORBIT 4: NEPTUNE / DEEP QUANTUM PURPLE EXO-PLANET (Radius: 80px) */
-    .orbit-4 { width: 160px; height: 160px; }
-    .orbit-4 .planet-track {
-      border: 1px dashed rgba(168, 85, 247, 0.22);
-    }
-    .orbit-4 .planet-spinner {
-      animation: solar-orbit-spin 15.2s linear infinite;
-    }
-    .planet-purple {
-      width: 6px;
-      height: 6px;
-      background: radial-gradient(circle at 30% 30%, #f3e8ff, #c084fc 50%, #7e22ce 100%);
-      color: #c084fc;
-      box-shadow: 0 0 8px #c084fc, 0 0 15px rgba(168, 85, 247, 0.65);
-    }
-
-    /* Interactive Slingshot & Hover States */
-    .orbit-cursor-dot.is-hovering .cursor-solar-system {
-      transform: scale(1.08);
-    }
-    .orbit-cursor-dot.is-hovering .orbit-1 .planet-spinner { animation-duration: 1.1s; }
-    .orbit-cursor-dot.is-hovering .orbit-2 .planet-spinner { animation-duration: 2.2s; }
-    .orbit-cursor-dot.is-hovering .orbit-3 .planet-spinner { animation-duration: 4.0s; }
-    .orbit-cursor-dot.is-hovering .orbit-4 .planet-spinner { animation-duration: 6.2s; }
-
-    .orbit-cursor-dot.is-hovering .planet-track {
-      opacity: 0.95;
-      filter: drop-shadow(0 0 3px rgba(0, 245, 184, 0.5));
-    }
-    .orbit-cursor-dot.is-hovering .planet-cyan {
-      box-shadow: 0 0 10px #00f5b8, 0 0 20px rgba(0, 245, 184, 0.9);
-    }
-    .orbit-cursor-dot.is-hovering .planet-azure {
-      box-shadow: 0 0 12px #38bdf8, 0 0 22px rgba(56, 189, 248, 0.85);
-    }
-    .orbit-cursor-dot.is-hovering .planet-gold {
-      box-shadow: 0 0 12px #fbbf24, 0 0 24px rgba(245, 158, 11, 0.85);
-    }
-    .orbit-cursor-dot.is-hovering .planet-purple {
-      box-shadow: 0 0 12px #c084fc, 0 0 24px rgba(168, 85, 247, 0.85);
-    }
-
-    /* Active Click: Gravitational Vortex Compression */
-    .orbit-cursor-dot.is-active .cursor-solar-system {
-      transform: scale(0.68);
-      transition: transform 0.08s ease;
-    }
-
-    /* Text Selection: Dim and Scale Down */
-    .orbit-cursor-dot.is-text .cursor-solar-system {
-      opacity: 0.22;
-      transform: scale(0.6);
-    }
-
-    @media (pointer: coarse) {
-      .cursor-solar-system { display: none !important; }
-    }
-
-    .orbit-cursor-dot.is-text .tactical-cursor-svg {
-      opacity: 0.35;
-    }
-
-    .orbit-cursor-dot.is-loading .tc-reticle-group {
-      animation-duration: 0.8s;
-    }
-
-    /* Option 1: Tactical HUD Corner Brackets [ ⌖ ] */
-    .orbit-cursor-ring {
-      position: fixed; top: 0; left: 0;
-      width: 52px; height: 52px;
-      border: none !important;
-      background: rgba(168, 85, 247, 0.02) !important;
-      border-radius: 0 !important;
-      pointer-events: none !important;
-      z-index: 2147483648 !important;
-      box-shadow: none !important;
-      will-change: transform, width, height;
       opacity: 0;
       transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
     }
 
-    /* 4 Tactical Corner L-Brackets */
-    .tc-bracket {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      pointer-events: none;
-      transition: all 0.25s ease;
-    }
-    .tc-tl {
-      top: 0; left: 0;
-      border-top: 2px solid #a855f7;
-      border-left: 2px solid #a855f7;
-      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
-    }
-    .tc-tr {
-      top: 0; right: 0;
-      border-top: 2px solid #a855f7;
-      border-right: 2px solid #a855f7;
-      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
-    }
-    .tc-br {
-      bottom: 0; right: 0;
-      border-bottom: 2px solid #a855f7;
-      border-right: 2px solid #a855f7;
-      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
-    }
-    .tc-bl {
-      bottom: 0; left: 0;
-      border-bottom: 2px solid #a855f7;
-      border-left: 2px solid #a855f7;
-      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.7));
+    /* Outer Weightless Magnetic Follower Ring */
+    .orbit-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      border: 1.8px solid #EE00FF !important;
+      background: rgba(238, 0, 255, 0.08) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 16px rgba(238, 0, 255, 0.45) !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .tc-hud-reticle {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 8px; height: 8px;
-      transform: translate(-50%, -50%);
-      border: 1px solid rgba(56, 189, 248, 0.5);
-      border-radius: 50%;
-      opacity: 0.6;
-      pointer-events: none;
-    }
-
-    /* Pure CSS Corner Brackets fallback before child elements mount */
-    #orbit-cursor-ring:empty,
-    .orbit-cursor-ring:empty {
-      background: 
-        linear-gradient(to right, #a855f7 2px, transparent 2px) 0 0,
-        linear-gradient(to bottom, #a855f7 2px, transparent 2px) 0 0,
-        linear-gradient(to left, #a855f7 2px, transparent 2px) 100% 0,
-        linear-gradient(to bottom, #a855f7 2px, transparent 2px) 100% 0,
-        linear-gradient(to left, #a855f7 2px, transparent 2px) 100% 100%,
-        linear-gradient(to top, #a855f7 2px, transparent 2px) 100% 100%,
-        linear-gradient(to right, #a855f7 2px, transparent 2px) 0 100%,
-        linear-gradient(to top, #a855f7 2px, transparent 2px) 0 100% !important;
-      background-repeat: no-repeat !important;
-      background-size: 12px 12px !important;
-      filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.65)) !important;
-    }
-
-    /* --- STATES --- */
-
-    /* HOVER (Clickable) */
+    /* Hover State: Expands gracefully around interactive elements */
     .orbit-cursor-ring.is-hovering {
-      width: 66px !important;
-      height: 66px !important;
+      width: 62px !important;
+      height: 62px !important;
+      border-color: #EE00FF !important;
+      background: rgba(238, 0, 255, 0.18) !important;
+      box-shadow: 0 0 28px rgba(238, 0, 255, 0.75), inset 0 0 12px rgba(238, 0, 255, 0.25) !important;
     }
-    .orbit-cursor-ring.is-hovering .tc-bracket {
-      border-color: #c084fc !important;
-      width: 15px !important;
-      height: 15px !important;
-      filter: drop-shadow(0 0 10px #a855f7) drop-shadow(0 0 3px #38bdf8) !important;
-    }
-    .orbit-cursor-ring.is-hovering .tc-hud-reticle {
-      border-color: #38bdf8 !important;
-      opacity: 1 !important;
-      transform: translate(-50%, -50%) scale(1.4) !important;
-    }
-    .orbit-cursor-ring.is-hovering:empty {
-      background-size: 15px 15px !important;
-      filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.9)) drop-shadow(0 0 3px #38bdf8) !important;
-    }
+
     .orbit-cursor-dot.is-hovering {
-      background: #ffffff;
-      box-shadow: 0 0 12px #a855f7, 0 0 4px #38bdf8;
-      width: 8px; height: 8px;
+      width: 6px !important;
+      height: 6px !important;
+      background: #ffffff !important;
+      box-shadow: 0 0 12px #ffffff, 0 0 24px #EE00FF !important;
     }
 
-    /* TEXT (I-beam) */
-    .orbit-cursor-ring.is-text {
-      width: 22px !important;
-      height: 44px !important;
-    }
-    .orbit-cursor-dot.is-text {
-      width: 2px; height: 24px;
-      border-radius: 1px;
-      background: #a855f7; box-shadow: 0 0 8px #a855f7;
-    }
-
-    /* LOADING (Wait) */
-    .orbit-cursor-ring.is-loading {
-      width: 44px !important;
-      height: 44px !important;
-    }
-    .orbit-cursor-dot.is-loading {
-      background: #38bdf8; box-shadow: 0 0 10px #38bdf8;
-    }
-
-    /* ACTIVE (Press/Click) */
+    /* Click Active State: Shockwave contraction */
     .orbit-cursor-ring.is-active {
-      width: 32px !important;
-      height: 32px !important;
-    }
-    .orbit-cursor-ring.is-active .tc-bracket {
-      border-color: #38bdf8 !important;
-      width: 9px !important;
-      height: 9px !important;
-      filter: drop-shadow(0 0 12px #38bdf8) !important;
-    }
-    .orbit-cursor-ring.is-active:empty {
-      background-size: 9px 9px !important;
-      filter: drop-shadow(0 0 12px #38bdf8) !important;
-    }
-    .orbit-cursor-dot.is-active {
-      background: #38bdf8; box-shadow: 0 0 12px #38bdf8;
-      width: 6px; height: 6px;
+      width: 26px !important;
+      height: 26px !important;
+      border-width: 2.4px !important;
+      background: rgba(238, 0, 255, 0.35) !important;
+      box-shadow: 0 0 35px #EE00FF !important;
     }
 
-    /* Touch screen fallback */
+    .orbit-cursor-dot.is-active {
+      width: 12px !important;
+      height: 12px !important;
+      box-shadow: 0 0 20px #ffffff, 0 0 35px #EE00FF !important;
+    }
+
+    /* Text selection indicator */
+    .orbit-cursor-ring.is-text {
+      width: 24px !important;
+      height: 36px !important;
+      border-radius: 6px !important;
+      border-width: 1.5px !important;
+      opacity: 0.65;
+    }
+
     @media (pointer: coarse) {
       html, body, *, *::before, *::after { cursor: auto !important; }
       .orbit-cursor-dot, .orbit-cursor-ring { display: none !important; }
     }
-
-    .mouse-trail-dot {
-      position: fixed; width: 4px; height: 4px;
-      background: #a855f7; border-radius: 50%;
-      pointer-events: none !important;
-      z-index: 2147483645 !important;
-      opacity: 0.8;
-      transform: translate(-50%, -50%);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      box-shadow: 0 0 6px #a855f7;
-    }
-
-    
-
-  </style>
+</style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-
-  <!-- Immediate Preloader Shield: Completely blocks page view on first paint with zero flash -->
-  <div id="orbit-initial-shield" class="sb-enter-overlay">
-    <div class="sb-enter-box">
-      <span class="sb-enter-tag">HARDWARE LINK REQUIRED</span>
-      <button id="sb-enter-btn" class="sb-enter-pill" type="button">
-        <span>⚡ CLICK OR PRESS <kbd>ENTER</kbd> TO START</span>
-      </button>
-      <div class="sb-enter-status">
-        <span class="sb-status-dot-blink" id="sb-enter-dot"></span>
-        <span id="sb-status-desc">MOUSE DISCONNECTED • PENDING CALIBRATION</span>
-      </div>
-    </div>
-  </div>
-  <script>
-    window.__shieldTriggered = false;
-    function __triggerShield() {
-      if (window.__shieldTriggered) return;
-      window.__shieldTriggered = true;
-      var b = document.getElementById('sb-enter-btn');
-      if (b) b.innerHTML = '<span>⚙ INITIATING CURSOR FORGE...</span>';
-    }
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') __triggerShield();
-    });
-    var shieldEl = document.getElementById('orbit-initial-shield');
-    if (shieldEl) {
-      shieldEl.addEventListener('click', __triggerShield);
-    }
-  </script>
 
   <!-- Tactical Right-Click Shortcuts Menu UI -->
   <div class="tactical-context-menu" id="tactical-context-menu" aria-hidden="true">
@@ -3643,40 +3222,8 @@
     </button>
   </div>
 
-  <!-- Tactical Orbit Mouse Cursor (Dot + Bigger Lighter Follower Ring) -->
-  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true">
-    <svg class="tactical-cursor-svg" width="36" height="36" viewBox="0 0 36 36" fill="none"><path class="tc-shadow" d="M4 2L21 9L13 13L9 21L4 2Z" fill="#000000" stroke="#000000" stroke-width="3.5" stroke-linejoin="round"/><path class="tc-spine-white" d="M4 2L13 13L9 21L4 2Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" stroke-linejoin="round"/><path class="tc-wing-carbon" d="M4 2L21 9L13 13L4 2Z" fill="#070b14" stroke="#a855f7" stroke-width="1.2" stroke-linejoin="round"/><g class="tc-reticle-group"><circle class="tc-reticle-ring" cx="16" cy="16" r="8" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="3 3"/><circle class="tc-reticle-inner" cx="16" cy="16" r="4.5" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"/></g><g class="tc-crosshairs"><line class="tc-ch-n" x1="16" y1="4" x2="16" y2="8" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/><line class="tc-ch-e" x1="24" y1="16" x2="28" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/><line class="tc-ch-s" x1="16" y1="24" x2="16" y2="28" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/><line class="tc-ch-w" x1="4" y1="16" x2="8" y2="16" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/></g><circle class="tc-apex-dot" cx="4" cy="2" r="1.8" fill="#38bdf8"/></svg>
-    <div class="cursor-solar-system" id="cursor-solar-system">
-      <div class="planet-orbit orbit-1">
-        <div class="planet-track"></div>
-        <div class="planet-spinner">
-          <div class="planet-body planet-cyan"></div>
-        </div>
-      </div>
-      <div class="planet-orbit orbit-2">
-        <div class="planet-track"></div>
-        <div class="planet-spinner">
-          <div class="planet-body planet-azure">
-            <div class="planet-moon-orbit"><div class="planet-moon"></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="planet-orbit orbit-3">
-        <div class="planet-track"></div>
-        <div class="planet-spinner">
-          <div class="planet-body planet-gold">
-            <div class="planet-rings"></div>
-          </div>
-        </div>
-      </div>
-      <div class="planet-orbit orbit-4">
-        <div class="planet-track"></div>
-        <div class="planet-spinner">
-          <div class="planet-body planet-purple"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Orbit Circle Mouse Cursor in #EE00FF (Dot + Magnetic Follower Ring) -->
+  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
   <div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
 
     
@@ -3840,11 +3387,12 @@
         <a href="#features" data-i18n="nav_features">Features</a>
         <a href="#interface" data-i18n="nav_interface">Interface</a>
         <a href="#capabilities" data-i18n="nav_capabilities">Capabilities</a>
-        <a href="#architecture" data-i18n="nav_how" class="nav-hide-1360">How It Works</a>
+        <a href="#architecture" data-i18n="nav_how">How It Works</a>
         <a href="#feeds" data-i18n="nav_feeds">Live Feeds</a>
-        <a href="#other-apps" class="nav-hide-1520">Other Features/Apps</a>
+        <a href="#section-gestube" style="color: #ff0055 !important; font-weight: 800 !important; text-shadow: 0 0 10px rgba(255, 0, 85, 0.4);">▶️ GESTUBE</a>
+        <a href="#other-apps">Other Features/Apps</a>
         <a href="../share/">File Transfer 📤</a>
-        <a href="../progress" class="nav-hide-1520">System Radar</a>
+        <a href="../progress">System Radar</a>
       </nav>
 
       <div class="nav-actions">
@@ -4219,6 +3767,139 @@
 
   
   <!-- Download Setup & Sovereign Ecosystem Applications (Unified Section) -->
+  
+  <!-- Dedicated GESTUBE Showcase Section for PC & All Devices -->
+  <section class="gestube-showcase-section reveal-on-scroll" id="section-gestube" style="padding: 70px 0 50px; position: relative; z-index: 2;">
+    <div class="container" style="max-width: 1260px;">
+      <div style="background: linear-gradient(155deg, rgba(26, 12, 28, 0.94) 0%, rgba(14, 8, 18, 0.98) 100%); border: 1.5px solid rgba(255, 0, 85, 0.35); border-radius: 28px; padding: 40px; box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 0, 85, 0.12); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff0055 0%, #a855f7 50%, #00f5b8 100%);"></div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; margin-bottom: 28px;">
+          <div>
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 0, 85, 0.15); border: 1px solid rgba(255, 0, 85, 0.4); padding: 5px 14px; border-radius: 999px; margin-bottom: 12px;">
+              <span class="status-pulse-dot" style="background: #ff0055; box-shadow: 0 0 10px #ff0055; margin: 0;"></span>
+              <span style="font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #ff3366; font-family: var(--font-mono);">NEW APPLICATION &bull; CROSS-PLATFORM</span>
+            </div>
+            <h2 class="section-title" style="font-size: 34px; margin-bottom: 10px; color: #ffffff;">GESTUBE &mdash; Next-Gen YouTube Companion</h2>
+            <p class="section-desc" style="max-width: 780px; margin-bottom: 0; color: rgba(255, 255, 255, 0.78); font-size: 15px;">
+              High-efficiency automated controller for YouTube. Seamlessly skips ads, auto-advances Shorts, and gives you keyboard quick controls. Built natively for Windows PC, Android smartphones, and all desktop/mobile browsers.
+            </p>
+
+        <!-- Dynamic Client Recommendation Badge -->
+        <div id="gestube-pc-rec-box" style="margin-top: 16px; background: rgba(255, 0, 85, 0.12); border: 1px dashed rgba(255, 0, 85, 0.45); border-radius: 12px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;" id="gestube-rec-icon">⚡</span>
+            <div>
+              <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #ff3366; font-weight: 700;">Recommended for your system:</div>
+              <div style="font-size: 13.5px; font-weight: 800; color: #ffffff;" id="gestube-rec-text">Detecting your device &amp; browser...</div>
+            </div>
+          </div>
+          <a href="../apps/gestube/downloads/GESTUBE_Windows_v1.0.0.zip" id="gestube-rec-btn" download class="btn-primary" style="padding: 8px 18px; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #ff0055, #cc0044); border-color: #ff3366; text-decoration: none; border-radius: 8px; box-shadow: 0 0 15px rgba(255, 0, 85, 0.35);">
+            ⚡ 1-Click Recommended Download
+          </a>
+        </div>
+        <script>
+          (function() {
+            try {
+              var ua = navigator.userAgent || '';
+              var platform = navigator.platform || '';
+              var isWin = /Win/i.test(platform) || /Windows/i.test(ua);
+              var isAndroid = /Android/i.test(ua);
+              var isFirefox = /Firefox|FxiOS/i.test(ua);
+              var isEdge = /Edg\//i.test(ua);
+              var isChrome = !isFirefox && !isEdge && /Chrome|CriOS/i.test(ua);
+
+              var recText = document.getElementById('gestube-rec-text');
+              var recBtn = document.getElementById('gestube-rec-btn');
+              var recIcon = document.getElementById('gestube-rec-icon');
+
+              if (recText && recBtn) {
+                if (isWin) {
+                  recIcon.textContent = '💻';
+                  recText.textContent = 'Windows PC Detected — Standalone App (.zip / .exe)';
+                  recBtn.href = '../apps/gestube/downloads/GESTUBE_Windows_v1.0.0.zip';
+                  recBtn.textContent = '⬇ Download Windows App (57 MB)';
+                } else if (isAndroid) {
+                  recIcon.textContent = '🤖';
+                  recText.textContent = 'Android Device Detected — Mobile APK & Kiwi Extension';
+                  recBtn.href = '../apps/gestube/downloads/GESTUBE_Mobile.apk';
+                  recBtn.textContent = '⬇ Download Android APK (494 KB)';
+                } else if (isFirefox) {
+                  recIcon.textContent = '🦊';
+                  recText.textContent = 'Firefox Browser Detected — Manifest V3 Add-on';
+                  recBtn.href = '../apps/gestube/downloads/GESTUBE_Extension_Firefox.zip';
+                  recBtn.textContent = '⬇ Download Firefox Add-on (.zip)';
+                } else if (isChrome || isEdge) {
+                  recIcon.textContent = '🧩';
+                  recText.textContent = (isEdge ? 'Microsoft Edge' : 'Chrome / Chromium') + ' Detected — Browser Extension';
+                  recBtn.href = '../apps/gestube/downloads/GESTUBE_Extension_Chrome_Edge.zip';
+                  recBtn.textContent = '⬇ Download Extension (.zip)';
+                }
+              }
+            } catch(e) {}
+          })();
+        </script>
+
+          </div>
+          <a href="../apps/gestube/" class="btn-primary" style="background: linear-gradient(135deg, #ff0055, #cc0044); border-color: #ff3366; color: #fff; padding: 12px 24px; border-radius: 999px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 25px rgba(255, 0, 85, 0.4);">
+            <span>Open Dedicated GESTUBE Portal ↗</span>
+          </a>
+        </div>
+
+        <!-- 4-Grid Platform Download Matrix -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 24px;">
+          <!-- Windows Desktop -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 22px; transition: transform 0.2s ease, border-color 0.2s ease;">
+            <div style="font-size: 28px; margin-bottom: 10px;">💻</div>
+            <h4 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 6px;">Windows PC App</h4>
+            <p style="font-size: 12.5px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; margin-bottom: 16px;">
+              Standalone desktop application with native controls and YouTube window integration.
+            </p>
+            <a href="../apps/gestube/downloads/GESTUBE_Windows_v1.0.0.zip" download class="btn-primary" style="width: 100%; display: block; text-align: center; padding: 10px; font-size: 12px; background: linear-gradient(135deg, #ff0055, #b8003d); border-color: #ff3366; text-decoration: none; border-radius: 8px; font-weight: 700;">
+              Download Windows .zip
+            </a>
+          </div>
+
+          <!-- Chrome & Edge Extension -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 22px;">
+            <div style="font-size: 28px; margin-bottom: 10px;">🧩</div>
+            <h4 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 6px;">Chrome / Edge / Brave</h4>
+            <p style="font-size: 12.5px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; margin-bottom: 16px;">
+              Manifest V3 high-speed browser extension for Chromium, Opera, and Kiwi Browser.
+            </p>
+            <a href="../apps/gestube/downloads/GESTUBE_Extension_Chrome_Edge.zip" download class="btn-secondary" style="width: 100%; display: block; text-align: center; padding: 10px; font-size: 12px; border-color: rgba(255, 0, 85, 0.4); color: #ff4b72; text-decoration: none; border-radius: 8px; font-weight: 700;">
+              Download Chrome/Edge .zip
+            </a>
+          </div>
+
+          <!-- Firefox Extension -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 22px;">
+            <div style="font-size: 28px; margin-bottom: 10px;">🦊</div>
+            <h4 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 6px;">Mozilla Firefox</h4>
+            <p style="font-size: 12.5px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; margin-bottom: 16px;">
+              Optimized Gecko add-on bundle with Gecko ID and developer sideloading support.
+            </p>
+            <a href="../apps/gestube/downloads/GESTUBE_Extension_Firefox.zip" download class="btn-secondary" style="width: 100%; display: block; text-align: center; padding: 10px; font-size: 12px; border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; text-decoration: none; border-radius: 8px; font-weight: 700;">
+              Download Firefox .zip
+            </a>
+          </div>
+
+          <!-- Android APK -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 22px;">
+            <div style="font-size: 28px; margin-bottom: 10px;">🤖</div>
+            <h4 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 6px;">Android Mobile APK</h4>
+            <p style="font-size: 12.5px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; margin-bottom: 16px;">
+              Standalone Android APK package for YouTube mobile control and Kiwi extension support.
+            </p>
+            <a href="../apps/gestube/downloads/GESTUBE_Mobile.apk" download class="btn-secondary" style="width: 100%; display: block; text-align: center; padding: 10px; font-size: 12px; border-color: rgba(34, 197, 94, 0.4); color: #4ade80; text-decoration: none; border-radius: 8px; font-weight: 700;">
+              Download Android .apk
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="other-apps-section reveal-on-scroll" id="other-apps">
     <div class="container" style="max-width: 1260px;">
       <div class="unified-ecosystem-bg">
@@ -4303,6 +3984,73 @@
 
           <!-- Column 2: Other Features & Apps (EchoNode & Retrosmart) -->
           <div class="ecosystem-companion-apps">
+            <!-- App: GESTUBE YouTube Optimizer & Extension Suite -->
+            <div class="app-rect-card" id="gestube-pc-card" style="border-color: rgba(255, 0, 85, 0.4); background: linear-gradient(135deg, rgba(20, 10, 24, 0.94) 0%, rgba(10, 8, 16, 0.98) 100%);">
+              <div class="app-rect-media" style="background: radial-gradient(circle at center, rgba(255, 0, 85, 0.25) 0%, rgba(10, 10, 16, 0.95) 75%); display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; min-height: 220px;">
+                <div class="cursor-glow-ring" style="width: 130px; height: 130px; border-color: rgba(255, 0, 85, 0.5); box-shadow: 0 0 35px rgba(255, 0, 85, 0.35);"></div>
+                <div style="font-size: 58px; position: relative; z-index: 2; filter: drop-shadow(0 0 20px rgba(255, 0, 85, 0.8));">▶️</div>
+                <div class="app-rect-status-tag" style="background: rgba(255, 0, 85, 0.2); border-color: rgba(255, 0, 85, 0.5); color: #ff3366;">
+                  <span class="badge-dot-live" style="background: #ff0055; box-shadow: 0 0 8px #ff0055;"></span> PC &amp; ANDROID &amp; EXTENSION
+                </div>
+              </div>
+              <div class="app-rect-details">
+                <div class="app-rect-top-row">
+                  <div>
+                    <div class="app-badges">
+                      <span class="app-badge" style="background: rgba(255, 0, 85, 0.2); border: 1px solid #ff0055; color: #ff3366;">▶️ YouTube Control</span>
+                      <span class="app-badge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">Windows .exe</span>
+                      <span class="app-badge" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc;">All Browsers (MV3)</span>
+                      <span class="app-badge" style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80;">Android APK</span>
+                    </div>
+                    <h3 class="app-rect-name" style="color: #ffffff;">GESTUBE &mdash; Smart YouTube Optimizer Suite</h3>
+                    <p class="app-rect-tagline" style="color: rgba(255, 255, 255, 0.7);">Auto Ad-Skip &bull; Shorts Auto-Scroller &bull; Speed Controls &bull; Cross-Platform Suite</p>
+                  </div>
+                  <a href="../apps/gestube/" class="btn app-launch-btn" style="background: linear-gradient(135deg, #ff0055, #cc0044); border-color: #ff3366; color: #fff;">
+                    <span>Open GESTUBE Hub ↗</span>
+                  </a>
+                </div>
+
+                <p class="app-rect-desc" style="color: rgba(255, 255, 255, 0.85);">
+                  The ultimate sovereign YouTube power tool. Automates ad-skipping, automatically scrolls YouTube Shorts when finished, unlocks high-speed playback shortcuts, picture-in-picture, and background playback. Available as a standalone Windows application, mobile Android APK, and universal extension for Chrome, Edge, Firefox, Brave, and Kiwi.
+                </p>
+
+                <!-- Direct Download Action Bar -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; margin-bottom: 14px;">
+                  <a href="../apps/gestube/downloads/GESTUBE_Windows_v1.0.0.zip" download class="btn-primary" style="padding: 9px 16px; font-size: 12px; background: linear-gradient(135deg, #ff0055, #b8003d); border-color: #ff3366; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                    💻 Windows App (.zip)
+                  </a>
+                  <a href="../apps/gestube/downloads/GESTUBE_Extension_Chrome_Edge.zip" download class="btn-secondary" style="padding: 9px 14px; font-size: 12px; border-color: rgba(255, 0, 85, 0.4); color: #ff4b72; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                    🧩 Chrome/Edge Extension
+                  </a>
+                  <a href="../apps/gestube/downloads/GESTUBE_Extension_Firefox.zip" download class="btn-secondary" style="padding: 9px 14px; font-size: 12px; border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                    🦊 Firefox Add-on
+                  </a>
+                  <a href="../apps/gestube/downloads/GESTUBE_Mobile.apk" download class="btn-secondary" style="padding: 9px 14px; font-size: 12px; border-color: rgba(34, 197, 94, 0.4); color: #4ade80; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                    🤖 Android APK
+                  </a>
+                </div>
+
+                <div class="app-rect-highlights">
+                  <div class="highlight-chip" style="border-color: rgba(255, 0, 85, 0.3);">
+                    <span class="chip-icon">⚡</span>
+                    <div class="chip-text"><strong>Instant Ad-Skip:</strong> Auto-presses Skip Ad instantly</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">📱</span>
+                    <div class="chip-text"><strong>Shorts Autoplay:</strong> Seamlessly scrolls to next short</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">🎛️</span>
+                    <div class="chip-text"><strong>Zero Overhead:</strong> Lightweight Manifest V3 code</div>
+                  </div>
+                  <div class="highlight-chip">
+                    <span class="chip-icon">🌐</span>
+                    <div class="chip-text"><strong>Universal:</strong> Chrome, Edge, Firefox, Brave, Opera, Kiwi</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- App 1: EchoNode Web -->
             <a href="../echonode/" target="_blank" rel="noopener noreferrer" class="app-rect-card" title="Click anywhere to launch EchoNode Web in a new tab">
               <div class="app-rect-media">
@@ -6539,34 +6287,10 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       const ring = document.getElementById('orbit-cursor-ring');
       if (!dot || !ring) return;
 
-      if (!ring.querySelector('.tc-bracket')) {
-        ring.innerHTML = `
-          <span class="tc-bracket tc-tl"></span>
-          <span class="tc-bracket tc-tr"></span>
-          <span class="tc-bracket tc-br"></span>
-          <span class="tc-bracket tc-bl"></span>
-          <span class="tc-hud-reticle"></span>
-        `;
-      }
-
       let mouseX = -100, mouseY = -100;
       let dotX = -100, dotY = -100;
       let ringX = -100, ringY = -100;
       let isVisible = false;
-
-      // Mouse Trail Particle System
-      const trails = [];
-      const MAX_TRAILS = 12;
-      let trailIndex = 0;
-      let lastTrailX = -100, lastTrailY = -100;
-
-      for (let i = 0; i < MAX_TRAILS; i++) {
-        const t = document.createElement('div');
-        t.className = 'mouse-trail-dot';
-        t.style.opacity = '0';
-        document.body.appendChild(t);
-        trails.push(t);
-      }
 
       window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
@@ -6582,26 +6306,6 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         }
       }, { passive: true });
 
-      function dropTrail(x, y) {
-        const distSq = (x - lastTrailX) ** 2 + (y - lastTrailY) ** 2;
-        if (distSq > 120) {
-          lastTrailX = x;
-          lastTrailY = y;
-          const t = trails[trailIndex];
-          if (t) {
-            t.style.left = x + 'px';
-            t.style.top = y + 'px';
-            t.style.opacity = '0.6';
-            t.style.transform = 'translate(-50%, -50%) scale(1)';
-            setTimeout(() => {
-              t.style.opacity = '0';
-              t.style.transform = 'translate(-50%, -50%) scale(0.2)';
-            }, 60);
-          }
-          trailIndex = (trailIndex + 1) % MAX_TRAILS;
-        }
-      }
-
       window.addEventListener('mousedown', () => {
         ring.classList.add('is-active');
         dot.classList.add('is-active');
@@ -6614,7 +6318,6 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         isVisible = false;
         dot.style.opacity = '0';
         ring.style.opacity = '0';
-        trails.forEach(t => t.style.opacity = '0');
       });
       document.addEventListener('mouseenter', () => {
         isVisible = true;
@@ -6625,63 +6328,39 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
       // Smooth Gliding Floating Physics Engine (Dual Lerp Deceleration)
       function renderFollower() {
         if (isVisible) {
-          const isButter = document.body.classList.contains('theme-buttermax');
+          // Responsive fluid glide for precision dot
+          dotX += (mouseX - dotX) * 0.38;
+          dotY += (mouseY - dotY) * 0.38;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
 
-          // Responsive fluid glide for the cursor pointer
-          const dotEase = isButter ? 0.36 : 0.28;
-          dotX += (mouseX - dotX) * dotEase;
-          dotY += (mouseY - dotY) * dotEase;
-          dot.style.transform = isButter
-            ? 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)'
-            : 'translate3d(' + dotX + 'px, ' + dotY + 'px, 0) translate(-4px, -2px)';
-
-          // Smooth aerodynamic trailing follower ring (weightless Buttermax glide)
-          const ringEase = isButter ? 0.12 : 0.14;
-          ringX += (mouseX - ringX) * ringEase;
-          ringY += (mouseY - ringY) * ringEase;
+          // Smooth aerodynamic trailing follower ring (weightless glide in #EE00FF)
+          ringX += (mouseX - ringX) * 0.16;
+          ringY += (mouseY - ringY) * 0.16;
           ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
-
-          // Emit trail particles along the smoothed flight path (Tactical mode only)
-          if (!isButter) {
-            dropTrail(dotX, dotY);
-          }
         }
         requestAnimationFrame(renderFollower);
       }
       requestAnimationFrame(renderFollower);
 
-      const interactiveSelector = '.tcm-item, a, button, input[type="button"], input[type="submit"], select, [role="button"], .interactive, .hud-action-btn, .cop-zoom-btn, .cop-earth-mode-btn, .cop-fullscreen-btn, .cctv-viewport, .cctv-btn, .btn, .feature-card, .capability-card, .step-card, .user-card, .feed-badge, .cop-layer-toggle, .lang-option, .dossier-btn';
-      const textSelector = 'p, h1, h2, h3, h4, h5, h6, span:not(.btn):not(.tcm-item), label, input[type="text"], input[type="password"], input[type="email"], textarea';
+      const interactiveSelector = 'a, button, input, select, textarea, [role="button"], .interactive, .btn, .bm-pill-btn, .app-rect-card, .feature-card, .capability-card, .feed-badge, .cop-fullscreen-btn, .cop-earth-mode-btn';
 
       document.addEventListener('mouseover', (e) => {
         const el = e.target;
         if (!el || !el.closest) return;
-        
-        let isClickable = el.closest(interactiveSelector) !== null;
-        let isText = el.closest(textSelector) !== null;
-        let isLoading = el.closest('.loading') !== null;
-        
-        try {
-            let style = window.getComputedStyle(el);
-            if (style.cursor === 'wait' || style.cursor === 'progress') isLoading = true;
-            if (style.cursor === 'pointer') isClickable = true;
-            if (style.cursor === 'text') isText = true;
-        } catch(err){}
-
-        ring.classList.remove('is-hovering', 'is-text', 'is-loading');
-        dot.classList.remove('is-hovering', 'is-text', 'is-loading');
-
-        if (isLoading) {
-          ring.classList.add('is-loading');
-          dot.classList.add('is-loading');
-        } else if (isClickable) {
+        if (el.closest(interactiveSelector)) {
           ring.classList.add('is-hovering');
           dot.classList.add('is-hovering');
-        } else if (isText) {
-          ring.classList.add('is-text');
-          dot.classList.add('is-text');
         }
-      });
+      }, { passive: true });
+
+      document.addEventListener('mouseout', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.remove('is-hovering');
+          dot.classList.remove('is-hovering');
+        }
+      }, { passive: true });
     })();
   </script>
 

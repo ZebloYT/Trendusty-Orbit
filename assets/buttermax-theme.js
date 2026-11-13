@@ -1082,25 +1082,32 @@
     styleEl.innerHTML = `
       body.theme-buttermax #orbit-cursor-dot, #orbit-cursor-dot {
         background: ${hex} !important;
-        box-shadow: 0 0 16px rgba(${r}, ${g}, ${b}, 0.95), 0 0 4px #ffffff !important;
+        border-radius: 50% !important;
+        width: 8px !important;
+        height: 8px !important;
+        box-shadow: 0 0 12px ${hex}, 0 0 24px rgba(${r}, ${g}, ${b}, 0.85), 0 0 3px #ffffff !important;
       }
-      body.theme-buttermax #orbit-cursor-ring {
+      body.theme-buttermax #orbit-cursor-ring, #orbit-cursor-ring {
+        border-radius: 50% !important;
         border-color: ${hex} !important;
-        background: rgba(${r}, ${g}, ${b}, 0.12) !important;
-        box-shadow: 0 0 24px rgba(${r}, ${g}, ${b}, 0.45) !important;
+        background: rgba(${r}, ${g}, ${b}, 0.08) !important;
+        box-shadow: 0 0 16px rgba(${r}, ${g}, ${b}, 0.45) !important;
       }
-      body.theme-buttermax #orbit-cursor-ring.is-hovering {
+      body.theme-buttermax #orbit-cursor-ring.is-hovering, #orbit-cursor-ring.is-hovering {
+        border-radius: 50% !important;
         border-color: ${hex} !important;
-        background: rgba(${r}, ${g}, ${b}, 0.26) !important;
-        box-shadow: 0 0 35px rgba(${r}, ${g}, ${b}, 0.75) !important;
+        background: rgba(${r}, ${g}, ${b}, 0.20) !important;
+        box-shadow: 0 0 28px rgba(${r}, ${g}, ${b}, 0.75) !important;
       }
-      body.theme-buttermax #orbit-cursor-ring.is-active {
+      body.theme-buttermax #orbit-cursor-ring.is-active, #orbit-cursor-ring.is-active {
+        border-radius: 50% !important;
         border-color: ${hex} !important;
-        background: rgba(${r}, ${g}, ${b}, 0.45) !important;
+        background: rgba(${r}, ${g}, ${b}, 0.40) !important;
       }
-      body.theme-buttermax #orbit-cursor-dot.is-active {
+      body.theme-buttermax #orbit-cursor-dot.is-active, #orbit-cursor-dot.is-active {
+        border-radius: 50% !important;
         background: ${hex} !important;
-        box-shadow: 0 0 22px rgba(${r}, ${g}, ${b}, 1) !important;
+        box-shadow: 0 0 24px rgba(${r}, ${g}, ${b}, 1) !important;
       }
     `;
   }

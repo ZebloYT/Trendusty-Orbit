@@ -69,7 +69,7 @@
       canvas.style.width = '100vw';
       canvas.style.height = '100vh';
       canvas.style.pointerEvents = 'none';
-      canvas.style.zIndex = '1'; // Above raw body background, beneath content cards (z-index 2+)
+      canvas.style.zIndex = '0'; // Sits cleanly on fixed viewport background, visible behind glass cards
       canvas.style.opacity = '1';
       document.body.prepend(canvas);
     }
@@ -224,13 +224,21 @@
   // PHASE 5.0: BUTTERMAX-INSPIRED ORGANIC BLOB PAGE TRANSITIONS
   // ---------------------------------------------------------------------------
   function setupPageTransitions() {
+    // Clear any leftover transition overlays on fresh load
+    const stale = document.getElementById('orbit-page-transition-layer');
+    if (stale) stale.remove();
+
     document.addEventListener('click', function(e) {
       const link = e.target.closest('a[href]');
       if (!link) return;
 
+      // Do NOT intercept downloads or file packages!
+      if (link.hasAttribute('download')) return;
+
       const href = link.getAttribute('href');
       if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
       if (link.getAttribute('target') === '_blank' || e.metaKey || e.ctrlKey) return;
+      if (href.match(/\.(zip|apk|exe|bat|msi|tar|gz|json|kdbx)($|\?)/i)) return;
 
       const isInternal = href.startsWith('/') || href.startsWith('./') || href.startsWith('../') || href.includes('trendustyorbit.online') || !href.includes('://');
       if (!isInternal) return;
@@ -257,6 +265,15 @@
       layer.style.overflow = 'hidden';
       document.body.appendChild(layer);
     }
+
+    // Safety timeout: auto remove after 1.2s so page is never permanently blocked
+    setTimeout(() => {
+      if (layer && layer.parentNode) {
+        layer.style.opacity = '0';
+        layer.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => { if (layer && layer.parentNode) layer.parentNode.removeChild(layer); }, 250);
+      }
+    }, 1200);
 
     const maxDist = Math.hypot(
       Math.max(clickX, window.innerWidth - clickX),
@@ -397,10 +414,10 @@
       for (let i = 0; i < Engine.liquidTrail.length; i++) {
         const pt = Engine.liquidTrail[i];
         const age = now - pt.createdAt;
-        if (age < 1300) {
-          const decay = 1 - age / 1300;
+        if (age < 2200) {
+          const decay = 1 - age / 2200;
           pt.alpha = decay;
-          pt.radius = pt.maxRadius * (0.3 + 0.7 * decay);
+          pt.radius = pt.maxRadius * (0.35 + 0.65 * decay);
           activeTrail.push(pt);
         }
       }
@@ -413,9 +430,9 @@
           Engine.ctx.beginPath();
           Engine.ctx.arc(pt.x, pt.y, pt.radius, 0, Math.PI * 2);
           if (isObsidian) {
-            Engine.ctx.fillStyle = `rgba(0, 245, 184, ${pt.alpha * 0.38})`;
+            Engine.ctx.fillStyle = `rgba(0, 245, 184, ${pt.alpha * 0.45})`;
           } else {
-            Engine.ctx.fillStyle = `rgba(18, 18, 18, ${pt.alpha * 0.50})`;
+            Engine.ctx.fillStyle = `rgba(18, 18, 18, ${pt.alpha * 0.65})`;
           }
           Engine.ctx.fill();
         }
@@ -431,11 +448,15 @@
           Engine.ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
         }
         if (isObsidian) {
-          Engine.ctx.strokeStyle = 'rgba(0, 245, 184, 0.55)';
+          Engine.ctx.shadowColor = '#EE00FF';
+          Engine.ctx.shadowBlur = 16;
+          Engine.ctx.strokeStyle = 'rgba(0, 245, 184, 0.75)';
         } else {
-          Engine.ctx.strokeStyle = 'rgba(18, 18, 18, 0.45)';
+          Engine.ctx.shadowColor = 'rgba(18, 18, 18, 0.35)';
+          Engine.ctx.shadowBlur = 10;
+          Engine.ctx.strokeStyle = 'rgba(18, 18, 18, 0.70)';
         }
-        Engine.ctx.lineWidth = 15;
+        Engine.ctx.lineWidth = 22;
         Engine.ctx.lineCap = 'round';
         Engine.ctx.lineJoin = 'round';
         Engine.ctx.stroke();
