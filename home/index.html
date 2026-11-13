@@ -2011,20 +2011,26 @@
 
     .unified-ecosystem-grid {
       display: grid;
-      grid-template-columns: 440px 1fr;
-      gap: 28px;
-      align-items: stretch;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .ecosystem-column-left,
+    .ecosystem-companion-apps {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
     /* Left Column: Download Setup Card */
     .ecosystem-download-card {
       background: linear-gradient(160deg, rgba(16, 26, 44, 0.95), rgba(7, 12, 22, 0.98));
       border: 1px solid rgba(0, 245, 184, 0.32);
-      border-radius: 22px;
-      padding: 32px 28px;
+      border-radius: 20px;
+      padding: 26px 24px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       position: relative;
       overflow: hidden;
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 0 35px rgba(0, 245, 184, 0.05);
@@ -2213,7 +2219,7 @@
 
     .app-rect-card {
       display: grid;
-      grid-template-columns: 240px 1fr;
+      grid-template-columns: 200px 1fr;
       background: linear-gradient(145deg, rgba(13, 20, 32, 0.95), rgba(7, 11, 18, 0.98));
       border: 1px solid rgba(0, 245, 184, 0.22);
       border-radius: 20px;
@@ -3916,8 +3922,9 @@
         </div>
 
         <div class="unified-ecosystem-grid">
-          <!-- Column 1: Download Setup Card -->
-          <div class="ecosystem-download-card">
+          <!-- Column 1: Desktop Setup & Retrosmart Suite -->
+          <div class="ecosystem-column-left">
+            <div class="ecosystem-download-card">
             <div>
               <div class="dl-card-badge">
                 <span class="badge-dot-live"></span> STANDALONE WINDOWS SETUP
@@ -3982,8 +3989,66 @@
             </div>
           </div>
 
-          <!-- Column 2: Other Features & Apps (EchoNode & Retrosmart) -->
-          <div class="ecosystem-companion-apps">
+          <!-- App 2: Retrosmart Xcursor Kits -->
+          <a href="../windows/cursor-download" target="_blank" rel="noopener noreferrer" class="app-rect-card app-rect-card-secondary" title="Click anywhere to explore 28 Cursor Kits">
+            <div class="app-rect-media app-rect-media-cursor" style="background: radial-gradient(circle at center, rgba(14, 165, 233, 0.22) 0%, rgba(3, 7, 18, 0.95) 75%); display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; min-height: 220px;">
+              <div class="cursor-glow-ring" style="width: 120px; height: 120px; border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 30px rgba(56, 189, 248, 0.25);"></div>
+              <img src="../assets/retrosmart-logo.png" alt="Retrosmart Xcursor Logo" style="width: 88%; max-height: 80px; object-fit: contain; position: relative; z-index: 2; filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.6));">
+              <div class="app-rect-status-tag" style="background: rgba(56, 189, 248, 0.18); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                <span class="badge-dot-live" style="background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span> 28 RETRO KITS
+              </div>
+            </div>
+            <div class="app-rect-details">
+              <div class="app-rect-top-row">
+                <div>
+                  <div class="app-badges">
+                    <span class="app-badge app-badge-status" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: #38bdf8;">Retrosmart Xcursor</span>
+                    <span class="app-badge app-badge-webgl">Win-3D • Mac-ish • Win-ish</span>
+                    <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">1-Click .INF Installer</span>
+                    <span class="app-badge" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24;">Google Chrome Extension</span>
+                  </div>
+                  <h3 class="app-rect-name">Retrosmart &amp; Tactical Cursors Suite</h3>
+                  <p class="app-rect-tagline">Authentic 8-Bit Pixel Cursors &bull; Win95 3D Chrome, Mac System 7 &amp; Modern Palettes</p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <span class="btn btn-outline" style="padding: 11px 18px; font-size: 13px; border-color: #38bdf8; color: #38bdf8; white-space: nowrap;">
+                    <span>Explore 28 Cursor Kits ↗</span>
+                  </span>
+                  <button type="button" class="btn app-chrome-ext-btn" onclick="event.preventDefault(); event.stopPropagation(); openChromeExtensionModal(event);" style="padding: 11px 18px; font-size: 12.5px; background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(245, 158, 11, 0.25)); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; border-radius: 8px; cursor: pointer; text-decoration: none; transition: all 0.2s ease; white-space: nowrap;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+                    <span>Download for Google Chrome Extension ⬇</span>
+                  </button>
+                </div>
+              </div>
+
+              <p class="app-rect-desc">
+                Sovereign desktop cursor suites from Retrosmart Xcursor featuring Win-3D Chrome (Blue/Red/Green/Violet), Mac-ish System 7, Win-ish 95, and Cur-Font across Catppuccin, Gruvbox, Everforest, and Rosé Pine. Complete with .cur &amp; .ani schemes, one-click install.inf scripts, interactive browser testing, and dedicated Google Chrome extension package.
+              </p>
+
+              <div class="app-rect-highlights">
+                <div class="highlight-chip">
+                  <span class="chip-icon">🕹️</span>
+                  <div class="chip-text"><strong>Win-3D Chrome:</strong> Win95/98 3D beveled chrome with animated stopwatch</div>
+                </div>
+                <div class="highlight-chip">
+                  <span class="chip-icon">🍎</span>
+                  <div class="chip-text"><strong>Mac-ish &amp; Win-ish:</strong> System 7 &amp; Win 3.1 pixel artwork in 8 palette themes</div>
+                </div>
+                <div class="highlight-chip">
+                  <span class="chip-icon">⚡</span>
+                  <div class="chip-text"><strong>1-Click Install:</strong> Full 15-role Windows schemes with right-click install.inf</div>
+                </div>
+                <div class="highlight-chip" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.35);">
+                  <span class="chip-icon">🌐</span>
+                  <div class="chip-text"><strong style="color: #fbbf24;">Chrome Extension:</strong> Ready-to-install Manifest V3 extension for Chrome &amp; Chromium</div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Column 2: Companion Cloud Suites (GESTUBE & EchoNode) -->
+        <div class="ecosystem-companion-apps">
             <!-- App: GESTUBE YouTube Optimizer & Extension Suite -->
             <div class="app-rect-card" id="gestube-pc-card" style="border-color: rgba(255, 0, 85, 0.4); background: linear-gradient(135deg, rgba(20, 10, 24, 0.94) 0%, rgba(10, 8, 16, 0.98) 100%);">
               <div class="app-rect-media" style="background: radial-gradient(circle at center, rgba(255, 0, 85, 0.25) 0%, rgba(10, 10, 16, 0.95) 75%); display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; min-height: 220px;">
@@ -4110,63 +4175,6 @@
                   <div class="highlight-chip" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.08);">
                     <span class="chip-icon">📖</span>
                     <div class="chip-text"><strong style="color: #fbbf24;">Minecraft Guide Book:</strong> Interactive 24/7 Codex, OP access &amp; Color Codes (/echonode/?guide=1)</div>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- App 2: Retrosmart Xcursor Kits -->
-            <a href="../windows/cursor-download" target="_blank" rel="noopener noreferrer" class="app-rect-card app-rect-card-secondary" title="Click anywhere to explore 28 Cursor Kits">
-              <div class="app-rect-media app-rect-media-cursor" style="background: radial-gradient(circle at center, rgba(14, 165, 233, 0.22) 0%, rgba(3, 7, 18, 0.95) 75%); display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; min-height: 220px;">
-                <div class="cursor-glow-ring" style="width: 120px; height: 120px; border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 30px rgba(56, 189, 248, 0.25);"></div>
-                <img src="../assets/retrosmart-logo.png" alt="Retrosmart Xcursor Logo" style="width: 88%; max-height: 80px; object-fit: contain; position: relative; z-index: 2; filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.6));">
-                <div class="app-rect-status-tag" style="background: rgba(56, 189, 248, 0.18); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
-                  <span class="badge-dot-live" style="background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span> 28 RETRO KITS
-                </div>
-              </div>
-              <div class="app-rect-details">
-                <div class="app-rect-top-row">
-                  <div>
-                    <div class="app-badges">
-                      <span class="app-badge app-badge-status" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: #38bdf8;">Retrosmart Xcursor</span>
-                      <span class="app-badge app-badge-webgl">Win-3D • Mac-ish • Win-ish</span>
-                      <span class="app-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa;">1-Click .INF Installer</span>
-                      <span class="app-badge" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24;">Google Chrome Extension</span>
-                    </div>
-                    <h3 class="app-rect-name">Retrosmart &amp; Tactical Cursors Suite</h3>
-                    <p class="app-rect-tagline">Authentic 8-Bit Pixel Cursors &bull; Win95 3D Chrome, Mac System 7 &amp; Modern Palettes</p>
-                  </div>
-                  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <span class="btn btn-outline" style="padding: 11px 18px; font-size: 13px; border-color: #38bdf8; color: #38bdf8; white-space: nowrap;">
-                      <span>Explore 28 Cursor Kits ↗</span>
-                    </span>
-                    <button type="button" class="btn app-chrome-ext-btn" onclick="event.preventDefault(); event.stopPropagation(); openChromeExtensionModal(event);" style="padding: 11px 18px; font-size: 12.5px; background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(245, 158, 11, 0.25)); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; border-radius: 8px; cursor: pointer; text-decoration: none; transition: all 0.2s ease; white-space: nowrap;">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
-                      <span>Download for Google Chrome Extension ⬇</span>
-                    </button>
-                  </div>
-                </div>
-
-                <p class="app-rect-desc">
-                  Sovereign desktop cursor suites from Retrosmart Xcursor featuring Win-3D Chrome (Blue/Red/Green/Violet), Mac-ish System 7, Win-ish 95, and Cur-Font across Catppuccin, Gruvbox, Everforest, and Rosé Pine. Complete with .cur &amp; .ani schemes, one-click install.inf scripts, interactive browser testing, and dedicated Google Chrome extension package.
-                </p>
-
-                <div class="app-rect-highlights">
-                  <div class="highlight-chip">
-                    <span class="chip-icon">🕹️</span>
-                    <div class="chip-text"><strong>Win-3D Chrome:</strong> Win95/98 3D beveled chrome with animated stopwatch</div>
-                  </div>
-                  <div class="highlight-chip">
-                    <span class="chip-icon">🍎</span>
-                    <div class="chip-text"><strong>Mac-ish &amp; Win-ish:</strong> System 7 &amp; Win 3.1 pixel artwork in 8 palette themes</div>
-                  </div>
-                  <div class="highlight-chip">
-                    <span class="chip-icon">⚡</span>
-                    <div class="chip-text"><strong>1-Click Install:</strong> Full 15-role Windows schemes with right-click install.inf</div>
-                  </div>
-                  <div class="highlight-chip" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.35);">
-                    <span class="chip-icon">🌐</span>
-                    <div class="chip-text"><strong style="color: #fbbf24;">Chrome Extension:</strong> Ready-to-install Manifest V3 extension for Chrome &amp; Chromium</div>
                   </div>
                 </div>
               </div>
