@@ -1,0 +1,3379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trendusty Orbit — Android Mobile Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#06080e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Trendusty Orbit Android Mobile Edition — Global OSINT Common Operating Picture, Real Earth 3D, EchoNode Minecraft Cloud & Retrosmart Cursors.">
+  <link rel="icon" type="image/svg+xml" href="../assets/trendusty-orbit-icon.svg">
+  <link rel="alternate icon" href="../assets/trendusty-orbit-icon.png">
+  <!-- Buttermax Inspired Theme Engine -->
+  <link rel="stylesheet" href="../assets/buttermax-theme.css">
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('orbit_theme');
+        if (savedTheme !== 'obsidian') {
+          document.documentElement.classList.add('theme-buttermax');
+        }
+      } catch(e) {}
+    })();
+  </script>
+
+  <!-- Google Identity Services (GIS) Library -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root {
+      --bg: #06080e;
+      --card-bg: rgba(14, 20, 32, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --cyan: #38bdf8;
+      --purple: #a855f7;
+      --emerald: #00f5b8;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --bottom-bar-h: 62px;
+      --top-bar-h: 56px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    input, textarea, .selectable-text {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      padding-top: calc(var(--top-bar-h) + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom, 0px) + 20px);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Space Mesh */
+    .space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: 
+        radial-gradient(circle at 15% 15%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(0, 245, 184, 0.07) 0%, transparent 50%),
+        #06080e;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Scanline grid texture */
+    .scanlines {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.18) 50%);
+      background-size: 100% 4px;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    /* TOP APP BAR */
+    .top-app-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: calc(var(--top-bar-h) + env(safe-area-inset-top, 0px));
+      padding-top: env(safe-area-inset-top, 0px);
+      background: rgba(8, 12, 20, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 14px;
+      padding-right: 14px;
+      z-index: 100;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      background: linear-gradient(90deg, #fff, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-badge {
+      font-size: 9px;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--cyan);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--emerald);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* STICKY BOTTOM NAVIGATION BAR */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: rgba(8, 12, 20, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .nav-tab.active {
+      color: var(--cyan);
+    }
+
+    .nav-tab.active::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 3px;
+      background: var(--cyan);
+      border-radius: 2px;
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .nav-tab svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* MAIN CONTAINER & SECTIONS */
+    .content-container {
+      padding: 14px;
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* SECTION CARD */
+    .mobile-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .status-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pill-green {
+      background: rgba(0, 245, 184, 0.15);
+      border: 1px solid rgba(0, 245, 184, 0.4);
+      color: var(--emerald);
+    }
+
+    .pill-amber {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+
+    .pill-purple {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: var(--purple);
+    }
+
+    /* REAL EARTH GLOBE SECTION */
+    .globe-stage {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      border-radius: 18px;
+      background: radial-gradient(circle at 50% 50%, #0d1527 0%, #030509 90%);
+      border: 1px solid rgba(0, 245, 184, 0.22);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 245, 184, 0.05);
+      overflow: hidden;
+      touch-action: none; /* Allows fluid touch manipulation without dragging page */
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+    }
+
+    .globe-stage:active {
+      cursor: grabbing;
+    }
+
+    #cop-webgl-canvas,
+    #live-cop-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* Top Stage HUD & Zoom controls */
+    .globe-top-hint {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(10, 15, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.3px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .globe-zoom-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .globe-zoom-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(10, 15, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .globe-zoom-btn:active {
+      transform: scale(0.92);
+      background: rgba(0, 245, 184, 0.25);
+      border-color: var(--emerald);
+      color: var(--emerald);
+    }
+
+    /* Touch HUD Floating Controls */
+    .globe-touch-controls {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 5px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .globe-ctrl-btn {
+      pointer-events: auto;
+      background: rgba(10, 15, 26, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--text-main);
+      padding: 6px 9px;
+      border-radius: 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .globe-ctrl-btn:active {
+      transform: scale(0.93);
+      background: rgba(56, 189, 248, 0.25);
+      border-color: var(--cyan);
+    }
+
+    .globe-ctrl-btn.active {
+      background: rgba(0, 245, 184, 0.22);
+      border-color: var(--emerald);
+      color: var(--emerald);
+      box-shadow: 0 0 10px rgba(0, 245, 184, 0.25);
+    }
+
+    /* COP Layer Toggle Pill Scroller */
+    .cop-layer-scroll {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 10px 2px 4px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .cop-layer-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cop-layer-btn {
+      flex-shrink: 0;
+      padding: 6px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cop-layer-btn:active {
+      transform: scale(0.95);
+    }
+
+    .cop-layer-btn.active {
+      background: rgba(0, 245, 184, 0.16);
+      border-color: rgba(0, 245, 184, 0.5);
+      color: #00f5b8;
+      box-shadow: 0 0 12px rgba(0, 245, 184, 0.2);
+    }
+
+    .cop-layer-btn .badge-num {
+      background: rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      padding: 1px 5px;
+      border-radius: 10px;
+      font-size: 9.5px;
+      font-family: monospace;
+    }
+
+    .cop-layer-btn.active .badge-num {
+      background: rgba(0, 245, 184, 0.3);
+      color: #fff;
+    }
+
+    /* Live Telemetry Chips */
+    .telemetry-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .telemetry-chip {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+
+    .tel-label {
+      font-size: 9.5px;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+    }
+
+    .tel-val {
+      font-size: 11px;
+      font-weight: 800;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Mobile Entity Inspection Bottom Sheet */
+    .mobile-entity-sheet-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .mobile-entity-sheet-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-entity-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 15, 28, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 245, 184, 0.35);
+      border-radius: 22px 22px 0 0;
+      padding: 16px 20px 24px;
+      z-index: 9999;
+      box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 245, 184, 0.15);
+      transform: translateY(115%);
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .mobile-entity-sheet.active {
+      transform: translateY(0);
+    }
+
+    .sheet-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .sheet-badge {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      color: var(--cyan);
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 8px;
+    }
+
+    .sheet-close-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #cbd5e1;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sheet-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .sheet-subtitle {
+      font-size: 11.5px;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+    }
+
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .sheet-item {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+
+    .sheet-item span {
+      display: block;
+      font-size: 9.5px;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 2px;
+    }
+
+    .sheet-item strong {
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+      font-family: ui-monospace, monospace;
+    }
+
+    .sheet-actions {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 10px;
+    }
+
+    .sheet-primary-btn {
+      background: linear-gradient(135deg, #00f5b8 0%, #00b4d8 100%);
+      color: #030a10;
+      font-weight: 800;
+      font-size: 12.5px;
+      padding: 11px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(0, 245, 184, 0.3);
+    }
+
+    .sheet-secondary-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 11px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+    }
+
+    /* RETROSMART CURSORS SECTION */
+    .cursors-scroll-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .cursor-preview-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cursor-preview-card:active {
+      transform: scale(0.96);
+      border-color: var(--purple);
+      background: rgba(168, 85, 247, 0.15);
+    }
+
+    .cursor-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .cursor-card-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .cursor-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cursor-meta {
+      font-size: 10.5px;
+      color: var(--text-sub);
+    }
+
+    /* ECHONODE MINECRAFT SECTION */
+    .server-hero-card {
+      background: linear-gradient(135deg, rgba(16, 24, 40, 0.85), rgba(10, 15, 26, 0.95));
+      border: 1px solid rgba(0, 245, 184, 0.25);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .server-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .server-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .server-cube-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .server-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .server-sub {
+      font-size: 10px;
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    .server-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 12px 0;
+    }
+
+    .metric-pill {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px 4px;
+      text-align: center;
+    }
+
+    .metric-name {
+      font-size: 9px;
+      color: var(--text-sub);
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--emerald);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .server-ip-box {
+      background: #090d14;
+      border: 1px dashed rgba(56, 189, 248, 0.35);
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .server-ip-text {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    .server-actions-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #00f5b8, #059669);
+      border: none;
+      color: #06080e;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 245, 184, 0.3);
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.97);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* REAL TERMINAL LOGS */
+    .mobile-terminal {
+      background: #05070c;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .terminal-header {
+      background: #090e18;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .terminal-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .terminal-body {
+      height: 180px;
+      overflow-y: auto;
+      padding: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      line-height: 1.5;
+      color: #94a3b8;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .log-line {
+      margin-bottom: 3px;
+      word-break: break-all;
+    }
+
+    .log-time { color: #64748b; }
+    .log-info { color: #38bdf8; font-weight: 700; }
+    .log-done { color: #00f5b8; font-weight: 700; }
+
+    /* AUTH MODAL BOTTOM SHEET */
+    .auth-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .auth-backdrop.open {
+      display: flex;
+    }
+
+    .auth-sheet {
+      background: #0f1523;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 20px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+      animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .sheet-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .auth-view {
+      display: none;
+    }
+
+    .auth-view.active {
+      display: block;
+    }
+
+    .auth-input-group {
+      margin-bottom: 12px;
+    }
+
+    .auth-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .auth-input {
+      width: 100%;
+      background: #080c14;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .auth-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .auth-submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .auth-divider {
+      text-align: center;
+      position: relative;
+      margin: 16px 0;
+    }
+
+    .auth-divider::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 50%; width: 100%; height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-divider span {
+      position: relative;
+      background: #0f1523;
+      padding: 0 10px;
+      font-size: 11px;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .google-btn-mobile {
+      width: 100%;
+      background: #ffffff;
+      color: #1f2937;
+      border: none;
+      border-radius: 12px;
+      padding: 11px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    /* SLIDE-OUT MOBILE MENU DRAWER */
+    .drawer-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+    }
+
+    .drawer-backdrop.open {
+      display: block;
+    }
+
+    .drawer-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 80%;
+      max-width: 320px;
+      background: #0c111c;
+      border-left: 1px solid var(--card-border);
+      padding: calc(20px + env(safe-area-inset-top, 0px)) 18px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1001;
+    }
+
+    .drawer-backdrop.open .drawer-panel {
+      transform: translateX(0);
+    }
+
+    .drawer-nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .drawer-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .drawer-link:active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--cyan);
+    }
+
+    /* DESKTOP SWITCHER BANNER */
+    .desktop-switch-banner {
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+  
+    /* Buttermax Mobile Overrides */
+    body.theme-buttermax {
+      background-color: #ffdb15 !important;
+      color: #121212 !important;
+    }
+    body.theme-buttermax .top-app-bar {
+      background: rgba(255, 219, 21, 0.95) !important;
+      border-bottom: 1.5px solid #121212 !important;
+      color: #121212 !important;
+    }
+    body.theme-buttermax .brand-name span {
+      color: #121212 !important;
+    }
+    body.theme-buttermax .brand-sub {
+      color: rgba(18, 18, 18, 0.7) !important;
+    }
+    body.theme-buttermax .bottom-nav-bar {
+      background: rgba(255, 219, 21, 0.96) !important;
+      border-top: 1.5px solid #121212 !important;
+    }
+    body.theme-buttermax .nav-tab {
+      color: #121212 !important;
+    }
+    body.theme-buttermax .nav-tab.active {
+      color: #000000 !important;
+      font-weight: 800 !important;
+    }
+    body.theme-buttermax .nav-tab.active::after {
+      background: #121212 !important;
+      box-shadow: 0 0 6px rgba(18, 18, 18, 0.4) !important;
+    }
+    body.theme-buttermax .mobile-card {
+      background: #ffffff !important;
+      border: 2px solid #121212 !important;
+      box-shadow: 4px 4px 0px #121212 !important;
+      color: #121212 !important;
+    }
+    body.theme-buttermax .card-title {
+      color: #121212 !important;
+      font-family: 'Syne', sans-serif !important;
+      font-weight: 800 !important;
+    }
+    body.theme-buttermax .card-sub {
+      color: rgba(18, 18, 18, 0.7) !important;
+    }
+    body.theme-buttermax .icon-btn {
+      background: #121212 !important;
+      color: #ffdb15 !important;
+      border: 1px solid #121212 !important;
+    }
+    body.theme-buttermax .drawer-panel {
+      background: #ffdb15 !important;
+      color: #121212 !important;
+      border-left: 2px solid #121212 !important;
+    }
+    body.theme-buttermax .drawer-link {
+      background: #ffffff !important;
+      color: #121212 !important;
+      border: 1.5px solid #121212 !important;
+      box-shadow: 2px 2px 0px #121212 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="space-bg"></div>
+  <!-- Buttermax Molten Liquid Fluid Background Canvas -->
+  <canvas id="bm-bg-fluid-canvas" class="bm-bg-fluid-canvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.85;"></canvas>
+  <div class="scanlines"></div>
+
+  <!-- TOP APP BAR -->
+  <header class="top-app-bar">
+    <a href="#" class="brand-wrap">
+      <img src="../assets/trendusty-orbit-icon.png" alt="Trendusty Orbit" class="brand-logo-img">
+      <div class="brand-title-wrap">
+        <div class="brand-name">
+          <span>TRENDUSTY ORBIT</span>
+          <span class="brand-badge">ANDROID</span>
+        </div>
+        <div class="brand-sub">
+          <div class="pulse-dot"></div>
+          <span id="top-clock">UTC 00:00:00</span>
+          <span>• REAL EARTH COP</span>
+        </div>
+      </div>
+    </a>
+
+    <div class="top-actions">
+      <!-- Theme Switcher (Buttermax Yellow / Obsidian Dark) -->
+      <button class="icon-btn theme-toggle-btn" onclick="toggleOrbitTheme()" title="Switch Theme (Buttermax Yellow / Obsidian Dark)" style="font-size: 13px;">
+        🟡
+      </button>
+      <!-- Audio Toggle -->
+      <button class="icon-btn" id="audioToggleBtn" onclick="toggleAudio()" title="Sound Effects">
+        <svg id="audioIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.08"></path>
+        </svg>
+      </button>
+
+      <!-- Account Trigger -->
+      <button class="icon-btn" onclick="openAuthModal('account')" title="Account">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </button>
+
+      <!-- Menu Drawer -->
+      <button class="icon-btn" onclick="openDrawer()" title="Menu">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN SCROLLABLE CONTENT -->
+  <main class="content-container">
+
+    <!-- DESKTOP SWITCH BANNER -->
+    <div class="desktop-switch-banner">
+      <div style="font-size: 11.5px; color: #cbd5e1;">
+        <span style="font-weight: 700; color: #c084fc;">📱 Android Mobile Mode Active</span><br>
+        Optimized touch experience with all desktop features
+      </div>
+      <button onclick="switchToDesktop()" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 8px; cursor: pointer;">
+        🖥️ Desktop Site
+      </button>
+    </div>
+
+    <!-- SECTION 1: REAL EARTH 3D COMMON OPERATING PICTURE -->
+    <section id="section-globe" class="mobile-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">🌍</div>
+          <div>
+            <div class="card-title">Real Earth 3D Planetary COP</div>
+            <div style="font-size: 10.5px; color: var(--text-sub);">NASA 4K Imagery • Day/Night Light • Rayleigh Limb</div>
+          </div>
+        </div>
+        <span class="status-pill pill-green" id="globe-status-pill">LIVE 60 FPS</span>
+      </div>
+
+      <!-- Touch-Interactive Globe Canvas (Real Earth & Digital Earth) -->
+      <div class="globe-stage" id="globe-touch-stage">
+        <canvas id="cop-webgl-canvas"></canvas>
+        <canvas id="live-cop-canvas"></canvas>
+
+        <!-- Top Stage Status & Gesture Hint -->
+        <div class="globe-top-hint">
+          <span id="globe-gesture-hint">👆 Drag to Pan • ✌️ Pinch to Zoom</span>
+        </div>
+
+        <!-- Zoom In / Out Buttons -->
+        <div class="globe-zoom-controls">
+          <button class="globe-zoom-btn" onclick="zoomMob(0.25)" title="Zoom In">+</button>
+          <button class="globe-zoom-btn" onclick="zoomMob(-0.25)" title="Zoom Out">−</button>
+        </div>
+
+        <!-- Floating Touch Controls -->
+        <div class="globe-touch-controls">
+          <button class="globe-ctrl-btn" id="btn-earth-mode-mob" onclick="toggleMobileEarthMode()" title="Toggle Real Earth vs Digital Grid">
+            <span id="earth-mode-icon-mob">🌐</span> <span id="earth-mode-label-mob">DIGITAL EARTH</span>
+          </button>
+          <button class="globe-ctrl-btn active" id="btn-orbit-spin" onclick="toggleAutoSpin()">
+            <span>🔄</span> <span>Spin</span>
+          </button>
+          <button class="globe-ctrl-btn active" id="btn-night-mode" onclick="toggleNightTerminator()">
+            <span>☀️</span> <span>Terminator</span>
+          </button>
+          <button class="globe-ctrl-btn" onclick="resetGlobeView()">
+            <span>🎯</span> <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Layer Toggle Bar -->
+      <div class="cop-layer-scroll">
+        <button class="cop-layer-btn active" id="layer-btn-flights" onclick="toggleMobileLayer('flights')">✈️ Flights <span class="badge-num">8</span></button>
+        <button class="cop-layer-btn active" id="layer-btn-satellites" onclick="toggleMobileLayer('satellites')">🛰️ Satellites <span class="badge-num">3</span></button>
+        <button class="cop-layer-btn active" id="layer-btn-cctv" onclick="toggleMobileLayer('cctv')">📷 CCTV <span class="badge-num">4</span></button>
+        <button class="cop-layer-btn active" id="layer-btn-ais" onclick="toggleMobileLayer('ais')">🚢 AIS Ships <span class="badge-num">6</span></button>
+        <button class="cop-layer-btn active" id="layer-btn-weather" onclick="toggleMobileLayer('weather')">🌩️ Storms</button>
+        <button class="cop-layer-btn active" id="layer-btn-threats" onclick="toggleMobileLayer('threats')">⚠️ Threats</button>
+      </div>
+
+      <!-- Live Telemetry Row -->
+      <div class="telemetry-row">
+        <div class="telemetry-chip">
+          <div class="tel-label">Sub-Sat Lat</div>
+          <div class="tel-val" id="tel-lat">28.61° N</div>
+        </div>
+        <div class="telemetry-chip">
+          <div class="tel-label">Sub-Sat Lon</div>
+          <div class="tel-val" id="tel-lon">77.20° E</div>
+        </div>
+        <div class="telemetry-chip">
+          <div class="tel-label">Altitude</div>
+          <div class="tel-val" id="tel-alt">420 KM</div>
+        </div>
+        <div class="telemetry-chip">
+          <div class="tel-label">Velocity</div>
+          <div class="tel-val" id="tel-vel">27.6K KM/H</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ECHONODE CLOUD MINECRAFT SERVER MANAGER -->
+    <section id="section-echonode" class="mobile-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon" style="background: rgba(0, 245, 184, 0.15); border-color: rgba(0, 245, 184, 0.35); color: var(--emerald);">⛏️</div>
+          <div>
+            <div class="card-title">EchoNode Cloud Server</div>
+            <div style="font-size: 10.5px; color: var(--text-sub);">24/7 Sovereign Minecraft Host • Purpur 26.1.2</div>
+          </div>
+        </div>
+        <span class="status-pill pill-green" id="server-status-pill">ONLINE</span>
+      </div>
+
+      <div class="server-hero-card">
+        <div class="server-top">
+          <div class="server-badge">
+            <img src="../echonode/server-icon.png" onerror="this.src='../assets/trendusty-orbit-icon.png'" alt="Sky Heaven" class="server-cube-img">
+            <div>
+              <div class="server-name">SKY HEAVEN MC</div>
+              <div class="server-sub">Java 25 LTS • 33 Plugins Active</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; font-weight: 800; color: var(--emerald);">20.0 TPS</span>
+        </div>
+
+        <div class="server-ip-box" onclick="copyServerIP()">
+          <div>
+            <div style="font-size: 9.5px; color: #94a3b8; text-transform: uppercase;">Direct Playit Tunnel (Tap to copy)</div>
+            <div class="server-ip-text">vivo-carrier.tun.ply.gg:25565</div>
+          </div>
+          <span style="font-size: 12px; color: var(--cyan); font-weight: 700;">COPY 📋</span>
+        </div>
+
+        <div class="server-metrics-grid">
+          <div class="metric-pill">
+            <div class="metric-name">TPS</div>
+            <div class="metric-value">20.0</div>
+          </div>
+          <div class="metric-pill">
+            <div class="metric-name">RAM</div>
+            <div class="metric-value">3.4 GB</div>
+          </div>
+          <div class="metric-pill">
+            <div class="metric-name">CPU</div>
+            <div class="metric-value">14.2%</div>
+          </div>
+        </div>
+
+        <div class="server-actions-row">
+          <button class="btn-primary" id="btnServerPower" onclick="toggleServerPower()">
+            <span id="serverPowerIcon">▶</span>
+            <span id="serverPowerText">RESTART / BOOT SERVER</span>
+          </button>
+          <a href="../echonode/" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+            DASHBOARD &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Real Streaming Terminal Simulator -->
+      <div class="mobile-terminal">
+        <div class="terminal-header">
+          <div class="terminal-title">
+            <span>💻</span>
+            <span>Purpur Server Terminal (Live)</span>
+          </div>
+          <button onclick="copyTerminalLogs()" style="background: transparent; border: none; color: var(--cyan); font-size: 10px; font-weight: 700; cursor: pointer;">
+            COPY LOGS
+          </button>
+        </div>
+        <div class="terminal-body selectable-text" id="terminal-body">
+          <div class="log-line"><span class="log-time">[12:00:01 INFO]:</span> Starting org.bukkit.craftbukkit.Main</div>
+          <div class="log-line"><span class="log-time">[12:00:02 INFO]:</span> Loading libraries, please wait...</div>
+          <div class="log-line"><span class="log-time">[12:00:05 INFO]:</span> Starting minecraft server version 1.21.4 (Purpur 26.1.2)</div>
+          <div class="log-line"><span class="log-time">[12:00:08 INFO]:</span> Loading 33 plugins (Axiom, LuckPerms, Geyser-Spigot, playit-gg)...</div>
+          <div class="log-line"><span class="log-time">[12:00:14 INFO]:</span> Preparing world 'world' (Overworld, Nether, End)</div>
+          <div class="log-line"><span class="log-done">[12:00:22 INFO]:</span> Done (21.4s)! For help, type "help"</div>
+          <div class="log-line"><span class="log-done">[12:00:22 INFO]:</span> [playit-gg] Tunnel live at vivo-carrier.tun.ply.gg:25565</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: TRENDUSTY ORBIT APP & RETROSMART CURSORS -->
+    <section id="section-orbit" class="mobile-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.35); color: var(--purple);">🛰️</div>
+          <div>
+            <div class="card-title">Trendusty Orbit App Suite</div>
+            <div style="font-size: 10.5px; color: var(--text-sub);">Desktop Intelligence • 28 Retrosmart Cursors</div>
+          </div>
+        </div>
+        <span class="status-pill pill-purple">WINDOWS &amp; EXT</span>
+      </div>
+
+      <p style="font-size: 12.5px; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+        High-performance OSINT command system featuring live planetary surveillance, hardware telemetry, and the complete 28 Retrosmart Custom Cursor engine for Windows and Chrome.
+      </p>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <a href="../download/" class="btn-primary" style="text-decoration: none; font-size: 12px; padding: 10px;">
+          ⬇️ Download Windows App
+        </a>
+        <button onclick="openChromeExtModal()" class="btn-secondary" style="font-size: 12px; padding: 10px;">
+          🧩 Chrome Ext
+        </button>
+      </div>
+
+      <!-- 28 Retrosmart Cursors Mobile Gallery -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 11px; font-weight: 700; color: #cbd5e1; text-transform: uppercase;">Cursor Library (Tap to test)</span>
+        <span style="font-size: 10px; color: var(--purple); font-weight: 700;">28 RETRO SKINS</span>
+      </div>
+
+      <div class="cursors-scroll-grid">
+        <div class="cursor-preview-card" onclick="testCursorEffect('Win95 Classic 3D')">
+          <div class="cursor-icon-box">🖱️</div>
+          <div class="cursor-card-info">
+            <div class="cursor-name">Win95 Classic 3D</div>
+            <div class="cursor-meta">Retro Windows</div>
+          </div>
+        </div>
+
+        <div class="cursor-preview-card" onclick="testCursorEffect('Mac System 7')">
+          <div class="cursor-icon-box">🍎</div>
+          <div class="cursor-card-info">
+            <div class="cursor-name">Mac System 7</div>
+            <div class="cursor-meta">Vintage Apple</div>
+          </div>
+        </div>
+
+        <div class="cursor-preview-card" onclick="testCursorEffect('Tactical OSINT Reticle')">
+          <div class="cursor-icon-box">⌖</div>
+          <div class="cursor-card-info">
+            <div class="cursor-name">Tactical HUD Reticle</div>
+            <div class="cursor-meta">Purple &amp; Sky Cyan</div>
+          </div>
+        </div>
+
+        <div class="cursor-preview-card" onclick="testCursorEffect('Pixel Cyber Arrow')">
+          <div class="cursor-icon-box">⚡</div>
+          <div class="cursor-card-info">
+            <div class="cursor-name">Pixel Cyber Neon</div>
+            <div class="cursor-meta">Emerald Glow</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ACCOUNT MANAGER SECTION -->
+    <section id="section-account" class="mobile-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: var(--cyan);">👤</div>
+          <div>
+            <div class="card-title">Orbit Account Hub</div>
+            <div style="font-size: 10.5px; color: var(--text-sub);">Google Cloud Identity • EchoNode Access</div>
+          </div>
+        </div>
+        <span class="status-pill pill-amber" id="account-status-pill">GUEST VISITOR</span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 14px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+        <div id="mob-account-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: #94a3b8;">
+          👤
+        </div>
+        <div style="flex: 1; overflow: hidden;">
+          <div id="mob-account-name" style="font-size: 13.5px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Guest Visitor</div>
+          <div id="mob-account-email" style="font-size: 11.5px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Not signed in — tap below to connect</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;" id="mob-account-action-btns">
+        <button class="btn-primary" onclick="openAuthModal('login')" style="font-size: 12px; padding: 10px; flex: 1;">
+          Sign In / Sign Up &rarr;
+        </button>
+        <button class="btn-secondary" onclick="openAuthModal('google')" style="font-size: 12px; padding: 10px;">
+          Google Sign-In
+        </button>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="text-align: center; padding: 20px 0 30px; font-size: 11px; color: #64748b;">
+      <p style="margin-bottom: 6px;">Trendusty Orbit &bull; EchoNode Cloud &bull; Android Mobile Portal</p>
+      <p><a href="../home/?view=desktop" style="color: var(--cyan); text-decoration: none; font-weight: 600;">Switch to Desktop Version</a> &bull; <a href="https://github.com/ZebloYT/Trendusty-Orbit" target="_blank" style="color: #94a3b8; text-decoration: none;">GitHub</a></p>
+    </footer>
+
+  </main>
+
+  <!-- STICKY BOTTOM NAVIGATION BAR -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" id="tab-globe" onclick="scrollToSection('section-globe')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
+      <span>Globe</span>
+    </button>
+    <button class="nav-tab" id="tab-echonode" onclick="scrollToSection('section-echonode')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      <span>EchoNode</span>
+    </button>
+    <button class="nav-tab" id="tab-orbit" onclick="scrollToSection('section-orbit')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+      <span>Orbit OS</span>
+    </button>
+    <button class="nav-tab" id="tab-account" onclick="scrollToSection('section-account')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <span>Account</span>
+    </button>
+  </nav>
+
+  <!-- AUTH BOTTOM SHEET DIALOG -->
+  <div id="auth-backdrop" class="auth-backdrop" onclick="closeAuthModal(event)">
+    <div class="auth-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      
+      <div class="sheet-header">
+        <div style="font-weight: 800; font-size: 16px; color: #fff;" id="sheet-title">Account Access</div>
+        <button class="sheet-close-btn" onclick="closeAuthModal()">&times;</button>
+      </div>
+
+      <!-- View 1: Login -->
+      <div class="auth-view active" id="auth-view-login">
+        <form onsubmit="handleMobileLogin(event)">
+          <div class="auth-input-group">
+            <label class="auth-label">Email or Username</label>
+            <input type="text" class="auth-input" id="login-user" required placeholder="Enter username or email">
+          </div>
+          <div class="auth-input-group">
+            <label class="auth-label">Password</label>
+            <input type="password" class="auth-input" id="login-pass" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="auth-submit-btn">Sign In</button>
+        </form>
+
+        <div class="auth-divider"><span>OR</span></div>
+
+        <button type="button" class="google-btn-mobile" onclick="switchAuthView('google')">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+          <span>Continue with Google</span>
+        </button>
+      </div>
+
+      <!-- View 2: Google Chooser -->
+      <div class="auth-view" id="auth-view-google">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 4px;">Sign in with Google</h3>
+          <p style="font-size: 12px; color: #94a3b8;">Choose an account to continue to Trendusty Orbit</p>
+        </div>
+
+        <div id="g_id_onload"
+             data-client_id="40423276504-orkfm7vatdnij68b8rpnv49ihbsvr652.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleGoogleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div style="display: flex; justify-content: center; margin: 16px 0;">
+          <div class="g_id_signin"
+               data-type="standard"
+               data-shape="pill"
+               data-theme="outline"
+               data-text="continue_with"
+               data-size="large"
+               data-width="280">
+          </div>
+        </div>
+
+        <button onclick="switchAuthView('login')" style="width: 100%; background: transparent; border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer;">
+          &larr; Back to Email Login
+        </button>
+      </div>
+
+      <!-- View 3: Account Manager -->
+      <div class="auth-view" id="auth-view-account">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div id="sheet-acc-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #94a3b8;">
+            👤
+          </div>
+          <h3 id="sheet-acc-name" style="font-size: 16px; font-weight: 800; color: #fff;">Guest Visitor</h3>
+          <p id="sheet-acc-email" style="font-size: 12px; color: #94a3b8;">Not signed in</p>
+        </div>
+
+        <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+          <div style="font-size: 11px; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">CONNECTED PLATFORMS</div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--emerald); margin-bottom: 4px;">
+            <span>EchoNode Minecraft 24/7</span>
+            <span>CONNECTED ✔</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--cyan);">
+            <span>Real Earth Orbit COP</span>
+            <span>ACTIVE ✔</span>
+          </div>
+        </div>
+
+        <button onclick="handleSignOut()" style="width: 100%; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171; border-radius: 12px; padding: 12px; font-weight: 700; font-size: 13px; cursor: pointer;">
+          Sign Out of Account
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT MOBILE MENU DRAWER -->
+  <div id="drawer-backdrop" class="drawer-backdrop" onclick="closeDrawer(event)">
+    <div class="drawer-panel" onclick="event.stopPropagation()">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 14px;">
+          <div style="font-size: 15px; font-weight: 800; color: #fff;">ORBIT OS MENU</div>
+          <button class="sheet-close-btn" onclick="closeDrawer()">&times;</button>
+        </div>
+
+        <div class="drawer-nav-list">
+          <a href="#section-globe" class="drawer-link" onclick="closeDrawer()">
+            <span>🌍</span> <span>Real Earth 3D</span>
+          </a>
+          <a href="#section-echonode" class="drawer-link" onclick="closeDrawer()">
+            <span>⛏️</span> <span>EchoNode Servers</span>
+          </a>
+          <a href="#section-orbit" class="drawer-link" onclick="closeDrawer()">
+            <span>🛰️</span> <span>Orbit OS &amp; Cursors</span>
+          </a>
+          <a href="/android/share/" class="drawer-link" onclick="closeDrawer()">
+            <span>📤</span> <span>Cloud File Transfer</span>
+          </a>
+          <a href="../download/" class="drawer-link" onclick="closeDrawer()">
+            <span>⬇️</span> <span>Download Windows App</span>
+          </a>
+          <a href="../echonode/" class="drawer-link" onclick="closeDrawer()">
+            <span>💻</span> <span>EchoNode Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="switchToDesktop()" style="width: 100%; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.35); color: #c084fc; font-weight: 700; padding: 12px; border-radius: 12px; font-size: 13px; cursor: pointer; margin-bottom: 8px;">
+          🖥️ Switch to Desktop View
+        </button>
+        <div style="font-size: 10.5px; color: #64748b; text-align: center;">
+          Trendusty Orbit v3.2 &bull; Android Touch OS
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC & PHOTOREALISTIC WEBGL EARTH ENGINE -->
+  <script>
+    // ----------------------------------------------------
+    // AUDIO ENGINE (WEB AUDIO API SYNTHESIZER)
+    // ----------------------------------------------------
+    let audioEnabled = true;
+    let audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioClass) audioCtx = new AudioClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playCyberClick(freq = 1200, dur = 0.04) {
+      if (!audioEnabled) return;
+      try {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + dur);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + dur);
+      } catch(e) {}
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById('audioIcon');
+      if (audioEnabled) {
+        icon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.08"></path>';
+        playCyberClick(880, 0.08);
+      } else {
+        icon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"></path>';
+      }
+    }
+
+    // ----------------------------------------------------
+    // PHOTOREALISTIC REAL EARTH 3D WEBGL & TACTICAL COP ENGINE
+    // NASA 4K Textures • Atmospheric Scattering • Night Terminator
+    // Live ADS-B Flights • LEO Satellites • Recon CCTV • Maritime AIS
+    // ----------------------------------------------------
+    const canvas = document.getElementById('cop-webgl-canvas');
+    const liveCanvas = document.getElementById('live-cop-canvas');
+    const liveCtx = liveCanvas ? liveCanvas.getContext('2d') : null;
+    const touchStage = document.getElementById('globe-touch-stage');
+
+    let gl = null;
+    let rotX = 0.22;
+    let rotY = 1.35;
+    let targetRotX = undefined;
+    let targetRotY = undefined;
+    let zoom = 1.0;
+    let autoSpin = true;
+    let nightMode = true;
+    let mobileEarthMode = 'real';
+
+    let userDragging = false;
+    let isMouseDown = false;
+    let isPinching = false;
+    let hasMovedSignificant = false;
+    let startTouchX = 0, startTouchY = 0;
+    let lastTouchX = 0, lastTouchY = 0;
+    let touchVelocityX = 0, touchVelocityY = 0;
+    let initialPinchDist = 0;
+    let initialPinchZoom = 1.0;
+    let lastInteractionTime = 0;
+
+    let targetTrackedEntity = null;
+    let currentSelectedEntity = null;
+    let clickableEntities = [];
+    let userWaypoint = null;
+    let issOrbitPhase = 0.42;
+    let starlinkPhase = 1.85;
+    let radarSweepAngle = 0;
+
+    // Tactical Layer Filter State
+    const mobLayers = {
+      flights: true,
+      satellites: true,
+      cctv: true,
+      ais: true,
+      weather: true,
+      threats: true
+    };
+
+    // Live Aviation ADS-B Flights
+    const FLIGHTS = [
+      { id: 'UAL-482', model: 'B787-9', operator: 'UNITED AIRLINES', route: 'KSFO ➔ RJAA', lat: 37.7749, lon: -122.4194, alt: 28400, spd: 492, hdg: 284, squawk: '7700 [MONITORED]', trail: [] },
+      { id: 'BAW-117', model: 'A350-1000', operator: 'BRITISH AIRWAYS', route: 'EGLL ➔ KJFK', lat: 51.5074, lon: -0.1278, alt: 36000, spd: 520, hdg: 270, squawk: '4211 [ROUTINE]', trail: [] },
+      { id: 'ANA-008', model: 'B777-300ER', operator: 'ALL NIPPON AIRWAYS', route: 'RJTT ➔ KLAX', lat: 35.6762, lon: 139.6503, alt: 34000, spd: 510, hdg: 65, squawk: '1200 [VFR-PAC]', trail: [] },
+      { id: 'UAE-201', model: 'A380-800', operator: 'EMIRATES', route: 'OMDB ➔ LFPG', lat: 25.2048, lon: 55.2708, alt: 38000, spd: 540, hdg: 310, squawk: '6342 [IN-FLIGHT]', trail: [] },
+      { id: 'QFA-001', model: 'B787-9', operator: 'QANTAS', route: 'YSSY ➔ KLAX', lat: -33.8688, lon: 151.2093, alt: 39000, spd: 485, hdg: 335, squawk: '2105 [PAC-ROUTE]', trail: [] },
+      { id: 'AFR-022', model: 'A350-900', operator: 'AIR FRANCE', route: 'LFPG ➔ KJFK', lat: 48.8566, lon: 2.3522, alt: 35000, spd: 505, hdg: 260, squawk: '7000 [TRANSIT]', trail: [] },
+      { id: 'SIA-322', model: 'A380-800', operator: 'SINGAPORE AIRLINES', route: 'WSSS ➔ EGLL', lat: 1.3521, lon: 103.8198, alt: 37000, spd: 515, hdg: 315, squawk: '3514 [EN-ROUTE]', trail: [] },
+      { id: 'DLH-456', model: 'B747-8i', operator: 'LUFTHANSA', route: 'EDDF ➔ KORD', lat: 50.1109, lon: 8.6821, alt: 33000, spd: 498, hdg: 275, squawk: '4022 [ATLANTIC]', trail: [] }
+    ];
+
+    // Maritime AIS Vessels
+    const SHIPS = [
+      { name: 'EVER GIVEN', type: 'CONTAINER CARRIER (20K TEU)', imo: '9811000', mmsi: '353136000', dest: 'ROTTERDAM', lat: 30.01, lon: 32.56, hdg: 340, spd: 16 },
+      { name: 'PACIFIC RUBY', type: 'VLCC SUPERTANKER', imo: '9723044', mmsi: '538006124', dest: 'NINGBO', lat: 1.25, lon: 104.05, hdg: 80, spd: 14 },
+      { name: 'MAERSK MC-KINNEY', type: 'TRIPLE-E CONTAINER', imo: '9619907', mmsi: '219018581', dest: 'BREMERHAVEN', lat: 51.95, lon: 4.02, hdg: 260, spd: 21 },
+      { name: 'GLOVIS CENTURY', type: 'VEHICLE CARRIER', imo: '9610999', mmsi: '440129000', dest: 'LONG BEACH', lat: 33.72, lon: -118.26, hdg: 170, spd: 18 },
+      { name: 'NORDIC BREEZE', type: 'BULK CARRIER', imo: '9499876', mmsi: '256123000', dest: 'GIBRALTAR', lat: 36.14, lon: -5.35, hdg: 90, spd: 13 },
+      { name: 'TI EUROPE', type: 'TI CLASS SUPERTANKER', imo: '9235268', mmsi: '205432000', dest: 'BALBOA', lat: 9.12, lon: -79.71, hdg: 310, spd: 15 }
+    ];
+
+    // Tactical CCTV Surveillance Cameras
+    const CCTV_FEEDS = [
+      { id: 'CAM-SF-08', label: 'CAM-SF-08 // SFO APRON', city: 'SAN FRANCISCO', lens: 'Optical PTZ 36x', res: '1080p @ 60fps', lat: 37.6213, lon: -122.3790 },
+      { id: 'CAM-LHR-02', label: 'CAM-LHR-02 // HEATHROW T5', city: 'LONDON', lens: 'Dual FLIR Thermal', res: '1080p @ 60fps', lat: 51.4700, lon: -0.4543 },
+      { id: 'CAM-HND-04', label: 'CAM-HND-04 // TOKYO HANEDA', city: 'TOKYO', lens: 'High-Lux Low Light', res: '4K @ 30fps', lat: 35.5494, lon: 139.7798 },
+      { id: 'CAM-DXB-01', label: 'CAM-DXB-01 // DUBAI CONCOURSE', city: 'DUBAI', lens: 'Mid-Wave IR Heat', res: '1080p @ 60fps', lat: 25.2532, lon: 55.3657 }
+    ];
+
+    // Weather Storm Cells
+    const WEATHER_CELLS = [
+      { lat: 22, lon: -140, radius: 240 },
+      { lat: 38, lon: -65, radius: 310 },
+      { lat: 15, lon: 128, radius: 280 },
+      { lat: 56, lon: -25, radius: 260 }
+    ];
+
+    // Geopolitical Threat Zones
+    const THREAT_ZONES = [
+      { lat: 31.5, lon: 34.8, radius: 180, label: 'GPS JAMMING SIG-RED' },
+      { lat: 14.5, lon: 43.5, radius: 220, label: 'RED SEA MARITIME RISK' },
+      { lat: 49.0, lon: 35.0, radius: 300, label: 'EW CORRIDOR' }
+    ];
+
+    // Cyber Continents Coordinates
+    const CONTINENTS = [
+      [ [70, -160], [71, -130], [68, -100], [58, -75], [52, -56], [45, -60], [30, -81], [25, -80], [18, -90], [15, -92], [22, -106], [32, -117], [38, -123], [48, -125], [58, -136], [60, -145], [65, -168], [70, -160] ],
+      [ [12, -72], [10, -62], [5, -52], [-5, -35], [-22, -41], [-35, -57], [-54, -67], [-52, -75], [-35, -73], [-18, -70], [-5, -81], [5, -77], [12, -72] ],
+      [ [71, 28], [69, 60], [60, 50], [55, 38], [44, 40], [37, 28], [36, -5], [43, -9], [48, -4], [54, 5], [58, 12], [63, 20], [71, 28] ],
+      [ [37, 10], [32, 32], [22, 37], [12, 51], [-4, 40], [-26, 33], [-34, 18], [-22, 14], [5, 10], [5, -1], [15, -17], [28, -13], [36, -5], [37, 10] ],
+      [ [75, 100], [72, 140], [66, 170], [60, 162], [50, 140], [38, 120], [22, 108], [8, 103], [12, 80], [24, 68], [25, 57], [40, 50], [50, 58], [60, 75], [75, 100] ],
+      [ [-12, 131], [-15, 145], [-24, 153], [-37, 150], [-38, 141], [-32, 116], [-22, 114], [-16, 123], [-12, 131] ],
+      [ [58, -5], [55, -2], [50, 1], [50, -5], [54, -5], [58, -5] ],
+      [ [44, 144], [38, 141], [33, 131], [35, 135], [40, 140], [44, 144] ]
+    ];
+
+    // Deep Space Starfield
+    const STARS = [];
+    for (let i = 0; i < 70; i++) {
+      STARS.push({
+        x: Math.random(),
+        y: Math.random(),
+        size: Math.random() * 1.4 + 0.6,
+        alpha: Math.random() * 0.7 + 0.25
+      });
+    }
+
+    // 3D Spherical Orthographic Projection (Exact 1:1 match with WebGL shader)
+    function projectMob(latDeg, lonDeg, radius, cx, cy) {
+      const lat = (latDeg * Math.PI) / 180;
+      const lon = (lonDeg * Math.PI) / 180;
+      const x0 = Math.cos(lat) * Math.sin(lon);
+      const y0 = -Math.sin(lat);
+      const z0 = Math.cos(lat) * Math.cos(lon);
+
+      const x1 = x0 * Math.cos(rotY) + z0 * Math.sin(rotY);
+      const z1 = -x0 * Math.sin(rotY) + z0 * Math.cos(rotY);
+
+      const y2 = y0 * Math.cos(rotX) - z1 * Math.sin(rotX);
+      const z2 = y0 * Math.sin(rotX) + z1 * Math.cos(rotX);
+
+      return {
+        x: cx + x1 * radius,
+        y: cy + y2 * radius,
+        z: z2,
+        visible: z2 > -0.05
+      };
+    }
+
+    function initRealEarth() {
+      if (!canvas) return;
+      try {
+        gl = canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false }) ||
+             canvas.getContext('experimental-webgl', { alpha: true, antialias: true, premultipliedAlpha: false });
+      } catch(e) {
+        console.warn('WebGL init error:', e);
+      }
+      if (!gl) return;
+
+      const vsSource = `
+        attribute vec2 a_pos;
+        void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+      `;
+
+      const fsSource = `
+        precision highp float;
+        uniform vec2 u_res;
+        uniform vec2 u_center;
+        uniform float u_radius;
+        uniform float u_rotX;
+        uniform float u_rotY;
+        uniform float u_time;
+        uniform float u_nightMode;
+        uniform sampler2D u_dayTexture;
+        uniform sampler2D u_nightTexture;
+
+        const float PI = 3.14159265358979323846;
+
+        float hash3(vec3 p) {
+          p = fract(p * 0.3183099 + vec3(0.1, 0.1, 0.1));
+          p *= 17.0;
+          return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+        }
+
+        float noise3(vec3 x) {
+          vec3 p = floor(x);
+          vec3 w = fract(x);
+          vec3 u = w * w * (3.0 - 2.0 * w);
+          return mix(
+            mix(mix(hash3(p), hash3(p + vec3(1.0, 0.0, 0.0)), u.x),
+                mix(hash3(p + vec3(0.0, 1.0, 0.0)), hash3(p + vec3(1.0, 1.0, 0.0)), u.x), u.y),
+            mix(mix(hash3(p + vec3(0.0, 0.0, 1.0)), hash3(p + vec3(1.0, 0.0, 1.0)), u.x),
+                mix(hash3(p + vec3(0.0, 1.0, 1.0)), hash3(p + vec3(1.0, 1.0, 1.0)), u.x), u.y),
+            u.z
+          );
+        }
+
+        float getCloudDensity(vec3 p) {
+          float c = noise3(p * 3.8) * 0.55 + 
+                    noise3(p * 7.6 + vec3(1.7, 2.3, 0.9)) * 0.30;
+          return smoothstep(0.52, 0.82, c) * 0.55;
+        }
+
+        void main() {
+          vec2 p = gl_FragCoord.xy;
+          float dx = (p.x - u_center.x) / u_radius;
+          float dy = (p.y - (u_res.y - u_center.y)) / u_radius;
+          float distSq = dx * dx + dy * dy;
+
+          if (distSq > 1.078) { discard; }
+
+          vec3 sunDir = normalize(vec3(-0.64, 0.38, 0.66));
+
+          // Rayleigh Atmospheric Limb Halo
+          if (distSq > 1.0) {
+            float dist = sqrt(distSq);
+            float h = (dist - 1.0) / 0.038;
+            float density = exp(-h * 4.2) * (1.0 - h);
+            vec2 limbDir = vec2(dx, dy) / dist;
+            float sunFacing = dot(limbDir, sunDir.xy);
+            float sunLit = smoothstep(-0.35, 0.65, sunFacing);
+            vec3 atmoColor = mix(vec3(0.22, 0.60, 1.0), vec3(0.96, 0.52, 0.18), clamp((1.0 - sunFacing) * 0.8, 0.0, 1.0));
+            float alpha = density * (0.08 + 0.92 * sunLit) * 0.95;
+            gl_FragColor = vec4(atmoColor * alpha, alpha);
+            return;
+          }
+
+          // On-Sphere Planetary Surface
+          float x1 = dx;
+          float y2 = -dy;
+          float z2 = sqrt(max(0.0, 1.0 - x1 * x1 - y2 * y2));
+
+          float cosX = cos(u_rotX); float sinX = sin(u_rotX);
+          float y0 = y2 * cosX + z2 * sinX;
+          float z1 = -y2 * sinX + z2 * cosX;
+
+          float cosY = cos(u_rotY); float sinY = sin(u_rotY);
+          float x0 = x1 * cosY - z1 * sinY;
+          float z0 = x1 * sinY + z1 * cosY;
+
+          float lat = -asin(clamp(y0, -1.0, 1.0));
+          float lon = atan(x0, z0);
+
+          float u = lon / (2.0 * PI) + 0.5;
+          float v = 0.5 - lat / PI;
+
+          vec4 dayTex = texture2D(u_dayTexture, vec2(u, v));
+          vec4 nightTex = texture2D(u_nightTexture, vec2(u, v));
+
+          vec3 normal = vec3(x1, dy, z2);
+          float NdotL = dot(normal, sunDir);
+          float dayLight = smoothstep(-0.10, 0.18, NdotL);
+
+          float cloud = getCloudDensity(vec3(x0, y0, z0) + vec3(u_time * 0.006, 0.0, 0.0));
+          vec3 surfaceColor = mix(dayTex.rgb, vec3(1.0), cloud * 0.7);
+
+          vec3 dayNightSurface = mix(nightTex.rgb * 1.35, surfaceColor, dayLight);
+          vec3 finalColor = mix(surfaceColor, dayNightSurface, u_nightMode);
+
+          // Subtle atmospheric rim
+          float limb = pow(1.0 - z2, 2.4);
+          finalColor += vec3(0.20, 0.58, 1.0) * limb * 0.35;
+
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `;
+
+      function compileShader(src, type) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          console.warn('Shader error:', gl.getShaderInfoLog(s));
+        }
+        return s;
+      }
+
+      const vs = compileShader(vsSource, gl.VERTEX_SHADER);
+      const fs = compileShader(fsSource, gl.FRAGMENT_SHADER);
+      if (!vs || !fs) return;
+
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      gl.useProgram(prog);
+
+      // Full screen quad buffer
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1,  1, -1, -1,  1,
+        -1,  1,  1, -1,  1,  1
+      ]), gl.STATIC_DRAW);
+
+      const aPos = gl.getAttribLocation(prog, 'a_pos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      const uRes = gl.getUniformLocation(prog, 'u_res');
+      const uCenter = gl.getUniformLocation(prog, 'u_center');
+      const uRadius = gl.getUniformLocation(prog, 'u_radius');
+      const uRotX = gl.getUniformLocation(prog, 'u_rotX');
+      const uRotY = gl.getUniformLocation(prog, 'u_rotY');
+      const uTime = gl.getUniformLocation(prog, 'u_time');
+      const uNightModeUniform = gl.getUniformLocation(prog, 'u_nightMode');
+      const uDay = gl.getUniformLocation(prog, 'u_dayTexture');
+      const uNight = gl.getUniformLocation(prog, 'u_nightTexture');
+
+      function loadTexture(url, unit) {
+        const tex = gl.createTexture();
+        gl.activeTexture(unit);
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        // Fallback procedural deep blue
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([14, 53, 92, 255]));
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          try {
+            gl.activeTexture(unit);
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+          } catch(e) {
+            console.warn("Texture upload error:", e);
+          }
+        };
+        img.onerror = () => {
+          if (!img.hasTriedOther) {
+            img.hasTriedOther = true;
+            img.src = url.startsWith('/') ? '.' + url : '/' + url;
+          }
+        };
+        img.src = url;
+        return tex;
+      }
+
+      loadTexture('/assets/earth/earth-satellite.jpg', gl.TEXTURE0);
+      loadTexture('/assets/earth/earth-night.jpg', gl.TEXTURE1);
+
+      gl.uniform1i(uDay, 0);
+      gl.uniform1i(uNight, 1);
+
+      function render(time) {
+        const t = time * 0.001;
+        const rect = touchStage.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
+        const w = Math.floor(rect.width);
+        const h = Math.floor(rect.height);
+
+        // Keep WebGL canvas sized
+        if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+          canvas.width = w * dpr;
+          canvas.height = h * dpr;
+        }
+
+        // Camera Momentum & Inactivity Auto-Spin
+        if (targetTrackedEntity) {
+          // Camera lock onto entity
+          const entLat = targetTrackedEntity.lat || 0;
+          const entLon = targetTrackedEntity.lon || 0;
+          const targetY = -(entLon * Math.PI) / 180 + Math.PI / 2;
+          const targetX = Math.max(-1.15, Math.min(1.15, (entLat * Math.PI) / 180 * 0.6));
+          rotY += (targetY - rotY) * 0.08;
+          rotX += (targetX - rotX) * 0.08;
+        } else if (!userDragging && !isMouseDown) {
+          rotY += touchVelocityX;
+          rotX += touchVelocityY;
+          rotX = Math.max(-1.2, Math.min(1.2, rotX));
+          touchVelocityX *= 0.92;
+          touchVelocityY *= 0.92;
+
+          // Auto-spin smoothly resumes after 3.5s of no user touch
+          if (autoSpin && (Date.now() - lastInteractionTime > 3500)) {
+            rotY += 0.0035;
+          }
+        }
+
+        const sphereRadius = Math.min(w, h) * 0.44 * zoom;
+        const cx = w * 0.5;
+        const cy = h * 0.5;
+
+        // 1. Planetary Sphere Render
+        if (mobileEarthMode === 'real') {
+          canvas.style.display = 'block';
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.uniform2f(uRes, canvas.width, canvas.height);
+          gl.uniform2f(uCenter, (w * 0.5) * dpr, (h * 0.5) * dpr);
+          gl.uniform1f(uRadius, sphereRadius * dpr);
+          gl.uniform1f(uRotX, rotX);
+          gl.uniform1f(uRotY, rotY);
+          gl.uniform1f(uTime, t);
+          gl.uniform1f(uNightModeUniform, nightMode ? 1.0 : 0.0);
+
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        } else {
+          canvas.style.display = 'none';
+        }
+
+        // 2. Tactical Overlays (Planes, Satellites, CCTV, AIS, Weather, Threats)
+        renderTacticalOverlays(w, h, dpr, cx, cy, sphereRadius, t);
+
+        // Update Sub-Sat Telemetry Row
+        updateSubSatTelemetry();
+
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    // ----------------------------------------------------
+    // TACTICAL 2D OVERLAY RENDERER (SHARED FOR REAL & DIGITAL)
+    // ----------------------------------------------------
+    function renderTacticalOverlays(w, h, dpr, cx, cy, radius, t) {
+      if (!liveCanvas || !liveCtx) return;
+
+      if (liveCanvas.width !== w * dpr || liveCanvas.height !== h * dpr) {
+        liveCanvas.width = w * dpr;
+        liveCanvas.height = h * dpr;
+      }
+
+      liveCtx.save();
+      liveCtx.scale(dpr, dpr);
+      liveCtx.clearRect(0, 0, w, h);
+
+      clickableEntities = [];
+
+      // If in DIGITAL mode, draw cyber dark globe, parallels, meridians, continents, and radar
+      if (mobileEarthMode === 'digital') {
+        // Deep space starfield
+        STARS.forEach(st => {
+          liveCtx.fillStyle = `rgba(200, 230, 255, ${st.alpha})`;
+          liveCtx.beginPath();
+          liveCtx.arc(st.x * w, st.y * h, st.size, 0, Math.PI * 2);
+          liveCtx.fill();
+        });
+
+        // Dark globe sphere
+        const globeGrad = liveCtx.createRadialGradient(cx - radius * 0.35, cy - radius * 0.35, radius * 0.1, cx, cy, radius);
+        globeGrad.addColorStop(0, '#0a1a2f');
+        globeGrad.addColorStop(0.8, '#04070e');
+        globeGrad.addColorStop(1, '#020306');
+        liveCtx.fillStyle = globeGrad;
+        liveCtx.beginPath();
+        liveCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+        liveCtx.fill();
+
+        // Atmospheric halo
+        const haloGrad = liveCtx.createRadialGradient(cx, cy, radius * 0.95, cx, cy, radius * 1.25);
+        haloGrad.addColorStop(0, 'rgba(0, 245, 184, 0.25)');
+        haloGrad.addColorStop(0.5, 'rgba(0, 245, 184, 0.04)');
+        haloGrad.addColorStop(1, 'transparent');
+        liveCtx.fillStyle = haloGrad;
+        liveCtx.beginPath();
+        liveCtx.arc(cx, cy, radius * 1.25, 0, Math.PI * 2);
+        liveCtx.fill();
+
+        liveCtx.strokeStyle = 'rgba(0, 245, 184, 0.45)';
+        liveCtx.lineWidth = 1.5;
+        liveCtx.stroke();
+
+        // Parallels
+        liveCtx.strokeStyle = 'rgba(0, 245, 184, 0.16)';
+        liveCtx.lineWidth = 1;
+        const parallels = [-60, -30, 0, 30, 60];
+        parallels.forEach(lat => {
+          liveCtx.beginPath();
+          let started = false;
+          for (let lon = -180; lon <= 180; lon += 6) {
+            const p = projectMob(lat, lon, radius, cx, cy);
+            if (p.visible) {
+              if (!started) { liveCtx.moveTo(p.x, p.y); started = true; }
+              else { liveCtx.lineTo(p.x, p.y); }
+            } else { started = false; }
+          }
+          liveCtx.stroke();
+        });
+
+        // Meridians
+        for (let lon = -180; lon < 180; lon += 30) {
+          liveCtx.beginPath();
+          let started = false;
+          for (let lat = -90; lat <= 90; lat += 5) {
+            const p = projectMob(lat, lon, radius, cx, cy);
+            if (p.visible) {
+              if (!started) { liveCtx.moveTo(p.x, p.y); started = true; }
+              else { liveCtx.lineTo(p.x, p.y); }
+            } else { started = false; }
+          }
+          liveCtx.stroke();
+        }
+
+        // Continents
+        CONTINENTS.forEach(poly => {
+          liveCtx.beginPath();
+          let first = true;
+          let anyVisible = false;
+          poly.forEach(([lat, lon]) => {
+            const p = projectMob(lat, lon, radius, cx, cy);
+            if (p.visible) anyVisible = true;
+            if (first) { liveCtx.moveTo(p.x, p.y); first = false; }
+            else { liveCtx.lineTo(p.x, p.y); }
+          });
+          if (anyVisible) {
+            liveCtx.fillStyle = 'rgba(0, 245, 184, 0.18)';
+            liveCtx.fill();
+            liveCtx.strokeStyle = 'rgba(0, 245, 184, 0.55)';
+            liveCtx.lineWidth = 1.2;
+            liveCtx.stroke();
+          }
+        });
+
+        // Radar sweep
+        radarSweepAngle += 0.025;
+        liveCtx.save();
+        liveCtx.beginPath();
+        liveCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+        liveCtx.clip();
+
+        const sweepX = cx + Math.cos(radarSweepAngle) * radius;
+        const sweepY = cy + Math.sin(radarSweepAngle) * radius;
+        liveCtx.strokeStyle = '#00f5b8';
+        liveCtx.lineWidth = 1.5;
+        liveCtx.beginPath();
+        liveCtx.moveTo(cx, cy);
+        liveCtx.lineTo(sweepX, sweepY);
+        liveCtx.stroke();
+
+        liveCtx.fillStyle = 'rgba(0, 245, 184, 0.15)';
+        liveCtx.beginPath();
+        liveCtx.moveTo(cx, cy);
+        liveCtx.arc(cx, cy, radius, radarSweepAngle - 0.4, radarSweepAngle, false);
+        liveCtx.lineTo(cx, cy);
+        liveCtx.fill();
+        liveCtx.restore();
+      }
+
+      // 1. WEATHER STORM CELLS
+      if (mobLayers.weather) {
+        WEATHER_CELLS.forEach((cell, idx) => {
+          const p = projectMob(cell.lat, cell.lon, radius, cx, cy);
+          if (p.visible) {
+            const pulse = Math.sin(t * 3.0 + idx) * 3 + (cell.radius * 0.04 * zoom);
+            const wGrad = liveCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.max(4, pulse));
+            wGrad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+            wGrad.addColorStop(0.7, 'rgba(56, 189, 248, 0.12)');
+            wGrad.addColorStop(1, 'transparent');
+            liveCtx.fillStyle = wGrad;
+            liveCtx.beginPath();
+            liveCtx.arc(p.x, p.y, Math.max(4, pulse), 0, Math.PI * 2);
+            liveCtx.fill();
+          }
+        });
+      }
+
+      // 2. GEOPOLITICAL THREAT ZONES
+      if (mobLayers.threats) {
+        THREAT_ZONES.forEach((tz, idx) => {
+          const p = projectMob(tz.lat, tz.lon, radius, cx, cy);
+          if (p.visible) {
+            const tPulse = (t * 2.0 + idx * 0.5) % 1;
+            liveCtx.strokeStyle = `rgba(239, 68, 68, ${1 - tPulse})`;
+            liveCtx.lineWidth = 1.2;
+            liveCtx.beginPath();
+            liveCtx.arc(p.x, p.y, 6 + tPulse * 16 * zoom, 0, Math.PI * 2);
+            liveCtx.stroke();
+
+            liveCtx.fillStyle = '#ef4444';
+            liveCtx.beginPath();
+            liveCtx.arc(p.x, p.y, 3 * zoom, 0, Math.PI * 2);
+            liveCtx.fill();
+
+            liveCtx.font = '8px monospace';
+            liveCtx.fillStyle = '#f87171';
+            liveCtx.fillText(tz.label, p.x + 6, p.y + 3);
+          }
+        });
+      }
+
+      // 3. MARITIME AIS VESSELS LAYER
+      if (mobLayers.ais) {
+        SHIPS.forEach(ship => {
+          const p = projectMob(ship.lat, ship.lon, radius, cx, cy);
+          if (p.visible) {
+            clickableEntities.push({
+              type: 'ship',
+              id: ship.name,
+              model: ship.type,
+              spd: ship.spd,
+              hdg: ship.hdg,
+              lat: ship.lat,
+              lon: ship.lon,
+              raw: ship,
+              x: p.x,
+              y: p.y
+            });
+
+            // Vessel blip
+            liveCtx.fillStyle = '#38bdf8';
+            liveCtx.beginPath();
+            liveCtx.arc(p.x, p.y, 3 * Math.min(zoom, 1.8), 0, Math.PI * 2);
+            liveCtx.fill();
+
+            // Heading vector line
+            const hdgRad = (ship.hdg * Math.PI) / 180;
+            liveCtx.strokeStyle = '#38bdf8';
+            liveCtx.lineWidth = 1;
+            liveCtx.beginPath();
+            liveCtx.moveTo(p.x, p.y);
+            liveCtx.lineTo(p.x + Math.sin(hdgRad) * 7 * Math.min(zoom, 1.8), p.y - Math.cos(hdgRad) * 7 * Math.min(zoom, 1.8));
+            liveCtx.stroke();
+
+            liveCtx.font = '8px monospace';
+            liveCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+            liveCtx.fillText(ship.name, p.x + 5, p.y + 3);
+          }
+        });
+      }
+
+      // 4. LIVE AVIATION ADS-B FLIGHTS (PLANES) LAYER
+      if (mobLayers.flights) {
+        FLIGHTS.forEach(flight => {
+          // Dynamic movement
+          const speedFact = flight.spd * 0.0000035;
+          flight.lon += Math.sin((flight.hdg * Math.PI) / 180) * speedFact * 10;
+          flight.lat += Math.cos((flight.hdg * Math.PI) / 180) * speedFact * 10;
+
+          const p = projectMob(flight.lat, flight.lon, radius, cx, cy);
+          if (p.visible) {
+            const isTarget = targetTrackedEntity && (targetTrackedEntity.id === flight.id);
+
+            clickableEntities.push({
+              type: 'flight',
+              id: flight.id,
+              model: flight.model,
+              spd: flight.spd,
+              hdg: flight.hdg,
+              alt: flight.alt,
+              squawk: flight.squawk,
+              lat: flight.lat,
+              lon: flight.lon,
+              raw: flight,
+              x: p.x,
+              y: p.y
+            });
+
+            // Flight History Trail
+            flight.trail.push({ x: p.x, y: p.y });
+            if (flight.trail.length > 18) flight.trail.shift();
+
+            if (flight.trail.length > 1) {
+              liveCtx.beginPath();
+              liveCtx.moveTo(flight.trail[0].x, flight.trail[0].y);
+              for (let i = 1; i < flight.trail.length; i++) {
+                liveCtx.lineTo(flight.trail[i].x, flight.trail[i].y);
+              }
+              liveCtx.strokeStyle = isTarget ? 'rgba(251, 191, 36, 0.65)' : 'rgba(0, 245, 184, 0.35)';
+              liveCtx.lineWidth = 1.2 * Math.min(zoom, 1.8);
+              liveCtx.stroke();
+            }
+
+            // Aircraft Blip Icon
+            liveCtx.fillStyle = isTarget ? '#fbbf24' : '#00f5b8';
+            liveCtx.beginPath();
+            liveCtx.arc(p.x, p.y, (isTarget ? 4.5 : 3) * Math.min(zoom, 1.8), 0, Math.PI * 2);
+            liveCtx.fill();
+
+            // Heading pointer tick
+            const hdgRad = (flight.hdg * Math.PI) / 180;
+            liveCtx.strokeStyle = isTarget ? '#fbbf24' : '#00f5b8';
+            liveCtx.lineWidth = 1.5;
+            liveCtx.beginPath();
+            liveCtx.moveTo(p.x, p.y);
+            liveCtx.lineTo(p.x + Math.sin(hdgRad) * 8 * Math.min(zoom, 1.8), p.y - Math.cos(hdgRad) * 8 * Math.min(zoom, 1.8));
+            liveCtx.stroke();
+
+            // Callsign text / Tactical brackets
+            if (isTarget) {
+              const pulse = Math.sin(t * 6.0) * 2 + 10 * Math.min(zoom, 1.8);
+              liveCtx.strokeStyle = '#fbbf24';
+              liveCtx.lineWidth = 1.2;
+              liveCtx.strokeRect(p.x - pulse, p.y - pulse, pulse * 2, pulse * 2);
+
+              liveCtx.font = '9px monospace';
+              liveCtx.fillStyle = '#fbbf24';
+              liveCtx.fillText(`TARGET: ${flight.id}`, p.x + pulse + 4, p.y - 4);
+              liveCtx.fillStyle = '#fff';
+              liveCtx.fillText(`FL${Math.floor(flight.alt / 100)} · ${flight.spd}KT`, p.x + pulse + 4, p.y + 6);
+            } else {
+              liveCtx.font = '8px monospace';
+              liveCtx.fillStyle = '#cbd5e1';
+              liveCtx.fillText(flight.id, p.x + 6, p.y - 3);
+            }
+          }
+        });
+      }
+
+      // 5. RECON CCTV SURVEILLANCE CAMERAS LAYER
+      if (mobLayers.cctv) {
+        CCTV_FEEDS.forEach((cam, idx) => {
+          const p = projectMob(cam.lat, cam.lon, radius, cx, cy);
+          if (p.visible) {
+            clickableEntities.push({
+              type: 'cctv',
+              id: cam.id,
+              label: cam.label,
+              lat: cam.lat,
+              lon: cam.lon,
+              raw: cam,
+              x: p.x,
+              y: p.y
+            });
+
+            // Pulsating radar ping
+            const ping = (t * 3.0 + idx * 0.3) % 1;
+            liveCtx.strokeStyle = `rgba(248, 113, 113, ${1 - ping})`;
+            liveCtx.lineWidth = 1;
+            liveCtx.beginPath();
+            liveCtx.arc(p.x, p.y, (4 + ping * 12) * Math.min(zoom, 1.8), 0, Math.PI * 2);
+            liveCtx.stroke();
+
+            liveCtx.fillStyle = '#f87171';
+            liveCtx.beginPath();
+            liveCtx.arc(p.x, p.y, 3 * Math.min(zoom, 1.8), 0, Math.PI * 2);
+            liveCtx.fill();
+
+            liveCtx.font = '8px monospace';
+            liveCtx.fillStyle = '#fca5a5';
+            liveCtx.fillText(cam.id, p.x + 6, p.y - 3);
+          }
+        });
+      }
+
+      // 6. SATELLITES & ISS ORBIT LAYER
+      if (mobLayers.satellites) {
+        issOrbitPhase += 0.0016;
+        const inc = (51.6 * Math.PI) / 180;
+        const satAltRadius = radius * 1.09;
+
+        // Draw ISS 51.6° Inclined Orbital Track
+        liveCtx.beginPath();
+        let started = false;
+        for (let u = 0; u <= Math.PI * 2; u += 0.1) {
+          const ox = Math.cos(u);
+          const oy = Math.sin(u) * Math.sin(inc);
+          const oz = Math.sin(u) * Math.cos(inc);
+
+          const rx = ox * Math.cos(rotY) + oz * Math.sin(rotY);
+          const rz = -ox * Math.sin(rotY) + oz * Math.cos(rotY);
+          const ry = oy * Math.cos(rotX) - rz * Math.sin(rotX);
+          const finalZ = oy * Math.sin(rotX) + rz * Math.cos(rotX);
+
+          const px = cx + rx * satAltRadius;
+          const py = cy + ry * satAltRadius;
+
+          if (finalZ > -0.2) {
+            if (!started) { liveCtx.moveTo(px, py); started = true; }
+            else { liveCtx.lineTo(px, py); }
+          } else { started = false; }
+        }
+        liveCtx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
+        liveCtx.setLineDash([3, 4]);
+        liveCtx.lineWidth = 1.2;
+        liveCtx.stroke();
+        liveCtx.setLineDash([]);
+
+        // Calculate ISS Current Ephemeris Position
+        const iu = issOrbitPhase;
+        const iox = Math.cos(iu);
+        const ioy = Math.sin(iu) * Math.sin(inc);
+        const ioz = Math.sin(iu) * Math.cos(inc);
+
+        const irx = iox * Math.cos(rotY) + ioz * Math.sin(rotY);
+        const irz = -iox * Math.sin(rotY) + ioz * Math.cos(rotY);
+        const iry = ioy * Math.cos(rotX) - irz * Math.sin(rotX);
+        const ifinalZ = ioy * Math.sin(rotX) + irz * Math.cos(rotX);
+
+        if (ifinalZ > -0.1) {
+          const isx = cx + irx * satAltRadius;
+          const isy = cy + iry * satAltRadius;
+
+          clickableEntities.push({
+            type: 'sat',
+            id: 'ISS (ZARYA)',
+            lat: (Math.asin(ioy) * 180) / Math.PI,
+            lon: (Math.atan2(iox, ioz) * 180) / Math.PI,
+            x: isx,
+            y: isy
+          });
+
+          // Solar panel cross blip
+          liveCtx.fillStyle = '#fbbf24';
+          liveCtx.fillRect(isx - 6 * Math.min(zoom, 1.8), isy - 1.5, 12 * Math.min(zoom, 1.8), 3);
+          liveCtx.fillRect(isx - 1.5, isy - 5 * Math.min(zoom, 1.8), 3, 10 * Math.min(zoom, 1.8));
+
+          liveCtx.font = '8px monospace';
+          liveCtx.fillStyle = '#fde047';
+          liveCtx.fillText('ISS (ZARYA)', isx + 8, isy - 3);
+        }
+
+        // Starlink Constellation Satellite
+        starlinkPhase += 0.0022;
+        const sox = Math.cos(starlinkPhase);
+        const soy = Math.sin(starlinkPhase) * Math.sin((53.2 * Math.PI) / 180);
+        const soz = Math.sin(starlinkPhase) * Math.cos((53.2 * Math.PI) / 180);
+        const srx = sox * Math.cos(rotY) + soz * Math.sin(rotY);
+        const srz = -sox * Math.sin(rotY) + soz * Math.cos(rotY);
+        const sry = soy * Math.cos(rotX) - srz * Math.sin(rotX);
+        const sfinalZ = soy * Math.sin(rotX) + srz * Math.cos(rotX);
+
+        if (sfinalZ > -0.1) {
+          const ssx = cx + srx * (radius * 1.12);
+          const ssy = cy + sry * (radius * 1.12);
+          clickableEntities.push({
+            type: 'sat',
+            id: 'STARLINK-G7',
+            lat: (Math.asin(soy) * 180) / Math.PI,
+            lon: (Math.atan2(sox, soz) * 180) / Math.PI,
+            x: ssx,
+            y: ssy
+          });
+          liveCtx.fillStyle = '#38bdf8';
+          liveCtx.beginPath();
+          liveCtx.arc(ssx, ssy, 2.5, 0, Math.PI * 2);
+          liveCtx.fill();
+          liveCtx.font = '7.5px monospace';
+          liveCtx.fillStyle = '#7dd3fc';
+          liveCtx.fillText('STARLINK-G7', ssx + 5, ssy - 2);
+        }
+      }
+
+      // 7. USER RECON WAYPOINT PING
+      if (userWaypoint) {
+        const wp = projectMob(userWaypoint.lat, userWaypoint.lon, radius, cx, cy);
+        if (wp.visible) {
+          const ping = (Date.now() * 0.003) % 1;
+          liveCtx.strokeStyle = `rgba(0, 245, 184, ${1 - ping})`;
+          liveCtx.lineWidth = 1.5;
+          liveCtx.beginPath();
+          liveCtx.arc(wp.x, wp.y, 4 + ping * 18, 0, Math.PI * 2);
+          liveCtx.stroke();
+
+          liveCtx.fillStyle = '#00f5b8';
+          liveCtx.beginPath();
+          liveCtx.arc(wp.x, wp.y, 3.5, 0, Math.PI * 2);
+          liveCtx.fill();
+
+          liveCtx.font = '9px monospace';
+          liveCtx.fillStyle = '#00f5b8';
+          liveCtx.fillText('WAYPOINT', wp.x + 8, wp.y - 4);
+        }
+      }
+
+      liveCtx.restore();
+    }
+
+    // ----------------------------------------------------
+    // FLUID TOUCH & MOUSE INTERACTION SYSTEM
+    // Multi-touch Pan • Pinch-to-Zoom • Inertia Momentum • Entity Tap
+    // ----------------------------------------------------
+    if (touchStage) {
+      // Touch start
+      touchStage.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        lastInteractionTime = Date.now();
+        if (e.touches.length === 1) {
+          userDragging = true;
+          isPinching = false;
+          hasMovedSignificant = false;
+          startTouchX = lastTouchX = e.touches[0].clientX;
+          startTouchY = lastTouchY = e.touches[0].clientY;
+          touchVelocityX = 0;
+          touchVelocityY = 0;
+        } else if (e.touches.length === 2) {
+          userDragging = false;
+          isPinching = true;
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          initialPinchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          initialPinchZoom = zoom;
+        }
+      }, { passive: false });
+
+      // Touch move
+      touchStage.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        lastInteractionTime = Date.now();
+        if (userDragging && e.touches.length === 1) {
+          const t = e.touches[0];
+          const dx = t.clientX - lastTouchX;
+          const dy = t.clientY - lastTouchY;
+          if (Math.hypot(t.clientX - startTouchX, t.clientY - startTouchY) > 7) {
+            hasMovedSignificant = true;
+            targetTrackedEntity = null; // Break lock on manual drag
+          }
+          touchVelocityX = dx * (0.007 / zoom);
+          touchVelocityY = -dy * (0.007 / zoom);
+          rotY += touchVelocityX;
+          rotX = Math.max(-1.2, Math.min(1.2, rotX + touchVelocityY));
+          lastTouchX = t.clientX;
+          lastTouchY = t.clientY;
+          updateSubSatTelemetry();
+        } else if (isPinching && e.touches.length === 2) {
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          if (initialPinchDist > 0) {
+            const factor = currentDist / initialPinchDist;
+            zoom = Math.max(0.75, Math.min(2.5, initialPinchZoom * factor));
+          }
+        }
+      }, { passive: false });
+
+      // Touch end
+      touchStage.addEventListener('touchend', (e) => {
+        if (userDragging && !hasMovedSignificant && e.changedTouches && e.changedTouches.length === 1) {
+          const ct = e.changedTouches[0];
+          const rect = touchStage.getBoundingClientRect();
+          const tapX = ct.clientX - rect.left;
+          const tapY = ct.clientY - rect.top;
+          handleStageTap(tapX, tapY);
+        }
+        userDragging = false;
+        isPinching = false;
+      }, { passive: false });
+
+      touchStage.addEventListener('touchcancel', () => {
+        userDragging = false;
+        isPinching = false;
+      });
+
+      // Mouse Drag support for desktop and tablet mouse emulation
+      touchStage.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        isMouseDown = true;
+        hasMovedSignificant = false;
+        startTouchX = lastTouchX = e.clientX;
+        startTouchY = lastTouchY = e.clientY;
+        touchVelocityX = 0;
+        touchVelocityY = 0;
+        lastInteractionTime = Date.now();
+        touchStage.style.cursor = 'grabbing';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        const dx = e.clientX - lastTouchX;
+        const dy = e.clientY - lastTouchY;
+        if (Math.hypot(e.clientX - startTouchX, e.clientY - startTouchY) > 5) {
+          hasMovedSignificant = true;
+          targetTrackedEntity = null;
+        }
+        touchVelocityX = dx * (0.007 / zoom);
+        touchVelocityY = -dy * (0.007 / zoom);
+        rotY += touchVelocityX;
+        rotX = Math.max(-1.2, Math.min(1.2, rotX + touchVelocityY));
+        lastTouchX = e.clientX;
+        lastTouchY = e.clientY;
+        lastInteractionTime = Date.now();
+        updateSubSatTelemetry();
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (isMouseDown) {
+          if (!hasMovedSignificant) {
+            const rect = touchStage.getBoundingClientRect();
+            const tapX = e.clientX - rect.left;
+            const tapY = e.clientY - rect.top;
+            handleStageTap(tapX, tapY);
+          }
+          isMouseDown = false;
+          touchStage.style.cursor = 'grab';
+        }
+      });
+
+      // Mouse wheel zoom
+      touchStage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.15 : 0.15;
+        zoom = Math.max(0.75, Math.min(2.5, zoom + delta));
+      }, { passive: false });
+    }
+
+    // Handle Tap on Entity or Globe
+    function handleStageTap(tapX, tapY) {
+      let closestEnt = null;
+      let minDist = 26; // 26px tap target tolerance
+
+      for (const ent of clickableEntities) {
+        const d = Math.hypot(ent.x - tapX, ent.y - tapY);
+        if (d < minDist) {
+          minDist = d;
+          closestEnt = ent;
+        }
+      }
+
+      if (closestEnt) {
+        playCyberClick(880, 0.06);
+        openEntitySheet(closestEnt);
+      } else {
+        // Tapped on globe surface: drop tactical waypoint
+        const rect = touchStage.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+        const cx = w * 0.5;
+        const cy = h * 0.5;
+        const radius = Math.min(w, h) * 0.44 * zoom;
+        const dx = (tapX - cx) / radius;
+        const dy = (tapY - cy) / radius;
+        const r2 = dx * dx + dy * dy;
+
+        if (r2 <= 1.0) {
+          const z2 = Math.sqrt(1.0 - r2);
+          const y0 = dy * Math.cos(rotX) + z2 * Math.sin(rotX);
+          const z1 = -dy * Math.sin(rotX) + z2 * Math.cos(rotX);
+          const x0 = dx * Math.cos(rotY) - z1 * Math.sin(rotY);
+          const z0 = dx * Math.sin(rotY) + z1 * Math.cos(rotY);
+
+          const lat = -Math.asin(Math.max(-1, Math.min(1, y0))) * (180 / Math.PI);
+          const lon = Math.atan2(x0, z0) * (180 / Math.PI);
+
+          userWaypoint = { lat, lon, time: Date.now() };
+          playCyberClick(1200, 0.05);
+          showMobileToast(`📍 Waypoint dropped: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`);
+          document.getElementById('tel-lat').innerText = Math.abs(lat).toFixed(1) + '° ' + (lat >= 0 ? 'N' : 'S');
+          document.getElementById('tel-lon').innerText = Math.abs(lon).toFixed(1) + '° ' + (lon >= 0 ? 'E' : 'W');
+        }
+      }
+    }
+
+    // ----------------------------------------------------
+    // MOBILE TELEMETRY BOTTOM SHEET CONTROLLER
+    // ----------------------------------------------------
+    function openEntitySheet(ent) {
+      currentSelectedEntity = ent;
+      const sheet = document.getElementById('mobile-cop-sheet');
+      const backdrop = document.getElementById('mobile-cop-sheet-backdrop');
+      const badge = document.getElementById('ent-sheet-badge');
+      const title = document.getElementById('ent-sheet-title');
+      const subtitle = document.getElementById('ent-sheet-subtitle');
+      const grid = document.getElementById('ent-sheet-grid');
+      const actionBtn = document.getElementById('ent-sheet-action-btn');
+
+      if (!sheet) return;
+
+      if (ent.type === 'flight') {
+        badge.innerText = '✈️ AIRCRAFT // ADS-B LIVE';
+        badge.style.color = '#00f5b8';
+        badge.style.borderColor = 'rgba(0, 245, 184, 0.4)';
+        title.innerText = `${ent.id} — ${ent.model}`;
+        subtitle.innerText = `${ent.raw.operator} • ${ent.raw.route}`;
+        grid.innerHTML = `
+          <div class="sheet-item"><span>AIRSPEED</span><strong>${ent.spd} KTS</strong></div>
+          <div class="sheet-item"><span>ALTITUDE</span><strong>${ent.alt.toLocaleString()} FT</strong></div>
+          <div class="sheet-item"><span>HEADING</span><strong>${ent.hdg}°</strong></div>
+          <div class="sheet-item"><span>SQUAWK</span><strong style="color: #fbbf24;">${ent.squawk}</strong></div>
+          <div class="sheet-item"><span>LATITUDE</span><strong>${ent.lat.toFixed(3)}°</strong></div>
+          <div class="sheet-item"><span>LONGITUDE</span><strong>${ent.lon.toFixed(3)}°</strong></div>
+        `;
+        actionBtn.innerText = '🎯 TRACK FLIGHT';
+      } else if (ent.type === 'sat') {
+        badge.innerText = '🛰️ LEO SATELLITE // TRACK';
+        badge.style.color = '#38bdf8';
+        badge.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+        title.innerText = ent.id;
+        subtitle.innerText = 'LOW EARTH ORBIT • NORAD 25544 • INC 51.6°';
+        grid.innerHTML = `
+          <div class="sheet-item"><span>ORBIT SPEED</span><strong>27,600 KM/H</strong></div>
+          <div class="sheet-item"><span>ALTITUDE</span><strong>418 KM</strong></div>
+          <div class="sheet-item"><span>PERIOD</span><strong>92.9 MIN</strong></div>
+          <div class="sheet-item"><span>DOWNLINK</span><strong style="color: #00f5b8;">S-BAND NOMINAL</strong></div>
+          <div class="sheet-item"><span>CREW</span><strong>EXPEDITION 71</strong></div>
+          <div class="sheet-item"><span>SOLAR ARRAY</span><strong>120 KW ACTIVE</strong></div>
+        `;
+        actionBtn.innerText = '🛰️ TRACK SATELLITE';
+      } else if (ent.type === 'cctv') {
+        badge.innerText = '📷 RECON CCTV // SECURE STREAM';
+        badge.style.color = '#f87171';
+        badge.style.borderColor = 'rgba(248, 113, 113, 0.4)';
+        title.innerText = ent.id;
+        subtitle.innerText = `${ent.raw.city} • ${ent.raw.label}`;
+        grid.innerHTML = `
+          <div class="sheet-item"><span>OPTICAL LENS</span><strong>${ent.raw.lens}</strong></div>
+          <div class="sheet-item"><span>RESOLUTION</span><strong>${ent.raw.res}</strong></div>
+          <div class="sheet-item"><span>LOCATION</span><strong>${ent.raw.city}</strong></div>
+          <div class="sheet-item"><span>PROTOCOL</span><strong style="color: #00f5b8;">HLS / RTSP AES</strong></div>
+          <div class="sheet-item"><span>LATITUDE</span><strong>${ent.lat.toFixed(3)}°</strong></div>
+          <div class="sheet-item"><span>LONGITUDE</span><strong>${ent.lon.toFixed(3)}°</strong></div>
+        `;
+        actionBtn.innerText = '📷 FOCUS CAMERA';
+      } else if (ent.type === 'ship') {
+        badge.innerText = '🚢 MARITIME AIS // CLASS-A';
+        badge.style.color = '#38bdf8';
+        badge.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+        title.innerText = ent.id;
+        subtitle.innerText = `${ent.model} • DEST: ${ent.raw.dest}`;
+        grid.innerHTML = `
+          <div class="sheet-item"><span>SPEED</span><strong>${ent.spd} KNOTS</strong></div>
+          <div class="sheet-item"><span>HEADING</span><strong>${ent.hdg}°</strong></div>
+          <div class="sheet-item"><span>IMO NUMBER</span><strong>${ent.raw.imo}</strong></div>
+          <div class="sheet-item"><span>MMSI ID</span><strong>${ent.raw.mmsi}</strong></div>
+          <div class="sheet-item"><span>LATITUDE</span><strong>${ent.lat.toFixed(3)}°</strong></div>
+          <div class="sheet-item"><span>LONGITUDE</span><strong>${ent.lon.toFixed(3)}°</strong></div>
+        `;
+        actionBtn.innerText = '🚢 TRACK VESSEL';
+      }
+
+      sheet.classList.add('active');
+      if (backdrop) backdrop.classList.add('active');
+    }
+
+    function closeEntitySheet() {
+      const sheet = document.getElementById('mobile-cop-sheet');
+      const backdrop = document.getElementById('mobile-cop-sheet-backdrop');
+      if (sheet) sheet.classList.remove('active');
+      if (backdrop) backdrop.classList.remove('active');
+    }
+
+    function trackSelectedEntity() {
+      if (currentSelectedEntity) {
+        targetTrackedEntity = currentSelectedEntity;
+        const targetLat = currentSelectedEntity.lat || 0;
+        const targetLon = currentSelectedEntity.lon || 0;
+        rotY = -(targetLon * Math.PI) / 180 + Math.PI / 2;
+        rotX = Math.max(-1.15, Math.min(1.15, (targetLat * Math.PI) / 180 * 0.6));
+        playCyberClick(1200, 0.08);
+        showMobileToast(`🎯 Camera locked onto ${currentSelectedEntity.id}`);
+        updateSubSatTelemetry();
+      }
+      closeEntitySheet();
+    }
+
+    // ----------------------------------------------------
+    // HUD & LAYER TOGGLES
+    // ----------------------------------------------------
+    function toggleMobileLayer(layerName) {
+      if (mobLayers[layerName] !== undefined) {
+        mobLayers[layerName] = !mobLayers[layerName];
+        const btn = document.getElementById('layer-btn-' + layerName);
+        if (btn) btn.classList.toggle('active', mobLayers[layerName]);
+        playCyberClick(mobLayers[layerName] ? 950 : 650, 0.05);
+      }
+    }
+
+    function toggleMobileEarthMode() {
+      mobileEarthMode = (mobileEarthMode === 'real' ? 'digital' : 'real');
+      playCyberClick(1100, 0.05);
+
+      const btnIcon = document.getElementById('earth-mode-icon-mob');
+      const btnLabel = document.getElementById('earth-mode-label-mob');
+      const pill = document.getElementById('globe-status-pill');
+
+      if (mobileEarthMode === 'real') {
+        if (btnIcon) btnIcon.innerText = '🌐';
+        if (btnLabel) btnLabel.innerText = 'DIGITAL EARTH';
+        if (pill) { pill.innerText = 'REAL EARTH 60 FPS'; pill.className = 'status-pill pill-green'; }
+      } else {
+        if (btnIcon) btnIcon.innerText = '🌍';
+        if (btnLabel) btnLabel.innerText = 'REAL EARTH';
+        if (pill) { pill.innerText = 'DIGITAL CYBER GRID'; pill.className = 'status-pill pill-purple'; }
+      }
+    }
+
+    function toggleAutoSpin() {
+      autoSpin = !autoSpin;
+      playCyberClick(900, 0.05);
+      document.getElementById('btn-orbit-spin').classList.toggle('active', autoSpin);
+    }
+
+    function toggleNightTerminator() {
+      nightMode = !nightMode;
+      playCyberClick(700, 0.05);
+      document.getElementById('btn-night-mode').classList.toggle('active', nightMode);
+    }
+
+    function zoomMob(delta) {
+      zoom = Math.max(0.75, Math.min(2.5, zoom + delta));
+      playCyberClick(1050, 0.04);
+    }
+
+    function resetGlobeView() {
+      rotX = 0.22;
+      rotY = 1.35;
+      zoom = 1.0;
+      targetTrackedEntity = null;
+      userWaypoint = null;
+      playCyberClick(1100, 0.05);
+      showMobileToast('🎯 Earth view reset to default');
+      updateSubSatTelemetry();
+    }
+
+    function updateSubSatTelemetry() {
+      const latDeg = (rotX * 57.3).toFixed(1);
+      const lonDeg = (((rotY * 57.3) % 360 + 540) % 360 - 180).toFixed(1);
+      const latEl = document.getElementById('tel-lat');
+      const lonEl = document.getElementById('tel-lon');
+      const altEl = document.getElementById('tel-alt');
+      const velEl = document.getElementById('tel-vel');
+
+      if (targetTrackedEntity) {
+        if (latEl) latEl.innerText = (targetTrackedEntity.lat || 0).toFixed(1) + '°';
+        if (lonEl) lonEl.innerText = (targetTrackedEntity.lon || 0).toFixed(1) + '°';
+        if (altEl) altEl.innerText = targetTrackedEntity.alt ? `${(targetTrackedEntity.alt).toLocaleString()} FT` : '418 KM';
+        if (velEl) velEl.innerText = targetTrackedEntity.spd ? `${targetTrackedEntity.spd} KTS` : '27.6K KM/H';
+      } else {
+        if (latEl) latEl.innerText = Math.abs(latDeg) + '° ' + (latDeg >= 0 ? 'N' : 'S');
+        if (lonEl) lonEl.innerText = Math.abs(lonDeg) + '° ' + (lonDeg >= 0 ? 'E' : 'W');
+        if (altEl) altEl.innerText = (420 * (1 / zoom)).toFixed(0) + ' KM';
+        if (velEl) velEl.innerText = '27.6K KM/H';
+      }
+    }
+
+    // Floating Mobile Toast Helper
+    let toastTimeout = null;
+    function showMobileToast(msg) {
+      let toast = document.getElementById('mob-hud-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'mob-hud-toast';
+        toast.style.cssText = 'position: fixed; top: 18px; left: 50%; transform: translateX(-50%); background: rgba(10, 15, 28, 0.95); border: 1px solid rgba(0, 245, 184, 0.45); color: #00f5b8; padding: 7px 16px; border-radius: 20px; font-size: 11px; font-weight: 800; z-index: 10001; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.6); transition: opacity 0.25s ease; backdrop-filter: blur(8px);';
+        document.body.appendChild(toast);
+      }
+      toast.innerText = msg;
+      toast.style.opacity = '1';
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.style.opacity = '0';
+      }, 2400);
+    }
+
+    // ----------------------------------------------------
+    // ECHONODE MINECRAFT SERVER STREAMING BOOT
+    // ----------------------------------------------------
+    let serverRunning = true;
+    const bootLogs = [
+      "[12:00:23 INFO]: Disconnecting existing sessions...",
+      "[12:00:24 INFO]: Initializing Purpur server boot sequence (Java 25 LTS)...",
+      "[12:00:25 INFO]: Loading purpur.yml and paper-global.yml configuration...",
+      "[12:00:26 INFO]: Enabling plugin AxiomPaper v1.6.0...",
+      "[12:00:27 INFO]: Enabling plugin LuckPerms v5.4.102...",
+      "[12:00:28 INFO]: Enabling plugin CoreProtect v22.4...",
+      "[12:00:30 INFO]: Enabling plugin Geyser-Spigot (Bedrock Port 19132)...",
+      "[12:00:32 INFO]: Establishing UDP tunnel vivo-carrier.tun.ply.gg:25565...",
+      "[12:00:35 INFO]: Spawning world chunks [world, nether, the_end]...",
+      "[12:00:41 INFO]: Done (17.8s)! For help, type 'help'",
+      "[12:00:41 INFO]: SKY HEAVEN MC is now ONLINE at 20.0 TPS with 33 plugins!"
+    ];
+
+    function toggleServerPower() {
+      playCyberClick(600, 0.08);
+      const term = document.getElementById('terminal-body');
+      const pill = document.getElementById('server-status-pill');
+      const icon = document.getElementById('serverPowerIcon');
+      const text = document.getElementById('serverPowerText');
+
+      term.innerHTML += `<div class="log-line" style="color: #fbbf24;"><span class="log-time">[${new Date().toTimeString().split(' ')[0]} WARN]:</span> Rebooting Sky Heaven Minecraft Server...</div>`;
+      pill.innerText = "BOOTING...";
+      pill.className = "status-pill pill-purple";
+
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < bootLogs.length) {
+          term.innerHTML += `<div class="log-line">${bootLogs[i]}</div>`;
+          term.scrollTop = term.scrollHeight;
+          i++;
+        } else {
+          clearInterval(interval);
+          pill.innerText = "ONLINE";
+          pill.className = "status-pill pill-green";
+          playCyberClick(1400, 0.1);
+        }
+      }, 350);
+    }
+
+    function copyServerIP() {
+      playCyberClick(1200, 0.04);
+      navigator.clipboard.writeText("vivo-carrier.tun.ply.gg:25565");
+      alert("✅ Minecraft Server IP Copied: vivo-carrier.tun.ply.gg:25565");
+    }
+
+    function copyTerminalLogs() {
+      playCyberClick(1200, 0.04);
+      const text = document.getElementById('terminal-body').innerText;
+      navigator.clipboard.writeText(text);
+      alert("📋 Terminal logs copied to clipboard!");
+    }
+
+    // ----------------------------------------------------
+    // NAVIGATION & VIEW SWITCHING
+    // ----------------------------------------------------
+    function scrollToSection(id) {
+      playCyberClick(800, 0.03);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+      // Update active nav tab
+      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+      const activeTabId = id.replace('section-', 'tab-');
+      const tab = document.getElementById(activeTabId);
+      if (tab) tab.classList.add('active');
+    }
+
+    function switchToDesktop() {
+      playCyberClick(700, 0.05);
+      localStorage.setItem('orbit_force_desktop', 'true');
+      window.location.href = '../home/?view=desktop';
+    }
+
+    function openDrawer() {
+      playCyberClick(1000, 0.04);
+      document.getElementById('drawer-backdrop').classList.add('open');
+    }
+
+    function closeDrawer(e) {
+      if (!e || e.target.id === 'drawer-backdrop' || e.target.classList.contains('sheet-close-btn') || e.target.tagName === 'A') {
+        playCyberClick(700, 0.03);
+        document.getElementById('drawer-backdrop').classList.remove('open');
+      }
+    }
+
+    // ----------------------------------------------------
+    // AUTH MODAL & USER SESSION SYNCHRONIZATION
+    // ----------------------------------------------------
+    function syncMobileUserAuthUI() {
+      let session = null;
+      try {
+        const raw = localStorage.getItem('orbit_user_session');
+        if (raw) session = JSON.parse(raw);
+      } catch (e) {}
+
+      const userName = (session && session.name) || localStorage.getItem('orbit_user_name');
+      const userEmail = (session && session.email) || localStorage.getItem('orbit_user_email');
+      const userAvatar = (session && session.avatar) || localStorage.getItem('orbit_user_avatar');
+      const isLoggedIn = !!(userName && userName !== 'Guest User' && userName !== 'Guest Visitor');
+
+      const pill = document.getElementById('account-status-pill');
+      const mobName = document.getElementById('mob-account-name');
+      const mobEmail = document.getElementById('mob-account-email');
+      const mobAvatar = document.getElementById('mob-account-avatar');
+      const sheetName = document.getElementById('sheet-acc-name');
+      const sheetEmail = document.getElementById('sheet-acc-email');
+      const sheetAvatar = document.getElementById('sheet-acc-avatar');
+      const actionBtns = document.getElementById('mob-account-action-btns');
+
+      if (isLoggedIn) {
+        if (pill) {
+          pill.className = 'status-pill pill-green';
+          pill.innerText = 'AUTHENTICATED';
+        }
+        if (mobName) mobName.innerText = userName;
+        if (mobEmail) mobEmail.innerText = userEmail || 'Account Connected';
+        if (sheetName) sheetName.innerText = userName;
+        if (sheetEmail) sheetEmail.innerText = userEmail || 'Account Connected';
+
+        if (userAvatar) {
+          if (mobAvatar) mobAvatar.innerHTML = `<img src="${userAvatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          if (sheetAvatar) sheetAvatar.innerHTML = `<img src="${userAvatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        } else {
+          const initial = (userName[0] || 'U').toUpperCase();
+          if (mobAvatar) {
+            mobAvatar.innerHTML = initial;
+            mobAvatar.style.background = 'linear-gradient(135deg, #a855f7, #38bdf8)';
+            mobAvatar.style.color = '#fff';
+          }
+          if (sheetAvatar) {
+            sheetAvatar.innerHTML = initial;
+            sheetAvatar.style.background = 'linear-gradient(135deg, #a855f7, #38bdf8)';
+            sheetAvatar.style.color = '#fff';
+          }
+        }
+
+        if (actionBtns) {
+          actionBtns.innerHTML = `
+            <button class="btn-primary" onclick="openAuthModal('account')" style="font-size: 12px; padding: 10px; flex: 1;">
+              Manage Account &rarr;
+            </button>
+            <button class="btn-secondary" onclick="handleSignOut()" style="font-size: 12px; padding: 10px; color: #f87171; border-color: rgba(239, 68, 68, 0.4);">
+              Sign Out
+            </button>
+          `;
+        }
+      } else {
+        if (pill) {
+          pill.className = 'status-pill pill-amber';
+          pill.innerText = 'GUEST VISITOR';
+        }
+        if (mobName) mobName.innerText = 'Guest Visitor';
+        if (mobEmail) mobEmail.innerText = 'Not signed in — tap below to connect';
+        if (sheetName) sheetName.innerText = 'Guest Visitor';
+        if (sheetEmail) sheetEmail.innerText = 'Not signed in';
+        if (mobAvatar) {
+          mobAvatar.innerHTML = '👤';
+          mobAvatar.style.background = 'rgba(255, 255, 255, 0.08)';
+          mobAvatar.style.color = '#94a3b8';
+        }
+        if (sheetAvatar) {
+          sheetAvatar.innerHTML = '👤';
+          sheetAvatar.style.background = 'rgba(255, 255, 255, 0.08)';
+          sheetAvatar.style.color = '#94a3b8';
+        }
+
+        if (actionBtns) {
+          actionBtns.innerHTML = `
+            <button class="btn-primary" onclick="openAuthModal('login')" style="font-size: 12px; padding: 10px; flex: 1;">
+              Sign In / Sign Up &rarr;
+            </button>
+            <button class="btn-secondary" onclick="openAuthModal('google')" style="font-size: 12px; padding: 10px;">
+              Google Sign-In
+            </button>
+          `;
+        }
+      }
+    }
+
+    function openAuthModal(view = 'login') {
+      playCyberClick(900, 0.04);
+      let session = null;
+      try {
+        const raw = localStorage.getItem('orbit_user_session');
+        if (raw) session = JSON.parse(raw);
+      } catch (e) {}
+      const isLoggedIn = !!(session && session.name);
+
+      if (!isLoggedIn && view === 'account') {
+        view = 'login';
+      }
+      switchAuthView(view);
+      document.getElementById('auth-backdrop').classList.add('open');
+    }
+
+    function closeAuthModal(e) {
+      if (!e || e.target.id === 'auth-backdrop' || e.target.classList.contains('sheet-close-btn')) {
+        playCyberClick(700, 0.03);
+        document.getElementById('auth-backdrop').classList.remove('open');
+      }
+    }
+
+    function switchAuthView(view) {
+      document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
+      const target = document.getElementById('auth-view-' + view);
+      if (target) target.classList.add('active');
+
+      const title = document.getElementById('sheet-title');
+      if (view === 'account') title.innerText = 'Account Manager';
+      else if (view === 'google') title.innerText = 'Google Sign-In';
+      else title.innerText = 'Sign In to Orbit';
+    }
+
+    function handleMobileLogin(e) {
+      e.preventDefault();
+      playCyberClick(1200, 0.08);
+      const user = (document.getElementById('login-user').value || '').trim();
+      const pass = document.getElementById('login-pass').value;
+      if (!user) return;
+
+      const email = user.includes('@') ? user : (user + '@trendustyorbit.online');
+      const name = user.includes('@') ? user.split('@')[0] : user;
+
+      localStorage.setItem('orbit_user_name', name);
+      localStorage.setItem('orbit_user_email', email);
+      localStorage.setItem('orbit_user_session', JSON.stringify({
+        name: name,
+        email: email,
+        loggedIn: true,
+        time: Date.now()
+      }));
+
+      // Vault account securely to serverless KDBX vault
+      try {
+        fetch('/api/security/accounts?action=record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            account: {
+              name: name,
+              email: email,
+              password: pass,
+              authType: 'email',
+              notes: 'Android Mobile App Sign-In'
+            }
+          })
+        }).catch(function() {});
+      } catch (err) {}
+
+      syncMobileUserAuthUI();
+      switchAuthView('account');
+      setTimeout(() => closeAuthModal(), 500);
+    }
+
+    function handleGoogleCredentialResponse(response) {
+      playCyberClick(1400, 0.1);
+      try {
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        const payload = JSON.parse(jsonPayload);
+
+        const name = payload.name || payload.email.split('@')[0];
+        const email = payload.email || '';
+        const pic = payload.picture || '';
+
+        localStorage.setItem('orbit_user_name', name);
+        localStorage.setItem('orbit_user_email', email);
+        if (pic) localStorage.setItem('orbit_user_avatar', pic);
+        localStorage.setItem('orbit_user_session', JSON.stringify({
+          name: name,
+          email: email,
+          avatar: pic,
+          sub: payload.sub,
+          loggedIn: true,
+          time: Date.now()
+        }));
+
+        // Vault Google account securely to serverless KDBX vault
+        try {
+          fetch('/api/security/accounts?action=record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              account: {
+                name: name,
+                email: email,
+                avatar: pic,
+                authType: 'google',
+                googleSub: payload.sub,
+                givenName: payload.given_name || '',
+                familyName: payload.family_name || '',
+                locale: payload.locale || '',
+                emailVerified: payload.email_verified !== undefined ? payload.email_verified : true,
+                notes: 'Android Mobile Google Sign-In'
+              }
+            })
+          }).catch(function() {});
+        } catch (err) {}
+
+        syncMobileUserAuthUI();
+        switchAuthView('account');
+        setTimeout(() => closeAuthModal(), 500);
+      } catch(e) {
+        console.error("GIS payload error", e);
+      }
+    }
+
+    function handleSignOut() {
+      playCyberClick(600, 0.06);
+      localStorage.removeItem('orbit_user_session');
+      localStorage.removeItem('orbit_user_name');
+      localStorage.removeItem('orbit_user_email');
+      localStorage.removeItem('orbit_user_avatar');
+      syncMobileUserAuthUI();
+      switchAuthView('login');
+      closeAuthModal();
+    }
+
+    function testCursorEffect(name) {
+      playCyberClick(1300, 0.06);
+      alert(`✨ Tested ${name} Custom Cursor! Available for Windows and Chrome.`);
+    }
+
+    function openChromeExtModal() {
+      playCyberClick(1100, 0.04);
+      alert("🧩 Retrosmart Chrome Extension: Replace browser cursor with 28 vintage Win95, Mac System 7 & Cyber cursors on every webpage!");
+    }
+
+    // Live UTC Clock
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('top-clock').innerText = 'UTC ' + now.toUTCString().split(' ')[4];
+    }, 1000);
+
+    // Initialize Earth on Page Load & DOM Ready immediately
+    let earthStarted = false;
+    function startMobileEarth() {
+      if (earthStarted) return;
+      earthStarted = true;
+      initRealEarth();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        startMobileEarth();
+        syncMobileUserAuthUI();
+      });
+    } else {
+      startMobileEarth();
+      syncMobileUserAuthUI();
+    }
+    window.addEventListener('load', () => {
+      startMobileEarth();
+      syncMobileUserAuthUI();
+    });
+  </script>
+  <!-- MOBILE ENTITY INSPECTION BOTTOM SHEET -->
+  <div id="mobile-cop-sheet-backdrop" class="mobile-entity-sheet-backdrop" onclick="closeEntitySheet()"></div>
+  <div id="mobile-cop-sheet" class="mobile-entity-sheet">
+    <div class="sheet-top-bar">
+      <span class="sheet-badge" id="ent-sheet-badge">✈️ AIRCRAFT // ADS-B</span>
+      <button class="sheet-close-btn" onclick="closeEntitySheet()">&times;</button>
+    </div>
+    <div class="sheet-header">
+      <div id="ent-sheet-title" class="sheet-title">UAL-482 (B787-9)</div>
+      <div id="ent-sheet-subtitle" class="sheet-subtitle">UNITED AIRLINES • KSFO ➔ RJAA</div>
+    </div>
+    <div class="sheet-grid" id="ent-sheet-grid"></div>
+    <div class="sheet-actions">
+      <button class="sheet-primary-btn" id="ent-sheet-action-btn" onclick="trackSelectedEntity()">🎯 TRACK TARGET</button>
+      <button class="sheet-secondary-btn" onclick="closeEntitySheet()">DISMISS</button>
+    </div>
+  </div>
+
+  <script src="../assets/buttermax-theme.js" defer></script>
+  <script src="../assets/orbit-animation-engine.js" defer></script>
+</body>
+</html>
