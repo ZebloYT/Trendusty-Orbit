@@ -20,6 +20,19 @@ module.exports = async (req, res) => {
   const clientMeta = guardian.getClientMeta(req);
   const clientIP = clientMeta.ip;
 
+  const action = req.query.action || (req.body && req.body.action) || 'status';
+
+  // Instant Unblock Endpoint (Always accessible so you can unblock yourself anytime)
+  if (action === 'unblock' || action === 'unblock_my_ip' || action === 'unblock_all') {
+    guardian.unbanIP(clientIP);
+    guardian.clearAllBans();
+    return res.status(200).json({
+      success: true,
+      message: 'Your IP has been fully unblocked and all restrictions cleared.',
+      clientIP: clientIP
+    });
+  }
+
   // Enforce IP Ban check
   if (guardian.isIPBanned(clientIP)) {
     guardian.logSecurityEvent('BLOCKED_BANNED_IP_ATTEMPT', clientMeta);
