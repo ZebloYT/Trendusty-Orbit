@@ -509,9 +509,62 @@
       white-space: pre-wrap;
       word-break: break-all;
     }
+
+    /* Orbit / Buttermax Circle Mouse in #EE00FF */
+    #orbit-cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 14px;
+      height: 14px;
+      background: #EE00FF;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px rgba(238, 0, 255, 0.7);
+      transition: width 0.15s ease, height 0.15s ease, background-color 0.2s ease, opacity 0.2s ease;
+      opacity: 0;
+    }
+    #orbit-cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 44px;
+      height: 44px;
+      border: 2px solid #EE00FF;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999998;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(238, 0, 255, 0.4);
+      transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+      opacity: 0;
+    }
+    #orbit-cursor-ring.is-hovering {
+      width: 60px;
+      height: 60px;
+      border-color: #00f5b8;
+      box-shadow: 0 0 25px rgba(0, 245, 184, 0.7);
+    }
+    #orbit-cursor-dot.is-hovering {
+      background: #00f5b8;
+      box-shadow: 0 0 18px #00f5b8;
+    }
+    #orbit-cursor-ring.is-active {
+      width: 30px;
+      height: 30px;
+      border-color: #ffdb15;
+    }
+    @media (pointer: coarse) {
+      #orbit-cursor-dot, #orbit-cursor-ring { display: none !important; }
+      html, body, *, *::before, *::after { cursor: auto !important; }
+    }
   </style>
 </head>
 <body class="custom-cursor-active">
+
+  <!-- Tactical Orbit Mouse Cursor (Circle mouse in #EE00FF) -->
+  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
 
   <!-- HUD Container -->
   <div class="hud-container">
@@ -1230,6 +1283,65 @@
         "'": '&#039;'
       })[m]);
     }
+
+    // Circle Mouse Follower in #EE00FF
+    (function initCustomCursor() {
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      if (!dot || !ring) return;
+
+      let mouseX = -100, mouseY = -100;
+      let ringX = -100, ringY = -100;
+      let active = false;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!active) {
+          active = true;
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+          ringX = mouseX;
+          ringY = mouseY;
+        }
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+      }, { passive: true });
+
+      window.addEventListener('mouseleave', () => {
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+        active = false;
+      });
+
+      function loop() {
+        if (active) {
+          ringX += (mouseX - ringX) * 0.18;
+          ringY += (mouseY - ringY) * 0.18;
+          ring.style.left = ringX + 'px';
+          ring.style.top = ringY + 'px';
+        }
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+
+      document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('a, button, input, select, textarea, .tab-btn, .action-btn, .stat-card, tr, .modal-close-btn');
+        if (target) {
+          dot.classList.add('is-hovering');
+          ring.classList.add('is-hovering');
+        } else {
+          dot.classList.remove('is-hovering');
+          ring.classList.remove('is-hovering');
+        }
+      });
+
+      window.addEventListener('mousedown', () => ring.classList.add('is-active'));
+      window.addEventListener('mouseup', () => ring.classList.remove('is-active'));
+    })();
   </script>
+
+  <script src="../../assets/buttermax-theme.js" defer></script>
+  <script src="../../assets/orbit-animation-engine.js" defer></script>
 </body>
 </html>
