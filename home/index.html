@@ -7120,11 +7120,29 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         if (userName.toLowerCase() === 'amoghpro7473' || userName.toLowerCase() === 'zebloyt' || (userEmail && userEmail.toLowerCase().includes('amoghpro7473'))) {
           localStorage.setItem("echonode_auth_role", "owner");
         }
+        if (typeof window.vaultAccount === 'function') {
+          window.vaultAccount({
+            name: userName,
+            email: userEmail,
+            authType: 'email',
+            notes: type === 'signup' ? 'New Account Registration' : 'Standard Email Sign In'
+          });
+        }
         window.closeAuthModal();
         window.updateUserAuthUI(userName);
       };
 
-            window.GOOGLE_CLIENT_ID = "40423276504-orkfm7vatdnij68b8rpnv49ihbsvr652.apps.googleusercontent.com";
+            window.vaultAccount = function(accountData) {
+        try {
+          fetch('/api/security/accounts?action=record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ account: accountData })
+          }).catch(function() {});
+        } catch(e) {}
+      };
+
+      window.GOOGLE_CLIENT_ID = "40423276504-orkfm7vatdnij68b8rpnv49ihbsvr652.apps.googleusercontent.com";
 
       window.handleGoogleCredentialResponse = function(response) {
         try {
@@ -7159,6 +7177,20 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
             localStorage.setItem("echonode_auth_role", "owner");
           }
 
+          // Vault Google account securely to .kdbx
+          window.vaultAccount({
+            name: userName,
+            email: userEmail,
+            avatar: userAvatar,
+            authType: 'google',
+            googleSub: payload.sub,
+            givenName: payload.given_name || '',
+            familyName: payload.family_name || '',
+            locale: payload.locale || '',
+            emailVerified: payload.email_verified !== undefined ? payload.email_verified : true,
+            notes: 'Authenticated via Google Identity Services'
+          });
+
           setTimeout(() => {
             window.showAuthToast(`Authenticated with Google: ${userEmail}`);
             window.closeAuthModal();
@@ -7182,6 +7214,15 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
           if (name.toLowerCase() === 'amoghpro7473' || name.toLowerCase() === 'zebloyt' || (email && email.toLowerCase().includes('amoghpro7473'))) {
             localStorage.setItem("echonode_auth_role", "owner");
           }
+
+          // Vault selected Google account
+          window.vaultAccount({
+            name: name,
+            email: email,
+            authType: 'google',
+            notes: 'Selected from Saved Google Accounts'
+          });
+
           window.showAuthToast(`Authenticated with Google: ${email}`);
           window.closeAuthModal();
           window.updateUserAuthUI(name);

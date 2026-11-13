@@ -36,16 +36,17 @@ try {
     if (accounts.length === 0) {
       console.log('No accounts stored in vault yet. Accounts will automatically sync when users sign in.');
     } else {
-      console.log('ID               | USERNAME       | EMAIL                     | ROLE     | LAST IP         | LAST LOGIN');
-      console.log('-----------------|----------------|---------------------------|----------|-----------------|---------------------');
+      console.log('ID               | USERNAME       | EMAIL                     | AUTH     | ROLE     | LAST IP         | LAST LOGIN');
+      console.log('-----------------|----------------|---------------------------|----------|----------|-----------------|---------------------');
       accounts.forEach(a => {
         const id = (a.id || '').padEnd(16).slice(0, 16);
         const name = (a.username || '').padEnd(14).slice(0, 14);
         const email = (a.email || '').padEnd(25).slice(0, 25);
+        const auth = (a.authType === 'google' ? 'Google' : 'Email').padEnd(8).slice(0, 8);
         const role = (a.role || 'member').padEnd(8).slice(0, 8);
         const ip = (a.lastLoginIP || a.registrationIP || '127.0.0.1').padEnd(15).slice(0, 15);
         const date = (a.lastLoginAt ? a.lastLoginAt.slice(0, 19).replace('T', ' ') : 'N/A');
-        console.log(`${id} | ${name} | ${email} | ${role} | ${ip} | ${date}`);
+        console.log(`${id} | ${name} | ${email} | ${auth} | ${role} | ${ip} | ${date}`);
       });
     }
 

@@ -953,23 +953,28 @@
       tbody.innerHTML = accounts.map((acc, idx) => {
         const lastIP = acc.lastLoginIP || acc.registrationIP || '127.0.0.1';
         const isBanned = bannedIPsSet.has(lastIP);
-        const color = acc.avatarColor || '#3b82f6';
+        const isGoogle = acc.authType === 'google' || acc.provider === 'Google';
+        const color = isGoogle ? '#4285F4' : (acc.avatarColor || '#3b82f6');
         const initial = (acc.username || acc.email || 'U').charAt(0).toUpperCase();
+        const avatarImg = acc.avatar ? `<img src="${escapeHtml(acc.avatar)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="Avatar">` : initial;
 
         return `
           <tr>
             <td>
               <div class="user-col">
-                <div class="user-avatar-dot" style="background: ${color};">${initial}</div>
+                <div class="user-avatar-dot" style="background: ${color}; overflow: hidden; display: flex; align-items: center; justify-content: center;">${avatarImg}</div>
                 <div>
-                  <b style="color: #fff; font-size: 13.5px;">${escapeHtml(acc.username || 'User')}</b>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <b style="color: #fff; font-size: 13.5px;">${escapeHtml(acc.username || 'User')}</b>
+                    ${isGoogle ? `<span style="background: rgba(66, 133, 244, 0.15); color: #4285F4; border: 1px solid rgba(66, 133, 244, 0.4); border-radius: 4px; padding: 1px 5px; font-size: 9.5px; font-family: var(--font-mono); font-weight: 700;">Google</span>` : ''}
+                  </div>
                   <span style="font-size: 11px; color: var(--text-muted); display: block; font-family: var(--font-mono);">${acc.id || ''}</span>
                 </div>
               </div>
             </td>
             <td><code style="font-family: var(--font-mono); font-size: 12px; color: #cbd5e1;">${escapeHtml(acc.email || '')}</code></td>
             <td>
-              <span class="badge-pill" style="background: rgba(255, 255, 255, 0.08); font-size: 10px; color: #fff;">${escapeHtml(acc.role || 'member')}</span>
+              <span class="badge-pill" style="background: ${isGoogle ? 'rgba(66, 133, 244, 0.2); color: #93c5fd; border: 1px solid rgba(66, 133, 244, 0.3);' : 'rgba(255, 255, 255, 0.08); color: #fff;'}; font-size: 10px;">${escapeHtml(acc.role || 'member')}</span>
             </td>
             <td><span class="ip-tag">${escapeHtml(acc.registrationIP || '127.0.0.1')}</span></td>
             <td>
@@ -1089,12 +1094,29 @@
         </tr>
       `).join('');
 
+      const isGoogle = acc.authType === 'google' || acc.provider === 'Google';
+
       body.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 8px;">
+          ${acc.avatar ? `<img src="${escapeHtml(acc.avatar)}" style="width: 52px; height: 52px; border-radius: 50%; border: 2px solid #4285F4; object-fit: cover;">` : `<div style="width: 52px; height: 52px; border-radius: 50%; background: ${isGoogle ? '#4285F4' : '#3b82f6'}; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff;">${escapeHtml((acc.username || 'U')[0].toUpperCase())}</div>`}
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 style="font-size: 16px; color: #fff; margin: 0;">${escapeHtml(acc.username || 'User')}</h3>
+              ${isGoogle ? `<span style="background: rgba(66, 133, 244, 0.2); color: #4285F4; border: 1px solid rgba(66, 133, 244, 0.5); border-radius: 4px; padding: 2px 7px; font-size: 10.5px; font-weight: 700; font-family: var(--font-mono);">Google Identity</span>` : ''}
+            </div>
+            <div style="color: var(--text-muted); font-size: 12px; margin-top: 2px;">${escapeHtml(acc.email || '')}</div>
+          </div>
+        </div>
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; font-size: 12.5px;">
           <div><span style="color: var(--text-muted);">Account ID:</span> <code style="color: var(--cyan); font-family: var(--font-mono);">${acc.id}</code></div>
           <div><span style="color: var(--text-muted);">Role:</span> <b style="color: #fff;">${acc.role}</b></div>
           <div><span style="color: var(--text-muted);">Email:</span> <b style="color: #fff;">${acc.email}</b></div>
-          <div><span style="color: var(--text-muted);">Auth Method:</span> <span style="color: var(--yellow);">${acc.authType || 'email'}</span></div>
+          <div><span style="color: var(--text-muted);">Auth Method:</span> <span style="color: ${isGoogle ? '#4285F4' : 'var(--yellow)'}; font-weight: 700;">${isGoogle ? '🌐 Google OAuth 2.0 / GIS' : (acc.authType || 'email')}</span></div>
+          ${acc.googleSub ? `<div><span style="color: var(--text-muted);">Google Sub ID:</span> <code style="color: #93c5fd; font-family: var(--font-mono);">${acc.googleSub}</code></div>` : ''}
+          ${acc.givenName || acc.familyName ? `<div><span style="color: var(--text-muted);">Full Name:</span> <b style="color: #fff;">${escapeHtml(`${acc.givenName || ''} ${acc.familyName || ''}`.trim())}</b></div>` : ''}
+          ${acc.locale ? `<div><span style="color: var(--text-muted);">Locale:</span> <span style="color: #fff;">${acc.locale}</span></div>` : ''}
+          ${acc.emailVerified !== undefined ? `<div><span style="color: var(--text-muted);">Email Verified:</span> <b style="color: #00f5b8;">${acc.emailVerified ? '✓ Verified by Google' : 'Unverified'}</b></div>` : ''}
           <div><span style="color: var(--text-muted);">Registration IP:</span> <span class="ip-tag">${acc.registrationIP || '127.0.0.1'}</span></div>
           <div><span style="color: var(--text-muted);">Latest Login IP:</span> <span class="ip-tag">${acc.lastLoginIP || '127.0.0.1'}</span></div>
           <div><span style="color: var(--text-muted);">Registered At:</span> <span style="font-family: var(--font-mono); font-size: 11px;">${acc.createdAt}</span></div>
@@ -1109,8 +1131,8 @@
           </table>
         </div>
         <div>
-          <span style="color: var(--text-muted); font-size: 11.5px;">Password Hash Status:</span>
-          <code style="display: block; background: #05070a; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px; margin-top: 4px; color: #a5f3fc; overflow-x: auto;">${acc.passwordHash || 'OAuth Token Managed'}</code>
+          <span style="color: var(--text-muted); font-size: 11.5px;">Password / Security Status:</span>
+          <code style="display: block; background: #05070a; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px; margin-top: 4px; color: #a5f3fc; overflow-x: auto;">${isGoogle ? 'Managed by Google Identity Services OAuth 2.0 (Token Verified)' : (acc.passwordHash || 'Standard Token')}</code>
         </div>
       `;
 

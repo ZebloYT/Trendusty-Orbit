@@ -7157,6 +7157,28 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
             localStorage.setItem("echonode_auth_role", "owner");
           }
 
+          // Vault Google account securely to .kdbx
+          try {
+            fetch("/api/security/accounts?action=record", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                account: {
+                  name: userName,
+                  email: userEmail,
+                  avatar: userAvatar,
+                  authType: "google",
+                  googleSub: payload.sub,
+                  givenName: payload.given_name || "",
+                  familyName: payload.family_name || "",
+                  locale: payload.locale || "",
+                  emailVerified: payload.email_verified !== undefined ? payload.email_verified : true,
+                  notes: "Authenticated via Google Identity Services"
+                }
+              })
+            }).catch(function() {});
+          } catch(e) {}
+
           setTimeout(() => {
             window.showAuthToast(`Authenticated with Google: ${userEmail}`);
             window.closeAuthModal();

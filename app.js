@@ -7217,6 +7217,28 @@ ${custom}
               const email = payload.email || '';
               const pic = payload.picture || '';
 
+              // Record Google account in vault
+              try {
+                fetch('/api/security/accounts?action=record', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    account: {
+                      name,
+                      email,
+                      avatar: pic,
+                      authType: 'google',
+                      googleSub: payload.sub,
+                      givenName: payload.given_name || '',
+                      familyName: payload.family_name || '',
+                      locale: payload.locale || '',
+                      emailVerified: payload.email_verified !== undefined ? payload.email_verified : true,
+                      notes: 'Authenticated via EchoNode Google Identity Sign-In'
+                    }
+                  })
+                }).catch(() => {});
+              } catch (e) {}
+
               // Send 6-character code as required for Google logins
               const code = this.generateVerificationCode();
               this.closeModal("modal-server-switcher");
