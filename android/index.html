@@ -318,6 +318,12 @@
       color: var(--emerald);
     }
 
+    .pill-amber {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+
     .pill-purple {
       background: rgba(168, 85, 247, 0.15);
       border: 1px solid rgba(168, 85, 247, 0.4);
@@ -1224,25 +1230,25 @@
             <div style="font-size: 10.5px; color: var(--text-sub);">Google Cloud Identity • EchoNode Access</div>
           </div>
         </div>
-        <span class="status-pill pill-green" id="account-status-pill">AUTHENTICATED</span>
+        <span class="status-pill pill-amber" id="account-status-pill">GUEST VISITOR</span>
       </div>
 
       <div style="display: flex; align-items: center; gap: 14px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px; margin-bottom: 12px;">
-        <div id="mob-account-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #38bdf8); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; color: #fff;">
-          U
+        <div id="mob-account-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: #94a3b8;">
+          👤
         </div>
         <div style="flex: 1; overflow: hidden;">
-          <div id="mob-account-name" style="font-size: 13.5px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active Commander</div>
-          <div id="mob-account-email" style="font-size: 11.5px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">commander@trendustyorbit.online</div>
+          <div id="mob-account-name" style="font-size: 13.5px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Guest Visitor</div>
+          <div id="mob-account-email" style="font-size: 11.5px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Not signed in — tap below to connect</div>
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px;">
-        <button class="btn-primary" onclick="openAuthModal('account')" style="font-size: 12px; padding: 10px;">
-          Manage Account &rarr;
+      <div style="display: flex; gap: 8px;" id="mob-account-action-btns">
+        <button class="btn-primary" onclick="openAuthModal('login')" style="font-size: 12px; padding: 10px; flex: 1;">
+          Sign In / Sign Up &rarr;
         </button>
         <button class="btn-secondary" onclick="openAuthModal('google')" style="font-size: 12px; padding: 10px;">
-          Switch Google Account
+          Google Sign-In
         </button>
       </div>
     </section>
@@ -1290,7 +1296,7 @@
         <form onsubmit="handleMobileLogin(event)">
           <div class="auth-input-group">
             <label class="auth-label">Email or Username</label>
-            <input type="text" class="auth-input" id="login-user" required placeholder="commander@orbit.com">
+            <input type="text" class="auth-input" id="login-user" required placeholder="Enter username or email">
           </div>
           <div class="auth-input-group">
             <label class="auth-label">Password</label>
@@ -1340,11 +1346,11 @@
       <!-- View 3: Account Manager -->
       <div class="auth-view" id="auth-view-account">
         <div style="text-align: center; margin-bottom: 16px;">
-          <div id="sheet-acc-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #38bdf8); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff;">
-            U
+          <div id="sheet-acc-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #94a3b8;">
+            👤
           </div>
-          <h3 id="sheet-acc-name" style="font-size: 16px; font-weight: 800; color: #fff;">Active Commander</h3>
-          <p id="sheet-acc-email" style="font-size: 12px; color: #94a3b8;">commander@trendustyorbit.online</p>
+          <h3 id="sheet-acc-name" style="font-size: 16px; font-weight: 800; color: #fff;">Guest Visitor</h3>
+          <p id="sheet-acc-email" style="font-size: 12px; color: #94a3b8;">Not signed in</p>
         </div>
 
         <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
@@ -2019,10 +2025,111 @@
     }
 
     // ----------------------------------------------------
-    // AUTH MODAL & GOOGLE IDENTITY SERVICES
+    // AUTH MODAL & USER SESSION SYNCHRONIZATION
     // ----------------------------------------------------
+    function syncMobileUserAuthUI() {
+      let session = null;
+      try {
+        const raw = localStorage.getItem('orbit_user_session');
+        if (raw) session = JSON.parse(raw);
+      } catch (e) {}
+
+      const userName = (session && session.name) || localStorage.getItem('orbit_user_name');
+      const userEmail = (session && session.email) || localStorage.getItem('orbit_user_email');
+      const userAvatar = (session && session.avatar) || localStorage.getItem('orbit_user_avatar');
+      const isLoggedIn = !!(userName && userName !== 'Guest User' && userName !== 'Guest Visitor');
+
+      const pill = document.getElementById('account-status-pill');
+      const mobName = document.getElementById('mob-account-name');
+      const mobEmail = document.getElementById('mob-account-email');
+      const mobAvatar = document.getElementById('mob-account-avatar');
+      const sheetName = document.getElementById('sheet-acc-name');
+      const sheetEmail = document.getElementById('sheet-acc-email');
+      const sheetAvatar = document.getElementById('sheet-acc-avatar');
+      const actionBtns = document.getElementById('mob-account-action-btns');
+
+      if (isLoggedIn) {
+        if (pill) {
+          pill.className = 'status-pill pill-green';
+          pill.innerText = 'AUTHENTICATED';
+        }
+        if (mobName) mobName.innerText = userName;
+        if (mobEmail) mobEmail.innerText = userEmail || 'Account Connected';
+        if (sheetName) sheetName.innerText = userName;
+        if (sheetEmail) sheetEmail.innerText = userEmail || 'Account Connected';
+
+        if (userAvatar) {
+          if (mobAvatar) mobAvatar.innerHTML = `<img src="${userAvatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          if (sheetAvatar) sheetAvatar.innerHTML = `<img src="${userAvatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        } else {
+          const initial = (userName[0] || 'U').toUpperCase();
+          if (mobAvatar) {
+            mobAvatar.innerHTML = initial;
+            mobAvatar.style.background = 'linear-gradient(135deg, #a855f7, #38bdf8)';
+            mobAvatar.style.color = '#fff';
+          }
+          if (sheetAvatar) {
+            sheetAvatar.innerHTML = initial;
+            sheetAvatar.style.background = 'linear-gradient(135deg, #a855f7, #38bdf8)';
+            sheetAvatar.style.color = '#fff';
+          }
+        }
+
+        if (actionBtns) {
+          actionBtns.innerHTML = `
+            <button class="btn-primary" onclick="openAuthModal('account')" style="font-size: 12px; padding: 10px; flex: 1;">
+              Manage Account &rarr;
+            </button>
+            <button class="btn-secondary" onclick="handleSignOut()" style="font-size: 12px; padding: 10px; color: #f87171; border-color: rgba(239, 68, 68, 0.4);">
+              Sign Out
+            </button>
+          `;
+        }
+      } else {
+        if (pill) {
+          pill.className = 'status-pill pill-amber';
+          pill.innerText = 'GUEST VISITOR';
+        }
+        if (mobName) mobName.innerText = 'Guest Visitor';
+        if (mobEmail) mobEmail.innerText = 'Not signed in — tap below to connect';
+        if (sheetName) sheetName.innerText = 'Guest Visitor';
+        if (sheetEmail) sheetEmail.innerText = 'Not signed in';
+        if (mobAvatar) {
+          mobAvatar.innerHTML = '👤';
+          mobAvatar.style.background = 'rgba(255, 255, 255, 0.08)';
+          mobAvatar.style.color = '#94a3b8';
+        }
+        if (sheetAvatar) {
+          sheetAvatar.innerHTML = '👤';
+          sheetAvatar.style.background = 'rgba(255, 255, 255, 0.08)';
+          sheetAvatar.style.color = '#94a3b8';
+        }
+
+        if (actionBtns) {
+          actionBtns.innerHTML = `
+            <button class="btn-primary" onclick="openAuthModal('login')" style="font-size: 12px; padding: 10px; flex: 1;">
+              Sign In / Sign Up &rarr;
+            </button>
+            <button class="btn-secondary" onclick="openAuthModal('google')" style="font-size: 12px; padding: 10px;">
+              Google Sign-In
+            </button>
+          `;
+        }
+      }
+    }
+
     function openAuthModal(view = 'login') {
       playCyberClick(900, 0.04);
+      let session = null;
+      try {
+        const raw = localStorage.getItem('orbit_user_session');
+        if (raw) session = JSON.parse(raw);
+      } catch (e) {}
+      const isLoggedIn = !!(session && session.name);
+
+      if (!isLoggedIn && view === 'account') {
+        view = 'login';
+      }
       switchAuthView(view);
       document.getElementById('auth-backdrop').classList.add('open');
     }
@@ -2048,25 +2155,93 @@
     function handleMobileLogin(e) {
       e.preventDefault();
       playCyberClick(1200, 0.08);
-      const user = document.getElementById('login-user').value;
-      document.getElementById('mob-account-name').innerText = user;
-      document.getElementById('sheet-acc-name').innerText = user;
+      const user = (document.getElementById('login-user').value || '').trim();
+      const pass = document.getElementById('login-pass').value;
+      if (!user) return;
+
+      const email = user.includes('@') ? user : (user + '@trendustyorbit.online');
+      const name = user.includes('@') ? user.split('@')[0] : user;
+
+      localStorage.setItem('orbit_user_name', name);
+      localStorage.setItem('orbit_user_email', email);
+      localStorage.setItem('orbit_user_session', JSON.stringify({
+        name: name,
+        email: email,
+        loggedIn: true,
+        time: Date.now()
+      }));
+
+      // Vault account securely to serverless KDBX vault
+      try {
+        fetch('/api/security/accounts?action=record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            account: {
+              name: name,
+              email: email,
+              password: pass,
+              authType: 'email',
+              notes: 'Android Mobile App Sign-In'
+            }
+          })
+        }).catch(function() {});
+      } catch (err) {}
+
+      syncMobileUserAuthUI();
       switchAuthView('account');
+      setTimeout(() => closeAuthModal(), 500);
     }
 
     function handleGoogleCredentialResponse(response) {
       playCyberClick(1400, 0.1);
       try {
-        const payload = JSON.parse(atob(response.credential.split('.')[1]));
-        document.getElementById('mob-account-name').innerText = payload.name;
-        document.getElementById('mob-account-email').innerText = payload.email;
-        document.getElementById('sheet-acc-name').innerText = payload.name;
-        document.getElementById('sheet-acc-email').innerText = payload.email;
-        if (payload.picture) {
-          document.getElementById('mob-account-avatar').innerHTML = `<img src="${payload.picture}" style="width:100%;height:100%;border-radius:50%;">`;
-          document.getElementById('sheet-acc-avatar').innerHTML = `<img src="${payload.picture}" style="width:100%;height:100%;border-radius:50%;">`;
-        }
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        const payload = JSON.parse(jsonPayload);
+
+        const name = payload.name || payload.email.split('@')[0];
+        const email = payload.email || '';
+        const pic = payload.picture || '';
+
+        localStorage.setItem('orbit_user_name', name);
+        localStorage.setItem('orbit_user_email', email);
+        if (pic) localStorage.setItem('orbit_user_avatar', pic);
+        localStorage.setItem('orbit_user_session', JSON.stringify({
+          name: name,
+          email: email,
+          avatar: pic,
+          sub: payload.sub,
+          loggedIn: true,
+          time: Date.now()
+        }));
+
+        // Vault Google account securely to serverless KDBX vault
+        try {
+          fetch('/api/security/accounts?action=record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              account: {
+                name: name,
+                email: email,
+                avatar: pic,
+                authType: 'google',
+                googleSub: payload.sub,
+                givenName: payload.given_name || '',
+                familyName: payload.family_name || '',
+                locale: payload.locale || '',
+                emailVerified: payload.email_verified !== undefined ? payload.email_verified : true,
+                notes: 'Android Mobile Google Sign-In'
+              }
+            })
+          }).catch(function() {});
+        } catch (err) {}
+
+        syncMobileUserAuthUI();
         switchAuthView('account');
+        setTimeout(() => closeAuthModal(), 500);
       } catch(e) {
         console.error("GIS payload error", e);
       }
@@ -2074,12 +2249,11 @@
 
     function handleSignOut() {
       playCyberClick(600, 0.06);
-      document.getElementById('mob-account-name').innerText = 'Commander Guest';
-      document.getElementById('mob-account-email').innerText = 'guest@trendustyorbit.online';
-      document.getElementById('sheet-acc-name').innerText = 'Commander Guest';
-      document.getElementById('sheet-acc-email').innerText = 'guest@trendustyorbit.online';
-      document.getElementById('mob-account-avatar').innerText = 'G';
-      document.getElementById('sheet-acc-avatar').innerText = 'G';
+      localStorage.removeItem('orbit_user_session');
+      localStorage.removeItem('orbit_user_name');
+      localStorage.removeItem('orbit_user_email');
+      localStorage.removeItem('orbit_user_avatar');
+      syncMobileUserAuthUI();
       switchAuthView('login');
       closeAuthModal();
     }
@@ -2108,11 +2282,18 @@
       initRealEarth();
     }
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startMobileEarth);
+      document.addEventListener('DOMContentLoaded', () => {
+        startMobileEarth();
+        syncMobileUserAuthUI();
+      });
     } else {
       startMobileEarth();
+      syncMobileUserAuthUI();
     }
-    window.addEventListener('load', startMobileEarth);
+    window.addEventListener('load', () => {
+      startMobileEarth();
+      syncMobileUserAuthUI();
+    });
   </script>
   <script src="../assets/buttermax-theme.js" defer></script>
   <script src="../assets/orbit-animation-engine.js" defer></script>
