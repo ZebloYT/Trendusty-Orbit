@@ -174,6 +174,18 @@ module.exports = async (req, res) => {
     }
 
     // -------------------------------------------------------------------------
+    // UNBLOCK ACTION (CLEAR ALL BANS & RESTORE FULL ACCESS)
+    // -------------------------------------------------------------------------
+    if (action === 'unblock_all' || action === 'unblock_my_ip' || action === 'unblock') {
+      guardian.clearAllBans();
+      return res.status(200).json({
+        success: true,
+        message: 'All IP addresses and sessions have been unblocked and cleared.',
+        clientIP: clientIP
+      });
+    }
+
+    // -------------------------------------------------------------------------
     // 6. ADMIN: GENERATE FORMAL ABUSE REPORT FOR AN IP
     // -------------------------------------------------------------------------
     if (action === 'abuse_report') {

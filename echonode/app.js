@@ -73,6 +73,7 @@ const SKY_HEAVEN_STATE = {
 
   players: [
     { name: "amoghpro7473", role: "Owner", type: "op", ping: "18ms", joined: "2026-10-24" },
+    { name: "zebloyt", role: "Owner", type: "op", ping: "16ms", joined: "2026-10-24" },
     { name: "1", role: "Admin", type: "op", ping: "22ms", joined: "2026-10-25" },
     { name: "SkyWalker99", role: "Member", type: "whitelist", ping: "38ms", joined: "2026-10-28" }
   ],
@@ -85,6 +86,9 @@ const SKY_HEAVEN_STATE = {
 
   virtualFiles: {
     "/server.properties": `# Minecraft server properties\n# Synchronized via EchoNode Web\nserver-port=25565\ngamemode=survival\ndifficulty=normal\npvp=true\nenable-command-block=true\nallow-flight=true\nallow-nether=true\nmax-players=50\nview-distance=12\nsimulation-distance=8\nmotd=\\u00A7b\\u00A7l✦ \\u00A7b\\u00A7lSKY\\u00A76\\u00A7lHEAVEN\\u00A7a\\u00A7lMC \\u00A78\\u2503 \\u00A7a\\u00A7lSURVIVAL SMP\\n\\u00A7eSurvive \\u00A78\\u2022 \\u00A7bBuild \\u00A78\\u2022 \\u00A7dExplore \\u00A78\\u2022 \\u00A7aPlay Together!\nwhite-list=false\nonline-mode=false\nlevel-seed=-3453969471065111142`,
+    "/ops.json": `[\n  {\n    "uuid": "00000000-0000-0000-0000-000000000001",\n    "name": "amoghpro7473",\n    "level": 4,\n    "bypassesPlayerLimit": true\n  },\n  {\n    "uuid": "00000000-0000-0000-0000-000000000002",\n    "name": "zebloyt",\n    "level": 4,\n    "bypassesPlayerLimit": true\n  }\n]`,
+    "/banned-players.json": `[]`,
+    "/banned-ips.json": `[]`,
     "/bukkit.yml": `settings:\n  allow-end: true\n  warn-on-overload: false\n  permissions-file: permissions.yml\n  update-folder: update\n  plugin-profiling: false\n  connection-throttle: 4000\nspawn-limits:\n  monsters: 70\n  animals: 10\n  water-animals: 5\n  water-ambient: 20\n  water-underground-creature: 5\n  axolotls: 5\n  ambient: 15`,
     "/paper.yml": `# Paper & Purpur High Performance Configuration\ntimings:\n  enabled: true\n  verbose: true\nworld-settings:\n  default:\n    max-auto-save-chunks-per-tick: 24\n    optimize-explosions: true\n    mob-spawner-tick-rate: 2\n    despawn-ranges:\n      soft: 32\n      hard: 96`,
     "/eula.txt": `# By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\neula=true`
@@ -3850,7 +3854,25 @@ class EchoNodeApp {
 
     if (root === "op") {
       const target = arg1 || "Player";
-      this.appendLog("success", `Made ${target} a server operator`);
+      this.appendLog("success", `Made ${target} a server operator (Level 4 OP - Full Permissions)`);
+      return;
+    }
+
+    if (root === "pardon" || root === "unban") {
+      const target = arg1 || "amoghpro7473";
+      this.appendLog("success", `Unbanned player ${target}`);
+      return;
+    }
+
+    if (root === "pardon-ip" || root === "unban-ip" || root === "unblock") {
+      const target = arg1 || "IP";
+      this.appendLog("success", `Unbanned IP address ${target}`);
+      return;
+    }
+
+    if (root === "deop") {
+      const target = arg1 || "Player";
+      this.appendLog("info", `Revoked server operator status for ${target}`);
       return;
     }
 
