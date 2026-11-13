@@ -60,8 +60,6 @@ module.exports = async (req, res) => {
     });
   }
 
-  const action = req.query.action || (req.body && req.body.action) || 'status';
-
   // Helper: Verify Admin Authorization
   function verifyAdminAuth() {
     const adminKey = env.get('ADMIN_ACCESS_KEY');
