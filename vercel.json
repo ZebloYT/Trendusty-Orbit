@@ -32,6 +32,22 @@
       "dest": "/apps/account-manager/$1"
     },
     {
+      "src": "^/apps/gestube/?$",
+      "dest": "/apps/gestube/index.html"
+    },
+    {
+      "src": "^/apps/gestube/(.*)",
+      "dest": "/apps/gestube/$1"
+    },
+    {
+      "src": "^/gestube/?$",
+      "dest": "/apps/gestube/index.html"
+    },
+    {
+      "src": "^/gestube/(.*)",
+      "dest": "/apps/gestube/$1"
+    },
+    {
       "src": "^/echonode/?$",
       "dest": "/echonode/index.html"
     },
