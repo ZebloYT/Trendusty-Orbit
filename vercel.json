@@ -9,19 +9,13 @@
     },
     {
       "src": "^/security/?$",
-      "dest": "/apps/account-manager/index.html"
+      "status": 301,
+      "headers": { "Location": "/apps/account-manager/" }
     },
     {
       "src": "^/admin/?$",
-      "dest": "/apps/account-manager/index.html"
-    },
-    {
-      "src": "^/apps/account-manager/?$",
-      "dest": "/apps/account-manager/index.html"
-    },
-    {
-      "src": "^/apps/account-manager/(.*)",
-      "dest": "/apps/account-manager/$1"
+      "status": 301,
+      "headers": { "Location": "/apps/account-manager/" }
     },
     {
       "src": "^/echonode/?$",
