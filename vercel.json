@@ -24,6 +24,30 @@
       "dest": "/admin/$1"
     },
     {
+      "src": "^/ofaa/?$",
+      "dest": "/ofaa/index.html"
+    },
+    {
+      "src": "^/ofaa/(.*)",
+      "dest": "/ofaa/$1"
+    },
+    {
+      "src": "^/apps/jarvis/?$",
+      "dest": "/apps/jarvis/index.html"
+    },
+    {
+      "src": "^/apps/jarvis/(.*)",
+      "dest": "/apps/jarvis/$1"
+    },
+    {
+      "src": "^/jarvis/?$",
+      "dest": "/apps/jarvis/index.html"
+    },
+    {
+      "src": "^/jarvis/(.*)",
+      "dest": "/apps/jarvis/$1"
+    },
+    {
       "src": "^/apps/account-manager/?$",
       "dest": "/apps/account-manager/index.html"
     },
