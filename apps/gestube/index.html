@@ -722,7 +722,9 @@
   <!-- Top Navigation Bar -->
   <nav class="top-nav">
     <a href="/home/" class="brand-group">
-      <div class="brand-icon">▶️</div>
+      <div class="brand-icon" style="background: none; border: none; box-shadow: none; padding: 0;">
+        <img src="assets/gestube-logo.png" alt="GESTUBE Logo" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255, 0, 51, 0.6));">
+      </div>
       <div>
         <div class="brand-text">GESTUBE</div>
       </div>
@@ -733,7 +735,8 @@
       <a href="/home/" class="nav-btn">🌍 COP</a>
       <a href="/android/" class="nav-btn">📱 Android</a>
       <a href="/apps/account-manager/" class="nav-btn">🔐 Vault</a>
-      <a href="https://www.youtube.com" target="_blank" rel="noopener" class="nav-btn primary">▶️ YouTube</a>
+      <a href="/apps/jarvis/" class="nav-btn" style="border-color: rgba(0, 245, 184, 0.4); color: #00f5b8;">🤖 JARVIS</a>
+      <a href="https://www.youtube.com" target="_blank" rel="noopener" class="nav-btn primary">📺 YouTube</a>
     </div>
   </nav>
 
@@ -741,6 +744,9 @@
 
     <!-- Hero Section -->
     <section class="hero">
+      <div style="width: 104px; height: 104px; margin: 0 auto 22px; border-radius: 26px; background: radial-gradient(circle, rgba(255, 0, 51, 0.2) 0%, rgba(13, 18, 28, 0.95) 75%); border: 1.5px solid rgba(255, 0, 51, 0.45); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(255, 0, 51, 0.35);">
+        <img src="assets/gestube-logo.png" alt="GESTUBE Official Logo" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(255, 0, 51, 0.8));">
+      </div>
       <div class="hero-pill">
         <span>⚡</span> GESTUBE v1.0.0 RELEASE
       </div>
@@ -1586,6 +1592,22 @@
       window.addEventListener('mousedown', () => ring.style.transform = 'translate(-50%, -50%) scale(0.85)');
       window.addEventListener('mouseup', () => ring.style.transform = 'translate(-50%, -50%) scale(1.0)');
     })();
+
+    // Global Login Check for App Downloads
+    document.addEventListener('click', function(e) {
+      const dl = e.target.closest('a[download], a[href*=".exe"], a[href*=".zip"], a[href*=".apk"], .cta-btn-primary');
+      if (!dl) return;
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+      if (!isLoggedIn) {
+        e.preventDefault();
+        e.stopPropagation();
+        alert('🔒 Authentication Required: Please log in or create an account on Trendusty Orbit to download GESTUBE application packages.');
+        window.location.href = '/home/?auth=login';
+        return false;
+      }
+    }, true);
   </script>
 
   <script src="../../assets/buttermax-theme.js" defer></script>
