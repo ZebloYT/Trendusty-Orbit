@@ -3,9 +3,9 @@
 // Vercel Serverless Function: /api/security/accounts
 // ============================================================================
 
-const vault = require('./vault');
-const guardian = require('./guardian');
-const env = require('./env');
+const vault = require('../../lib/security/vault');
+const guardian = require('../../lib/security/guardian');
+const env = require('../../lib/security/env');
 
 module.exports = async (req, res) => {
   // CORS & Security Headers

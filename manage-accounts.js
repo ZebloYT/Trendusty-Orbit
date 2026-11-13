@@ -14,9 +14,9 @@
 
 const fs = require('fs');
 const path = require('path');
-const vault = require('./api/security/vault');
-const guardian = require('./api/security/guardian');
-const env = require('./api/security/env');
+const vault = require('./lib/security/vault');
+const guardian = require('./lib/security/guardian');
+const env = require('./lib/security/env');
 
 const args = process.argv.slice(2);
 const command = args[0] || '--help';

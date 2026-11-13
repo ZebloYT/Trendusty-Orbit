@@ -1,4 +1,4 @@
-const env = require('../security/env');
+const env = require('../../lib/security/env');
 const GITHUB_REPO = "ZebloYT/Trendusty-Orbit";
 const GITHUB_TOKEN = env.get('GITHUB_PAT');
 

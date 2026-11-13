@@ -9,13 +9,27 @@
     },
     {
       "src": "^/security/?$",
-      "status": 301,
-      "headers": { "Location": "/apps/account-manager/" }
+      "dest": "/security/index.html"
+    },
+    {
+      "src": "^/security/(.*)",
+      "dest": "/security/$1"
     },
     {
       "src": "^/admin/?$",
-      "status": 301,
-      "headers": { "Location": "/apps/account-manager/" }
+      "dest": "/admin/index.html"
+    },
+    {
+      "src": "^/admin/(.*)",
+      "dest": "/admin/$1"
+    },
+    {
+      "src": "^/apps/account-manager/?$",
+      "dest": "/apps/account-manager/index.html"
+    },
+    {
+      "src": "^/apps/account-manager/(.*)",
+      "dest": "/apps/account-manager/$1"
     },
     {
       "src": "^/echonode/?$",
