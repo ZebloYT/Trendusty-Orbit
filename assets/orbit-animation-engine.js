@@ -21,7 +21,8 @@
     cursorColor: '#EE00FF',
     cursorRgb: { r: 238, g: 0, b: 255 },
     mouse: { x: -1000, y: -1000, prevX: -1000, prevY: -1000, vx: 0, vy: 0, speed: 0 },
-    liquidBlobs: [],
+    liquidTrail: [], // Flowing liquid stream following cursor on the background
+    liquidBlobs: [], // Organic floating background liquid ink pools
     canvas: null,
     ctx: null,
     animFrameId: null,
@@ -68,8 +69,8 @@
       canvas.style.width = '100vw';
       canvas.style.height = '100vh';
       canvas.style.pointerEvents = 'none';
-      canvas.style.zIndex = '0'; // Behind all page content
-      canvas.style.opacity = '0.9';
+      canvas.style.zIndex = '1'; // Above raw body background, beneath content cards (z-index 2+)
+      canvas.style.opacity = '1';
       document.body.prepend(canvas);
     }
 
@@ -95,59 +96,54 @@
   function initLiquidBlobs() {
     Engine.liquidBlobs = [
       {
-        baseX: Engine.width * 0.15,
+        baseX: Engine.width * 0.18,
         baseY: Engine.height * 0.28,
-        x: Engine.width * 0.15,
+        x: Engine.width * 0.18,
         y: Engine.height * 0.28,
-        radius: Math.min(220, Engine.width * 0.16),
+        radius: Math.min(230, Engine.width * 0.16),
         speedFactor: 0.0008,
         phase: 0,
-        nodes: 8,
-        offsets: [0, 0, 0, 0, 0, 0, 0, 0]
+        nodes: 12
       },
       {
         baseX: Engine.width * 0.82,
-        baseY: Engine.height * 0.38,
+        baseY: Engine.height * 0.35,
         x: Engine.width * 0.82,
-        y: Engine.height * 0.38,
-        radius: Math.min(260, Engine.width * 0.18),
+        y: Engine.height * 0.35,
+        radius: Math.min(270, Engine.width * 0.18),
         speedFactor: 0.0006,
         phase: 2.1,
-        nodes: 8,
-        offsets: [0, 0, 0, 0, 0, 0, 0, 0]
+        nodes: 12
       },
       {
-        baseX: Engine.width * 0.45,
-        baseY: Engine.height * 0.78,
-        x: Engine.width * 0.45,
-        y: Engine.height * 0.78,
-        radius: Math.min(200, Engine.width * 0.14),
+        baseX: Engine.width * 0.48,
+        baseY: Engine.height * 0.76,
+        x: Engine.width * 0.48,
+        y: Engine.height * 0.76,
+        radius: Math.min(220, Engine.width * 0.15),
         speedFactor: 0.0009,
         phase: 4.2,
-        nodes: 8,
-        offsets: [0, 0, 0, 0, 0, 0, 0, 0]
+        nodes: 12
       },
       {
         baseX: Engine.width * 0.08,
-        baseY: Engine.height * 0.85,
-        x: Engine.width * 0.08,
-        y: Engine.height * 0.85,
-        radius: Math.min(180, Engine.width * 0.12),
-        speedFactor: 0.0007,
-        phase: 1.2,
-        nodes: 8,
-        offsets: [0, 0, 0, 0, 0, 0, 0, 0]
-      },
-      {
-        baseX: Engine.width * 0.92,
         baseY: Engine.height * 0.82,
-        x: Engine.width * 0.92,
+        x: Engine.width * 0.08,
         y: Engine.height * 0.82,
         radius: Math.min(190, Engine.width * 0.13),
+        speedFactor: 0.0007,
+        phase: 1.2,
+        nodes: 12
+      },
+      {
+        baseX: Engine.width * 0.90,
+        baseY: Engine.height * 0.80,
+        x: Engine.width * 0.90,
+        y: Engine.height * 0.80,
+        radius: Math.min(200, Engine.width * 0.14),
         speedFactor: 0.00085,
         phase: 3.4,
-        nodes: 8,
-        offsets: [0, 0, 0, 0, 0, 0, 0, 0]
+        nodes: 12
       }
     ];
   }
@@ -317,7 +313,7 @@
 
       const isObsidian = document.documentElement.classList.contains('theme-obsidian') || document.body.classList.contains('theme-obsidian');
 
-      // Draw each organic liquid ink blob in the background
+      // 1. Draw each organic liquid ink blob in the background
       Engine.liquidBlobs.forEach((blob, bIdx) => {
         // Slow organic drift
         const driftX = Math.sin(time * blob.speedFactor + blob.phase) * 35;
@@ -330,8 +326,8 @@
           const distX = Engine.mouse.x - (blob.baseX + driftX);
           const distY = Engine.mouse.y - (blob.baseY + driftY);
           const dist = Math.hypot(distX, distY);
-          if (dist < 380 && dist > 1) {
-            const pull = (1 - dist / 380) * 45;
+          if (dist < 420 && dist > 1) {
+            const pull = (1 - dist / 420) * 55;
             deformX = (distX / dist) * pull;
             deformY = (distY / dist) * pull;
           }
@@ -344,7 +340,7 @@
         const points = [];
         for (let i = 0; i < blob.nodes; i++) {
           const angle = (i / blob.nodes) * Math.PI * 2;
-          const wobble = Math.sin(time * 0.0018 + i * 1.2 + blob.phase) * 16;
+          const wobble = Math.sin(time * 0.0022 + i * 1.4 + blob.phase) * 20;
           const r = blob.radius + wobble;
           points.push({
             x: blob.x + Math.cos(angle) * r,
@@ -368,29 +364,83 @@
         }
         Engine.ctx.closePath();
 
-        // Styling based on active theme
+        // High-contrast, rich styling based on active theme
         if (isObsidian) {
-          // Cybernetic Obsidian theme: ethereal dark teal/magenta liquid aura
-          const grad = Engine.ctx.createRadialGradient(blob.x, blob.y, 20, blob.x, blob.y, blob.radius * 1.2);
-          grad.addColorStop(0, 'rgba(0, 245, 184, 0.08)');
-          grad.addColorStop(0.6, 'rgba(238, 0, 255, 0.04)');
+          // Cybernetic Obsidian theme: luminous cyan/magenta liquid aura
+          const grad = Engine.ctx.createRadialGradient(blob.x, blob.y, 25, blob.x, blob.y, blob.radius * 1.3);
+          grad.addColorStop(0, 'rgba(0, 245, 184, 0.22)');
+          grad.addColorStop(0.65, 'rgba(238, 0, 255, 0.14)');
           grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
           Engine.ctx.fillStyle = grad;
           Engine.ctx.fill();
+
+          Engine.ctx.strokeStyle = 'rgba(0, 245, 184, 0.40)';
+          Engine.ctx.lineWidth = 1.6;
+          Engine.ctx.stroke();
         } else {
-          // Canonical Buttermax Solar Yellow theme: rich subtle molten amber/charcoal liquid contours
-          const grad = Engine.ctx.createRadialGradient(blob.x, blob.y, 15, blob.x, blob.y, blob.radius * 1.3);
-          grad.addColorStop(0, 'rgba(18, 18, 18, 0.07)');
-          grad.addColorStop(0.7, 'rgba(255, 170, 0, 0.05)');
+          // Canonical Buttermax Solar Yellow theme: rich, clearly visible molten amber/charcoal liquid
+          const grad = Engine.ctx.createRadialGradient(blob.x, blob.y, 20, blob.x, blob.y, blob.radius * 1.35);
+          grad.addColorStop(0, 'rgba(18, 18, 18, 0.25)');
+          grad.addColorStop(0.65, 'rgba(255, 170, 0, 0.20)');
           grad.addColorStop(1, 'rgba(255, 219, 21, 0)');
           Engine.ctx.fillStyle = grad;
           Engine.ctx.fill();
 
-          Engine.ctx.strokeStyle = 'rgba(18, 18, 18, 0.04)';
-          Engine.ctx.lineWidth = 1.2;
+          Engine.ctx.strokeStyle = 'rgba(18, 18, 18, 0.32)';
+          Engine.ctx.lineWidth = 1.8;
           Engine.ctx.stroke();
         }
       });
+
+      // 2. Draw dynamic fluid wake stream following cursor on the background
+      const activeTrail = [];
+      for (let i = 0; i < Engine.liquidTrail.length; i++) {
+        const pt = Engine.liquidTrail[i];
+        const age = now - pt.createdAt;
+        if (age < 1300) {
+          const decay = 1 - age / 1300;
+          pt.alpha = decay;
+          pt.radius = pt.maxRadius * (0.3 + 0.7 * decay);
+          activeTrail.push(pt);
+        }
+      }
+      Engine.liquidTrail = activeTrail;
+
+      if (Engine.liquidTrail.length > 1) {
+        Engine.ctx.save();
+        for (let i = 0; i < Engine.liquidTrail.length; i++) {
+          const pt = Engine.liquidTrail[i];
+          Engine.ctx.beginPath();
+          Engine.ctx.arc(pt.x, pt.y, pt.radius, 0, Math.PI * 2);
+          if (isObsidian) {
+            Engine.ctx.fillStyle = `rgba(0, 245, 184, ${pt.alpha * 0.38})`;
+          } else {
+            Engine.ctx.fillStyle = `rgba(18, 18, 18, ${pt.alpha * 0.50})`;
+          }
+          Engine.ctx.fill();
+        }
+
+        // Smooth fluid stream ribbon connecting wake nodes
+        Engine.ctx.beginPath();
+        Engine.ctx.moveTo(Engine.liquidTrail[0].x, Engine.liquidTrail[0].y);
+        for (let i = 1; i < Engine.liquidTrail.length; i++) {
+          const prev = Engine.liquidTrail[i - 1];
+          const curr = Engine.liquidTrail[i];
+          const mx = (prev.x + curr.x) * 0.5;
+          const my = (prev.y + curr.y) * 0.5;
+          Engine.ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
+        }
+        if (isObsidian) {
+          Engine.ctx.strokeStyle = 'rgba(0, 245, 184, 0.55)';
+        } else {
+          Engine.ctx.strokeStyle = 'rgba(18, 18, 18, 0.45)';
+        }
+        Engine.ctx.lineWidth = 15;
+        Engine.ctx.lineCap = 'round';
+        Engine.ctx.lineJoin = 'round';
+        Engine.ctx.stroke();
+        Engine.ctx.restore();
+      }
     }
 
     loop(performance.now());
@@ -400,7 +450,23 @@
   // INPUT LISTENERS
   // ---------------------------------------------------------------------------
   function attachEventListeners() {
+    function addLiquidPoint(x, y, now) {
+      const baseR = Math.min(38, Math.max(16, 20 + Engine.mouse.speed * 0.28));
+      Engine.liquidTrail.push({
+        x: x,
+        y: y,
+        radius: baseR,
+        maxRadius: baseR,
+        alpha: 1.0,
+        createdAt: now
+      });
+      if (Engine.liquidTrail.length > 55) {
+        Engine.liquidTrail.shift();
+      }
+    }
+
     window.addEventListener('mousemove', function(e) {
+      const now = performance.now();
       Engine.mouse.prevX = Engine.mouse.x;
       Engine.mouse.prevY = Engine.mouse.y;
       Engine.mouse.x = e.clientX;
@@ -408,6 +474,21 @@
       Engine.mouse.vx = Engine.mouse.x - Engine.mouse.prevX;
       Engine.mouse.vy = Engine.mouse.y - Engine.mouse.prevY;
       Engine.mouse.speed = Math.hypot(Engine.mouse.vx, Engine.mouse.vy);
+
+      // Record smooth fluid stream following cursor on the background
+      const dist = Math.hypot(e.clientX - Engine.mouse.prevX, e.clientY - Engine.mouse.prevY);
+      if (dist > 14 && Engine.mouse.prevX > -500) {
+        const steps = Math.min(6, Math.floor(dist / 14));
+        for (let s = 1; s <= steps; s++) {
+          const t = s / steps;
+          addLiquidPoint(
+            Engine.mouse.prevX + (e.clientX - Engine.mouse.prevX) * t,
+            Engine.mouse.prevY + (e.clientY - Engine.mouse.prevY) * t,
+            now
+          );
+        }
+      }
+      addLiquidPoint(e.clientX, e.clientY, now);
 
       updateAmbientSpotlight(e.clientX, e.clientY);
     }, { passive: true });

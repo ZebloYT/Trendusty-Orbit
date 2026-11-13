@@ -453,6 +453,37 @@ body.bg-amber #buttermax-hero-curtain {
   z-index: 1;
 }
 
+/* Whole-Website Interactive Background Liquid Canvas */
+#orbit-liquid-bg-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  opacity: 1 !important;
+}
+
+/* Ensure all page content containers sit above the background canvas */
+.container,
+header,
+main,
+section,
+footer,
+.hero,
+.showcase,
+.why-section,
+.steps-section,
+.feeds-section,
+.other-apps-section,
+.bottom-mission-banner,
+#spatial-stage,
+.spatial-hud-controls {
+  position: relative;
+  z-index: 2;
+}
+
 .bm-blob-svg-defs {
   position: absolute;
   width: 0;

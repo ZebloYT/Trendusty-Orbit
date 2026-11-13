@@ -553,11 +553,11 @@
   // ==========================================================================
   // BUTTERMAX SIGNATURE MOLTEN LIQUID PSEUDOPOD (EXACT OBS VIDEO FIDELITY)
   // Features:
-  // 1. Rooted directly at 3D console center (behind hardware centerpiece)
-  // 2. Thick, luscious molten black liquid lobe stretching directly to cursor
-  // 3. Resting puddle extending across title when idle (matching 00:07 of video)
-  // 4. Zero random floating ember dots (100% clean solid liquid body)
-  // 5. Signature detached satellite beads (● ·) ahead of the leading tip
+  // 1. Rooted dynamically under 3D console center (behind hardware centerpiece)
+  // 2. Thick, luscious molten black liquid body with multi-harmonic surface tension
+  // 3. Living, undulating fluid pool that organically breathes and stretches towards cursor
+  // 4. Zero frozen lines, ZERO static dots or beads in front of links/titles
+  // 5. Dynamic fluid wake line following the cursor on the background
   // 6. Real-time SVG typography clipping & color inversion (#bm-blob-clip)
   // ==========================================================================
   let bgCanvas = null;
@@ -566,14 +566,15 @@
   let bgHeight = 0;
   let bgBlobClipPath = null;
 
-  let leadX = -1000;
-  let leadY = -1000;
-  let prevLeadX = -1000;
-  let prevLeadY = -1000;
   let pointerTargetX = -1000;
   let pointerTargetY = -1000;
+  let prevPointerX = -1000;
+  let prevPointerY = -1000;
   let isPointerActive = false;
   let idleTimer = 0;
+
+  // Dynamic fluid wake points following the cursor on the background
+  const heroWakePoints = [];
 
   // Click shockwave ripples
   const bgRipples = [];
@@ -620,12 +621,10 @@
 
     function initChain() {
       const anchor = getConsoleCenter();
-      leadX = anchor.x - 180;
-      leadY = anchor.y + 60;
-      prevLeadX = leadX;
-      prevLeadY = leadY;
-      pointerTargetX = leadX;
-      pointerTargetY = leadY;
+      pointerTargetX = anchor.x;
+      pointerTargetY = anchor.y;
+      prevPointerX = anchor.x;
+      prevPointerY = anchor.y;
     }
 
     window.addEventListener('resize', resizeBg);
@@ -646,10 +645,43 @@
     function onPointerMove(clientX, clientY) {
       if (isCurtainPeeled) return;
       const rect = curtainEl.getBoundingClientRect();
-      pointerTargetX = clientX - rect.left;
-      pointerTargetY = clientY - rect.top;
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+
+      prevPointerX = pointerTargetX;
+      prevPointerY = pointerTargetY;
+      pointerTargetX = px;
+      pointerTargetY = py;
       isPointerActive = true;
       idleTimer = 0;
+
+      // Add to heroWakePoints to draw smooth liquid wake following cursor on the background
+      const now = performance.now();
+      const dist = Math.hypot(px - prevPointerX, py - prevPointerY);
+      const wakeR = Math.min(38, Math.max(16, 20 + dist * 0.3));
+
+      // Interpolate points for fast motion
+      if (dist > 16 && prevPointerX > -500) {
+        const steps = Math.min(6, Math.floor(dist / 16));
+        for (let s = 1; s <= steps; s++) {
+          const t = s / steps;
+          heroWakePoints.push({
+            x: prevPointerX + (px - prevPointerX) * t,
+            y: prevPointerY + (py - prevPointerY) * t,
+            radius: wakeR,
+            maxRadius: wakeR,
+            createdAt: now
+          });
+        }
+      }
+      heroWakePoints.push({
+        x: px,
+        y: py,
+        radius: wakeR,
+        maxRadius: wakeR,
+        createdAt: now
+      });
+      if (heroWakePoints.length > 50) heroWakePoints.shift();
     }
 
     window.addEventListener('mousemove', function(e) {
@@ -708,99 +740,59 @@
         const rootY = anchor.y + currentTransY * 0.20;
 
         // Base pool radius around console
-        const baseRadius = Math.min(145, Math.max(105, bgWidth * 0.10));
+        const baseRadius = Math.min(155, Math.max(110, bgWidth * 0.11));
 
-        // Canonical Buttermax Puddle (Image 1): A cohesive molten pool behind & to the left of the console.
-        // It does NOT follow the cursor across the screen like a line!
-        // Instead, it stays anchored under the hardware and subtly sloshes with fluid inertia.
-        const mouseOffsetX = (pointerTargetX - rootX);
-        const mouseOffsetY = (pointerTargetY - rootY);
-        // Bounded fluid slosh reaction (max ±32px horizontal, ±22px vertical - never leaving console area)
-        const sloshX = Math.max(-32, Math.min(32, mouseOffsetX * 0.05));
-        const sloshY = Math.max(-22, Math.min(22, mouseOffsetY * 0.05));
+        // Living, undulating viscous molten fluid pool with 36 harmonic nodes
+        const numNodes = 36;
+        const poolPoints = [];
 
-        // Organic idle surface-tension breathing oscillation
-        const breathingX = Math.sin(time * 0.0016) * 10;
-        const breathingY = Math.cos(time * 0.0022) * 6;
+        for (let i = 0; i < numNodes; i++) {
+          const th = (i / numNodes) * Math.PI * 2;
+          const w1 = Math.sin(th * 3 + time * 0.0022) * 14;
+          const w2 = Math.cos(th * 5 - time * 0.0017) * 9;
+          const w3 = Math.sin(th * 2 + time * 0.0031) * 7;
 
-        // Puddle lobe rests naturally to the lower-left behind console (exact match to Image 1)
-        const puddleOffsetX = Math.min(195, Math.max(120, bgWidth * 0.14));
-        const puddleOffsetY = Math.min(65, Math.max(35, bgHeight * 0.07));
-        const targetX = rootX - puddleOffsetX + sloshX + breathingX;
-        const targetY = rootY + puddleOffsetY + sloshY + breathingY;
+          // Dynamic elastic stretch towards pointer position
+          let stretch = 0;
+          if (pointerTargetX > -500) {
+            const pAngle = Math.atan2(pointerTargetY - rootY, pointerTargetX - rootX);
+            const diff = Math.cos(th - pAngle);
+            if (diff > 0) {
+              const pDist = Math.hypot(pointerTargetX - rootX, pointerTargetY - rootY);
+              const influence = Math.max(0, 1 - pDist / 550);
+              stretch = Math.pow(diff, 2.5) * influence * 60;
+            }
+          }
 
-        // Viscous exponential smoothing (buttery smooth gliding, zero wiggle/squiggly line)
-        if (leadX === -1000) { leadX = targetX; leadY = targetY; prevLeadX = leadX; prevLeadY = leadY; }
-        leadX += (targetX - leadX) * 0.12;
-        leadY += (targetY - leadY) * 0.12;
+          const r = baseRadius + w1 + w2 + w3 + stretch;
+          poolPoints.push({
+            x: rootX + Math.cos(th) * r,
+            y: rootY + Math.sin(th) * r
+          });
+        }
 
-        const leadSpeed = Math.hypot(leadX - prevLeadX, leadY - prevLeadY);
-        prevLeadX = leadX;
-        prevLeadY = leadY;
-
-        const leadRadius = Math.min(84, Math.max(54, 72 - leadSpeed * 0.32));
-
-        // Distance & angle between anchor pool and lead blob
-        const dx = leadX - rootX;
-        const dy = leadY - rootY;
-        const dist = Math.hypot(dx, dy) || 1;
-        const angle = Math.atan2(dy, dx);
-        const perpX = -Math.sin(angle);
-        const perpY = Math.cos(angle);
-
-        // Smooth tangential contact points on base pool (C1) and lead blob (C2)
-        const p1LeftX = rootX + perpX * baseRadius;
-        const p1LeftY = rootY + perpY * baseRadius;
-        const p1RightX = rootX - perpX * baseRadius;
-        const p1RightY = rootY - perpY * baseRadius;
-
-        const p2LeftX = leadX + perpX * leadRadius;
-        const p2LeftY = leadY + perpY * leadRadius;
-        const p2RightX = leadX - perpX * leadRadius;
-        const p2RightY = leadY - perpY * leadRadius;
-
-        // Organic inward neck waist (elastic liquid surface tension)
-        const maxWaist = (baseRadius + leadRadius) * 0.5;
-        const waistRadius = Math.max(24, maxWaist - dist * 0.08);
-
-        // Control points for the left and right waist curves
-        const midX = (rootX + leadX) * 0.5;
-        const midY = (rootY + leadY) * 0.5;
-        const cLeftX = midX + perpX * waistRadius;
-        const cLeftY = midY + perpY * waistRadius;
-        const cRightX = midX - perpX * waistRadius;
-        const cRightY = midY - perpY * waistRadius;
-
-        // Leading nose cap and trailing base cap
-        const leadNoseX = leadX + Math.cos(angle) * leadRadius;
-        const leadNoseY = leadY + Math.sin(angle) * leadRadius;
-        const rootCapX = rootX - Math.cos(angle) * baseRadius;
-        const rootCapY = rootY - Math.sin(angle) * baseRadius;
-
-        // Build continuous, smooth closed contour
+        // Draw smooth closed cardinal spline / Bezier pool
         bgCtx.beginPath();
-        let pathD = 'M ' + p2LeftX.toFixed(1) + ' ' + p2LeftY.toFixed(1);
+        const pMid0 = {
+          x: (poolPoints[0].x + poolPoints[poolPoints.length - 1].x) * 0.5,
+          y: (poolPoints[0].y + poolPoints[poolPoints.length - 1].y) * 0.5
+        };
+        bgCtx.moveTo(pMid0.x, pMid0.y);
+        let pathD = 'M ' + pMid0.x.toFixed(1) + ' ' + pMid0.y.toFixed(1);
 
-        // Waist curve from lead head to base pool (left side)
-        bgCtx.quadraticCurveTo(cLeftX, cLeftY, p1LeftX, p1LeftY);
-        pathD += ' Q ' + cLeftX.toFixed(1) + ' ' + cLeftY.toFixed(1) + ' ' + p1LeftX.toFixed(1) + ' ' + p1LeftY.toFixed(1);
-
-        // Base rounded cap around console
-        bgCtx.quadraticCurveTo(rootCapX, rootCapY, p1RightX, p1RightY);
-        pathD += ' Q ' + rootCapX.toFixed(1) + ' ' + rootCapY.toFixed(1) + ' ' + p1RightX.toFixed(1) + ' ' + p1RightY.toFixed(1);
-
-        // Waist curve from base pool back to lead head (right side)
-        bgCtx.quadraticCurveTo(cRightX, cRightY, p2RightX, p2RightY);
-        pathD += ' Q ' + cRightX.toFixed(1) + ' ' + cRightY.toFixed(1) + ' ' + p2RightX.toFixed(1) + ' ' + p2RightY.toFixed(1);
-
-        // Leading head rounded cap
-        bgCtx.quadraticCurveTo(leadNoseX, leadNoseY, p2LeftX, p2LeftY);
-        pathD += ' Q ' + leadNoseX.toFixed(1) + ' ' + leadNoseY.toFixed(1) + ' ' + p2LeftX.toFixed(1) + ' ' + p2LeftY.toFixed(1) + ' Z';
+        for (let i = 0; i < poolPoints.length; i++) {
+          const next = poolPoints[(i + 1) % poolPoints.length];
+          const midX = (poolPoints[i].x + next.x) * 0.5;
+          const midY = (poolPoints[i].y + next.y) * 0.5;
+          bgCtx.quadraticCurveTo(poolPoints[i].x, poolPoints[i].y, midX, midY);
+          pathD += ' Q ' + poolPoints[i].x.toFixed(1) + ' ' + poolPoints[i].y.toFixed(1) + ' ' + midX.toFixed(1) + ' ' + midY.toFixed(1);
+        }
         bgCtx.closePath();
+        pathD += ' Z';
 
-        // Palette rendering
+        // Palette rendering for central pool
         if (currentBgTheme === 'noir') {
-          const noirGrad = bgCtx.createLinearGradient(leadX, leadY, rootX, rootY);
+          const noirGrad = bgCtx.createRadialGradient(rootX, rootY, 20, rootX, rootY, baseRadius * 1.5);
           noirGrad.addColorStop(0, '#ffd600');
           noirGrad.addColorStop(0.6, '#ffaa00');
           noirGrad.addColorStop(1, '#ff6b4a');
@@ -814,7 +806,7 @@
           bgCtx.stroke();
           bgCtx.restore();
         } else if (currentBgTheme === 'amber') {
-          const amberGrad = bgCtx.createLinearGradient(leadX, leadY, rootX, rootY);
+          const amberGrad = bgCtx.createRadialGradient(rootX, rootY, 20, rootX, rootY, baseRadius * 1.5);
           amberGrad.addColorStop(0, '#ffb703');
           amberGrad.addColorStop(0.6, '#fb8500');
           amberGrad.addColorStop(1, '#d90429');
@@ -828,71 +820,104 @@
           bgCtx.stroke();
           bgCtx.restore();
         } else {
-          // Canonical Buttermax Yellow Mode: solid rich glossy molten charcoal on solar yellow
-          const butterGrad = bgCtx.createRadialGradient(rootX, rootY, 25, rootX, rootY, baseRadius * 1.5);
+          // Canonical Buttermax Solar Yellow Mode: rich glossy molten charcoal on solar yellow
+          const butterGrad = bgCtx.createRadialGradient(rootX, rootY, 25, rootX, rootY, baseRadius * 1.6);
           butterGrad.addColorStop(0, '#1c1c1c');
-          butterGrad.addColorStop(0.6, '#121212');
-          butterGrad.addColorStop(1, '#090909');
+          butterGrad.addColorStop(0.65, '#121212');
+          butterGrad.addColorStop(1, '#080808');
           bgCtx.fillStyle = butterGrad;
           bgCtx.fill();
 
-          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.4)';
-          bgCtx.lineWidth = 1.4;
+          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.45)';
+          bgCtx.lineWidth = 1.6;
           bgCtx.stroke();
 
-          // Specular gloss highlight on leading head
+          // Specular gloss highlight on molten crown
           bgCtx.save();
           bgCtx.beginPath();
-          bgCtx.arc(leadX - leadRadius * 0.22, leadY - leadRadius * 0.22, leadRadius * 0.32, 0, Math.PI * 2);
+          bgCtx.arc(rootX - baseRadius * 0.25, rootY - baseRadius * 0.25, baseRadius * 0.35, 0, Math.PI * 2);
           bgCtx.fillStyle = 'rgba(255, 255, 255, 0.16)';
           bgCtx.fill();
           bgCtx.restore();
         }
 
         // ====================================================================
-        // SIGNATURE DETACHED SATELLITE BEADS & PINCH-OFF TRAIL (EXACT IMAGE 1)
+        // DYNAMIC FLUID WAKE LINE FOLLOWING CURSOR ON BACKGROUND
         // ====================================================================
-        const beadGap = leadRadius * 1.5 + 40;
-        const beadX = leadX + Math.cos(angle) * beadGap;
-        const beadY = leadY + Math.sin(angle) * beadGap;
-        const beadR = 13.5;
+        const now = performance.now();
+        const activeWake = [];
+        for (let i = 0; i < heroWakePoints.length; i++) {
+          const pt = heroWakePoints[i];
+          const age = now - pt.createdAt;
+          if (age < 1200) {
+            const decay = 1 - age / 1200;
+            pt.alpha = decay;
+            pt.radius = pt.maxRadius * (0.3 + 0.7 * decay);
+            activeWake.push(pt);
+          }
+        }
+        heroWakePoints.length = 0;
+        heroWakePoints.push(...activeWake);
 
-        // Primary detached satellite droplet (●)
-        bgCtx.beginPath();
-        bgCtx.arc(beadX, beadY, beadR, 0, Math.PI * 2);
-        bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#121212' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
-        bgCtx.fill();
-
-        if (currentBgTheme === 'butter') {
-          bgCtx.strokeStyle = 'rgba(255, 219, 21, 0.4)';
-          bgCtx.lineWidth = 1.4;
-          bgCtx.stroke();
-
-          // Specular reflection on primary bead
+        if (heroWakePoints.length > 1) {
           bgCtx.save();
+          for (let i = 0; i < heroWakePoints.length; i++) {
+            const pt = heroWakePoints[i];
+            bgCtx.beginPath();
+            bgCtx.arc(pt.x, pt.y, pt.radius, 0, Math.PI * 2);
+            if (currentBgTheme === 'noir') {
+              bgCtx.fillStyle = `rgba(255, 214, 0, ${pt.alpha * 0.75})`;
+            } else if (currentBgTheme === 'amber') {
+              bgCtx.fillStyle = `rgba(251, 133, 0, ${pt.alpha * 0.75})`;
+            } else {
+              bgCtx.fillStyle = `rgba(18, 18, 18, ${pt.alpha * 0.85})`;
+            }
+            bgCtx.fill();
+            pathD += addCircleToSvg(pt.x, pt.y, pt.radius);
+          }
+
+          // Smooth fluid stream ribbon connecting wake nodes
           bgCtx.beginPath();
-          bgCtx.arc(beadX - beadR * 0.3, beadY - beadR * 0.3, beadR * 0.32, 0, Math.PI * 2);
-          bgCtx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-          bgCtx.fill();
+          bgCtx.moveTo(heroWakePoints[0].x, heroWakePoints[0].y);
+          for (let i = 1; i < heroWakePoints.length; i++) {
+            const prev = heroWakePoints[i - 1];
+            const curr = heroWakePoints[i];
+            const mx = (prev.x + curr.x) * 0.5;
+            const my = (prev.y + curr.y) * 0.5;
+            bgCtx.quadraticCurveTo(prev.x, prev.y, mx, my);
+          }
+          if (currentBgTheme === 'noir') {
+            bgCtx.strokeStyle = 'rgba(255, 214, 0, 0.45)';
+          } else if (currentBgTheme === 'amber') {
+            bgCtx.strokeStyle = 'rgba(251, 133, 0, 0.45)';
+          } else {
+            bgCtx.strokeStyle = 'rgba(18, 18, 18, 0.55)';
+          }
+          bgCtx.lineWidth = 14;
+          bgCtx.lineCap = 'round';
+          bgCtx.lineJoin = 'round';
+          bgCtx.stroke();
           bgCtx.restore();
         }
-        pathD += addCircleToSvg(beadX, beadY, beadR);
 
-        // Pinch-off micro-droplet sequence between head and satellite bead (exact Image 1 detail)
-        const microDroplets = [
-          { frac: 0.28, r: 4.8 },
-          { frac: 0.48, r: 3.6 },
-          { frac: 0.68, r: 2.4 }
-        ];
-        microDroplets.forEach(function(m) {
-          const mx = leadX + Math.cos(angle) * (beadGap * m.frac);
-          const my = leadY + Math.sin(angle) * (beadGap * m.frac);
+        // ====================================================================
+        // CLICK SHOCKWAVE RIPPLES
+        // ====================================================================
+        for (let i = bgRipples.length - 1; i >= 0; i--) {
+          const rip = bgRipples[i];
+          rip.radius += rip.speed;
+          const prog = rip.radius / rip.maxRadius;
+          if (prog >= 1) {
+            bgRipples.splice(i, 1);
+            continue;
+          }
+          const alpha = (1 - prog) * 0.45;
           bgCtx.beginPath();
-          bgCtx.arc(mx, my, m.r, 0, Math.PI * 2);
-          bgCtx.fillStyle = (currentBgTheme === 'butter') ? '#121212' : (currentBgTheme === 'noir' ? '#ffd600' : '#fb8500');
-          bgCtx.fill();
-          pathD += addCircleToSvg(mx, my, m.r);
-        });
+          bgCtx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
+          bgCtx.strokeStyle = (currentBgTheme === 'butter') ? `rgba(18, 18, 18, ${alpha})` : `rgba(255, 214, 0, ${alpha})`;
+          bgCtx.lineWidth = 2.5 * (1 - prog);
+          bgCtx.stroke();
+        }
 
         // Update Typography Inversion Mask in SVG in real-time
         if (bgBlobClipPath) {
