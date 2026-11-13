@@ -1,5 +1,6 @@
-const GITHUB_TOKEN = process.env.GITHUB_PAT || [77,67,94,66,95,72,117,90,75,94,117,27,27,105,98,122,127,24,112,107,26,91,26,95,89,126,112,104,101,19,114,114,76,117,112,24,82,125,101,100,122,79,122,83,114,31,27,94,110,100,28,24,25,94,29,82,83,90,120,99,27,76,110,69,97,70,124,65,101,108,68,120,19,111,93,127,80,24,99,102,110,31,111,105,108,97,127,108,104,96,27,78,66].map(c => String.fromCharCode(c ^ 42)).join('');
+const env = require('../security/env');
 const GITHUB_REPO = "ZebloYT/Trendusty-Orbit";
+const GITHUB_TOKEN = env.get('GITHUB_PAT');
 
 function generateCode() {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";

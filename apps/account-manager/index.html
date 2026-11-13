@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trendusty Orbit — Security Vault & Account Manager</title>
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../assets/buttermax-theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&family=Syne:wght@700;800;900&display=swap">
+
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-panel: #0d111a;
+      --bg-card: rgba(18, 24, 38, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-cyan: rgba(0, 245, 184, 0.35);
+      --cyan: #00f5b8;
+      --magenta: #ee00ff;
+      --yellow: #ffdb15;
+      --red: #ff4757;
+      --text-main: #f0fdf4;
+      --text-muted: #94a3b8;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 245, 184, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(238, 0, 255, 0.05) 0%, transparent 40%),
+        linear-gradient(to bottom, #07090e, #05070a);
+      background-attachment: fixed;
+    }
+
+    /* Grid background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hud-container {
+      max-width: 1350px;
+      margin: 0 auto;
+      padding: 30px 24px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Top HUD Header */
+    .hud-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 28px;
+    }
+
+    .hud-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .hud-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid var(--border-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 0 20px rgba(0, 245, 184, 0.2);
+    }
+
+    .hud-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+
+    .hud-subtitle {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 3px;
+    }
+
+    .hud-status-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-kdbx {
+      background: rgba(0, 245, 184, 0.12);
+      color: var(--cyan);
+      border: 1px solid var(--border-cyan);
+    }
+
+    .badge-guardian {
+      background: rgba(238, 0, 255, 0.12);
+      color: var(--magenta);
+      border: 1px solid rgba(238, 0, 255, 0.35);
+    }
+
+    /* Unlock Screen */
+    .lock-card {
+      max-width: 520px;
+      margin: 60px auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-cyan);
+      border-radius: 16px;
+      padding: 36px 32px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 245, 184, 0.1);
+      backdrop-filter: blur(20px);
+    }
+
+    .lock-icon {
+      font-size: 42px;
+      margin-bottom: 16px;
+    }
+
+    .lock-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .lock-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(7, 9, 14, 0.9);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 245, 184, 0.25);
+    }
+
+    .btn-vault {
+      background: var(--cyan);
+      color: #07090e;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 16px rgba(0, 245, 184, 0.35);
+    }
+
+    .btn-vault:hover {
+      background: #26ffc5;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 245, 184, 0.5);
+    }
+
+    /* Main Dashboard Content (Hidden until unlocked) */
+    #dashboard-content {
+      display: none;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(14px);
+      transition: all 0.25s ease;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      margin: 8px 0 4px;
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: #f0fdf4;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-action-cyan {
+      border-color: var(--border-cyan);
+      color: var(--cyan);
+      background: rgba(0, 245, 184, 0.08);
+    }
+    .btn-action-cyan:hover {
+      background: rgba(0, 245, 184, 0.2);
+    }
+
+    .btn-action-magenta {
+      border-color: rgba(238, 0, 255, 0.35);
+      color: var(--magenta);
+      background: rgba(238, 0, 255, 0.08);
+    }
+    .btn-action-magenta:hover {
+      background: rgba(238, 0, 255, 0.2);
+    }
+
+    .btn-action-red {
+      border-color: rgba(255, 71, 87, 0.4);
+      color: var(--red);
+      background: rgba(255, 71, 87, 0.08);
+    }
+    .btn-action-red:hover {
+      background: rgba(255, 71, 87, 0.2);
+    }
+
+    /* Tabs */
+    .hud-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 20px;
+    }
+
+    .hud-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-tab-btn:hover {
+      color: #fff;
+    }
+
+    .hud-tab-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow-x: auto;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .user-col {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .ip-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: rgba(0, 245, 184, 0.08);
+      color: var(--cyan);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 245, 184, 0.2);
+      display: inline-block;
+    }
+
+    .ip-tag.banned {
+      background: rgba(255, 71, 87, 0.12);
+      color: var(--red);
+      border-color: rgba(255, 71, 87, 0.3);
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-cyan);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 18px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    pre.code-block {
+      background: #05070a;
+      border: 1px solid var(--border-subtle);
+      padding: 14px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #a5f3fc;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body class="custom-cursor-active">
+
+  <!-- HUD Container -->
+  <div class="hud-container">
+
+    <!-- HUD Header -->
+    <header class="hud-header">
+      <div class="hud-title-wrap">
+        <div class="hud-icon">🛡️</div>
+        <div>
+          <h1 class="hud-title">Orbit Security &amp; Account Vault</h1>
+          <div class="hud-subtitle">KDBX v4.0 / AES-256-GCM Encrypted Identity Registry</div>
+        </div>
+      </div>
+      <div class="hud-status-badges">
+        <span class="badge-pill badge-kdbx">🔒 KDBX Encrypted</span>
+        <span class="badge-pill badge-guardian">🛡️ Guardian Active</span>
+        <a href="../../home/" class="btn-action">← Return to Orbit</a>
+      </div>
+    </header>
+
+    <!-- 1. LOCK / AUTHENTICATION SCREEN -->
+    <div id="lock-screen" class="lock-card">
+      <div class="lock-icon">🔐</div>
+      <h2>Unlock Account Vault</h2>
+      <p>Enter your Master Encryption Passphrase or Admin Access Key to decrypt the .kdbx database and inspect user credentials &amp; IP records.</p>
+
+      <form id="form-unlock" onsubmit="handleUnlockVault(event)">
+        <div class="form-group">
+          <label for="input-master-key">Master Passphrase / Admin Key</label>
+          <input type="password" id="input-master-key" class="form-input" placeholder="Enter key from .env or admin password" required autofocus>
+        </div>
+        <button type="submit" class="btn-vault" id="btn-unlock-submit">
+          <span>🔓 Decrypt &amp; Access Vault</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- 2. MAIN DASHBOARD (REVEALED ONCE UNLOCKED) -->
+    <div id="dashboard-content">
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Vaulted Accounts</div>
+          <div class="stat-val" id="stat-total-accounts">0</div>
+          <div class="stat-sub">Stored in accounts_vault.kdbx</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Unique IPs Recorded</div>
+          <div class="stat-val" id="stat-unique-ips">0</div>
+          <div class="stat-sub">All client sessions tracked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Banned / Restricted IPs</div>
+          <div class="stat-val" id="stat-banned-ips" style="color: var(--red);">0</div>
+          <div class="stat-sub">Manually flagged hacker IPs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Encryption Standard</div>
+          <div class="stat-val" style="font-size: 20px; color: var(--cyan);">AES-256-GCM</div>
+          <div class="stat-sub">PBKDF2 100K SHA-512 rounds</div>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <div class="action-group">
+          <button class="btn-action btn-action-cyan" onclick="downloadKdbx()">💾 Download .kdbx File</button>
+          <button class="btn-action" onclick="downloadKeePassXml()">📋 Download KeePass XML</button>
+          <button class="btn-action btn-action-magenta" onclick="openRawDecryptModal()">🔓 Decrypt Raw JSON</button>
+          <button class="btn-action" onclick="openAddAccountModal()">➕ Add Account</button>
+        </div>
+        <div class="action-group">
+          <button class="btn-action" onclick="loadVaultData()">🔄 Refresh</button>
+          <button class="btn-action btn-action-red" onclick="lockVault()">🔒 Lock Vault</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="hud-tabs">
+        <button class="hud-tab-btn active" id="tab-btn-accounts" onclick="switchTab('accounts')">👥 User Accounts (<span id="tab-count-acc">0</span>)</button>
+        <button class="hud-tab-btn" id="tab-btn-ips" onclick="switchTab('ips')">🌐 IP Intelligence &amp; Hacker Ban Center (<span id="tab-count-ips">0</span>)</button>
+        <button class="hud-tab-btn" id="tab-btn-logs" onclick="switchTab('logs')">🛡️ Security Audit Logs (<span id="tab-count-logs">0</span>)</button>
+      </div>
+
+      <!-- TAB 1: ACCOUNTS TABLE -->
+      <div id="tab-pane-accounts">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Operator / User</th>
+                <th>Email Address</th>
+                <th>Role</th>
+                <th>Registration IP</th>
+                <th>Latest Login IP</th>
+                <th>Last Active</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-table-body">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading vaulted accounts...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: IP INTELLIGENCE & HACKER BAN CENTER -->
+      <div id="tab-pane-ips" style="display: none;">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>Associated Accounts</th>
+                <th>Geolocation / Device</th>
+                <th>Last Seen</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ips-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Analyzing client IP activity...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: SECURITY AUDIT LOGS -->
+      <div id="tab-pane-logs" style="display: none;">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Event Type</th>
+                <th>Source IP</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="logs-table-body">
+              <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">Fetching audit telemetry...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: ACCOUNT DETAIL & IP HISTORY -->
+  <div class="modal-backdrop" id="modal-account-detail">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-detail-title">Account Details</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-account-detail')">✕</button>
+      </div>
+      <div id="modal-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: ABUSE INCIDENT REPORT -->
+  <div class="modal-backdrop" id="modal-abuse-report">
+    <div class="modal-box" style="max-width: 760px;">
+      <div class="modal-header">
+        <h3>📋 Official Hacker Incident &amp; Abuse Report</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-abuse-report')">✕</button>
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+        Use this pre-formatted incident report to report the hacker's IP address directly to their Internet Service Provider (ISP), hosting company, or Cloudflare abuse desk.
+      </p>
+      <pre class="code-block" id="abuse-report-text"></pre>
+      <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn-action btn-action-cyan" onclick="copyAbuseReport()">📋 Copy Report Text</button>
+        <button class="btn-action" onclick="closeModal('modal-abuse-report')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RAW DECRYPTED JSON VIEWER -->
+  <div class="modal-backdrop" id="modal-raw-decrypt">
+    <div class="modal-box" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3>🔓 Decrypted Vault Payload (.kdbx JSON)</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-raw-decrypt')">✕</button>
+      </div>
+      <pre class="code-block" id="raw-decrypt-json" style="max-height: 480px; overflow-y: auto;"></pre>
+      <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn-action btn-action-cyan" onclick="copyRawJson()">📋 Copy JSON</button>
+        <button class="btn-action" onclick="closeModal('modal-raw-decrypt')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD ACCOUNT MANUALLY -->
+  <div class="modal-backdrop" id="modal-add-account">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3>➕ Provision Account in Vault</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-add-account')">✕</button>
+      </div>
+      <form onsubmit="handleAddAccountSubmit(event)">
+        <div class="form-group">
+          <label>Username / Display Name</label>
+          <input type="text" id="new-acc-username" class="form-input" required placeholder="e.g. Commander">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="new-acc-email" class="form-input" required placeholder="operator@orbit.com">
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="new-acc-role" class="form-input">
+            <option value="member">Member</option>
+            <option value="operator">Operator</option>
+            <option value="admin">Administrator</option>
+            <option value="owner">Owner</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Security Notes</label>
+          <input type="text" id="new-acc-notes" class="form-input" placeholder="e.g. Manual clearance granted">
+        </div>
+        <button type="submit" class="btn-vault">💾 Save to Encrypted Vault</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Controller -->
+  <script>
+    let activeMasterKey = sessionStorage.getItem('orbit_active_admin_key') || '';
+    let vaultData = null;
+
+    // Check existing unlock session on load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Also sync any local accounts in device localStorage into the vault
+      syncLocalStorageAccounts();
+
+      if (activeMasterKey) {
+        loadVaultData();
+      }
+    });
+
+    // 1. Sync accounts from localStorage to backend vault
+    function syncLocalStorageAccounts() {
+      try {
+        const raw = localStorage.getItem('orbit_saved_accounts');
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list) && list.length > 0) {
+            list.forEach(acc => {
+              fetch('/api/security/accounts?action=record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account: acc })
+              }).catch(() => {});
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 2. Unlock Vault with Master Key
+    async function handleUnlockVault(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('input-master-key');
+      const key = input ? input.value.trim() : '';
+      if (!key) return;
+
+      const btn = document.getElementById('btn-unlock-submit');
+      if (btn) btn.innerHTML = '<span>⏳ Decrypting Vault...</span>';
+
+      try {
+        const res = await fetch('/api/security/accounts?action=unlock', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': key
+          },
+          body: JSON.stringify({ masterKey: key })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          activeMasterKey = key;
+          sessionStorage.setItem('orbit_active_admin_key', key);
+          vaultData = data;
+          renderDashboard(data);
+        } else {
+          alert('❌ Decryption Failed: ' + (data.error || 'Incorrect Master Passphrase / Admin Key.'));
+          if (btn) btn.innerHTML = '<span>🔓 Decrypt &amp; Access Vault</span>';
+        }
+      } catch (err) {
+        alert('Network or server connection error: ' + err.message);
+        if (btn) btn.innerHTML = '<span>🔓 Decrypt &amp; Access Vault</span>';
+      }
+    }
+
+    // 3. Load Vault Data from API
+    async function loadVaultData() {
+      if (!activeMasterKey) return;
+      try {
+        const res = await fetch('/api/security/accounts?action=unlock', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': activeMasterKey
+          },
+          body: JSON.stringify({ masterKey: activeMasterKey })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          vaultData = data;
+          renderDashboard(data);
+        } else {
+          lockVault();
+        }
+      } catch (e) {
+        console.error('Failed to load vault data:', e);
+      }
+    }
+
+    // 4. Lock Vault
+    function lockVault() {
+      activeMasterKey = '';
+      sessionStorage.removeItem('orbit_active_admin_key');
+      vaultData = null;
+      document.getElementById('dashboard-content').style.display = 'none';
+      document.getElementById('lock-screen').style.display = 'block';
+      const input = document.getElementById('input-master-key');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const btn = document.getElementById('btn-unlock-submit');
+      if (btn) btn.innerHTML = '<span>🔓 Decrypt &amp; Access Vault</span>';
+    }
+
+    // 5. Render Dashboard UI
+    function renderDashboard(data) {
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('dashboard-content').style.display = 'block';
+
+      const accounts = data.accounts || [];
+      const banned = data.bannedIPs || [];
+      const audit = data.auditLogs || [];
+
+      // Calculate unique IPs
+      const uniqueIPs = new Set();
+      accounts.forEach(a => {
+        if (a.registrationIP) uniqueIPs.add(a.registrationIP);
+        if (a.lastLoginIP) uniqueIPs.add(a.lastLoginIP);
+        (a.ipHistory || []).forEach(h => uniqueIPs.add(h.ip));
+      });
+
+      document.getElementById('stat-total-accounts').textContent = accounts.length;
+      document.getElementById('stat-unique-ips').textContent = uniqueIPs.size;
+      document.getElementById('stat-banned-ips').textContent = banned.length;
+      document.getElementById('tab-count-acc').textContent = accounts.length;
+      document.getElementById('tab-count-ips').textContent = uniqueIPs.size;
+      document.getElementById('tab-count-logs').textContent = audit.length;
+
+      renderAccountsTable(accounts, banned);
+      renderIPsTable(accounts, banned);
+      renderLogsTable(audit);
+    }
+
+    // 6. Render Accounts Table
+    function renderAccountsTable(accounts, banned) {
+      const tbody = document.getElementById('accounts-table-body');
+      if (!tbody) return;
+
+      if (accounts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">No accounts stored in vault yet. Accounts will sync automatically on user sign in.</td></tr>`;
+        return;
+      }
+
+      const bannedIPsSet = new Set(banned.map(b => b.ip));
+
+      tbody.innerHTML = accounts.map((acc, idx) => {
+        const lastIP = acc.lastLoginIP || acc.registrationIP || '127.0.0.1';
+        const isBanned = bannedIPsSet.has(lastIP);
+        const color = acc.avatarColor || '#3b82f6';
+        const initial = (acc.username || acc.email || 'U').charAt(0).toUpperCase();
+
+        return `
+          <tr>
+            <td>
+              <div class="user-col">
+                <div class="user-avatar-dot" style="background: ${color};">${initial}</div>
+                <div>
+                  <b style="color: #fff; font-size: 13.5px;">${escapeHtml(acc.username || 'User')}</b>
+                  <span style="font-size: 11px; color: var(--text-muted); display: block; font-family: var(--font-mono);">${acc.id || ''}</span>
+                </div>
+              </div>
+            </td>
+            <td><code style="font-family: var(--font-mono); font-size: 12px; color: #cbd5e1;">${escapeHtml(acc.email || '')}</code></td>
+            <td>
+              <span class="badge-pill" style="background: rgba(255, 255, 255, 0.08); font-size: 10px; color: #fff;">${escapeHtml(acc.role || 'member')}</span>
+            </td>
+            <td><span class="ip-tag">${escapeHtml(acc.registrationIP || '127.0.0.1')}</span></td>
+            <td>
+              <span class="ip-tag ${isBanned ? 'banned' : ''}">${escapeHtml(lastIP)} ${isBanned ? '(BANNED)' : ''}</span>
+            </td>
+            <td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+              ${acc.lastLoginAt ? acc.lastLoginAt.slice(0, 19).replace('T', ' ') : 'N/A'}
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn-action" onclick="viewAccountDetail(${idx})" title="View Complete Profile & IP History">🔍 Details</button>
+                ${isBanned 
+                  ? `<button class="btn-action btn-action-cyan" onclick="unbanIP('${lastIP}')">✅ Unban</button>` 
+                  : `<button class="btn-action btn-action-red" onclick="promptBanIP('${lastIP}')">🚫 Ban IP</button>`}
+                <button class="btn-action btn-action-magenta" onclick="openAbuseReport('${lastIP}', '${escapeHtml(acc.email)}')">📝 Report</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 7. Render IP Intelligence Table
+    function renderIPsTable(accounts, banned) {
+      const tbody = document.getElementById('ips-table-body');
+      if (!tbody) return;
+
+      const ipMap = new Map();
+      accounts.forEach(a => {
+        const regIp = a.registrationIP || '127.0.0.1';
+        if (!ipMap.has(regIp)) ipMap.set(regIp, { accounts: new Set(), lastSeen: a.createdAt, country: a.country, userAgent: a.userAgent });
+        ipMap.get(regIp).accounts.add(a.email);
+
+        (a.ipHistory || []).forEach(h => {
+          if (!ipMap.has(h.ip)) ipMap.set(h.ip, { accounts: new Set(), lastSeen: h.timestamp, country: h.country, userAgent: h.userAgent });
+          ipMap.get(h.ip).accounts.add(a.email);
+        });
+      });
+
+      const bannedMap = new Map();
+      banned.forEach(b => bannedMap.set(b.ip, b));
+
+      if (ipMap.size === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No IP records found in vault yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = Array.from(ipMap.entries()).map(([ip, info]) => {
+        const isBanned = bannedMap.has(ip);
+        const banDetails = bannedMap.get(ip);
+        const accs = Array.from(info.accounts).join(', ');
+
+        return `
+          <tr>
+            <td><span class="ip-tag ${isBanned ? 'banned' : ''}">${escapeHtml(ip)}</span></td>
+            <td>
+              ${isBanned 
+                ? `<span class="badge-pill" style="background: rgba(255, 71, 87, 0.15); color: var(--red); border: 1px solid rgba(255, 71, 87, 0.3);">🚫 BANNED</span>` 
+                : `<span class="badge-pill" style="background: rgba(0, 245, 184, 0.15); color: var(--cyan); border: 1px solid rgba(0, 245, 184, 0.3);">✅ CLEAN</span>`}
+            </td>
+            <td><code style="font-family: var(--font-mono); font-size: 11.5px; color: #94a3b8;">${escapeHtml(accs)}</code></td>
+            <td style="font-size: 11.5px;">
+              <span style="color: var(--yellow);">${escapeHtml(info.country || 'Global')}</span> · <span style="color: #64748b;">${escapeHtml((info.userAgent || '').slice(0, 35))}...</span>
+            </td>
+            <td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+              ${info.lastSeen ? info.lastSeen.slice(0, 19).replace('T', ' ') : 'N/A'}
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                ${isBanned 
+                  ? `<button class="btn-action btn-action-cyan" onclick="unbanIP('${ip}')">✅ Unban</button>` 
+                  : `<button class="btn-action btn-action-red" onclick="promptBanIP('${ip}')">🚫 Ban IP</button>`}
+                <button class="btn-action btn-action-magenta" onclick="openAbuseReport('${ip}', '${escapeHtml(accs)}')">📝 Report Abuse</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 8. Render Audit Logs Table
+    function renderLogsTable(logs) {
+      const tbody = document.getElementById('logs-table-body');
+      if (!tbody) return;
+
+      if (!logs || logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">No security incidents recorded. System running clean.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = logs.map(l => {
+        return `
+          <tr>
+            <td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">${l.timestamp ? l.timestamp.slice(0, 19).replace('T', ' ') : ''}</td>
+            <td><b style="color: var(--cyan); font-family: var(--font-mono); font-size: 11.5px;">${escapeHtml(l.eventType || '')}</b></td>
+            <td><span class="ip-tag">${escapeHtml(l.ip || '127.0.0.1')}</span></td>
+            <td><code style="font-family: var(--font-mono); font-size: 11px; color: #cbd5e1;">${escapeHtml(JSON.stringify(l))}</code></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 9. View Single Account Details & Complete IP History Modal
+    function viewAccountDetail(idx) {
+      if (!vaultData || !vaultData.accounts || !vaultData.accounts[idx]) return;
+      const acc = vaultData.accounts[idx];
+      const title = document.getElementById('modal-detail-title');
+      const body = document.getElementById('modal-detail-body');
+
+      title.textContent = `Account: ${acc.username || acc.email}`;
+
+      const historyRows = (acc.ipHistory || []).map(h => `
+        <tr>
+          <td><span class="ip-tag">${escapeHtml(h.ip)}</span></td>
+          <td style="font-family: var(--font-mono); font-size: 11px;">${h.timestamp ? h.timestamp.slice(0, 19).replace('T', ' ') : 'N/A'}</td>
+          <td style="font-size: 11px; color: #94a3b8;">${escapeHtml(h.userAgent || 'Unknown')}</td>
+        </tr>
+      `).join('');
+
+      body.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; font-size: 12.5px;">
+          <div><span style="color: var(--text-muted);">Account ID:</span> <code style="color: var(--cyan); font-family: var(--font-mono);">${acc.id}</code></div>
+          <div><span style="color: var(--text-muted);">Role:</span> <b style="color: #fff;">${acc.role}</b></div>
+          <div><span style="color: var(--text-muted);">Email:</span> <b style="color: #fff;">${acc.email}</b></div>
+          <div><span style="color: var(--text-muted);">Auth Method:</span> <span style="color: var(--yellow);">${acc.authType || 'email'}</span></div>
+          <div><span style="color: var(--text-muted);">Registration IP:</span> <span class="ip-tag">${acc.registrationIP || '127.0.0.1'}</span></div>
+          <div><span style="color: var(--text-muted);">Latest Login IP:</span> <span class="ip-tag">${acc.lastLoginIP || '127.0.0.1'}</span></div>
+          <div><span style="color: var(--text-muted);">Registered At:</span> <span style="font-family: var(--font-mono); font-size: 11px;">${acc.createdAt}</span></div>
+          <div><span style="color: var(--text-muted);">Last Active:</span> <span style="font-family: var(--font-mono); font-size: 11px;">${acc.lastLoginAt}</span></div>
+        </div>
+
+        <h4 style="font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; margin-bottom: 8px; color: var(--cyan);">IP Connection History (${(acc.ipHistory || []).length} Recorded IPs)</h4>
+        <div class="table-container" style="max-height: 220px; margin-bottom: 16px;">
+          <table>
+            <thead><tr><th>IP Address</th><th>Timestamp</th><th>Device User-Agent</th></tr></thead>
+            <tbody>${historyRows || '<tr><td colspan="3" style="text-align: center;">No additional IP records.</td></tr>'}</tbody>
+          </table>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); font-size: 11.5px;">Password Hash Status:</span>
+          <code style="display: block; background: #05070a; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px; margin-top: 4px; color: #a5f3fc; overflow-x: auto;">${acc.passwordHash || 'OAuth Token Managed'}</code>
+        </div>
+      `;
+
+      openModal('modal-account-detail');
+    }
+
+    // 10. Ban IP Action
+    async function promptBanIP(ip) {
+      const reason = prompt(`Ban Hacker IP ${ip}?\nEnter reason for security logs:`, 'Detected unauthorized malicious probe');
+      if (reason === null) return;
+
+      try {
+        const res = await fetch('/api/security/accounts?action=ban_ip', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': activeMasterKey
+          },
+          body: JSON.stringify({ ip, reason, hours: 168 })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert(`🚫 IP ${ip} has been BANNED from accessing the site.`);
+          loadVaultData();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to ban IP.'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    // 11. Unban IP Action
+    async function unbanIP(ip) {
+      if (!confirm(`Unban IP ${ip}?`)) return;
+      try {
+        const res = await fetch('/api/security/accounts?action=unban_ip', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': activeMasterKey
+          },
+          body: JSON.stringify({ ip })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert(`✅ IP ${ip} unbanned.`);
+          loadVaultData();
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    // 12. Open Formal Abuse Incident Report
+    async function openAbuseReport(ip, accountEmail) {
+      try {
+        const res = await fetch('/api/security/accounts?action=abuse_report', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': activeMasterKey
+          },
+          body: JSON.stringify({ ip, email: accountEmail })
+        });
+        const data = await res.json();
+        if (res.ok && data.report) {
+          document.getElementById('abuse-report-text').textContent = data.report;
+          openModal('modal-abuse-report');
+        }
+      } catch (e) {
+        alert('Failed to generate abuse report: ' + e.message);
+      }
+    }
+
+    function copyAbuseReport() {
+      const text = document.getElementById('abuse-report-text').textContent;
+      navigator.clipboard.writeText(text);
+      alert('📋 Incident report copied to clipboard! You can paste it into an email to abuse@ or the hosting provider.');
+    }
+
+    // 13. Open Raw Decrypted JSON Viewer
+    function openRawDecryptModal() {
+      if (!vaultData) return;
+      document.getElementById('raw-decrypt-json').textContent = JSON.stringify(vaultData, null, 2);
+      openModal('modal-raw-decrypt');
+    }
+
+    function copyRawJson() {
+      const text = document.getElementById('raw-decrypt-json').textContent;
+      navigator.clipboard.writeText(text);
+      alert('📋 Decrypted JSON copied to clipboard.');
+    }
+
+    // 14. Download Binary .kdbx File
+    function downloadKdbx() {
+      if (!activeMasterKey) return;
+      window.location.href = `/api/security/accounts?action=export_kdbx&key=${encodeURIComponent(activeMasterKey)}`;
+    }
+
+    // 15. Download KeePass XML File
+    function downloadKeePassXml() {
+      if (!activeMasterKey) return;
+      window.location.href = `/api/security/accounts?action=export_keepass_xml&key=${encodeURIComponent(activeMasterKey)}`;
+    }
+
+    // 16. Add Account Manually Form
+    function openAddAccountModal() {
+      openModal('modal-add-account');
+    }
+
+    async function handleAddAccountSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('new-acc-username').value.trim();
+      const email = document.getElementById('new-acc-email').value.trim();
+      const role = document.getElementById('new-acc-role').value;
+      const notes = document.getElementById('new-acc-notes').value.trim();
+
+      try {
+        const res = await fetch('/api/security/accounts?action=save_account', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Key': activeMasterKey
+          },
+          body: JSON.stringify({
+            account: { username, email, role, notes, authType: 'manual_admin' }
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert(`✅ Account ${username} added to encrypted vault.`);
+          closeModal('modal-add-account');
+          loadVaultData();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to add account.'));
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    // UI Helpers: Tabs & Modals
+    function switchTab(tab) {
+      document.querySelectorAll('.hud-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-btn-${tab}`).classList.add('active');
+
+      document.getElementById('tab-pane-accounts').style.display = (tab === 'accounts') ? 'block' : 'none';
+      document.getElementById('tab-pane-ips').style.display = (tab === 'ips') ? 'block' : 'none';
+      document.getElementById('tab-pane-logs').style.display = (tab === 'logs') ? 'block' : 'none';
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      })[m]);
+    }
+  </script>
+</body>
+</html>

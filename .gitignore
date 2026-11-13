@@ -5,3 +5,15 @@ server_data/
 *.tmp
 *.log
 .github/
+
+# Security & Credentials - NEVER COMMIT SENSITIVE DATA
+.env
+.env.*
+!.env.example
+*.kdbx
+*.key
+*.pem
+security_vault/
+banned_ips.json
+accounts_vault.json
+
