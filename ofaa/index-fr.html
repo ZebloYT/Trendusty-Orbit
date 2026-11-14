@@ -844,10 +844,40 @@
 
     <div class="nav-links">
       <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)" style="background: rgba(12, 16, 23, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; font-family: monospace; cursor: pointer;">
-        <option value="en">EN English</option>
-        <option value="es">ES Español</option>
-        <option value="fr">FR Français</option>
-        <option value="ar">AR العربية</option>
+        <optgroup label="🌐 Global Languages">
+          <option value="en">EN English</option>
+          <option value="es">ES Español</option>
+          <option value="fr">FR Français</option>
+          <option value="ar">AR العربية (RTL)</option>
+          <option value="zh">ZH 中文 (Mandarin)</option>
+          <option value="ja">JA 日本語</option>
+          <option value="ru">RU Русский</option>
+          <option value="de">DE Deutsch</option>
+          <option value="pt">PT Português</option>
+          <option value="it">IT Italiano</option>
+          <option value="nl">NL Nederlands</option>
+          <option value="tr">TR Türkçe</option>
+          <option value="ko">KO 한국어</option>
+          <option value="fa">FA فارسی (RTL)</option>
+          <option value="vi">VI Tiếng Việt</option>
+          <option value="id">ID Bahasa Indonesia</option>
+        </optgroup>
+        <optgroup label="🇮🇳 Indian Languages">
+          <option value="hi">HI हिन्दी (Hindi)</option>
+          <option value="bn">BN বাংলা (Bengali)</option>
+          <option value="te">TE తెలుగు (Telugu)</option>
+          <option value="mr">MR मराठी (Marathi)</option>
+          <option value="ta">TA தமிழ் (Tamil)</option>
+          <option value="gu">GU ગુજરાતી (Gujarati)</option>
+          <option value="ur">UR اردو (Urdu - RTL)</option>
+          <option value="kn">KN ಕನ್ನಡ (Kannada)</option>
+          <option value="ml">ML മലയാളം (Malayalam)</option>
+          <option value="pa">PA ਪੰਜਾਬੀ (Punjabi)</option>
+          <option value="or">OR ଓଡ଼ିଆ (Odia)</option>
+          <option value="as">AS অসমীয়া (Assamese)</option>
+          <option value="sa">SA संस्कृतम् (Sanskrit)</option>
+          <option value="ne">NE नेपाली (Nepali)</option>
+        </optgroup>
       </select>
       <a href="../home/" class="nav-pill">&larr; Main Operations Center</a>
       <a href="../apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;">🤖 JARVIS</a>
@@ -855,6 +885,7 @@
       <a href="../echonode/" class="nav-pill">⛏️ EchoNode</a>
       <a href="../windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
       <a href="../share/" class="nav-pill">📤 Share</a>
+      <a href="../languages/" class="nav-pill" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">🌐 Languages</a>
       <button type="button" class="nav-pill" onclick="openFeedbackModal('OFAA Catalog')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
       <button type="button" class="nav-pill" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
     </div>

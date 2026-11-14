@@ -1,0 +1,3947 @@
+{
+  "total_countries": 195,
+  "total_indian_states": 36,
+  "countries": [
+    {
+      "country": "Afghanistan",
+      "flag": "🇦🇫",
+      "region": "Asia",
+      "official_raw": "Pashto, Dari (Persian)",
+      "regional_raw": "Uzbek, Turkmen, Balochi",
+      "official_list": [
+        "Pashto",
+        "Dari"
+      ],
+      "regional_list": [
+        "Uzbek",
+        "Turkmen",
+        "Balochi"
+      ],
+      "primary_iso": "ps",
+      "is_rtl": true
+    },
+    {
+      "country": "Albania",
+      "flag": "🇦🇱",
+      "region": "Europe",
+      "official_raw": "Albanian",
+      "regional_raw": "Greek, Macedonian, Aromanian",
+      "official_list": [
+        "Albanian"
+      ],
+      "regional_list": [
+        "Greek",
+        "Macedonian",
+        "Aromanian"
+      ],
+      "primary_iso": "sq",
+      "is_rtl": false
+    },
+    {
+      "country": "Algeria",
+      "flag": "🇩🇿",
+      "region": "Africa",
+      "official_raw": "Arabic, Tamazight (Berber)",
+      "regional_raw": "French",
+      "official_list": [
+        "Arabic",
+        "Tamazight"
+      ],
+      "regional_list": [
+        "French"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Andorra",
+      "flag": "🇦🇩",
+      "region": "Europe",
+      "official_raw": "Catalan",
+      "regional_raw": "Spanish, French, Portuguese",
+      "official_list": [
+        "Catalan"
+      ],
+      "regional_list": [
+        "Spanish",
+        "French",
+        "Portuguese"
+      ],
+      "primary_iso": "ca",
+      "is_rtl": false
+    },
+    {
+      "country": "Angola",
+      "flag": "🇦🇴",
+      "region": "Africa",
+      "official_raw": "Portuguese",
+      "regional_raw": "Kimbundu, Umbundu, Kikongo",
+      "official_list": [
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Kimbundu",
+        "Umbundu",
+        "Kikongo"
+      ],
+      "primary_iso": "pt",
+      "is_rtl": false
+    },
+    {
+      "country": "Antigua and Barbuda",
+      "flag": "🇦🇬",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Antiguan Creole",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Antiguan Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Argentina",
+      "flag": "🇦🇷",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Italian, Quechua, Guarani",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Italian",
+        "Quechua",
+        "Guarani"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Armenia",
+      "flag": "🇦🇲",
+      "region": "Asia",
+      "official_raw": "Armenian",
+      "regional_raw": "Russian, Kurmanji",
+      "official_list": [
+        "Armenian"
+      ],
+      "regional_list": [
+        "Russian",
+        "Kurmanji"
+      ],
+      "primary_iso": "hy",
+      "is_rtl": false
+    },
+    {
+      "country": "Australia",
+      "flag": "🇦🇺",
+      "region": "Oceania",
+      "official_raw": "English",
+      "regional_raw": "Mandarin, Arabic, Indigenous languages",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Mandarin",
+        "Arabic",
+        "Indigenous languages"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Austria",
+      "flag": "🇦🇹",
+      "region": "Europe",
+      "official_raw": "German",
+      "regional_raw": "Austro-Bavarian, Alemannic, Turkish",
+      "official_list": [
+        "German"
+      ],
+      "regional_list": [
+        "Austro-Bavarian",
+        "Alemannic",
+        "Turkish"
+      ],
+      "primary_iso": "de",
+      "is_rtl": false
+    },
+    {
+      "country": "Azerbaijan",
+      "flag": "🇦🇿",
+      "region": "Asia",
+      "official_raw": "Azerbaijani",
+      "regional_raw": "Russian, Lezgian, Talysh",
+      "official_list": [
+        "Azerbaijani"
+      ],
+      "regional_list": [
+        "Russian",
+        "Lezgian",
+        "Talysh"
+      ],
+      "primary_iso": "az",
+      "is_rtl": false
+    },
+    {
+      "country": "Bahamas",
+      "flag": "🇧🇸",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Bahamian Creole",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Bahamian Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Bahrain",
+      "flag": "🇧🇭",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "English, Persian, Urdu",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "English",
+        "Persian",
+        "Urdu"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Bangladesh",
+      "flag": "🇧🇩",
+      "region": "Asia",
+      "official_raw": "Bengali",
+      "regional_raw": "Chittagonian, Sylheti, Chakma",
+      "official_list": [
+        "Bengali"
+      ],
+      "regional_list": [
+        "Chittagonian",
+        "Sylheti",
+        "Chakma"
+      ],
+      "primary_iso": "bn",
+      "is_rtl": false
+    },
+    {
+      "country": "Barbados",
+      "flag": "🇧🇧",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Bajan Creole",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Bajan Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Belarus",
+      "flag": "🇧🇾",
+      "region": "Europe",
+      "official_raw": "Belarusian, Russian",
+      "regional_raw": "Polish, Ukrainian",
+      "official_list": [
+        "Belarusian",
+        "Russian"
+      ],
+      "regional_list": [
+        "Polish",
+        "Ukrainian"
+      ],
+      "primary_iso": "be",
+      "is_rtl": false
+    },
+    {
+      "country": "Belgium",
+      "flag": "🇧🇪",
+      "region": "Europe",
+      "official_raw": "Dutch, French, German",
+      "regional_raw": "Walloon, Luxembourgish",
+      "official_list": [
+        "Dutch",
+        "French",
+        "German"
+      ],
+      "regional_list": [
+        "Walloon",
+        "Luxembourgish"
+      ],
+      "primary_iso": "nl",
+      "is_rtl": false
+    },
+    {
+      "country": "Belize",
+      "flag": "🇧🇿",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Spanish, Kriol, Maya, Garifuna",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Spanish",
+        "Kriol",
+        "Maya",
+        "Garifuna"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Benin",
+      "flag": "🇧🇯",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Fon, Yoruba, Bariba",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Fon",
+        "Yoruba",
+        "Bariba"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Bhutan",
+      "flag": "🇧🇹",
+      "region": "Asia",
+      "official_raw": "Dzongkha",
+      "regional_raw": "Tshangla, Nepali",
+      "official_list": [
+        "Dzongkha"
+      ],
+      "regional_list": [
+        "Tshangla",
+        "Nepali"
+      ],
+      "primary_iso": "dz",
+      "is_rtl": false
+    },
+    {
+      "country": "Bolivia",
+      "flag": "🇧🇴",
+      "region": "Americas",
+      "official_raw": "Spanish, Quechua, Aymara, Guarani",
+      "regional_raw": "Plautdietsch",
+      "official_list": [
+        "Spanish",
+        "Quechua",
+        "Aymara",
+        "Guarani"
+      ],
+      "regional_list": [
+        "Plautdietsch"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Bosnia and Herzegovina",
+      "flag": "🇧🇦",
+      "region": "Europe",
+      "official_raw": "Bosnian, Croatian, Serbian",
+      "regional_raw": "Romani, Vlax",
+      "official_list": [
+        "Bosnian",
+        "Croatian",
+        "Serbian"
+      ],
+      "regional_list": [
+        "Romani",
+        "Vlax"
+      ],
+      "primary_iso": "bs",
+      "is_rtl": false
+    },
+    {
+      "country": "Botswana",
+      "flag": "🇧🇼",
+      "region": "Africa",
+      "official_raw": "English, Tswana",
+      "regional_raw": "Kalanga, Kgalagadi",
+      "official_list": [
+        "English",
+        "Tswana"
+      ],
+      "regional_list": [
+        "Kalanga",
+        "Kgalagadi"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Brazil",
+      "flag": "🇧🇷",
+      "region": "Americas",
+      "official_raw": "Portuguese",
+      "regional_raw": "Spanish, German, Italian, Indigenous languages",
+      "official_list": [
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Spanish",
+        "German",
+        "Italian",
+        "Indigenous languages"
+      ],
+      "primary_iso": "pt",
+      "is_rtl": false
+    },
+    {
+      "country": "Brunei",
+      "flag": "🇧🇳",
+      "region": "Asia",
+      "official_raw": "Malay",
+      "regional_raw": "English, Chinese, Brunei Malay",
+      "official_list": [
+        "Malay"
+      ],
+      "regional_list": [
+        "English",
+        "Chinese",
+        "Brunei Malay"
+      ],
+      "primary_iso": "ms",
+      "is_rtl": false
+    },
+    {
+      "country": "Bulgaria",
+      "flag": "🇧🇬",
+      "region": "Europe",
+      "official_raw": "Bulgarian",
+      "regional_raw": "Turkish, Romani",
+      "official_list": [
+        "Bulgarian"
+      ],
+      "regional_list": [
+        "Turkish",
+        "Romani"
+      ],
+      "primary_iso": "bg",
+      "is_rtl": false
+    },
+    {
+      "country": "Burkina Faso",
+      "flag": "🇧🇫",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Mooré, Fula, Dioula",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Mooré",
+        "Fula",
+        "Dioula"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Burundi",
+      "flag": "🇧🇮",
+      "region": "Africa",
+      "official_raw": "Kirundi, French, English",
+      "regional_raw": "Swahili",
+      "official_list": [
+        "Kirundi",
+        "French",
+        "English"
+      ],
+      "regional_list": [
+        "Swahili"
+      ],
+      "primary_iso": "rn",
+      "is_rtl": false
+    },
+    {
+      "country": "Cabo Verde",
+      "flag": "🇨🇻",
+      "region": "Africa",
+      "official_raw": "Portuguese",
+      "regional_raw": "Cape Verdean Creole",
+      "official_list": [
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Cape Verdean Creole"
+      ],
+      "primary_iso": "pt",
+      "is_rtl": false
+    },
+    {
+      "country": "Cambodia",
+      "flag": "🇰🇭",
+      "region": "Asia",
+      "official_raw": "Khmer",
+      "regional_raw": "French, English, Cham",
+      "official_list": [
+        "Khmer"
+      ],
+      "regional_list": [
+        "French",
+        "English",
+        "Cham"
+      ],
+      "primary_iso": "km",
+      "is_rtl": false
+    },
+    {
+      "country": "Cameroon",
+      "flag": "🇨🇲",
+      "region": "Africa",
+      "official_raw": "French, English",
+      "regional_raw": "Fulfulde, Ewondo, Basaa",
+      "official_list": [
+        "French",
+        "English"
+      ],
+      "regional_list": [
+        "Fulfulde",
+        "Ewondo",
+        "Basaa"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Canada",
+      "flag": "🇨🇦",
+      "region": "Americas",
+      "official_raw": "English, French",
+      "regional_raw": "Mandarin, Punjabi, Inuktitut, Cree",
+      "official_list": [
+        "English",
+        "French"
+      ],
+      "regional_list": [
+        "Mandarin",
+        "Punjabi",
+        "Inuktitut",
+        "Cree"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Central African Rep.",
+      "flag": "🇨🇫",
+      "region": "Africa",
+      "official_raw": "French, Sango",
+      "regional_raw": "Banda, Gbaya",
+      "official_list": [
+        "French",
+        "Sango"
+      ],
+      "regional_list": [
+        "Banda",
+        "Gbaya"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Chad",
+      "flag": "🇹🇩",
+      "region": "Africa",
+      "official_raw": "Arabic, French",
+      "regional_raw": "Sara, Kanembu",
+      "official_list": [
+        "Arabic",
+        "French"
+      ],
+      "regional_list": [
+        "Sara",
+        "Kanembu"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Chile",
+      "flag": "🇨🇱",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Mapudungun, Aymara, Rapa Nui",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Mapudungun",
+        "Aymara",
+        "Rapa Nui"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "China",
+      "flag": "🇨🇳",
+      "region": "Asia",
+      "official_raw": "Mandarin Chinese",
+      "regional_raw": "Cantonese, Tibetan, Uyghur, Mongolian",
+      "official_list": [
+        "Mandarin Chinese"
+      ],
+      "regional_list": [
+        "Cantonese",
+        "Tibetan",
+        "Uyghur",
+        "Mongolian"
+      ],
+      "primary_iso": "zh-CN",
+      "is_rtl": false
+    },
+    {
+      "country": "Colombia",
+      "flag": "🇨🇴",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Wayuu, Paez, English Creole",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Wayuu",
+        "Paez",
+        "English Creole"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Comoros",
+      "flag": "🇰🇲",
+      "region": "Africa",
+      "official_raw": "Comorian, Arabic, French",
+      "regional_raw": "Malagasy",
+      "official_list": [
+        "Comorian",
+        "Arabic",
+        "French"
+      ],
+      "regional_list": [
+        "Malagasy"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Congo (Dem. Rep.)",
+      "flag": "🇨🇩",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Lingala, Swahili, Kikongo, Tshiluba",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Lingala",
+        "Swahili",
+        "Kikongo",
+        "Tshiluba"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Congo (Republic)",
+      "flag": "🇨🇬",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Kituba, Lingala",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Kituba",
+        "Lingala"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Costa Rica",
+      "flag": "🇨🇷",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Mekatelyu, Bribri",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Mekatelyu",
+        "Bribri"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Croatia",
+      "flag": "🇭🇷",
+      "region": "Europe",
+      "official_raw": "Croatian",
+      "regional_raw": "Serbian, Italian, Romani",
+      "official_list": [
+        "Croatian"
+      ],
+      "regional_list": [
+        "Serbian",
+        "Italian",
+        "Romani"
+      ],
+      "primary_iso": "hr",
+      "is_rtl": false
+    },
+    {
+      "country": "Cuba",
+      "flag": "🇨🇺",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Haitian Creole",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Haitian Creole"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Cyprus",
+      "flag": "🇨🇾",
+      "region": "Europe",
+      "official_raw": "Greek, Turkish",
+      "regional_raw": "English, Armenian, Maronite Arabic",
+      "official_list": [
+        "Greek",
+        "Turkish"
+      ],
+      "regional_list": [
+        "English",
+        "Armenian",
+        "Maronite Arabic"
+      ],
+      "primary_iso": "el",
+      "is_rtl": false
+    },
+    {
+      "country": "Czech Republic",
+      "flag": "🇨🇿",
+      "region": "Europe",
+      "official_raw": "Czech",
+      "regional_raw": "Slovak, German, Polish",
+      "official_list": [
+        "Czech"
+      ],
+      "regional_list": [
+        "Slovak",
+        "German",
+        "Polish"
+      ],
+      "primary_iso": "cs",
+      "is_rtl": false
+    },
+    {
+      "country": "Denmark",
+      "flag": "🇩🇰",
+      "region": "Europe",
+      "official_raw": "Danish",
+      "regional_raw": "Faroese, Greenlandic, German",
+      "official_list": [
+        "Danish"
+      ],
+      "regional_list": [
+        "Faroese",
+        "Greenlandic",
+        "German"
+      ],
+      "primary_iso": "da",
+      "is_rtl": false
+    },
+    {
+      "country": "Djibouti",
+      "flag": "🇩🇯",
+      "region": "Africa",
+      "official_raw": "Arabic, French",
+      "regional_raw": "Somali, Afar",
+      "official_list": [
+        "Arabic",
+        "French"
+      ],
+      "regional_list": [
+        "Somali",
+        "Afar"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Dominica",
+      "flag": "🇩🇲",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Antillean Creole, French",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Antillean Creole",
+        "French"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Dominican Republic",
+      "flag": "🇩🇴",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Haitian Creole",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Haitian Creole"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "East Timor",
+      "flag": "🇹🇱",
+      "region": "Asia",
+      "official_raw": "Tetum, Portuguese",
+      "regional_raw": "Indonesian, English",
+      "official_list": [
+        "Tetum",
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Indonesian",
+        "English"
+      ],
+      "primary_iso": "tet",
+      "is_rtl": false
+    },
+    {
+      "country": "Ecuador",
+      "flag": "🇪🇨",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Quechua, Shuar",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Quechua",
+        "Shuar"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Egypt",
+      "flag": "🇪🇬",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "English, French, Nubian",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "English",
+        "French",
+        "Nubian"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "El Salvador",
+      "flag": "🇸🇻",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Nawat (Pipil)",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Nawat"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Equatorial Guinea",
+      "flag": "🇬🇶",
+      "region": "Africa",
+      "official_raw": "Spanish, French, Portuguese",
+      "regional_raw": "Fang, Bube",
+      "official_list": [
+        "Spanish",
+        "French",
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Fang",
+        "Bube"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Eritrea",
+      "flag": "🇪🇷",
+      "region": "Africa",
+      "official_raw": "Tigrinya, Arabic, English",
+      "regional_raw": "Tigre, Afar",
+      "official_list": [
+        "Tigrinya",
+        "Arabic",
+        "English"
+      ],
+      "regional_list": [
+        "Tigre",
+        "Afar"
+      ],
+      "primary_iso": "ti",
+      "is_rtl": false
+    },
+    {
+      "country": "Estonia",
+      "flag": "🇪🇪",
+      "region": "Europe",
+      "official_raw": "Estonian",
+      "regional_raw": "Russian, Ukrainian",
+      "official_list": [
+        "Estonian"
+      ],
+      "regional_list": [
+        "Russian",
+        "Ukrainian"
+      ],
+      "primary_iso": "et",
+      "is_rtl": false
+    },
+    {
+      "country": "Eswatini",
+      "flag": "🇸🇿",
+      "region": "Africa",
+      "official_raw": "Swazi, English",
+      "regional_raw": "Zulu, Tsonga",
+      "official_list": [
+        "Swazi",
+        "English"
+      ],
+      "regional_list": [
+        "Zulu",
+        "Tsonga"
+      ],
+      "primary_iso": "ss",
+      "is_rtl": false
+    },
+    {
+      "country": "Ethiopia",
+      "flag": "🇪🇹",
+      "region": "Africa",
+      "official_raw": "Amharic, Oromo, Somali, Tigrinya, Afar",
+      "regional_raw": "Sidama, Wolaytta",
+      "official_list": [
+        "Amharic",
+        "Oromo",
+        "Somali",
+        "Tigrinya",
+        "Afar"
+      ],
+      "regional_list": [
+        "Sidama",
+        "Wolaytta"
+      ],
+      "primary_iso": "am",
+      "is_rtl": false
+    },
+    {
+      "country": "Fiji",
+      "flag": "🇫🇯",
+      "region": "Oceania",
+      "official_raw": "English, Fijian, Fiji Hindi",
+      "regional_raw": "Rotuman",
+      "official_list": [
+        "English",
+        "Fijian",
+        "Fiji Hindi"
+      ],
+      "regional_list": [
+        "Rotuman"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Finland",
+      "flag": "🇫🇮",
+      "region": "Europe",
+      "official_raw": "Finnish, Swedish",
+      "regional_raw": "Sami languages, Russian",
+      "official_list": [
+        "Finnish",
+        "Swedish"
+      ],
+      "regional_list": [
+        "Sami languages",
+        "Russian"
+      ],
+      "primary_iso": "fi",
+      "is_rtl": false
+    },
+    {
+      "country": "France",
+      "flag": "🇫🇷",
+      "region": "Europe",
+      "official_raw": "French",
+      "regional_raw": "Breton, Corsican, Occitan, Basque",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Breton",
+        "Corsican",
+        "Occitan",
+        "Basque"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Gabon",
+      "flag": "🇬🇦",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Fang, Myene, Punu",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Fang",
+        "Myene",
+        "Punu"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Gambia",
+      "flag": "🇬🇲",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Mandinka, Fula, Wolof",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Mandinka",
+        "Fula",
+        "Wolof"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Georgia",
+      "flag": "🇬🇪",
+      "region": "Asia",
+      "official_raw": "Georgian",
+      "regional_raw": "Mingrelian, Armenian, Russian",
+      "official_list": [
+        "Georgian"
+      ],
+      "regional_list": [
+        "Mingrelian",
+        "Armenian",
+        "Russian"
+      ],
+      "primary_iso": "ka",
+      "is_rtl": false
+    },
+    {
+      "country": "Germany",
+      "flag": "🇩🇪",
+      "region": "Europe",
+      "official_raw": "German",
+      "regional_raw": "Turkish, Low German, Sorbian",
+      "official_list": [
+        "German"
+      ],
+      "regional_list": [
+        "Turkish",
+        "Low German",
+        "Sorbian"
+      ],
+      "primary_iso": "de",
+      "is_rtl": false
+    },
+    {
+      "country": "Ghana",
+      "flag": "🇬🇭",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Akan, Ewe, Hausa, Dagbani",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Akan",
+        "Ewe",
+        "Hausa",
+        "Dagbani"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Greece",
+      "flag": "🇬🇷",
+      "region": "Europe",
+      "official_raw": "Greek",
+      "regional_raw": "English, Albanian, Turkish",
+      "official_list": [
+        "Greek"
+      ],
+      "regional_list": [
+        "English",
+        "Albanian",
+        "Turkish"
+      ],
+      "primary_iso": "el",
+      "is_rtl": false
+    },
+    {
+      "country": "Grenada",
+      "flag": "🇬🇩",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Grenadian Creole",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Grenadian Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Guatemala",
+      "flag": "🇬🇹",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "K'iche', Q'eqchi', Kaqchikel",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "K'iche'",
+        "Q'eqchi'",
+        "Kaqchikel"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Guinea",
+      "flag": "🇬🇳",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Pular, Maninka, Susu",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Pular",
+        "Maninka",
+        "Susu"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Guinea-Bissau",
+      "flag": "🇬🇼",
+      "region": "Africa",
+      "official_raw": "Portuguese",
+      "regional_raw": "Guinea-Bissau Creole, Balanta",
+      "official_list": [
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Guinea-Bissau Creole",
+        "Balanta"
+      ],
+      "primary_iso": "pt",
+      "is_rtl": false
+    },
+    {
+      "country": "Guyana",
+      "flag": "🇬🇾",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Guyanese Creole, Hindi, Indigenous",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Guyanese Creole",
+        "Hindi",
+        "Indigenous"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Haiti",
+      "flag": "🇭🇹",
+      "region": "Americas",
+      "official_raw": "French, Haitian Creole",
+      "regional_raw": "Spanish, English",
+      "official_list": [
+        "French",
+        "Haitian Creole"
+      ],
+      "regional_list": [
+        "Spanish",
+        "English"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Honduras",
+      "flag": "🇭🇳",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Garifuna, Miskito",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Garifuna",
+        "Miskito"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Hungary",
+      "flag": "🇭🇺",
+      "region": "Europe",
+      "official_raw": "Hungarian",
+      "regional_raw": "Romani, German",
+      "official_list": [
+        "Hungarian"
+      ],
+      "regional_list": [
+        "Romani",
+        "German"
+      ],
+      "primary_iso": "hu",
+      "is_rtl": false
+    },
+    {
+      "country": "Iceland",
+      "flag": "🇮🇸",
+      "region": "Europe",
+      "official_raw": "Icelandic",
+      "regional_raw": "English, Danish",
+      "official_list": [
+        "Icelandic"
+      ],
+      "regional_list": [
+        "English",
+        "Danish"
+      ],
+      "primary_iso": "is",
+      "is_rtl": false
+    },
+    {
+      "country": "India",
+      "flag": "🇮🇳",
+      "region": "Asia",
+      "official_raw": "Hindi, English (plus 22 Scheduled Languages)",
+      "regional_raw": "Bengali, Telugu, Marathi, Tamil (see states table)",
+      "official_list": [
+        "Hindi",
+        "English"
+      ],
+      "regional_list": [
+        "Bengali",
+        "Telugu",
+        "Marathi",
+        "Tamil"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Indonesia",
+      "flag": "🇮🇩",
+      "region": "Asia",
+      "official_raw": "Indonesian",
+      "regional_raw": "Javanese, Sundanese, Madurese",
+      "official_list": [
+        "Indonesian"
+      ],
+      "regional_list": [
+        "Javanese",
+        "Sundanese",
+        "Madurese"
+      ],
+      "primary_iso": "id",
+      "is_rtl": false
+    },
+    {
+      "country": "Iran",
+      "flag": "🇮🇷",
+      "region": "Middle East",
+      "official_raw": "Persian",
+      "regional_raw": "Azerbaijani, Kurdish, Luri, Arabic",
+      "official_list": [
+        "Persian"
+      ],
+      "regional_list": [
+        "Azerbaijani",
+        "Kurdish",
+        "Luri",
+        "Arabic"
+      ],
+      "primary_iso": "fa",
+      "is_rtl": true
+    },
+    {
+      "country": "Iraq",
+      "flag": "🇮🇶",
+      "region": "Middle East",
+      "official_raw": "Arabic, Kurdish",
+      "regional_raw": "Turkmen, Assyrian Neo-Aramaic",
+      "official_list": [
+        "Arabic",
+        "Kurdish"
+      ],
+      "regional_list": [
+        "Turkmen",
+        "Assyrian Neo-Aramaic"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Ireland",
+      "flag": "🇮🇪",
+      "region": "Europe",
+      "official_raw": "Irish, English",
+      "regional_raw": "Shelta",
+      "official_list": [
+        "Irish",
+        "English"
+      ],
+      "regional_list": [
+        "Shelta"
+      ],
+      "primary_iso": "ga",
+      "is_rtl": false
+    },
+    {
+      "country": "Israel",
+      "flag": "🇮🇱",
+      "region": "Middle East",
+      "official_raw": "Hebrew",
+      "regional_raw": "Arabic, Russian, English",
+      "official_list": [
+        "Hebrew"
+      ],
+      "regional_list": [
+        "Arabic",
+        "Russian",
+        "English"
+      ],
+      "primary_iso": "he",
+      "is_rtl": true
+    },
+    {
+      "country": "Italy",
+      "flag": "🇮🇹",
+      "region": "Europe",
+      "official_raw": "Italian",
+      "regional_raw": "Sicilian, Neapolitan, Sardinian, German",
+      "official_list": [
+        "Italian"
+      ],
+      "regional_list": [
+        "Sicilian",
+        "Neapolitan",
+        "Sardinian",
+        "German"
+      ],
+      "primary_iso": "it",
+      "is_rtl": false
+    },
+    {
+      "country": "Ivory Coast",
+      "flag": "🇨🇮",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Baoulé, Dioula, Dan, Anyin",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Baoulé",
+        "Dioula",
+        "Dan",
+        "Anyin"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Jamaica",
+      "flag": "🇯🇲",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Jamaican Patois",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Jamaican Patois"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Japan",
+      "flag": "🇯🇵",
+      "region": "Asia",
+      "official_raw": "Japanese",
+      "regional_raw": "Ryukyuan, Ainu",
+      "official_list": [
+        "Japanese"
+      ],
+      "regional_list": [
+        "Ryukyuan",
+        "Ainu"
+      ],
+      "primary_iso": "ja",
+      "is_rtl": false
+    },
+    {
+      "country": "Jordan",
+      "flag": "🇯🇴",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "English",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Kazakhstan",
+      "flag": "🇰🇿",
+      "region": "Asia",
+      "official_raw": "Kazakh, Russian",
+      "regional_raw": "Uzbek, Ukrainian",
+      "official_list": [
+        "Kazakh",
+        "Russian"
+      ],
+      "regional_list": [
+        "Uzbek",
+        "Ukrainian"
+      ],
+      "primary_iso": "kk",
+      "is_rtl": false
+    },
+    {
+      "country": "Kenya",
+      "flag": "🇰🇪",
+      "region": "Africa",
+      "official_raw": "Swahili, English",
+      "regional_raw": "Kikuyu, Luhya, Luo",
+      "official_list": [
+        "Swahili",
+        "English"
+      ],
+      "regional_list": [
+        "Kikuyu",
+        "Luhya",
+        "Luo"
+      ],
+      "primary_iso": "sw",
+      "is_rtl": false
+    },
+    {
+      "country": "Kiribati",
+      "flag": "🇰🇮",
+      "region": "Oceania",
+      "official_raw": "English, Gilbertese",
+      "regional_raw": "Samoan, Tuvaluan",
+      "official_list": [
+        "English",
+        "Gilbertese"
+      ],
+      "regional_list": [
+        "Samoan",
+        "Tuvaluan"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "North Korea",
+      "flag": "🇰🇵",
+      "region": "Asia",
+      "official_raw": "Korean",
+      "regional_raw": "Mandarin",
+      "official_list": [
+        "Korean"
+      ],
+      "regional_list": [
+        "Mandarin"
+      ],
+      "primary_iso": "ko",
+      "is_rtl": false
+    },
+    {
+      "country": "South Korea",
+      "flag": "🇰🇷",
+      "region": "Asia",
+      "official_raw": "Korean",
+      "regional_raw": "English",
+      "official_list": [
+        "Korean"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "ko",
+      "is_rtl": false
+    },
+    {
+      "country": "Kuwait",
+      "flag": "🇰🇼",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "English",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Kyrgyzstan",
+      "flag": "🇰🇬",
+      "region": "Asia",
+      "official_raw": "Kyrgyz, Russian",
+      "regional_raw": "Uzbek, Dungan",
+      "official_list": [
+        "Kyrgyz",
+        "Russian"
+      ],
+      "regional_list": [
+        "Uzbek",
+        "Dungan"
+      ],
+      "primary_iso": "ky",
+      "is_rtl": false
+    },
+    {
+      "country": "Laos",
+      "flag": "🇱🇦",
+      "region": "Asia",
+      "official_raw": "Lao",
+      "regional_raw": "Hmong, Khmu, French",
+      "official_list": [
+        "Lao"
+      ],
+      "regional_list": [
+        "Hmong",
+        "Khmu",
+        "French"
+      ],
+      "primary_iso": "lo",
+      "is_rtl": false
+    },
+    {
+      "country": "Latvia",
+      "flag": "🇱🇻",
+      "region": "Europe",
+      "official_raw": "Latvian",
+      "regional_raw": "Russian, Latgalian",
+      "official_list": [
+        "Latvian"
+      ],
+      "regional_list": [
+        "Russian",
+        "Latgalian"
+      ],
+      "primary_iso": "lv",
+      "is_rtl": false
+    },
+    {
+      "country": "Lebanon",
+      "flag": "🇱🇧",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "French, English, Armenian",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "French",
+        "English",
+        "Armenian"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Lesotho",
+      "flag": "🇱🇸",
+      "region": "Africa",
+      "official_raw": "Sotho, English",
+      "regional_raw": "Zulu, Xhosa",
+      "official_list": [
+        "Sotho",
+        "English"
+      ],
+      "regional_list": [
+        "Zulu",
+        "Xhosa"
+      ],
+      "primary_iso": "st",
+      "is_rtl": false
+    },
+    {
+      "country": "Liberia",
+      "flag": "🇱🇷",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Kpelle, Bassa, Grebo",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Kpelle",
+        "Bassa",
+        "Grebo"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Libya",
+      "flag": "🇱🇾",
+      "region": "Africa",
+      "official_raw": "Arabic",
+      "regional_raw": "Berber languages, Italian",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "Berber languages",
+        "Italian"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Liechtenstein",
+      "flag": "🇱🇮",
+      "region": "Europe",
+      "official_raw": "German",
+      "regional_raw": "Alemannic",
+      "official_list": [
+        "German"
+      ],
+      "regional_list": [
+        "Alemannic"
+      ],
+      "primary_iso": "de",
+      "is_rtl": false
+    },
+    {
+      "country": "Lithuania",
+      "flag": "🇱🇹",
+      "region": "Europe",
+      "official_raw": "Lithuanian",
+      "regional_raw": "Russian, Polish",
+      "official_list": [
+        "Lithuanian"
+      ],
+      "regional_list": [
+        "Russian",
+        "Polish"
+      ],
+      "primary_iso": "lt",
+      "is_rtl": false
+    },
+    {
+      "country": "Luxembourg",
+      "flag": "🇱🇺",
+      "region": "Europe",
+      "official_raw": "Luxembourgish, French, German",
+      "regional_raw": "Portuguese",
+      "official_list": [
+        "Luxembourgish",
+        "French",
+        "German"
+      ],
+      "regional_list": [
+        "Portuguese"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Madagascar",
+      "flag": "🇲🇬",
+      "region": "Africa",
+      "official_raw": "Malagasy, French",
+      "regional_raw": "English",
+      "official_list": [
+        "Malagasy",
+        "French"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "mg",
+      "is_rtl": false
+    },
+    {
+      "country": "Malawi",
+      "flag": "🇲🇼",
+      "region": "Africa",
+      "official_raw": "English, Chewa",
+      "regional_raw": "Yao, Tumbuka",
+      "official_list": [
+        "English",
+        "Chewa"
+      ],
+      "regional_list": [
+        "Yao",
+        "Tumbuka"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Malaysia",
+      "flag": "🇲🇾",
+      "region": "Asia",
+      "official_raw": "Malay",
+      "regional_raw": "English, Mandarin, Tamil, Iban",
+      "official_list": [
+        "Malay"
+      ],
+      "regional_list": [
+        "English",
+        "Mandarin",
+        "Tamil",
+        "Iban"
+      ],
+      "primary_iso": "ms",
+      "is_rtl": false
+    },
+    {
+      "country": "Maldives",
+      "flag": "🇲🇻",
+      "region": "Asia",
+      "official_raw": "Dhivehi",
+      "regional_raw": "English",
+      "official_list": [
+        "Dhivehi"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "dv",
+      "is_rtl": false
+    },
+    {
+      "country": "Mali",
+      "flag": "🇲🇱",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Bambara, Fula, Dogon",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Bambara",
+        "Fula",
+        "Dogon"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Malta",
+      "flag": "🇲🇹",
+      "region": "Europe",
+      "official_raw": "Maltese, English",
+      "regional_raw": "Italian",
+      "official_list": [
+        "Maltese",
+        "English"
+      ],
+      "regional_list": [
+        "Italian"
+      ],
+      "primary_iso": "mt",
+      "is_rtl": false
+    },
+    {
+      "country": "Marshall Islands",
+      "flag": "🇲🇭",
+      "region": "Oceania",
+      "official_raw": "Marshallese, English",
+      "regional_raw": "Japanese",
+      "official_list": [
+        "Marshallese",
+        "English"
+      ],
+      "regional_list": [
+        "Japanese"
+      ],
+      "primary_iso": "mh",
+      "is_rtl": false
+    },
+    {
+      "country": "Mauritania",
+      "flag": "🇲🇷",
+      "region": "Africa",
+      "official_raw": "Arabic",
+      "regional_raw": "Pulaar, Soninke, Wolof, French",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "Pulaar",
+        "Soninke",
+        "Wolof",
+        "French"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Mauritius",
+      "flag": "🇲🇺",
+      "region": "Africa",
+      "official_raw": "English, French",
+      "regional_raw": "Mauritian Creole, Bhojpuri",
+      "official_list": [
+        "English",
+        "French"
+      ],
+      "regional_list": [
+        "Mauritian Creole",
+        "Bhojpuri"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Mexico",
+      "flag": "🇲🇽",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Nahuatl, Maya, Zapotec, Mixtec",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Nahuatl",
+        "Maya",
+        "Zapotec",
+        "Mixtec"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Micronesia",
+      "flag": "🇫🇲",
+      "region": "Oceania",
+      "official_raw": "English",
+      "regional_raw": "Chuukese, Pohnpeian, Yapese",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Chuukese",
+        "Pohnpeian",
+        "Yapese"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Moldova",
+      "flag": "🇲🇩",
+      "region": "Europe",
+      "official_raw": "Romanian",
+      "regional_raw": "Russian, Gagauz",
+      "official_list": [
+        "Romanian"
+      ],
+      "regional_list": [
+        "Russian",
+        "Gagauz"
+      ],
+      "primary_iso": "ro",
+      "is_rtl": false
+    },
+    {
+      "country": "Monaco",
+      "flag": "🇲🇨",
+      "region": "Europe",
+      "official_raw": "French",
+      "regional_raw": "Monégasque, Italian, English",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Monégasque",
+        "Italian",
+        "English"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Mongolia",
+      "flag": "🇲🇳",
+      "region": "Asia",
+      "official_raw": "Mongolian",
+      "regional_raw": "Kazakh, Tuvan",
+      "official_list": [
+        "Mongolian"
+      ],
+      "regional_list": [
+        "Kazakh",
+        "Tuvan"
+      ],
+      "primary_iso": "mn",
+      "is_rtl": false
+    },
+    {
+      "country": "Montenegro",
+      "flag": "🇲🇪",
+      "region": "Europe",
+      "official_raw": "Montenegrin",
+      "regional_raw": "Serbian, Bosnian, Albanian",
+      "official_list": [
+        "Montenegrin"
+      ],
+      "regional_list": [
+        "Serbian",
+        "Bosnian",
+        "Albanian"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Morocco",
+      "flag": "🇲🇦",
+      "region": "Africa",
+      "official_raw": "Arabic, Tamazight (Berber)",
+      "regional_raw": "French, Spanish",
+      "official_list": [
+        "Arabic",
+        "Tamazight"
+      ],
+      "regional_list": [
+        "French",
+        "Spanish"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Mozambique",
+      "flag": "🇲🇿",
+      "region": "Africa",
+      "official_raw": "Portuguese",
+      "regional_raw": "Makhuwa, Tsonga, Sena",
+      "official_list": [
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Makhuwa",
+        "Tsonga",
+        "Sena"
+      ],
+      "primary_iso": "pt",
+      "is_rtl": false
+    },
+    {
+      "country": "Myanmar (Burma)",
+      "flag": "🇲🇲",
+      "region": "Asia",
+      "official_raw": "Burmese",
+      "regional_raw": "Shan, Karen, Rakhine, Mon",
+      "official_list": [
+        "Burmese"
+      ],
+      "regional_list": [
+        "Shan",
+        "Karen",
+        "Rakhine",
+        "Mon"
+      ],
+      "primary_iso": "my",
+      "is_rtl": false
+    },
+    {
+      "country": "Namibia",
+      "flag": "🇳🇦",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Oshiwambo, Khoekhoe, Afrikaans, German",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Oshiwambo",
+        "Khoekhoe",
+        "Afrikaans",
+        "German"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Nauru",
+      "flag": "🇳🇷",
+      "region": "Oceania",
+      "official_raw": "Nauruan, English",
+      "regional_raw": "Pacific Creole",
+      "official_list": [
+        "Nauruan",
+        "English"
+      ],
+      "regional_list": [
+        "Pacific Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Nepal",
+      "flag": "🇳🇵",
+      "region": "Asia",
+      "official_raw": "Nepali",
+      "regional_raw": "Maithili, Bhojpuri, Tharu, Tamang",
+      "official_list": [
+        "Nepali"
+      ],
+      "regional_list": [
+        "Maithili",
+        "Bhojpuri",
+        "Tharu",
+        "Tamang"
+      ],
+      "primary_iso": "ne",
+      "is_rtl": false
+    },
+    {
+      "country": "Netherlands",
+      "flag": "🇳🇱",
+      "region": "Europe",
+      "official_raw": "Dutch",
+      "regional_raw": "Frisian, English, Papiamento",
+      "official_list": [
+        "Dutch"
+      ],
+      "regional_list": [
+        "Frisian",
+        "English",
+        "Papiamento"
+      ],
+      "primary_iso": "nl",
+      "is_rtl": false
+    },
+    {
+      "country": "New Zealand",
+      "flag": "🇳🇿",
+      "region": "Oceania",
+      "official_raw": "English, Māori, NZ Sign Language",
+      "regional_raw": "Samoan, Hindi",
+      "official_list": [
+        "English",
+        "Māori",
+        "NZ Sign Language"
+      ],
+      "regional_list": [
+        "Samoan",
+        "Hindi"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Nicaragua",
+      "flag": "🇳🇮",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Miskito, English Creole",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Miskito",
+        "English Creole"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Niger",
+      "flag": "🇳🇪",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Hausa, Zarma, Tuareg",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Hausa",
+        "Zarma",
+        "Tuareg"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Hausa, Yoruba, Igbo, Fulfulde",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Hausa",
+        "Yoruba",
+        "Igbo",
+        "Fulfulde"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "North Macedonia",
+      "flag": "🇲🇰",
+      "region": "Europe",
+      "official_raw": "Macedonian, Albanian",
+      "regional_raw": "Turkish, Romani, Serbian",
+      "official_list": [
+        "Macedonian",
+        "Albanian"
+      ],
+      "regional_list": [
+        "Turkish",
+        "Romani",
+        "Serbian"
+      ],
+      "primary_iso": "mk",
+      "is_rtl": false
+    },
+    {
+      "country": "Norway",
+      "flag": "🇳🇴",
+      "region": "Europe",
+      "official_raw": "Norwegian, Sámi",
+      "regional_raw": "Kven, Romani",
+      "official_list": [
+        "Norwegian",
+        "Sámi"
+      ],
+      "regional_list": [
+        "Kven",
+        "Romani"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Oman",
+      "flag": "🇴🇲",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "Balochi, Swahili, English, Hindi",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "Balochi",
+        "Swahili",
+        "English",
+        "Hindi"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Pakistan",
+      "flag": "🇵🇰",
+      "region": "Asia",
+      "official_raw": "Urdu, English",
+      "regional_raw": "Punjabi, Pashto, Sindhi, Balochi",
+      "official_list": [
+        "Urdu",
+        "English"
+      ],
+      "regional_list": [
+        "Punjabi",
+        "Pashto",
+        "Sindhi",
+        "Balochi"
+      ],
+      "primary_iso": "ur",
+      "is_rtl": true
+    },
+    {
+      "country": "Palau",
+      "flag": "🇵🇼",
+      "region": "Oceania",
+      "official_raw": "Palauan, English",
+      "regional_raw": "Japanese, Sonsorolese",
+      "official_list": [
+        "Palauan",
+        "English"
+      ],
+      "regional_list": [
+        "Japanese",
+        "Sonsorolese"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Panama",
+      "flag": "🇵🇦",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Ngäbere, English Creole",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Ngäbere",
+        "English Creole"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Papua New Guinea",
+      "flag": "🇵🇬",
+      "region": "Oceania",
+      "official_raw": "English, Tok Pisin, Hiri Motu",
+      "regional_raw": "Over 800 indigenous languages",
+      "official_list": [
+        "English",
+        "Tok Pisin",
+        "Hiri Motu"
+      ],
+      "regional_list": [],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Paraguay",
+      "flag": "🇵🇾",
+      "region": "Americas",
+      "official_raw": "Spanish, Guarani",
+      "regional_raw": "Portuguese, Plautdietsch",
+      "official_list": [
+        "Spanish",
+        "Guarani"
+      ],
+      "regional_list": [
+        "Portuguese",
+        "Plautdietsch"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Peru",
+      "flag": "🇵🇪",
+      "region": "Americas",
+      "official_raw": "Spanish, Quechua, Aymara",
+      "regional_raw": "Asháninka, Aguaruna",
+      "official_list": [
+        "Spanish",
+        "Quechua",
+        "Aymara"
+      ],
+      "regional_list": [
+        "Asháninka",
+        "Aguaruna"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Philippines",
+      "flag": "🇵🇭",
+      "region": "Asia",
+      "official_raw": "Filipino, English",
+      "regional_raw": "Tagalog, Cebuano, Ilocano, Hiligaynon",
+      "official_list": [
+        "Filipino",
+        "English"
+      ],
+      "regional_list": [
+        "Tagalog",
+        "Cebuano",
+        "Ilocano",
+        "Hiligaynon"
+      ],
+      "primary_iso": "fil",
+      "is_rtl": false
+    },
+    {
+      "country": "Poland",
+      "flag": "🇵🇱",
+      "region": "Europe",
+      "official_raw": "Polish",
+      "regional_raw": "Silesian, Kashubian",
+      "official_list": [
+        "Polish"
+      ],
+      "regional_list": [
+        "Silesian",
+        "Kashubian"
+      ],
+      "primary_iso": "pl",
+      "is_rtl": false
+    },
+    {
+      "country": "Portugal",
+      "flag": "🇵🇹",
+      "region": "Europe",
+      "official_raw": "Portuguese",
+      "regional_raw": "Mirandese",
+      "official_list": [
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Mirandese"
+      ],
+      "primary_iso": "pt",
+      "is_rtl": false
+    },
+    {
+      "country": "Qatar",
+      "flag": "🇶🇦",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "English",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Romania",
+      "flag": "🇷🇴",
+      "region": "Europe",
+      "official_raw": "Romanian",
+      "regional_raw": "Hungarian, Romani",
+      "official_list": [
+        "Romanian"
+      ],
+      "regional_list": [
+        "Hungarian",
+        "Romani"
+      ],
+      "primary_iso": "ro",
+      "is_rtl": false
+    },
+    {
+      "country": "Russia",
+      "flag": "🇷🇺",
+      "region": "Europe/Asia",
+      "official_raw": "Russian",
+      "regional_raw": "Tatar, Chechen, Bashkir, Chuvash",
+      "official_list": [
+        "Russian"
+      ],
+      "regional_list": [
+        "Tatar",
+        "Chechen",
+        "Bashkir",
+        "Chuvash"
+      ],
+      "primary_iso": "ru",
+      "is_rtl": false
+    },
+    {
+      "country": "Rwanda",
+      "flag": "🇷🇼",
+      "region": "Africa",
+      "official_raw": "Kinyarwanda, French, English, Swahili",
+      "regional_raw": "Congolese Swahili",
+      "official_list": [
+        "Kinyarwanda",
+        "French",
+        "English",
+        "Swahili"
+      ],
+      "regional_list": [
+        "Congolese Swahili"
+      ],
+      "primary_iso": "rw",
+      "is_rtl": false
+    },
+    {
+      "country": "St. Kitts & Nevis",
+      "flag": "🇰🇳",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Saint Kitts Creole",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Saint Kitts Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "St. Lucia",
+      "flag": "🇱🇨",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Saint Lucian Creole",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Saint Lucian Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "St. Vincent & Gren.",
+      "flag": "🇻🇨",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Vincentian Creole",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Vincentian Creole"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Samoa",
+      "flag": "🇼🇸",
+      "region": "Oceania",
+      "official_raw": "Samoan, English",
+      "regional_raw": "Polynesian dialects",
+      "official_list": [
+        "Samoan",
+        "English"
+      ],
+      "regional_list": [
+        "Polynesian dialects"
+      ],
+      "primary_iso": "sm",
+      "is_rtl": false
+    },
+    {
+      "country": "San Marino",
+      "flag": "🇸🇲",
+      "region": "Europe",
+      "official_raw": "Italian",
+      "regional_raw": "Sammarinese",
+      "official_list": [
+        "Italian"
+      ],
+      "regional_list": [
+        "Sammarinese"
+      ],
+      "primary_iso": "it",
+      "is_rtl": false
+    },
+    {
+      "country": "Sao Tome & Principe",
+      "flag": "🇸🇹",
+      "region": "Africa",
+      "official_raw": "Portuguese",
+      "regional_raw": "Forro, Angolar, Principense",
+      "official_list": [
+        "Portuguese"
+      ],
+      "regional_list": [
+        "Forro",
+        "Angolar",
+        "Principense"
+      ],
+      "primary_iso": "pt",
+      "is_rtl": false
+    },
+    {
+      "country": "Saudi Arabia",
+      "flag": "🇸🇦",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "English, Tagalog, Hindi",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "English",
+        "Tagalog",
+        "Hindi"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Senegal",
+      "flag": "🇸🇳",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Wolof, Pulaar, Serer",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Wolof",
+        "Pulaar",
+        "Serer"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Serbia",
+      "flag": "🇷🇸",
+      "region": "Europe",
+      "official_raw": "Serbian",
+      "regional_raw": "Hungarian, Bosnian, Romani",
+      "official_list": [
+        "Serbian"
+      ],
+      "regional_list": [
+        "Hungarian",
+        "Bosnian",
+        "Romani"
+      ],
+      "primary_iso": "sr",
+      "is_rtl": false
+    },
+    {
+      "country": "Seychelles",
+      "flag": "🇸🇨",
+      "region": "Africa",
+      "official_raw": "Seychellois Creole, English, French",
+      "regional_raw": "Bhojpuri, Swahili",
+      "official_list": [
+        "Seychellois Creole",
+        "English",
+        "French"
+      ],
+      "regional_list": [
+        "Bhojpuri",
+        "Swahili"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Sierra Leone",
+      "flag": "🇸🇱",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Krio, Mende, Temne",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Krio",
+        "Mende",
+        "Temne"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Singapore",
+      "flag": "🇸🇬",
+      "region": "Asia",
+      "official_raw": "English, Malay, Mandarin, Tamil",
+      "regional_raw": "Hokkien, Cantonese",
+      "official_list": [
+        "English",
+        "Malay",
+        "Mandarin",
+        "Tamil"
+      ],
+      "regional_list": [
+        "Hokkien",
+        "Cantonese"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Slovakia",
+      "flag": "🇸🇰",
+      "region": "Europe",
+      "official_raw": "Slovak",
+      "regional_raw": "Hungarian, Romani, Rusyn",
+      "official_list": [
+        "Slovak"
+      ],
+      "regional_list": [
+        "Hungarian",
+        "Romani",
+        "Rusyn"
+      ],
+      "primary_iso": "sk",
+      "is_rtl": false
+    },
+    {
+      "country": "Slovenia",
+      "flag": "🇸🇮",
+      "region": "Europe",
+      "official_raw": "Slovene",
+      "regional_raw": "Italian, Hungarian",
+      "official_list": [
+        "Slovene"
+      ],
+      "regional_list": [
+        "Italian",
+        "Hungarian"
+      ],
+      "primary_iso": "sl",
+      "is_rtl": false
+    },
+    {
+      "country": "Solomon Islands",
+      "flag": "🇸🇧",
+      "region": "Oceania",
+      "official_raw": "English",
+      "regional_raw": "Pijin, various indigenous languages",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Pijin",
+        "various indigenous languages"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Somalia",
+      "flag": "🇸🇴",
+      "region": "Africa",
+      "official_raw": "Somali, Arabic",
+      "regional_raw": "Italian, English",
+      "official_list": [
+        "Somali",
+        "Arabic"
+      ],
+      "regional_list": [
+        "Italian",
+        "English"
+      ],
+      "primary_iso": "so",
+      "is_rtl": false
+    },
+    {
+      "country": "South Africa",
+      "flag": "🇿🇦",
+      "region": "Africa",
+      "official_raw": "12 Official: Afrikaans, English, Ndebele, Pedi, Sotho, Swazi, Tsonga, Tswana, Venda, Xhosa, Zulu, SA Sign Language",
+      "regional_raw": "Fanagalo, Lobedu",
+      "official_list": [
+        "English",
+        "Ndebele",
+        "Pedi",
+        "Sotho",
+        "Swazi",
+        "Tsonga",
+        "Tswana",
+        "Venda",
+        "Xhosa",
+        "Zulu",
+        "SA Sign Language"
+      ],
+      "regional_list": [
+        "Fanagalo",
+        "Lobedu"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "South Sudan",
+      "flag": "🇸🇸",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Dinka, Nuer, Bari, Zande",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Dinka",
+        "Nuer",
+        "Bari",
+        "Zande"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Spain",
+      "flag": "🇪🇸",
+      "region": "Europe",
+      "official_raw": "Spanish (Castilian)",
+      "regional_raw": "Catalan, Galician, Basque, Valencian",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Catalan",
+        "Galician",
+        "Basque",
+        "Valencian"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Sri Lanka",
+      "flag": "🇱🇰",
+      "region": "Asia",
+      "official_raw": "Sinhala, Tamil",
+      "regional_raw": "English",
+      "official_list": [
+        "Sinhala",
+        "Tamil"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "si",
+      "is_rtl": false
+    },
+    {
+      "country": "Sudan",
+      "flag": "🇸🇩",
+      "region": "Africa",
+      "official_raw": "Arabic, English",
+      "regional_raw": "Beja, Fur, Nubian",
+      "official_list": [
+        "Arabic",
+        "English"
+      ],
+      "regional_list": [
+        "Beja",
+        "Fur",
+        "Nubian"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Suriname",
+      "flag": "🇸🇷",
+      "region": "Americas",
+      "official_raw": "Dutch",
+      "regional_raw": "Sranan Tongo, Hindi, Javanese",
+      "official_list": [
+        "Dutch"
+      ],
+      "regional_list": [
+        "Sranan Tongo",
+        "Hindi",
+        "Javanese"
+      ],
+      "primary_iso": "nl",
+      "is_rtl": false
+    },
+    {
+      "country": "Sweden",
+      "flag": "🇸🇪",
+      "region": "Europe",
+      "official_raw": "Swedish",
+      "regional_raw": "Finnish, Meänkieli, Sami",
+      "official_list": [
+        "Swedish"
+      ],
+      "regional_list": [
+        "Finnish",
+        "Meänkieli",
+        "Sami"
+      ],
+      "primary_iso": "sv",
+      "is_rtl": false
+    },
+    {
+      "country": "Switzerland",
+      "flag": "🇨🇭",
+      "region": "Europe",
+      "official_raw": "German, French, Italian, Romansh",
+      "regional_raw": "English",
+      "official_list": [
+        "German",
+        "French",
+        "Italian",
+        "Romansh"
+      ],
+      "regional_list": [
+        "English"
+      ],
+      "primary_iso": "de",
+      "is_rtl": false
+    },
+    {
+      "country": "Syria",
+      "flag": "🇸🇾",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "Kurdish, Armenian, Aramaic",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "Kurdish",
+        "Armenian",
+        "Aramaic"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Taiwan",
+      "flag": "🇹🇼",
+      "region": "Asia",
+      "official_raw": "Mandarin Chinese",
+      "regional_raw": "Taiwanese Hokkien, Hakka, Formosan",
+      "official_list": [
+        "Mandarin Chinese"
+      ],
+      "regional_list": [
+        "Taiwanese Hokkien",
+        "Hakka",
+        "Formosan"
+      ],
+      "primary_iso": "zh-CN",
+      "is_rtl": false
+    },
+    {
+      "country": "Tajikistan",
+      "flag": "🇹🇯",
+      "region": "Asia",
+      "official_raw": "Tajik",
+      "regional_raw": "Russian, Uzbek",
+      "official_list": [
+        "Tajik"
+      ],
+      "regional_list": [
+        "Russian",
+        "Uzbek"
+      ],
+      "primary_iso": "tg",
+      "is_rtl": false
+    },
+    {
+      "country": "Tanzania",
+      "flag": "🇹🇿",
+      "region": "Africa",
+      "official_raw": "Swahili, English",
+      "regional_raw": "Sukuma, Gogo, Haya",
+      "official_list": [
+        "Swahili",
+        "English"
+      ],
+      "regional_list": [
+        "Sukuma",
+        "Gogo",
+        "Haya"
+      ],
+      "primary_iso": "sw",
+      "is_rtl": false
+    },
+    {
+      "country": "Thailand",
+      "flag": "🇹🇭",
+      "region": "Asia",
+      "official_raw": "Thai",
+      "regional_raw": "Isan, Kam Mueang, Pak Tai",
+      "official_list": [
+        "Thai"
+      ],
+      "regional_list": [
+        "Isan",
+        "Kam Mueang",
+        "Pak Tai"
+      ],
+      "primary_iso": "th",
+      "is_rtl": false
+    },
+    {
+      "country": "Togo",
+      "flag": "🇹🇬",
+      "region": "Africa",
+      "official_raw": "French",
+      "regional_raw": "Ewe, Kabiye",
+      "official_list": [
+        "French"
+      ],
+      "regional_list": [
+        "Ewe",
+        "Kabiye"
+      ],
+      "primary_iso": "fr",
+      "is_rtl": false
+    },
+    {
+      "country": "Tonga",
+      "flag": "🇹🇴",
+      "region": "Oceania",
+      "official_raw": "Tongan, English",
+      "regional_raw": "Polynesian dialects",
+      "official_list": [
+        "Tongan",
+        "English"
+      ],
+      "regional_list": [
+        "Polynesian dialects"
+      ],
+      "primary_iso": "to",
+      "is_rtl": false
+    },
+    {
+      "country": "Trinidad and Tobago",
+      "flag": "🇹🇹",
+      "region": "Americas",
+      "official_raw": "English",
+      "regional_raw": "Trinidadian Creole, Hindi, Spanish",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Trinidadian Creole",
+        "Hindi",
+        "Spanish"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Tunisia",
+      "flag": "🇹🇳",
+      "region": "Africa",
+      "official_raw": "Arabic",
+      "regional_raw": "French, Berber",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "French",
+        "Berber"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Turkey",
+      "flag": "🇹🇷",
+      "region": "Middle East",
+      "official_raw": "Turkish",
+      "regional_raw": "Kurmanji, Zaza, Arabic",
+      "official_list": [
+        "Turkish"
+      ],
+      "regional_list": [
+        "Kurmanji",
+        "Zaza",
+        "Arabic"
+      ],
+      "primary_iso": "tr",
+      "is_rtl": false
+    },
+    {
+      "country": "Turkmenistan",
+      "flag": "🇹🇲",
+      "region": "Asia",
+      "official_raw": "Turkmen",
+      "regional_raw": "Russian, Uzbek",
+      "official_list": [
+        "Turkmen"
+      ],
+      "regional_list": [
+        "Russian",
+        "Uzbek"
+      ],
+      "primary_iso": "tk",
+      "is_rtl": false
+    },
+    {
+      "country": "Tuvalu",
+      "flag": "🇹🇻",
+      "region": "Oceania",
+      "official_raw": "Tuvaluan, English",
+      "regional_raw": "Samoan, Kiribati",
+      "official_list": [
+        "Tuvaluan",
+        "English"
+      ],
+      "regional_list": [
+        "Samoan",
+        "Kiribati"
+      ],
+      "primary_iso": "tvl",
+      "is_rtl": false
+    },
+    {
+      "country": "Uganda",
+      "flag": "🇺🇬",
+      "region": "Africa",
+      "official_raw": "English, Swahili",
+      "regional_raw": "Luganda, Runyankore, Luo",
+      "official_list": [
+        "English",
+        "Swahili"
+      ],
+      "regional_list": [
+        "Luganda",
+        "Runyankore",
+        "Luo"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Ukraine",
+      "flag": "🇺🇦",
+      "region": "Europe",
+      "official_raw": "Ukrainian",
+      "regional_raw": "Russian, Crimean Tatar, Romanian",
+      "official_list": [
+        "Ukrainian"
+      ],
+      "regional_list": [
+        "Russian",
+        "Crimean Tatar",
+        "Romanian"
+      ],
+      "primary_iso": "uk",
+      "is_rtl": false
+    },
+    {
+      "country": "United Arab Emirates",
+      "flag": "🇦🇪",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "English, Hindi, Malayalam, Urdu",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "English",
+        "Hindi",
+        "Malayalam",
+        "Urdu"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "United Kingdom",
+      "flag": "🇬🇧",
+      "region": "Europe",
+      "official_raw": "English",
+      "regional_raw": "Welsh, Scottish Gaelic, Scots, Irish",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Welsh",
+        "Scottish Gaelic",
+        "Scots",
+        "Irish"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "United States",
+      "flag": "🇺🇸",
+      "region": "Americas",
+      "official_raw": "English (De Facto)",
+      "regional_raw": "Spanish, Chinese, Tagalog, Vietnamese",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Spanish",
+        "Chinese",
+        "Tagalog",
+        "Vietnamese"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Uruguay",
+      "flag": "🇺🇾",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Portuñol, Italian",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Portuñol",
+        "Italian"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Uzbekistan",
+      "flag": "🇺🇿",
+      "region": "Asia",
+      "official_raw": "Uzbek",
+      "regional_raw": "Russian, Tajik, Karakalpak",
+      "official_list": [
+        "Uzbek"
+      ],
+      "regional_list": [
+        "Russian",
+        "Tajik",
+        "Karakalpak"
+      ],
+      "primary_iso": "uz",
+      "is_rtl": false
+    },
+    {
+      "country": "Vanuatu",
+      "flag": "🇻🇺",
+      "region": "Oceania",
+      "official_raw": "Bislama, English, French",
+      "regional_raw": "Over 100 indigenous languages",
+      "official_list": [
+        "Bislama",
+        "English",
+        "French"
+      ],
+      "regional_list": [],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Vatican City",
+      "flag": "🇻🇦",
+      "region": "Europe",
+      "official_raw": "Italian, Latin",
+      "regional_raw": "French",
+      "official_list": [
+        "Italian",
+        "Latin"
+      ],
+      "regional_list": [
+        "French"
+      ],
+      "primary_iso": "it",
+      "is_rtl": false
+    },
+    {
+      "country": "Venezuela",
+      "flag": "🇻🇪",
+      "region": "Americas",
+      "official_raw": "Spanish",
+      "regional_raw": "Wayuu, Warao, Pemon",
+      "official_list": [
+        "Spanish"
+      ],
+      "regional_list": [
+        "Wayuu",
+        "Warao",
+        "Pemon"
+      ],
+      "primary_iso": "es",
+      "is_rtl": false
+    },
+    {
+      "country": "Vietnam",
+      "flag": "🇻🇳",
+      "region": "Asia",
+      "official_raw": "Vietnamese",
+      "regional_raw": "Tay, Khmer, Hmong, French",
+      "official_list": [
+        "Vietnamese"
+      ],
+      "regional_list": [
+        "Tay",
+        "Khmer",
+        "Hmong",
+        "French"
+      ],
+      "primary_iso": "vi",
+      "is_rtl": false
+    },
+    {
+      "country": "Yemen",
+      "flag": "🇾🇪",
+      "region": "Middle East",
+      "official_raw": "Arabic",
+      "regional_raw": "Mehri, Soqotri",
+      "official_list": [
+        "Arabic"
+      ],
+      "regional_list": [
+        "Mehri",
+        "Soqotri"
+      ],
+      "primary_iso": "ar",
+      "is_rtl": true
+    },
+    {
+      "country": "Zambia",
+      "flag": "🇿🇲",
+      "region": "Africa",
+      "official_raw": "English",
+      "regional_raw": "Bemba, Nyanja, Tonga, Lozi",
+      "official_list": [
+        "English"
+      ],
+      "regional_list": [
+        "Bemba",
+        "Nyanja",
+        "Tonga",
+        "Lozi"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "country": "Zimbabwe",
+      "flag": "🇿🇼",
+      "region": "Africa",
+      "official_raw": "16 Official: English, Shona, Ndebele, Chewa, Chibarwe, Kalanga, Khoisan, Nambya, Ndau, Shangani, Sotho, Tonga, Tswana, Venda, Xhosa, Sign Language",
+      "regional_raw": "Sotho, Tonga",
+      "official_list": [
+        "Shona",
+        "Ndebele",
+        "Chewa",
+        "Chibarwe",
+        "Kalanga",
+        "Khoisan",
+        "Nambya",
+        "Ndau",
+        "Shangani",
+        "Sotho",
+        "Tonga",
+        "Tswana",
+        "Venda",
+        "Xhosa",
+        "Sign Language"
+      ],
+      "regional_list": [
+        "Sotho",
+        "Tonga"
+      ],
+      "primary_iso": "sn",
+      "is_rtl": false
+    }
+  ],
+  "indian_states": [
+    {
+      "state": "Andaman & Nicobar (UT)",
+      "type": "Union Territory",
+      "emoji": "🏝️",
+      "languages_raw": "Hindi, English, Bengali, Tamil, Telugu",
+      "languages_list": [
+        "Hindi",
+        "English",
+        "Bengali",
+        "Tamil",
+        "Telugu"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Andhra Pradesh",
+      "type": "State",
+      "emoji": "🏛️",
+      "languages_raw": "Telugu",
+      "languages_list": [
+        "Telugu"
+      ],
+      "primary_iso": "te",
+      "is_rtl": false
+    },
+    {
+      "state": "Arunachal Pradesh",
+      "type": "State",
+      "emoji": "🌄",
+      "languages_raw": "English, Nyishi, Adi, Monpa",
+      "languages_list": [
+        "English",
+        "Nyishi",
+        "Adi",
+        "Monpa"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Assam",
+      "type": "State",
+      "emoji": "🫖",
+      "languages_raw": "Assamese, Bodo, Bengali",
+      "languages_list": [
+        "Assamese",
+        "Bodo",
+        "Bengali"
+      ],
+      "primary_iso": "as",
+      "is_rtl": false
+    },
+    {
+      "state": "Bihar",
+      "type": "State",
+      "emoji": "📖",
+      "languages_raw": "Hindi, Bhojpuri, Maithili, Magahi",
+      "languages_list": [
+        "Hindi",
+        "Bhojpuri",
+        "Maithili",
+        "Magahi"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Chandigarh (UT)",
+      "type": "Union Territory",
+      "emoji": "🏙️",
+      "languages_raw": "English, Hindi, Punjabi",
+      "languages_list": [
+        "English",
+        "Hindi",
+        "Punjabi"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Chhattisgarh",
+      "type": "State",
+      "emoji": "⛏️",
+      "languages_raw": "Hindi, Chhattisgarhi",
+      "languages_list": [
+        "Hindi",
+        "Chhattisgarhi"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Dadra & Nagar Haveli & Daman & Diu (UT)",
+      "type": "Union Territory",
+      "emoji": "🏖️",
+      "languages_raw": "Gujarati, Hindi, Marathi, Bhili",
+      "languages_list": [
+        "Gujarati",
+        "Hindi",
+        "Marathi",
+        "Bhili"
+      ],
+      "primary_iso": "gu",
+      "is_rtl": false
+    },
+    {
+      "state": "Delhi (UT)",
+      "type": "National Capital Territory",
+      "emoji": "🏛️",
+      "languages_raw": "Hindi, Punjabi, Urdu, English",
+      "languages_list": [
+        "Hindi",
+        "Punjabi",
+        "Urdu",
+        "English"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Goa",
+      "type": "State",
+      "emoji": "🌴",
+      "languages_raw": "Konkani, Marathi",
+      "languages_list": [
+        "Konkani",
+        "Marathi"
+      ],
+      "primary_iso": "kok",
+      "is_rtl": false
+    },
+    {
+      "state": "Gujarat",
+      "type": "State",
+      "emoji": "🦁",
+      "languages_raw": "Gujarati",
+      "languages_list": [
+        "Gujarati"
+      ],
+      "primary_iso": "gu",
+      "is_rtl": false
+    },
+    {
+      "state": "Haryana",
+      "type": "State",
+      "emoji": "🌾",
+      "languages_raw": "Hindi, Haryanvi, Punjabi",
+      "languages_list": [
+        "Hindi",
+        "Haryanvi",
+        "Punjabi"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Himachal Pradesh",
+      "type": "State",
+      "emoji": "🏔️",
+      "languages_raw": "Hindi, Pahari, Sanskrit",
+      "languages_list": [
+        "Hindi",
+        "Pahari",
+        "Sanskrit"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Jammu & Kashmir (UT)",
+      "type": "Union Territory",
+      "emoji": "❄️",
+      "languages_raw": "Kashmiri, Dogri, Hindi, Urdu, English",
+      "languages_list": [
+        "Kashmiri",
+        "Dogri",
+        "Hindi",
+        "Urdu",
+        "English"
+      ],
+      "primary_iso": "ks",
+      "is_rtl": false
+    },
+    {
+      "state": "Jharkhand",
+      "type": "State",
+      "emoji": "🌲",
+      "languages_raw": "Hindi, Santhali, Khortha, Kurmali",
+      "languages_list": [
+        "Hindi",
+        "Santhali",
+        "Khortha",
+        "Kurmali"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Karnataka",
+      "type": "State",
+      "emoji": "💻",
+      "languages_raw": "Kannada",
+      "languages_list": [
+        "Kannada"
+      ],
+      "primary_iso": "kn",
+      "is_rtl": false
+    },
+    {
+      "state": "Kerala",
+      "type": "State",
+      "emoji": "🥥",
+      "languages_raw": "Malayalam",
+      "languages_list": [
+        "Malayalam"
+      ],
+      "primary_iso": "ml",
+      "is_rtl": false
+    },
+    {
+      "state": "Ladakh (UT)",
+      "type": "Union Territory",
+      "emoji": "🏔️",
+      "languages_raw": "Ladakhi, Purgi, Balti, English, Hindi",
+      "languages_list": [
+        "Ladakhi",
+        "Purgi",
+        "Balti",
+        "English",
+        "Hindi"
+      ],
+      "primary_iso": "lbj",
+      "is_rtl": false
+    },
+    {
+      "state": "Lakshadweep (UT)",
+      "type": "Union Territory",
+      "emoji": "🏝️",
+      "languages_raw": "Malayalam, Mahl, English",
+      "languages_list": [
+        "Malayalam",
+        "Mahl",
+        "English"
+      ],
+      "primary_iso": "ml",
+      "is_rtl": false
+    },
+    {
+      "state": "Madhya Pradesh",
+      "type": "State",
+      "emoji": "🐅",
+      "languages_raw": "Hindi, Malvi, Nimadi, Bhili",
+      "languages_list": [
+        "Hindi",
+        "Malvi",
+        "Nimadi",
+        "Bhili"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Maharashtra",
+      "type": "State",
+      "emoji": "🏰",
+      "languages_raw": "Marathi, Hindi",
+      "languages_list": [
+        "Marathi",
+        "Hindi"
+      ],
+      "primary_iso": "mr",
+      "is_rtl": false
+    },
+    {
+      "state": "Manipur",
+      "type": "State",
+      "emoji": "🌸",
+      "languages_raw": "Manipuri (Meitei)",
+      "languages_list": [
+        "Manipuri"
+      ],
+      "primary_iso": "mni",
+      "is_rtl": false
+    },
+    {
+      "state": "Meghalaya",
+      "type": "State",
+      "emoji": "🌧️",
+      "languages_raw": "English, Khasi, Garo",
+      "languages_list": [
+        "English",
+        "Khasi",
+        "Garo"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Mizoram",
+      "type": "State",
+      "emoji": "🎋",
+      "languages_raw": "Mizo, English",
+      "languages_list": [
+        "Mizo",
+        "English"
+      ],
+      "primary_iso": "lus",
+      "is_rtl": false
+    },
+    {
+      "state": "Nagaland",
+      "type": "State",
+      "emoji": "🦅",
+      "languages_raw": "English, Nagamese, Ao, Konyak, Angami",
+      "languages_list": [
+        "English",
+        "Nagamese",
+        "Ao",
+        "Konyak",
+        "Angami"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Odisha",
+      "type": "State",
+      "emoji": "☀️",
+      "languages_raw": "Odia",
+      "languages_list": [
+        "Odia"
+      ],
+      "primary_iso": "or",
+      "is_rtl": false
+    },
+    {
+      "state": "Puducherry (UT)",
+      "type": "Union Territory",
+      "emoji": "⛵",
+      "languages_raw": "Tamil, French, Telugu, Malayalam",
+      "languages_list": [
+        "Tamil",
+        "French",
+        "Telugu",
+        "Malayalam"
+      ],
+      "primary_iso": "ta",
+      "is_rtl": false
+    },
+    {
+      "state": "Punjab",
+      "type": "State",
+      "emoji": "🌾",
+      "languages_raw": "Punjabi",
+      "languages_list": [
+        "Punjabi"
+      ],
+      "primary_iso": "pa",
+      "is_rtl": false
+    },
+    {
+      "state": "Rajasthan",
+      "type": "State",
+      "emoji": "🐪",
+      "languages_raw": "Hindi, Rajasthani, Marwari",
+      "languages_list": [
+        "Hindi",
+        "Rajasthani",
+        "Marwari"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Sikkim",
+      "type": "State",
+      "emoji": "🏔️",
+      "languages_raw": "English, Nepali, Sikkimese, Lepcha",
+      "languages_list": [
+        "English",
+        "Nepali",
+        "Sikkimese",
+        "Lepcha"
+      ],
+      "primary_iso": "en-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Tamil Nadu",
+      "type": "State",
+      "emoji": "🛕",
+      "languages_raw": "Tamil, English",
+      "languages_list": [
+        "Tamil",
+        "English"
+      ],
+      "primary_iso": "ta",
+      "is_rtl": false
+    },
+    {
+      "state": "Telangana",
+      "type": "State",
+      "emoji": "💎",
+      "languages_raw": "Telugu, Urdu",
+      "languages_list": [
+        "Telugu",
+        "Urdu"
+      ],
+      "primary_iso": "te",
+      "is_rtl": false
+    },
+    {
+      "state": "Tripura",
+      "type": "State",
+      "emoji": "🎍",
+      "languages_raw": "Bengali, Kokborok, English",
+      "languages_list": [
+        "Bengali",
+        "Kokborok",
+        "English"
+      ],
+      "primary_iso": "bn",
+      "is_rtl": false
+    },
+    {
+      "state": "Uttar Pradesh",
+      "type": "State",
+      "emoji": "🕌",
+      "languages_raw": "Hindi, Urdu, Awadhi, Bhojpuri",
+      "languages_list": [
+        "Hindi",
+        "Urdu",
+        "Awadhi",
+        "Bhojpuri"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "Uttarakhand",
+      "type": "State",
+      "emoji": "⛰️",
+      "languages_raw": "Hindi, Sanskrit, Garhwali, Kumaoni",
+      "languages_list": [
+        "Hindi",
+        "Sanskrit",
+        "Garhwali",
+        "Kumaoni"
+      ],
+      "primary_iso": "hi-IN",
+      "is_rtl": false
+    },
+    {
+      "state": "West Bengal",
+      "type": "State",
+      "emoji": "🐯",
+      "languages_raw": "Bengali, Nepali, English",
+      "languages_list": [
+        "Bengali",
+        "Nepali",
+        "English"
+      ],
+      "primary_iso": "bn",
+      "is_rtl": false
+    }
+  ],
+  "iso_map": {
+    "Pashto": "ps",
+    "Dari": "prs",
+    "Persian": "fa",
+    "Uzbek": "uz",
+    "Turkmen": "tk",
+    "Balochi": "bal",
+    "Albanian": "sq",
+    "Greek": "el",
+    "Macedonian": "mk",
+    "Arabic": "ar",
+    "Tamazight": "ber",
+    "French": "fr",
+    "Catalan": "ca",
+    "Spanish": "es",
+    "Portuguese": "pt",
+    "English": "en-IN",
+    "Italian": "it",
+    "Quechua": "qu",
+    "Guarani": "gn",
+    "Armenian": "hy",
+    "Russian": "ru",
+    "Kurmanji": "kmr",
+    "Mandarin": "zh-CN",
+    "Mandarin Chinese": "zh-CN",
+    "Chinese": "zh-CN",
+    "German": "de",
+    "Turkish": "tr",
+    "Azerbaijani": "az",
+    "Bengali": "bn",
+    "Belarusian": "be",
+    "Polish": "pl",
+    "Ukrainian": "uk",
+    "Dutch": "nl",
+    "Maya": "myn",
+    "Dzongkha": "dz",
+    "Nepali": "ne",
+    "Aymara": "ay",
+    "Bosnian": "bs",
+    "Croatian": "hr",
+    "Serbian": "sr",
+    "Tswana": "tn",
+    "Malay": "ms",
+    "Bulgarian": "bg",
+    "Kirundi": "rn",
+    "Swahili": "sw",
+    "Khmer": "km",
+    "Punjabi": "pa",
+    "Sango": "sg",
+    "Cantonese": "yue",
+    "Tibetan": "bo",
+    "Uyghur": "ug",
+    "Mongolian": "mn",
+    "Malagasy": "mg",
+    "Lingala": "ln",
+    "Czech": "cs",
+    "Slovak": "sk",
+    "Danish": "da",
+    "Somali": "so",
+    "Tetum": "tet",
+    "Indonesian": "id",
+    "Tigrinya": "ti",
+    "Estonian": "et",
+    "Swazi": "ss",
+    "Zulu": "zu",
+    "Amharic": "am",
+    "Oromo": "om",
+    "Fijian": "fj",
+    "Fiji Hindi": "hif",
+    "Finnish": "fi",
+    "Swedish": "sv",
+    "Breton": "br",
+    "Basque": "eu",
+    "Georgian": "ka",
+    "Akan": "ak",
+    "Ewe": "ee",
+    "Hausa": "ha",
+    "Hindi": "hi-IN",
+    "Hungarian": "hu",
+    "Icelandic": "is",
+    "Javanese": "jv",
+    "Sundanese": "su",
+    "Kurdish": "ku",
+    "Irish": "ga",
+    "Hebrew": "he",
+    "Japanese": "ja",
+    "Kazakh": "kk",
+    "Korean": "ko",
+    "Kyrgyz": "ky",
+    "Lao": "lo",
+    "Latvian": "lv",
+    "Sotho": "st",
+    "Lithuanian": "lt",
+    "Chewa": "ny",
+    "Tamil": "ta",
+    "Dhivehi": "dv",
+    "Maltese": "mt",
+    "Marshallese": "mh",
+    "Romanian": "ro",
+    "Burmese": "my",
+    "Afrikaans": "af",
+    "Māori": "mi",
+    "Samoan": "sm",
+    "Igbo": "ig",
+    "Urdu": "ur",
+    "Sindhi": "sd",
+    "Filipino": "fil",
+    "Tagalog": "tl",
+    "Cebuano": "ceb",
+    "Ilocano": "ilo",
+    "Tatar": "tt",
+    "Chechen": "ce",
+    "Kinyarwanda": "rw",
+    "Slovene": "sl",
+    "Sinhala": "si",
+    "Galician": "gl",
+    "Tajik": "tg",
+    "Thai": "th",
+    "Tongan": "to",
+    "Tuvaluan": "tvl",
+    "Luganda": "lg",
+    "Malayalam": "ml",
+    "Welsh": "cy",
+    "Latin": "la",
+    "Vietnamese": "vi",
+    "Shona": "sn",
+    "Telugu": "te",
+    "Assamese": "as",
+    "Bodo": "brx",
+    "Bhojpuri": "bho",
+    "Maithili": "mai",
+    "Chhattisgarhi": "hne",
+    "Marathi": "mr",
+    "Bhili": "bhb",
+    "Konkani": "kok",
+    "Gujarati": "gu",
+    "Haryanvi": "bgc",
+    "Sanskrit": "sa",
+    "Kashmiri": "ks",
+    "Dogri": "doi",
+    "Santhali": "sat",
+    "Kannada": "kn",
+    "Ladakhi": "lbj",
+    "Mahl": "dv",
+    "Manipuri": "mni",
+    "Mizo": "lus",
+    "Odia": "or",
+    "Rajasthani": "raj",
+    "Kokborok": "trp",
+    "Awadhi": "awa",
+    "Garhwali": "gbm",
+    "Kumaoni": "kfy"
+  },
+  "rtl_codes": [
+    "ur",
+    "ps",
+    "prs",
+    "ar",
+    "ku",
+    "sd",
+    "fa",
+    "ug",
+    "he",
+    "arc",
+    "bal"
+  ]
+}

@@ -8,16 +8,24 @@
       "dest": "/api/$1"
     },
     {
-      "src": "^/(.*)/index-(en|es|fr|ar)(\\.html)?$",
+      "src": "^/(.*)/index-([a-zA-Z0-9_-]+)(\\.html)?$",
       "dest": "/$1/index-$2.html"
     },
     {
-      "src": "^/windows/download-(en|es|fr|ar)(\\.html)?$",
+      "src": "^/windows/download-([a-zA-Z0-9_-]+)(\\.html)?$",
       "dest": "/windows/download-$1.html"
     },
     {
-      "src": "^/index-(en|es|fr|ar)(\\.html)?$",
+      "src": "^/index-([a-zA-Z0-9_-]+)(\\.html)?$",
       "dest": "/index-$1.html"
+    },
+    {
+      "src": "^/languages/?$",
+      "dest": "/languages/index.html"
+    },
+    {
+      "src": "^/languages/(.*)",
+      "dest": "/languages/$1"
     },
     {
       "src": "^/security/?$",

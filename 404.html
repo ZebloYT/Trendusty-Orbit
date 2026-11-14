@@ -33,12 +33,14 @@
           return;
         }
 
-        if (/index-(en|es|fr|ar)$/i.test(clean) || /download-(en|es|fr|ar)$/i.test(clean)) {
+        if (/index-([a-zA-Z0-9_-]+)$/i.test(clean) || /download-([a-zA-Z0-9_-]+)$/i.test(clean)) {
           window.location.replace(clean + '.html' + search + hash);
           return;
         }
 
         var routeMap = {
+          '/languages': '/languages/',
+          '/languages/': '/languages/index.html',
           '': '/home/',
           '/': '/home/',
           '/home': '/home/',

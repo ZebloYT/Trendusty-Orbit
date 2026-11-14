@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="or" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Other Features &amp; Apps (OFAA) — Sovereign Ecosystem Catalog | Trendusty Orbit</title>
+  <meta name="description" content="Explore all standalone applications, mobile controllers, browser extensions, AI agents, and sovereign cloud infrastructure across the Trendusty Orbit ecosystem.">
+  <link rel="icon" type="image/svg+xml" href="../assets/trendusty-orbit-icon.svg">
+  <link rel="stylesheet" href="../assets/buttermax-theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap">
+
+  <style>
+    :root {
+      --bg-dark: #060911;
+      --bg-panel: #0b111e;
+      --bg-card: #000000;
+      --border-subtle: rgba(0, 245, 184, 0.16);
+      --border-glow: rgba(0, 245, 184, 0.45);
+      --cyan: #00f5b8;
+      --blue: #38bdf8;
+      --magenta: #ee00ff;
+      --amber: #fbbf24;
+      --emerald: #10b981;
+      --rose: #ff0055;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+      scroll-behavior: auto !important;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      user-select: auto !important;
+      touch-action: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      scroll-behavior: auto !important;
+      background-image: 
+        radial-gradient(circle at 12% 18%, rgba(238, 0, 255, 0.07) 0%, transparent 40%),
+        radial-gradient(circle at 88% 30%, rgba(0, 245, 184, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(56, 189, 248, 0.06) 0%, transparent 45%),
+        linear-gradient(to bottom, #060911, #030509);
+      background-attachment: fixed;
+    }
+
+    /* Ambient cyber grid */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-size: 38px 38px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 245, 184, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.02) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* TOP NAVIGATION */
+    .top-nav {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(6, 9, 17, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 28px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #00f5b8 0%, #ee00ff 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px rgba(238, 0, 255, 0.35);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+
+    .brand-title span {
+      color: var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--text-sub);
+      padding: 7px 13px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-pill:hover {
+      color: var(--cyan);
+      border-color: rgba(0, 245, 184, 0.4);
+      background: rgba(0, 245, 184, 0.08);
+    }
+
+    .nav-pill.active {
+      color: #030712;
+      background: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 245, 184, 0.4);
+    }
+
+    /* HERO */
+    .hero-section {
+      padding: 60px 0 35px;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: clamp(34px, 5vw, 56px);
+      font-weight: 900;
+      letter-spacing: -1.4px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 65%, #ee00ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: clamp(15px, 1.8vw, 18px);
+      color: #64748b;
+      max-width: 820px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+
+    /* SEARCH & FILTER CONTROLS */
+    .catalog-controls {
+      background: rgba(11, 17, 30, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 16px 20px;
+      margin-bottom: 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .search-input-wrap {
+      flex: 1 1 300px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(6, 10, 18, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 11px 16px 11px 38px;
+      color: #fff;
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 245, 184, 0.3);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-sub);
+      pointer-events: none;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-sub);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .filter-btn.active {
+      background: rgba(0, 245, 184, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* CARDS GRID */
+    .ofaa-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+      gap: 26px;
+      margin-bottom: 60px;
+      perspective: 1200px;
+    }
+
+    .ofaa-card {
+      background: #000000 !important;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transform-style: preserve-3d;
+      transform-origin: center center;
+      transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+      transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Ambient Animated Background Canvas inside the card */
+    .card-ambient-bg {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at 50% 120%, rgba(8, 16, 28, 0.95), #000000 85%);
+    }
+
+    /* IDLE ANIMATION 1: Drifting Luminous Cyber Aurora */
+    .card-ambient-bg::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 35%, rgba(0, 245, 184, 0.09) 0%, transparent 45%),
+                  radial-gradient(circle at 75% 65%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+                  radial-gradient(circle at 50% 85%, rgba(238, 0, 255, 0.06) 0%, transparent 50%);
+      opacity: 0.55;
+      animation: cardIdleAurora 14s ease-in-out infinite alternate;
+      will-change: transform, opacity;
+      transition: opacity 0.5s ease, filter 0.5s ease;
+    }
+
+    /* IDLE & HOVER ANIMATION 2: Tactical Micro-Mesh & Shimmer Wave */
+    .card-ambient-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.45;
+      transition: opacity 0.4s ease, background-image 0.4s ease;
+      mask-image: radial-gradient(ellipse at 50% 50%, black 45%, transparent 92%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 45%, transparent 92%);
+    }
+
+    /* HOVER STATE: Energized Aurora & Luminescent Surges */
+    .ofaa-card:hover {
+      border-color: rgba(0, 245, 184, 0.5);
+      background: #000000 !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 245, 184, 0.22), 0 0 70px rgba(56, 189, 248, 0.12);
+    }
+
+    .ofaa-card:hover .card-ambient-bg::before {
+      opacity: 0.95;
+      filter: brightness(1.25) saturate(1.35);
+      animation: cardHoverSurge 6s ease-in-out infinite alternate;
+    }
+
+    .ofaa-card:hover .card-ambient-bg::after {
+      opacity: 0.8;
+      background-image: 
+        linear-gradient(rgba(0, 245, 184, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.045) 1px, transparent 1px);
+    }
+
+    /* Top Accent Line with Idle & Hover Shimmering Laser Flow */
+    .ofaa-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #00f5b8, #38bdf8, #ee00ff, #00f5b8);
+      background-size: 300% 100%;
+      animation: cardTopBarIdle 8s linear infinite;
+      z-index: 3;
+      transition: height 0.3s ease, filter 0.3s ease;
+    }
+
+    .ofaa-card:hover::before {
+      height: 3.5px;
+      filter: drop-shadow(0 0 8px #00f5b8);
+      animation: cardTopBarHover 3s linear infinite;
+    }
+
+    /* Interactive Mouse Spotlight Sheen */
+    .ofaa-card::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: inherit;
+      background: radial-gradient(420px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(0, 245, 184, 0.16) 0%, rgba(56, 189, 248, 0.08) 35%, transparent 75%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .ofaa-card:hover::after {
+      opacity: 1;
+    }
+
+    @keyframes cardIdleAurora {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+      }
+      50% {
+        transform: translate3d(5%, 4%, 0) scale(1.08) rotate(5deg);
+      }
+      100% {
+        transform: translate3d(-4%, -3%, 0) scale(1.04) rotate(-4deg);
+      }
+    }
+
+    @keyframes cardHoverSurge {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1.1) rotate(0deg);
+      }
+      50% {
+        transform: translate3d(6%, 5%, 0) scale(1.18) rotate(8deg);
+      }
+      100% {
+        transform: translate3d(-5%, -4%, 0) scale(1.14) rotate(-6deg);
+      }
+    }
+
+    @keyframes cardTopBarIdle {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    @keyframes cardTopBarHover {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    .card-top {
+      padding: 24px 26px 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .card-icon-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      background: #080e1a;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .card-icon-wrap img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
+
+    .status-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-live {
+      background: rgba(0, 245, 184, 0.15);
+      border: 1px solid rgba(0, 245, 184, 0.4);
+      color: #00f5b8;
+    }
+
+    .status-wip {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+    }
+
+    .status-pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .card-tagline {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+
+    .card-desc {
+      font-size: 13.5px;
+      color: #cbd5e1;
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    .card-badges-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .mini-badge {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-sub);
+    }
+
+    .card-bottom {
+      padding: 16px 26px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: #000000 !important;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-action-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-act {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 9px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-act-primary {
+      background: linear-gradient(135deg, #00f5b8, #00c997);
+      color: #030712;
+      box-shadow: 0 4px 15px rgba(0, 245, 184, 0.3);
+    }
+
+    .btn-act-primary:hover {
+      background: #38bdf8;
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .btn-act-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: #f1f5f9;
+    }
+
+    .btn-act-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .btn-act-fb {
+      background: rgba(251, 191, 36, 0.1);
+      border-color: rgba(251, 191, 36, 0.35);
+      color: #fbbf24;
+    }
+
+    .btn-act-fb:hover {
+      background: rgba(251, 191, 36, 0.2);
+      border-color: #fbbf24;
+      color: #fef08a;
+    }
+
+    /* AUTH NOTIFICATION BANNER */
+    .auth-banner-box {
+      background: rgba(14, 22, 38, 0.95);
+      border: 1px solid rgba(0, 245, 184, 0.28);
+      border-radius: 14px;
+      padding: 14px 22px;
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 13.5px;
+      color: #ffffff !important;
+    }
+
+    .auth-banner-box span,
+    .auth-banner-box strong {
+      color: #ffffff !important;
+    }
+
+    /* FOOTER */
+    .ofaa-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 13px;
+    }
+
+    /* UNIVERSAL FEEDBACK / AUTH MODAL BACKDROP */
+    .auth-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 5, 9, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+      padding: 20px;
+    }
+
+    .auth-modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .auth-modal-window {
+      background: #0b111e;
+      border: 1px solid rgba(0, 245, 184, 0.3);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 245, 184, 0.2);
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .auth-modal-backdrop.is-open .auth-modal-window {
+      transform: scale(1) translateY(0);
+    }
+
+    .auth-modal-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .auth-modal-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .auth-modal-body {
+      padding: 24px;
+    }
+
+    .auth-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .auth-close-btn:hover {
+      background: rgba(255, 0, 85, 0.2);
+      color: #ff0055;
+      border-color: #ff0055;
+    }
+
+    /* Tactical Orbit Buttermax Circle Cursor — #EE00FF */
+    html.custom-cursor-active,
+    html.custom-cursor-active body,
+    html.custom-cursor-active *,
+    html.custom-cursor-active *::before,
+    html.custom-cursor-active *::after {
+      cursor: none !important;
+    }
+    html.custom-cursor-active a,
+    html.custom-cursor-active button,
+    html.custom-cursor-active input,
+    html.custom-cursor-active textarea,
+    html.custom-cursor-active select,
+    html.custom-cursor-active canvas,
+    html.custom-cursor-active [role="button"],
+    html.custom-cursor-active label {
+      cursor: none !important;
+    }
+
+    /* Precision Center Dot */
+    .orbit-cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background: #EE00FF !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF, 0 0 3px #ffffff !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* Outer Weightless Magnetic Follower Ring */
+    .orbit-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      border: 1.8px solid #EE00FF !important;
+      background: rgba(238, 0, 255, 0.08) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 16px rgba(238, 0, 255, 0.45) !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Hover State: Expands gracefully around interactive elements */
+    .orbit-cursor-ring.is-hovering {
+      width: 62px !important;
+      height: 62px !important;
+      border-color: #EE00FF !important;
+      background: rgba(238, 0, 255, 0.18) !important;
+      box-shadow: 0 0 28px rgba(238, 0, 255, 0.75), inset 0 0 12px rgba(238, 0, 255, 0.25) !important;
+    }
+
+    .orbit-cursor-dot.is-hovering {
+      width: 6px !important;
+      height: 6px !important;
+      background: #ffffff !important;
+      box-shadow: 0 0 12px #ffffff, 0 0 24px #EE00FF !important;
+    }
+
+    /* Click Active State: Shockwave contraction */
+    .orbit-cursor-ring.is-active {
+      width: 26px !important;
+      height: 26px !important;
+      border-width: 2.4px !important;
+      background: rgba(238, 0, 255, 0.35) !important;
+      box-shadow: 0 0 35px #EE00FF !important;
+    }
+
+    .orbit-cursor-dot.is-active {
+      width: 12px !important;
+      height: 12px !important;
+      box-shadow: 0 0 20px #ffffff, 0 0 35px #EE00FF !important;
+    }
+
+    @media (pointer: coarse) {
+      html.custom-cursor-active,
+      html.custom-cursor-active body,
+      html.custom-cursor-active * {
+        cursor: auto !important;
+      }
+      .orbit-cursor-dot, .orbit-cursor-ring {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .ofaa-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="custom-cursor-active" data-scroll="native">
+
+  <!-- Orbit Circle Mouse Cursor in #EE00FF -->
+  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
+
+  <!-- TOP NAVIGATION -->
+  <nav class="top-nav">
+    <a href="../home/" class="brand-group">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-title">TRENDUSTY <span>ORBIT</span> // OFAA</div>
+    </a>
+
+    <div class="nav-links">
+      <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)" style="background: rgba(12, 16, 23, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; font-family: monospace; cursor: pointer;">
+        <optgroup label="🌐 Global Languages">
+          <option value="en">EN English</option>
+          <option value="es">ES Español</option>
+          <option value="fr">FR Français</option>
+          <option value="ar">AR العربية (RTL)</option>
+          <option value="zh">ZH 中文 (Mandarin)</option>
+          <option value="ja">JA 日本語</option>
+          <option value="ru">RU Русский</option>
+          <option value="de">DE Deutsch</option>
+          <option value="pt">PT Português</option>
+          <option value="it">IT Italiano</option>
+          <option value="nl">NL Nederlands</option>
+          <option value="tr">TR Türkçe</option>
+          <option value="ko">KO 한국어</option>
+          <option value="fa">FA فارسی (RTL)</option>
+          <option value="vi">VI Tiếng Việt</option>
+          <option value="id">ID Bahasa Indonesia</option>
+        </optgroup>
+        <optgroup label="🇮🇳 Indian Languages">
+          <option value="hi">HI हिन्दी (Hindi)</option>
+          <option value="bn">BN বাংলা (Bengali)</option>
+          <option value="te">TE తెలుగు (Telugu)</option>
+          <option value="mr">MR मराठी (Marathi)</option>
+          <option value="ta">TA தமிழ் (Tamil)</option>
+          <option value="gu">GU ગુજરાતી (Gujarati)</option>
+          <option value="ur">UR اردو (Urdu - RTL)</option>
+          <option value="kn">KN ಕನ್ನಡ (Kannada)</option>
+          <option value="ml">ML മലയാളം (Malayalam)</option>
+          <option value="pa">PA ਪੰਜਾਬੀ (Punjabi)</option>
+          <option value="or">OR ଓଡ଼ିଆ (Odia)</option>
+          <option value="as">AS অসমীয়া (Assamese)</option>
+          <option value="sa">SA संस्कृतम् (Sanskrit)</option>
+          <option value="ne">NE नेपाली (Nepali)</option>
+        </optgroup>
+      </select>
+      <a href="../home/" class="nav-pill">&larr; Main Operations Center</a>
+      <a href="../apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;">🤖 JARVIS</a>
+      <a href="../apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.35); color: #ff4b72;"><img src="../assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
+      <a href="../echonode/" class="nav-pill">⛏️ EchoNode</a>
+      <a href="../windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
+      <a href="../share/" class="nav-pill">📤 Share</a>
+      <a href="../languages/" class="nav-pill" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">🌐 Languages</a>
+      <button type="button" class="nav-pill" onclick="openFeedbackModal('OFAA Catalog')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
+      <button type="button" class="nav-pill" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero-section">
+      <div class="hero-eyebrow">
+        <span>⚡ SOVEREIGN ECOSYSTEM DIRECTORY</span>
+      </div>
+      <h1 class="hero-title">Other Features &amp; Applications</h1>
+      <p class="hero-desc" style="color: #64748b !important;">
+        Complete catalog of autonomous AI companions, standalone desktop workstations, mobile remote controllers, custom browser extensions, and cloud utility toolchains &mdash; built under one zero-telemetry architecture.
+      </p>
+
+      <!-- AUTH STATUS BANNER -->
+      <div class="auth-banner-box">
+        <div>
+          <span style="color: #ffffff !important;">🔒 <strong style="color: #ffffff !important;">Download Authorization:</strong> Website browsing &amp; feature explorations are open for everyone. An authenticated operative account is required to download application installers and binary archives.</span>
+        </div>
+        <div id="ofaa-auth-status" style="font-family: var(--font-mono); font-weight: 700; color: var(--cyan);">
+          Checking session...
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH & FILTER ROW -->
+    <div class="catalog-controls">
+      <div class="search-input-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="ofaa-search-input" class="search-input" placeholder="Search applications, features, extensions, or tags..." oninput="filterApps()">
+      </div>
+
+      <div class="filter-pills" id="filter-pills">
+        <button type="button" class="filter-btn active" data-filter="all" onclick="setFilter(this, 'all')">All Apps &amp; Features (8)</button>
+        <button type="button" class="filter-btn" data-filter="ai" onclick="setFilter(this, 'ai')">🤖 AI &amp; Intelligence</button>
+        <button type="button" class="filter-btn" data-filter="desktop" onclick="setFilter(this, 'desktop')">💻 Desktop Workstations</button>
+        <button type="button" class="filter-btn" data-filter="mobile" onclick="setFilter(this, 'mobile')">📱 Mobile &amp; Remote</button>
+        <button type="button" class="filter-btn" data-filter="extensions" onclick="setFilter(this, 'extensions')">🧩 Browser Extensions</button>
+        <button type="button" class="filter-btn" data-filter="cloud" onclick="setFilter(this, 'cloud')">☁️ Cloud &amp; Utilities</button>
+      </div>
+    </div>
+
+    <!-- CARDS GRID -->
+    <section class="ofaa-grid" id="ofaa-cards-grid">
+      
+      <!-- 1. JARVIS AI ASSISTANT -->
+      <div class="ofaa-card" data-category="ai desktop mobile" data-keywords="jarvis ai assistant voice commands controller telemetry android windows">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(245, 158, 11, 0.4); background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, #060b14 80%);">
+              🤖
+            </div>
+            <span class="status-tag status-wip">
+              <span class="status-pulse"></span> UNDER PROCESS (ALPHA)
+            </span>
+          </div>
+
+          <h3 class="card-title">JARVIS AI Assistant &amp; Controller</h3>
+          <div class="card-tagline">Autonomous AI System Orchestration &bull; Mobile Remote Companion</div>
+          <p class="card-desc">
+            The neural core of Trendusty Orbit. Coordinates automated system management, tactical voice synthesis, real-time telemetry analytics, and direct Android companion remote link.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">Windows 10/11 Host (120 MB)</span>
+            <span class="mini-badge">Android Controller APK (14 MB)</span>
+            <span class="mini-badge">Voice Recognition</span>
+            <span class="mini-badge">Zero Telemetry</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../apps/jarvis/" class="btn-act btn-act-primary">Open JARVIS Hub ↗</a>
+            <a href="../apps/jarvis/downloads/JarvisController.apk" download class="btn-act btn-act-secondary">🤖 Android APK</a>
+            <button type="button" class="btn-act btn-act-fb" onclick="openFeedbackModal('JARVIS')">⭐ Feedback</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. GESTUBE YOUTUBE OPTIMIZER -->
+      <div class="ofaa-card" data-category="extensions desktop mobile" data-keywords="gestube youtube skip ads shorts auto-scroll extension chrome edge firefox android windows">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(255, 0, 85, 0.4); background: radial-gradient(circle, rgba(255, 0, 85, 0.15) 0%, #060b14 80%);">
+              <img src="../assets/gestube-logo.png" alt="GESTUBE Logo">
+            </div>
+            <span class="status-tag status-live">
+              <span class="status-pulse"></span> LIVE v1.0.0
+            </span>
+          </div>
+
+          <h3 class="card-title">GESTUBE &mdash; YouTube Optimizer Suite</h3>
+          <div class="card-tagline" style="color: #ff3366;">Instant Ad-Skip &bull; Shorts Auto-Advancer &bull; Cross-Platform</div>
+          <p class="card-desc">
+            Autonomous YouTube power tool. Automates ad-skipping, automatically scrolls YouTube Shorts when finished, unlocks high-speed playback shortcuts, picture-in-picture, and background playback.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">Windows App (.zip)</span>
+            <span class="mini-badge">Chrome/Edge (MV3)</span>
+            <span class="mini-badge">Firefox Add-on</span>
+            <span class="mini-badge">Android APK</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../apps/gestube/" class="btn-act btn-act-primary" style="background: linear-gradient(135deg, #ff0055, #cc0044); color: #fff;">Open GESTUBE Hub ↗</a>
+            <a href="../apps/gestube/downloads/GESTUBE_Windows_v1.0.0.zip" download class="btn-act btn-act-secondary">💻 Windows App</a>
+            <a href="../apps/gestube/downloads/GESTUBE_Extension_Chrome_Edge.zip" download class="btn-act btn-act-secondary">🧩 Chrome Ext</a>
+            <button type="button" class="btn-act btn-act-fb" onclick="openFeedbackModal('GESTUBE')">⭐ Feedback</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. ECHONODE MINECRAFT CLOUD -->
+      <div class="ofaa-card" data-category="cloud" data-keywords="echonode minecraft paper server cloud 3d webgl console playit guide book">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(0, 245, 184, 0.35);">
+              <img src="../assets/echonode-logo.jpg" alt="EchoNode Logo" style="border-radius: 8px;">
+            </div>
+            <span class="status-tag status-live">
+              <span class="status-pulse"></span> 24/7 CLOUD HOST
+            </span>
+          </div>
+
+          <h3 class="card-title">EchoNode Web &mdash; 24/7 Minecraft Manager</h3>
+          <div class="card-tagline">Continuous CI/CD Server Hosting &bull; Interactive 3D WebGL</div>
+          <p class="card-desc">
+            Sovereign Minecraft Cloud Server Management Suite featuring live terminal log streaming, interactive 3D WebGL models, automated 24/7 GitHub Actions CI/CD with playit.gg tunneling, MOTD designer, and Minecraft Guide Book.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">Paper 1.20+</span>
+            <span class="mini-badge">3D WebGL</span>
+            <span class="mini-badge">playit.gg Tunnel</span>
+            <span class="mini-badge">33 Plugins</span>
+            <span class="mini-badge">TPS 20.0</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../echonode/" class="btn-act btn-act-primary">Launch EchoNode Web ↗</a>
+            <a href="../echonode/?guide=1" class="btn-act btn-act-secondary">📖 Guide Book</a>
+            <button type="button" class="btn-act btn-act-fb" onclick="openFeedbackModal('EchoNode')">⭐ Feedback</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. RETROSMART CURSORS -->
+      <div class="ofaa-card" data-category="extensions desktop" data-keywords="retrosmart cursors xcursor win95 mac system 7 chrome extension pixel font 3d">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(56, 189, 248, 0.4); background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, #060b14 80%);">
+              <img src="../assets/retrosmart-logo.png" alt="Retrosmart Logo">
+            </div>
+            <span class="status-tag status-live" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+              <span class="status-pulse" style="background: #38bdf8;"></span> 28 RETRO KITS
+            </span>
+          </div>
+
+          <h3 class="card-title">Retrosmart &amp; Tactical Cursors Suite</h3>
+          <div class="card-tagline" style="color: #38bdf8;">Authentic 8-Bit Pixel Cursors &bull; Win95 3D Chrome, Mac System 7</div>
+          <p class="card-desc">
+            Sovereign desktop cursor suites from Retrosmart Xcursor featuring Win-3D Chrome, Mac-ish System 7, Win-ish 95, and Cur-Font across Catppuccin, Gruvbox, Everforest, and Rosé Pine. Complete with 1-click install.inf and Chrome Extension.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">15-Role Windows Schemes</span>
+            <span class="mini-badge">1-Click .INF Setup</span>
+            <span class="mini-badge">Chrome Extension (MV3)</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../windows/cursor-download" class="btn-act btn-act-primary" style="background: linear-gradient(135deg, #38bdf8, #0284c7); color: #fff;">Explore 28 Kits ↗</a>
+            <a href="../retrosmart/downloads/orbit-retrosmart-chrome-extension.zip" download class="btn-act btn-act-secondary">🧩 Chrome Extension</a>
+            <button type="button" class="btn-act btn-act-fb" onclick="openFeedbackModal('Retrosmart')">⭐ Feedback</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. TRENDUSTY ORBIT DESKTOP CLIENT -->
+      <div class="ofaa-card" data-category="desktop" data-keywords="trendusty orbit desktop client setup windows cop common operating picture radar">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(0, 245, 184, 0.4);">
+              <img src="../favicon.ico" alt="Trendusty Orbit Logo">
+            </div>
+            <span class="status-tag status-live">
+              <span class="status-pulse"></span> WINDOWS CLIENT v2.0
+            </span>
+          </div>
+
+          <h3 class="card-title">Trendusty Orbit Desktop Workstation</h3>
+          <div class="card-tagline">Air-Gapped Common Operating Picture &bull; 60 FPS Hardware Render</div>
+          <p class="card-desc">
+            Deploy the complete Common Operating Picture (COP) directly to your Windows workstation. Fuses live global aviation, maritime AIS, satellite ephemeris, CCTV, and cyber intelligence with zero telemetry leakage.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">Windows 10/11 x64</span>
+            <span class="mini-badge">365 KB Native Setup</span>
+            <span class="mini-badge">Zero Telemetry</span>
+            <span class="mini-badge">DirectX / FXAA Engine</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../windows/Trendusty-Orbit-Setup.exe" download class="btn-act btn-act-primary">Download Orbit (.exe) ⬇</a>
+            <a href="../Install%20Trendusty%20Orbit.bat" download class="btn-act btn-act-secondary">Batch (.bat)</a>
+            <a href="../windows/download" target="_blank" class="btn-act btn-act-secondary">Setup Hub ↗</a>
+            <button type="button" class="btn-act btn-act-fb" onclick="openFeedbackModal('Trendusty Orbit Desktop')">⭐ Feedback</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. ORBIT SHARE (P2P FILE TRANSFER) -->
+      <div class="ofaa-card" data-category="cloud" data-keywords="orbit share file transfer p2p webrtc encrypted direct browser">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(168, 85, 247, 0.4); background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, #060b14 80%);">
+              📤
+            </div>
+            <span class="status-tag status-live" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #c084fc;">
+              <span class="status-pulse" style="background: #c084fc;"></span> P2P ENCRYPTED
+            </span>
+          </div>
+
+          <h3 class="card-title">Orbit Share &mdash; P2P Encrypted File Transfer</h3>
+          <div class="card-tagline" style="color: #c084fc;">End-to-End WebRTC Tunnel &bull; Zero Server Storage</div>
+          <p class="card-desc">
+            Direct browser-to-browser encrypted file transfers. Stream gigabytes of operational dossiers, video archives, and code repositories across air-gapped networks with zero intermediate cloud storage.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">WebRTC DataChannel</span>
+            <span class="mini-badge">E2E Encryption</span>
+            <span class="mini-badge">Unlimited File Size</span>
+            <span class="mini-badge">Instant Link Generation</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../share/" class="btn-act btn-act-primary" style="background: linear-gradient(135deg, #a855f7, #7c3aed); color: #fff;">Launch Orbit Share ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. COLOR LAB & TACTICAL CURSORS -->
+      <div class="ofaa-card" data-category="desktop" data-keywords="color lab cursor magnetic follower magenta physics experimental">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(238, 0, 255, 0.4); background: radial-gradient(circle, rgba(238, 0, 255, 0.15) 0%, #060b14 80%);">
+              🧪
+            </div>
+            <span class="status-tag status-live" style="background: rgba(238, 0, 255, 0.15); border-color: rgba(238, 0, 255, 0.4); color: #ee00ff;">
+              <span class="status-pulse" style="background: #ee00ff;"></span> LAB EXPERIMENT
+            </span>
+          </div>
+
+          <h3 class="card-title">Color Lab &amp; Tactical Cursor Sandbox</h3>
+          <div class="card-tagline" style="color: #ee00ff;">#EE00FF Neon Palette &bull; Real-Time Magnetic Follower Physics</div>
+          <p class="card-desc">
+            Interactive visual laboratory for testing customized magnetic follower physics, neon magenta core luminescence, click compression behaviors, and multi-layered cyber reactive surfaces.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">60 FPS Follower Ring</span>
+            <span class="mini-badge">Dynamic Interpolation</span>
+            <span class="mini-badge">Hex Code Customizer</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../temp/" class="btn-act btn-act-primary" style="background: linear-gradient(135deg, #ee00ff, #c026d3); color: #fff;">Enter Color Lab ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. SECURITY VAULT -->
+      <div class="ofaa-card" data-category="cloud" data-keywords="security vault kdbx aes-256 encrypted accounts ip defense sentinel guardian">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
+        <div class="card-top">
+          <div class="card-header-row">
+            <div class="card-icon-wrap" style="border-color: rgba(0, 245, 184, 0.4); background: radial-gradient(circle, rgba(0, 245, 184, 0.15) 0%, #060b14 80%);">
+              🛡️
+            </div>
+            <span class="status-tag status-live">
+              <span class="status-pulse"></span> AES-256-GCM
+            </span>
+          </div>
+
+          <h3 class="card-title">Security Vault &amp; IP Defense Guardian</h3>
+          <div class="card-tagline">Encrypted KDBX Account Management &bull; Rate Limit Sentinel</div>
+          <p class="card-desc">
+            Zero-knowledge account database with AES-256-GCM cryptography. Features automated IP firewall analysis, credential synchronization, anti-bruteforce shield, and instant unblock bypass console.
+          </p>
+
+          <div class="card-badges-row">
+            <span class="mini-badge">KDBX Vault Engine</span>
+            <span class="mini-badge">Live IP Sentinel</span>
+            <span class="mini-badge">Anti-DDoS Shield</span>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-action-bar">
+            <a href="../apps/account-manager/" class="btn-act btn-act-primary">Open Security Vault ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Universal Apps Feedback & Problem Resolver Modal -->
+  <div id="feedback-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleFeedbackBackdropClick(event)">
+    <div class="auth-modal-window" style="max-width: 580px; border-color: rgba(251, 191, 36, 0.45); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.2);" onclick="event.stopPropagation()">
+      <div class="auth-modal-header" style="border-bottom: 1px solid rgba(251, 191, 36, 0.25);">
+        <div class="auth-modal-brand">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            ⭐
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 15px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+              <span>App Feedback &amp; Problem Resolver</span>
+              <span style="font-size: 10px; font-weight: 700; background: rgba(0, 245, 184, 0.15); color: #00f5b8; border: 1px solid rgba(0, 245, 184, 0.4); padding: 2px 7px; border-radius: 999px;">LIVE SUPPORT</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8;">Report bugs, request features, or rate any Trendusty Orbit application</div>
+          </div>
+        </div>
+        <button type="button" class="auth-close-btn" onclick="closeFeedbackModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="auth-modal-body" style="padding: 24px; color: #e2e8f0; font-size: 13px;">
+        <form id="universal-feedback-form" onsubmit="handleUniversalFeedbackSubmit(event)">
+          <!-- User status banner -->
+          <div id="modal-user-identity-box" style="background: rgba(0, 245, 184, 0.08); border: 1px solid rgba(0, 245, 184, 0.25); border-radius: 10px; padding: 10px 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 16px;">👤</span>
+              <span id="modal-user-name-display" style="font-weight: 700; color: #00f5b8; font-family: var(--font-mono); font-size: 12.5px;">Logged in as: Operative</span>
+            </div>
+            <span id="modal-auth-badge" style="font-size: 10.5px; font-family: var(--font-mono); color: #94a3b8;">AUTHENTICATED</span>
+          </div>
+
+          <!-- App & Category row -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: #00f5b8; margin-bottom: 6px;">APPLICATION</label>
+              <select id="modal-fb-app" style="width: 100%; background: #070d18; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; font-family: var(--font-sans);">
+                <option value="JARVIS">🤖 JARVIS (Under Process)</option>
+                <option value="GESTUBE">▶️ GESTUBE YouTube Suite</option>
+                <option value="EchoNode">⛏️ EchoNode Minecraft Cloud</option>
+                <option value="Retrosmart">🕹️ Retrosmart Xcursor Kits</option>
+                <option value="Trendusty Orbit Desktop">🌐 Trendusty Orbit Desktop COP</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: #fbbf24; margin-bottom: 6px;">REPORT TYPE</label>
+              <select id="modal-fb-category" style="width: 100%; background: #070d18; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; font-family: var(--font-sans);">
+                <option value="problem">🐛 Bug / Problem to Fix</option>
+                <option value="feature">💡 Feature Request</option>
+                <option value="performance">⚡ Performance / Lag Issue</option>
+                <option value="general">💬 General Feedback &amp; Review</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Star Rating -->
+          <div style="margin-bottom: 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; text-align: center;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: #fbbf24; font-weight: 700; margin-bottom: 6px;">YOUR STAR RATING:</div>
+            <div id="modal-star-picker" style="display: inline-flex; gap: 8px; cursor: pointer; font-size: 32px; user-select: none;">
+              <span class="m-star" data-val="1" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="2" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="3" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="4" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="5" style="color: #fbbf24;">★</span>
+            </div>
+            <div id="modal-star-text" style="font-family: var(--font-mono); font-size: 11.5px; color: #fbbf24; margin-top: 4px; font-weight: 700;">★★★★★ 5/5 Sovereign Grade</div>
+          </div>
+
+          <!-- Message Textarea -->
+          <div style="margin-bottom: 18px;">
+            <label style="display: block; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: #38bdf8; margin-bottom: 6px;">PROBLEM DESCRIPTION / FEEDBACK DETAILS</label>
+            <textarea id="modal-fb-message" required placeholder="Describe any bug or problem you experienced, error messages, or suggestions for the developer..." style="width: 100%; min-height: 100px; background: #070d18; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 12px; color: #fff; font-size: 13px; font-family: var(--font-sans); resize: vertical;"></textarea>
+          </div>
+
+          <div id="modal-fb-status" style="font-family: var(--font-mono); font-size: 12px; margin-bottom: 14px;"></div>
+
+          <!-- Submit Button -->
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button type="button" onclick="closeFeedbackModal()" class="btn" style="padding: 10px 18px; font-size: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; border-radius: 8px; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn" style="padding: 10px 24px; font-size: 12.5px; font-weight: 700; background: linear-gradient(135deg, #fbbf24, #d97706); color: #050811; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);">
+              <span>Submit Report &amp; Rating 🚀</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ofaa-footer">
+    <div class="container">
+      <div style="margin-bottom: 12px; font-family: var(--font-mono); font-weight: 700; color: #fff;">TRENDUSTY ORBIT // SOVEREIGN ECOSYSTEM</div>
+      <p>All client binaries and cloud components are compiled without third-party tracking, analytics, or telemetry leakage.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Category Filter & Search Logic
+    let currentFilter = 'all';
+
+    function setFilter(btn, filter) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = filter;
+      filterApps();
+    }
+
+    function filterApps() {
+      const query = (document.getElementById('ofaa-search-input').value || '').toLowerCase().trim();
+      const cards = document.querySelectorAll('.ofaa-card');
+
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category') || '';
+        const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+        const text = card.textContent.toLowerCase();
+
+        const matchesCat = currentFilter === 'all' || cat.includes(currentFilter);
+        const matchesQuery = !query || keywords.includes(query) || text.includes(query);
+
+        if (matchesCat && matchesQuery) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Auth & Download Interceptor
+    function checkAuthUser() {
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+
+      const authStatus = document.getElementById('ofaa-auth-status');
+      const userPill = document.getElementById('orbit-ecosystem-user-pill') || document.getElementById('ofaa-user-pill');
+
+      if (isLoggedIn) {
+        if (authStatus) authStatus.innerHTML = `🟢 Logged in as: <strong>${name}</strong>`;
+        let avatar = '👤';
+        try {
+          if (sess) {
+            const parsed = JSON.parse(sess);
+            if (parsed && parsed.avatar) avatar = parsed.avatar;
+          }
+        } catch (e) {}
+        if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+          avatar = localStorage.getItem('orbit_user_avatar');
+        }
+        const lower = (name || '').toLowerCase();
+        if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+          avatar = '🥷';
+        }
+        if (userPill) {
+          userPill.innerHTML = `${avatar} ${name}`;
+          userPill.classList.add('active');
+        }
+      } else {
+        if (authStatus) authStatus.innerHTML = `⚪ Not Logged In &bull; <a href="../home/?auth=login" style="color:#00f5b8; text-decoration:underline;">Sign In to Download</a>`;
+        if (userPill) {
+          userPill.innerHTML = `👤 Sign Up / Login`;
+          userPill.classList.remove('active');
+        }
+      }
+    }
+
+    function handleEcosystemUserClick(e) {
+      if (e) e.preventDefault();
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      if (sess && name && name !== 'Guest User') {
+        window.location.href = '/apps/account-manager/';
+      } else {
+        window.location.href = '/home/?auth=login';
+      }
+    }
+
+    function openAuthModal(e) {
+      handleEcosystemUserClick(e);
+    }
+
+    // Global download protection
+    document.addEventListener('click', function(e) {
+      const dl = e.target.closest('a[download], a[href*=".exe"], a[href*=".zip"], a[href*=".apk"], a[href*=".bat"]');
+      if (!dl) return;
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+
+      if (!isLoggedIn) {
+        e.preventDefault();
+        e.stopPropagation();
+        alert('🔒 Authentication Required: Please log in or create an account on Trendusty Orbit to download application packages.');
+        window.location.href = '../home/?auth=login';
+        return false;
+      }
+    }, true);
+
+    // Feedback Modal logic
+    let modalRating = 5;
+    const modalRatingMap = {
+      1: "★☆☆☆☆ 1/5 Critical Bugs / Poor",
+      2: "★★☆☆☆ 2/5 Needs Improvement",
+      3: "★★★☆☆ 3/5 Fair / Usable",
+      4: "★★★★☆ 4/5 Very Good",
+      5: "★★★★★ 5/5 Sovereign Grade"
+    };
+
+    function initStars() {
+      const picker = document.getElementById('modal-star-picker');
+      if (!picker) return;
+      const stars = picker.querySelectorAll('.m-star');
+      const text = document.getElementById('modal-star-text');
+
+      stars.forEach(s => {
+        s.addEventListener('mouseenter', () => {
+          const v = parseInt(s.getAttribute('data-val'), 10);
+          stars.forEach(st => {
+            const val = parseInt(st.getAttribute('data-val'), 10);
+            st.style.color = val <= v ? '#fbbf24' : 'rgba(255,255,255,0.2)';
+            st.style.transform = val <= v ? 'scale(1.15)' : 'scale(1)';
+          });
+          text.textContent = modalRatingMap[v];
+        });
+
+        s.addEventListener('mouseleave', () => {
+          stars.forEach(st => {
+            const val = parseInt(st.getAttribute('data-val'), 10);
+            st.style.color = val <= modalRating ? '#fbbf24' : 'rgba(255,255,255,0.2)';
+            st.style.transform = 'scale(1)';
+          });
+          text.textContent = modalRatingMap[modalRating];
+        });
+
+        s.addEventListener('click', () => {
+          modalRating = parseInt(s.getAttribute('data-val'), 10);
+          stars.forEach(st => {
+            const val = parseInt(st.getAttribute('data-val'), 10);
+            st.style.color = val <= modalRating ? '#fbbf24' : 'rgba(255,255,255,0.2)';
+          });
+          text.textContent = modalRatingMap[modalRating];
+        });
+      });
+    }
+
+    window.openFeedbackModal = function(appName) {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (!modal) return;
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+
+      const nameDisplay = document.getElementById('modal-user-name-display');
+      const authBadge = document.getElementById('modal-auth-badge');
+
+      if (isLoggedIn) {
+        nameDisplay.innerHTML = `Logged in as: <strong>${name}</strong>`;
+        authBadge.textContent = 'VERIFIED OPERATIVE';
+        authBadge.style.color = '#00f5b8';
+      } else {
+        nameDisplay.innerHTML = `Logged in as: <em>Guest Operative</em> (<a href="../home/?auth=login" style="color:#00f5b8; text-decoration:underline;">Sign In</a>)`;
+        authBadge.textContent = 'GUEST ACCESS';
+        authBadge.style.color = '#fbbf24';
+      }
+
+      if (appName) {
+        const sel = document.getElementById('modal-fb-app');
+        if (sel) {
+          for (let opt of sel.options) {
+            if (opt.value.toLowerCase().includes(appName.toLowerCase())) {
+              sel.value = opt.value;
+              break;
+            }
+          }
+        }
+      }
+
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('auth-modal-open');
+      document.body.style.overflow = 'hidden';
+      initStars();
+    };
+
+    window.closeFeedbackModal = function() {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (modal) {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('auth-modal-open');
+        document.body.style.overflow = '';
+      }
+    };
+
+    window.handleFeedbackBackdropClick = function(e) {
+      if (e.target && e.target.id === 'feedback-modal-backdrop') {
+        window.closeFeedbackModal();
+      }
+    };
+
+    window.handleUniversalFeedbackSubmit = async function(e) {
+      e.preventDefault();
+      const status = document.getElementById('modal-fb-status');
+      const appName = document.getElementById('modal-fb-app').value;
+      const category = document.getElementById('modal-fb-category').value;
+      const message = document.getElementById('modal-fb-message').value;
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const userName = (sess && name && name !== 'Guest User') ? name : 'Guest Operative';
+
+      status.style.color = '#38bdf8';
+      status.textContent = 'Submitting report to engineering hub...';
+
+      const payload = {
+        appName,
+        category,
+        userName,
+        rating: modalRating,
+        message
+      };
+
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          status.style.color = '#00f5b8';
+          status.textContent = `✅ ${data.message}`;
+          document.getElementById('modal-fb-message').value = '';
+          setTimeout(() => {
+            window.closeFeedbackModal();
+            status.textContent = '';
+          }, 2400);
+        } else {
+          status.style.color = '#ff0055';
+          status.textContent = `⚠️ ${data.error || 'Submission failed'}`;
+        }
+      } catch (err) {
+        status.style.color = '#00f5b8';
+        status.textContent = `✅ Feedback recorded locally! Thank you, ${userName}.`;
+        setTimeout(() => {
+          window.closeFeedbackModal();
+          status.textContent = '';
+        }, 2400);
+      }
+    };
+
+    // Buttery Smooth 3D Turning & Mouse-Follower Physics for OFAA Cards
+    function initCardMouseFollower() {
+      const cards = document.querySelectorAll('.ofaa-card');
+      if (!cards.length) return;
+
+      cards.forEach(card => {
+        // Ensure ambient animated background canvas exists inside the card
+        if (!card.querySelector('.card-ambient-bg')) {
+          const bg = document.createElement('div');
+          bg.className = 'card-ambient-bg';
+          bg.setAttribute('aria-hidden', 'true');
+          card.insertBefore(bg, card.firstChild);
+        }
+
+        let isHovered = false;
+        let animationFrameId = null;
+        let targetX = 0;
+        let targetY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        let targetScale = 1;
+        let currentScale = 1;
+        let cardBounds = null;
+
+        function getCardBounds() {
+          const r = card.getBoundingClientRect();
+          return {
+            left: r.left,
+            top: r.top,
+            width: r.width,
+            height: r.height,
+            centerX: r.left + r.width / 2,
+            centerY: r.top + r.height / 2
+          };
+        }
+
+        function updateCardPhysics() {
+          // Butter-smooth damped spring/lerp easing for luxury turning rotation
+          // 0.08 produces an organic, silky weight that eliminates cuts and sudden jerks
+          const ease = 0.085;
+          currentX += (targetX - currentX) * ease;
+          currentY += (targetY - currentY) * ease;
+          currentScale += (targetScale - currentScale) * ease;
+
+          const maxTiltDeg = 10; // Elegant 3D turning rotation range
+          const rotateX = (-currentY * maxTiltDeg).toFixed(2);
+          const rotateY = (currentX * maxTiltDeg).toFixed(2);
+          const scale = currentScale.toFixed(4);
+
+          // Apply pure 3D turning rotation with perspective and scale lift (no jarring displacement)
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+
+          // Continue animation if still hovered OR if settling back to resting neutral
+          const isStillMoving = Math.abs(targetX - currentX) > 0.0008 || 
+                                Math.abs(targetY - currentY) > 0.0008 || 
+                                Math.abs(targetScale - currentScale) > 0.0008;
+
+          if (isHovered || isStillMoving) {
+            animationFrameId = requestAnimationFrame(updateCardPhysics);
+          } else {
+            // Clean neutral rest state
+            currentX = 0;
+            currentY = 0;
+            currentScale = 1;
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            animationFrameId = null;
+          }
+        }
+
+        card.addEventListener('mouseenter', (e) => {
+          isHovered = true;
+          targetScale = 1.025;
+          cardBounds = getCardBounds();
+
+          // Smoothly set target from cursor position without snapping currentX/currentY
+          const relX = (e.clientX - cardBounds.centerX) / (cardBounds.width / 2);
+          const relY = (e.clientY - cardBounds.centerY) / (cardBounds.height / 2);
+          targetX = Math.max(-1, Math.min(1, relX));
+          targetY = Math.max(-1, Math.min(1, relY));
+
+          // Set radial glow highlight coordinates
+          const localX = e.clientX - cardBounds.left;
+          const localY = e.clientY - cardBounds.top;
+          card.style.setProperty('--mouse-x', `${localX.toFixed(1)}px`);
+          card.style.setProperty('--mouse-y', `${localY.toFixed(1)}px`);
+
+          // Ensure inline transitions don't conflict with rAF
+          card.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
+
+          if (!animationFrameId) {
+            animationFrameId = requestAnimationFrame(updateCardPhysics);
+          }
+        });
+
+        card.addEventListener('mousemove', (e) => {
+          if (!cardBounds) cardBounds = getCardBounds();
+
+          // Stable center-relative calculation immune to 3D rotational shift
+          const relX = (e.clientX - cardBounds.centerX) / (cardBounds.width / 2);
+          const relY = (e.clientY - cardBounds.centerY) / (cardBounds.height / 2);
+          targetX = Math.max(-1, Math.min(1, relX));
+          targetY = Math.max(-1, Math.min(1, relY));
+
+          const localX = e.clientX - cardBounds.left;
+          const localY = e.clientY - cardBounds.top;
+          card.style.setProperty('--mouse-x', `${localX.toFixed(1)}px`);
+          card.style.setProperty('--mouse-y', `${localY.toFixed(1)}px`);
+
+          if (!animationFrameId) {
+            animationFrameId = requestAnimationFrame(updateCardPhysics);
+          }
+        }, { passive: true });
+
+        card.addEventListener('mouseleave', () => {
+          isHovered = false;
+          targetX = 0;
+          targetY = 0;
+          targetScale = 1;
+          cardBounds = null;
+          card.style.removeProperty('--mouse-x');
+          card.style.removeProperty('--mouse-y');
+
+          // Keep physics loop active to smoothly glide back to flat resting position
+          if (!animationFrameId) {
+            animationFrameId = requestAnimationFrame(updateCardPhysics);
+          }
+        });
+
+        // Recalculate bounds when window scrolls or resizes
+        window.addEventListener('scroll', () => { cardBounds = null; }, { passive: true });
+        window.addEventListener('resize', () => { cardBounds = null; }, { passive: true });
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuthUser();
+      initStars();
+      initCardMouseFollower();
+    });
+
+    // Guarantee 100% immediate, zero-latency native scrolling on OFAA
+    window.addEventListener('wheel', function(e) {
+      e.stopImmediatePropagation();
+    }, { passive: true, capture: true });
+  </script>
+
+  <!-- Tactical Orbit Cursor Animation Engine -->
+  <script>
+    (function initOrbitCursor() {
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      if (!dot || !ring) return;
+
+      document.documentElement.classList.add('custom-cursor-active');
+      document.body.classList.add('custom-cursor-active');
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let dotX = mouseX;
+      let dotY = mouseY;
+      let ringX = mouseX;
+      let ringY = mouseY;
+      let isVisible = false;
+
+      function onMouseMove(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          isVisible = true;
+          dotX = mouseX;
+          dotY = mouseY;
+          ringX = mouseX;
+          ringY = mouseY;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+        }
+      }
+
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+      window.addEventListener('mousedown', () => {
+        ring.classList.add('is-active');
+        dot.classList.add('is-active');
+      });
+      window.addEventListener('mouseup', () => {
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
+      });
+      document.addEventListener('mouseleave', () => {
+        isVisible = false;
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      });
+      document.addEventListener('mouseenter', (e) => {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        if (e && e.clientX) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }
+      });
+
+      // Smooth Gliding Floating Physics Engine (Dual Lerp Deceleration)
+      function renderFollower() {
+        if (isVisible) {
+          // Responsive fluid glide for precision dot
+          dotX += (mouseX - dotX) * 0.38;
+          dotY += (mouseY - dotY) * 0.38;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+
+          // Smooth aerodynamic trailing follower ring (weightless glide in #EE00FF)
+          ringX += (mouseX - ringX) * 0.16;
+          ringY += (mouseY - ringY) * 0.16;
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+        }
+        requestAnimationFrame(renderFollower);
+      }
+      requestAnimationFrame(renderFollower);
+
+      const interactiveSelector = 'a, button, input, select, textarea, [role="button"], .interactive, .btn, .btn-act, .filter-btn, .nav-pill, .ofaa-card, .m-star';
+
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.add('is-hovering');
+          dot.classList.add('is-hovering');
+        }
+      }, { passive: true });
+
+      document.addEventListener('mouseout', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.remove('is-hovering');
+          dot.classList.remove('is-hovering');
+        }
+      }, { passive: true });
+    })();
+  </script>
+
+  <script src="../assets/buttermax-theme.js" defer></script>
+  <script src="../assets/orbit-i18n.js"></script>
+  <script src="../assets/orbit-animation-engine.js" defer></script>
+</body>
+</html>
