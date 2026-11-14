@@ -214,7 +214,12 @@
     .hero-section {
       text-align: center;
       margin-bottom: 36px;
-      position: relative;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      z-index: 2 !important;
     }
 
     .eyebrow-pill {
@@ -607,7 +612,7 @@
   <main class="languages-container">
     
     <!-- HERO SECTION -->
-    <header class="hero-section">
+    <section class="hero-section">
       <div class="eyebrow-pill" data-i18n="lang_eyebrow">🌐 GLOBAL MULTILINGUAL SOVEREIGN DIRECTORY</div>
       <h1 class="hero-title" data-i18n="lang_title">Languages of the World &amp; India</h1>
       <p class="hero-desc" data-i18n="lang_desc">
@@ -620,7 +625,7 @@
         <div class="stat-badge" data-i18n="lang_stat_catalog"><span>Cataloged Languages:</span> <strong>350+</strong></div>
         <div class="stat-badge" data-i18n="lang_stat_routing"><span>Dynamic URL Routing:</span> <strong>?hl=... Live</strong></div>
       </div>
-    </header>
+    </section>
 
     <!-- SEARCH & CONTROLS PANEL -->
     <section class="controls-panel">

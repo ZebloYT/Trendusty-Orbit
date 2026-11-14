@@ -942,7 +942,7 @@ section,
    RESTYLED SITE SECTIONS FOR BUTTERMAX THEME
    High-contrast, brutalist-editorial design with butter yellow cards
    ========================================================================== */
-header {
+header:not(.hero-section) {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -1006,7 +1006,7 @@ header .container.nav-inner {
 /* ==========================================================================
    ROCK-SOLID RESPONSIVE NAVBAR ENGINE (ZERO OVERFLOW / 100% VISIBILITY)
    ========================================================================== */
-header {
+header:not(.hero-section) {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
