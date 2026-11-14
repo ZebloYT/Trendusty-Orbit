@@ -6,7 +6,6 @@
   <title>JARVIS — Autonomous AI System Assistant &amp; Controller | Trendusty Orbit</title>
   <meta name="description" content="JARVIS: Autonomous AI Tactical System Assistant and Android Remote Controller for Trendusty Orbit. Voice recognition, system automation, telemetry link, and neural command orchestration.">
   <link rel="icon" type="image/svg+xml" href="../../assets/trendusty-orbit-icon.svg">
-  <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="../../assets/buttermax-theme.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap">
 
@@ -31,12 +30,25 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+      scroll-behavior: smooth !important;
+    }
+
     body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: var(--font-sans);
-      min-height: 100vh;
-      overflow-x: hidden;
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      user-select: auto !important;
+      touch-action: auto !important;
+      -webkit-overflow-scrolling: touch !important;
       background-image: 
         radial-gradient(circle at 10% 20%, rgba(0, 245, 184, 0.08) 0%, transparent 40%),
         radial-gradient(circle at 85% 65%, rgba(56, 189, 248, 0.09) 0%, transparent 45%),
@@ -534,9 +546,107 @@
       color: rgba(255, 255, 255, 0.35);
       margin-top: 10px;
     }
+
+    /* Tactical Orbit Buttermax Circle Cursor — #EE00FF */
+    html.custom-cursor-active,
+    html.custom-cursor-active body,
+    html.custom-cursor-active *,
+    html.custom-cursor-active *::before,
+    html.custom-cursor-active *::after {
+      cursor: none !important;
+    }
+    html.custom-cursor-active a,
+    html.custom-cursor-active button,
+    html.custom-cursor-active input,
+    html.custom-cursor-active textarea,
+    html.custom-cursor-active select,
+    html.custom-cursor-active canvas,
+    html.custom-cursor-active [role="button"],
+    html.custom-cursor-active label {
+      cursor: none !important;
+    }
+
+    /* Precision Center Dot */
+    #orbit-cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 8px; height: 8px;
+      background: #EE00FF !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF, 0 0 3px #ffffff !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* Outer Weightless Magnetic Follower Ring */
+    #orbit-cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border: 1.8px solid #EE00FF !important;
+      background: rgba(238, 0, 255, 0.08) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 16px rgba(238, 0, 255, 0.45) !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Hover State: Expands gracefully around interactive elements */
+    #orbit-cursor-ring.is-hovering {
+      width: 62px !important;
+      height: 62px !important;
+      border-color: #00f5b8 !important;
+      background: rgba(0, 245, 184, 0.18) !important;
+      box-shadow: 0 0 28px rgba(0, 245, 184, 0.75), inset 0 0 12px rgba(0, 245, 184, 0.25) !important;
+    }
+
+    #orbit-cursor-dot.is-hovering {
+      width: 6px !important;
+      height: 6px !important;
+      background: #ffffff !important;
+      box-shadow: 0 0 12px #ffffff, 0 0 24px #00f5b8 !important;
+    }
+
+    /* Click Active State */
+    #orbit-cursor-ring.is-active {
+      width: 26px !important;
+      height: 26px !important;
+      border-width: 2.4px !important;
+      background: rgba(238, 0, 255, 0.35) !important;
+      box-shadow: 0 0 35px #EE00FF !important;
+    }
+
+    #orbit-cursor-dot.is-active {
+      width: 12px !important;
+      height: 12px !important;
+      box-shadow: 0 0 20px #ffffff, 0 0 35px #EE00FF !important;
+    }
+
+    @media (pointer: coarse) {
+      html.custom-cursor-active,
+      html.custom-cursor-active body,
+      html.custom-cursor-active * {
+        cursor: auto !important;
+      }
+      #orbit-cursor-dot, #orbit-cursor-ring {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Orbit Circle Mouse Cursor in #EE00FF -->
+  <div id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div id="orbit-cursor-ring" aria-hidden="true"></div>
 
   <!-- TOP NAV -->
   <nav class="top-nav">
@@ -989,6 +1099,101 @@
       syncUserUI();
       loadFeedbackFeed();
     });
+  </script>
+
+  <!-- Tactical Orbit Cursor Animation Engine -->
+  <script>
+    (function initCursor() {
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      if (!dot || !ring) return;
+
+      document.documentElement.classList.add('custom-cursor-active');
+      document.body.classList.add('custom-cursor-active');
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let dotX = mouseX;
+      let dotY = mouseY;
+      let ringX = mouseX;
+      let ringY = mouseY;
+      let isVisible = false;
+
+      function onMouseMove(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          isVisible = true;
+          dotX = mouseX;
+          dotY = mouseY;
+          ringX = mouseX;
+          ringY = mouseY;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+        }
+      }
+
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+      window.addEventListener('mousedown', () => {
+        ring.classList.add('is-active');
+        dot.classList.add('is-active');
+      });
+      window.addEventListener('mouseup', () => {
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
+      });
+      document.addEventListener('mouseleave', () => {
+        isVisible = false;
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      });
+      document.addEventListener('mouseenter', (e) => {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        if (e && e.clientX) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }
+      });
+
+      function renderFollower() {
+        if (isVisible) {
+          dotX += (mouseX - dotX) * 0.38;
+          dotY += (mouseY - dotY) * 0.38;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+
+          ringX += (mouseX - ringX) * 0.16;
+          ringY += (mouseY - ringY) * 0.16;
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+        }
+        requestAnimationFrame(renderFollower);
+      }
+      requestAnimationFrame(renderFollower);
+
+      const interactiveSelector = 'a, button, input, select, textarea, [role="button"], .interactive, .btn, .dl-btn, .nav-pill, .star-icon, .form-input, .form-textarea, .form-select';
+
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.add('is-hovering');
+          dot.classList.add('is-hovering');
+        }
+      }, { passive: true });
+
+      document.addEventListener('mouseout', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.remove('is-hovering');
+          dot.classList.remove('is-hovering');
+        }
+      }, { passive: true });
+    })();
   </script>
 </body>
 </html>

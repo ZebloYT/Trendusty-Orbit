@@ -6,7 +6,6 @@
   <title>GESTUBE — Smart YouTube Controller &amp; Optimizer</title>
   <meta name="description" content="GESTUBE: Auto-skip ads, dust annoying channels, auto-scroll YouTube Shorts, background audio playback & floating sidebar controller for Windows, Android, and all web browsers.">
   <link rel="icon" type="image/svg+xml" href="../../assets/trendusty-orbit-icon.svg">
-  <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="../../assets/buttermax-theme.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap">
 
@@ -32,12 +31,25 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+      scroll-behavior: smooth !important;
+    }
+
     body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: var(--font-sans);
-      min-height: 100vh;
-      overflow-x: hidden;
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      user-select: auto !important;
+      touch-action: auto !important;
+      -webkit-overflow-scrolling: touch !important;
       background-image: 
         radial-gradient(circle at 15% 15%, rgba(255, 0, 51, 0.07) 0%, transparent 45%),
         radial-gradient(circle at 85% 75%, rgba(0, 245, 184, 0.06) 0%, transparent 45%),
@@ -669,41 +681,98 @@
       text-decoration: none;
     }
 
-    /* CUSTOM CURSOR FOLLOWERS */
+    /* Tactical Orbit Buttermax Circle Cursor — #EE00FF */
+    html.custom-cursor-active,
+    html.custom-cursor-active body,
+    html.custom-cursor-active *,
+    html.custom-cursor-active *::before,
+    html.custom-cursor-active *::after {
+      cursor: none !important;
+    }
+    html.custom-cursor-active a,
+    html.custom-cursor-active button,
+    html.custom-cursor-active input,
+    html.custom-cursor-active textarea,
+    html.custom-cursor-active select,
+    html.custom-cursor-active canvas,
+    html.custom-cursor-active [role="button"],
+    html.custom-cursor-active label {
+      cursor: none !important;
+    }
+
+    /* Precision Center Dot */
     #orbit-cursor-dot {
       position: fixed;
       top: 0; left: 0;
-      width: 7px; height: 7px;
-      background: #EE00FF;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 999999;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF;
-      transition: width 0.15s, height 0.15s;
+      width: 8px; height: 8px;
+      background: #EE00FF !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF, 0 0 3px #ffffff !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
     }
 
+    /* Outer Weightless Magnetic Follower Ring */
     #orbit-cursor-ring {
       position: fixed;
       top: 0; left: 0;
-      width: 32px; height: 32px;
-      border: 1.5px solid rgba(238, 0, 255, 0.55);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 999998;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s, height 0.2s, border-color 0.2s;
+      width: 40px; height: 40px;
+      border: 1.8px solid #EE00FF !important;
+      background: rgba(238, 0, 255, 0.08) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 16px rgba(238, 0, 255, 0.45) !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Hover State: Expands gracefully around interactive elements */
+    #orbit-cursor-ring.is-hovering {
+      width: 62px !important;
+      height: 62px !important;
+      border-color: #ff0033 !important;
+      background: rgba(255, 0, 51, 0.18) !important;
+      box-shadow: 0 0 28px rgba(255, 0, 51, 0.75), inset 0 0 12px rgba(255, 0, 51, 0.25) !important;
     }
 
     #orbit-cursor-dot.is-hovering {
-      width: 12px; height: 12px;
-      background: #00f5b8;
-      box-shadow: 0 0 14px #00f5b8;
+      width: 6px !important;
+      height: 6px !important;
+      background: #ffffff !important;
+      box-shadow: 0 0 12px #ffffff, 0 0 24px #ff0033 !important;
     }
 
-    #orbit-cursor-ring.is-hovering {
-      width: 48px; height: 48px;
-      border-color: rgba(0, 245, 184, 0.7);
+    /* Click Active State */
+    #orbit-cursor-ring.is-active {
+      width: 26px !important;
+      height: 26px !important;
+      border-width: 2.4px !important;
+      background: rgba(238, 0, 255, 0.35) !important;
+      box-shadow: 0 0 35px #EE00FF !important;
+    }
+
+    #orbit-cursor-dot.is-active {
+      width: 12px !important;
+      height: 12px !important;
+      box-shadow: 0 0 20px #ffffff, 0 0 35px #EE00FF !important;
+    }
+
+    @media (pointer: coarse) {
+      html.custom-cursor-active,
+      html.custom-cursor-active body,
+      html.custom-cursor-active * {
+        cursor: auto !important;
+      }
+      #orbit-cursor-dot, #orbit-cursor-ring {
+        display: none !important;
+      }
     }
 
     @media (max-width: 640px) {
@@ -722,7 +791,9 @@
   <!-- Top Navigation Bar -->
   <nav class="top-nav">
     <a href="/home/" class="brand-group">
-      <div class="brand-icon">▶️</div>
+      <div class="brand-icon" style="background: none; border: none; box-shadow: none; padding: 0;">
+        <img src="assets/gestube-logo.png" alt="GESTUBE Logo" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255, 0, 51, 0.6));">
+      </div>
       <div>
         <div class="brand-text">GESTUBE</div>
       </div>
@@ -733,7 +804,8 @@
       <a href="/home/" class="nav-btn">🌍 COP</a>
       <a href="/android/" class="nav-btn">📱 Android</a>
       <a href="/apps/account-manager/" class="nav-btn">🔐 Vault</a>
-      <a href="https://www.youtube.com" target="_blank" rel="noopener" class="nav-btn primary">▶️ YouTube</a>
+      <a href="/apps/jarvis/" class="nav-btn" style="border-color: rgba(0, 245, 184, 0.4); color: #00f5b8;">🤖 JARVIS</a>
+      <a href="https://www.youtube.com" target="_blank" rel="noopener" class="nav-btn primary">📺 YouTube</a>
     </div>
   </nav>
 
@@ -741,6 +813,9 @@
 
     <!-- Hero Section -->
     <section class="hero">
+      <div style="width: 104px; height: 104px; margin: 0 auto 22px; border-radius: 26px; background: radial-gradient(circle, rgba(255, 0, 51, 0.2) 0%, rgba(13, 18, 28, 0.95) 75%); border: 1.5px solid rgba(255, 0, 51, 0.45); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(255, 0, 51, 0.35);">
+        <img src="assets/gestube-logo.png" alt="GESTUBE Official Logo" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(255, 0, 51, 0.8));">
+      </div>
       <div class="hero-pill">
         <span>⚡</span> GESTUBE v1.0.0 RELEASE
       </div>
@@ -1530,62 +1605,116 @@
     }
   </script>
 
-  <!-- Interactive Cursor Follower Follower Logic -->
+  <!-- Tactical Orbit Cursor Animation Engine -->
   <script>
     (function initCursor() {
       const dot = document.getElementById('orbit-cursor-dot');
       const ring = document.getElementById('orbit-cursor-ring');
       if (!dot || !ring) return;
 
+      document.documentElement.classList.add('custom-cursor-active');
+      document.body.classList.add('custom-cursor-active');
+
       let mouseX = window.innerWidth / 2;
       let mouseY = window.innerHeight / 2;
+      let dotX = mouseX;
+      let dotY = mouseY;
       let ringX = mouseX;
       let ringY = mouseY;
-      let active = false;
+      let isVisible = false;
 
-      window.addEventListener('mousemove', (e) => {
+      function onMouseMove(e) {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        dot.style.left = mouseX + 'px';
-        dot.style.top = mouseY + 'px';
-        if (!active) {
-          ring.style.opacity = '1';
+        if (!isVisible) {
+          isVisible = true;
+          dotX = mouseX;
+          dotY = mouseY;
+          ringX = mouseX;
+          ringY = mouseY;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
           dot.style.opacity = '1';
-          active = true;
+          ring.style.opacity = '1';
         }
-      });
+      }
 
-      window.addEventListener('mouseleave', () => {
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+      window.addEventListener('mousedown', () => {
+        ring.classList.add('is-active');
+        dot.classList.add('is-active');
+      });
+      window.addEventListener('mouseup', () => {
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
+      });
+      document.addEventListener('mouseleave', () => {
+        isVisible = false;
         dot.style.opacity = '0';
         ring.style.opacity = '0';
-        active = false;
+      });
+      document.addEventListener('mouseenter', (e) => {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        if (e && e.clientX) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }
       });
 
-      function loop() {
-        if (active) {
-          ringX += (mouseX - ringX) * 0.18;
-          ringY += (mouseY - ringY) * 0.18;
-          ring.style.left = ringX + 'px';
-          ring.style.top = ringY + 'px';
+      function renderFollower() {
+        if (isVisible) {
+          dotX += (mouseX - dotX) * 0.38;
+          dotY += (mouseY - dotY) * 0.38;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+
+          ringX += (mouseX - ringX) * 0.16;
+          ringY += (mouseY - ringY) * 0.16;
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
         }
-        requestAnimationFrame(loop);
+        requestAnimationFrame(renderFollower);
       }
-      requestAnimationFrame(loop);
+      requestAnimationFrame(renderFollower);
+
+      const interactiveSelector = 'a, button, input, select, textarea, [role="button"], .interactive, .btn, .cta-btn-primary, .cta-btn-secondary, .matrix-card, .guide-tab, .copy-chip-btn, .nav-btn';
 
       document.addEventListener('mouseover', (e) => {
-        const target = e.target.closest('a, button, input, select, textarea, .matrix-card, .guide-tab, .copy-chip-btn');
-        if (target) {
-          dot.classList.add('is-hovering');
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
           ring.classList.add('is-hovering');
-        } else {
-          dot.classList.remove('is-hovering');
-          ring.classList.remove('is-hovering');
+          dot.classList.add('is-hovering');
         }
-      });
+      }, { passive: true });
 
-      window.addEventListener('mousedown', () => ring.style.transform = 'translate(-50%, -50%) scale(0.85)');
-      window.addEventListener('mouseup', () => ring.style.transform = 'translate(-50%, -50%) scale(1.0)');
+      document.addEventListener('mouseout', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.remove('is-hovering');
+          dot.classList.remove('is-hovering');
+        }
+      }, { passive: true });
     })();
+  </script>
+
+    // Global Login Check for App Downloads
+    document.addEventListener('click', function(e) {
+      const dl = e.target.closest('a[download], a[href*=".exe"], a[href*=".zip"], a[href*=".apk"], .cta-btn-primary');
+      if (!dl) return;
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+      if (!isLoggedIn) {
+        e.preventDefault();
+        e.stopPropagation();
+        alert('🔒 Authentication Required: Please log in or create an account on Trendusty Orbit to download GESTUBE application packages.');
+        window.location.href = '/home/?auth=login';
+        return false;
+      }
+    }, true);
   </script>
 
   <script src="../../assets/buttermax-theme.js" defer></script>
