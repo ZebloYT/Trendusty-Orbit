@@ -300,8 +300,11 @@
       justify-content: space-between;
       position: relative;
       transform-style: preserve-3d;
-      transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0);
+      transform-origin: center center;
+      transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
       will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
       backdrop-filter: blur(16px);
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -1424,7 +1427,7 @@
       }
     };
 
-    // 3D Interactive Mouse Tracking & Follower Physics for OFAA Cards
+    // Buttery Smooth 3D Turning & Mouse-Follower Physics for OFAA Cards
     function initCardMouseFollower() {
       const cards = document.querySelectorAll('.ofaa-card');
       if (!cards.length) return;
@@ -1436,60 +1439,117 @@
         let targetY = 0;
         let currentX = 0;
         let currentY = 0;
+        let targetScale = 1;
+        let currentScale = 1;
+        let cardBounds = null;
+
+        function getCardBounds() {
+          const r = card.getBoundingClientRect();
+          return {
+            left: r.left,
+            top: r.top,
+            width: r.width,
+            height: r.height,
+            centerX: r.left + r.width / 2,
+            centerY: r.top + r.height / 2
+          };
+        }
 
         function updateCardPhysics() {
-          if (!isHovered) return;
+          // Butter-smooth damped spring/lerp easing for luxury turning rotation
+          // 0.08 produces an organic, silky weight that eliminates cuts and sudden jerks
+          const ease = 0.085;
+          currentX += (targetX - currentX) * ease;
+          currentY += (targetY - currentY) * ease;
+          currentScale += (targetScale - currentScale) * ease;
 
-          // Smooth lerp interpolation for silky follower physics
-          currentX += (targetX - currentX) * 0.16;
-          currentY += (targetY - currentY) * 0.16;
+          const maxTiltDeg = 10; // Elegant 3D turning rotation range
+          const rotateX = (-currentY * maxTiltDeg).toFixed(2);
+          const rotateY = (currentX * maxTiltDeg).toFixed(2);
+          const scale = currentScale.toFixed(4);
 
-          const rotateX = (-currentY * 9).toFixed(2);
-          const rotateY = (currentX * 9).toFixed(2);
-          const translateX = (currentX * 8).toFixed(2);
-          const translateY = (currentY * 8).toFixed(2);
+          // Apply pure 3D turning rotation with perspective and scale lift (no jarring displacement)
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
 
-          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translate3d(${translateX}px, ${translateY}px, 14px) scale3d(1.025, 1.025, 1.025)`;
+          // Continue animation if still hovered OR if settling back to resting neutral
+          const isStillMoving = Math.abs(targetX - currentX) > 0.0008 || 
+                                Math.abs(targetY - currentY) > 0.0008 || 
+                                Math.abs(targetScale - currentScale) > 0.0008;
 
-          if (isHovered) {
+          if (isHovered || isStillMoving) {
             animationFrameId = requestAnimationFrame(updateCardPhysics);
+          } else {
+            // Clean neutral rest state
+            currentX = 0;
+            currentY = 0;
+            currentScale = 1;
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            animationFrameId = null;
           }
         }
 
         card.addEventListener('mouseenter', (e) => {
           isHovered = true;
-          card.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
-          const rect = card.getBoundingClientRect();
-          targetX = ((e.clientX - rect.left) - rect.width / 2) / (rect.width / 2);
-          targetY = ((e.clientY - rect.top) - rect.height / 2) / (rect.height / 2);
-          currentX = targetX;
-          currentY = targetY;
-          cancelAnimationFrame(animationFrameId);
-          animationFrameId = requestAnimationFrame(updateCardPhysics);
-        });
+          targetScale = 1.025;
+          cardBounds = getCardBounds();
 
-        card.addEventListener('mousemove', (e) => {
-          const rect = card.getBoundingClientRect();
-          const localX = e.clientX - rect.left;
-          const localY = e.clientY - rect.top;
+          // Smoothly set target from cursor position without snapping currentX/currentY
+          const relX = (e.clientX - cardBounds.centerX) / (cardBounds.width / 2);
+          const relY = (e.clientY - cardBounds.centerY) / (cardBounds.height / 2);
+          targetX = Math.max(-1, Math.min(1, relX));
+          targetY = Math.max(-1, Math.min(1, relY));
 
-          // Update radial glow position tracking mouse
+          // Set radial glow highlight coordinates
+          const localX = e.clientX - cardBounds.left;
+          const localY = e.clientY - cardBounds.top;
           card.style.setProperty('--mouse-x', `${localX.toFixed(1)}px`);
           card.style.setProperty('--mouse-y', `${localY.toFixed(1)}px`);
 
-          // Calculate normalized distance from center (-1 to +1)
-          targetX = (localX - rect.width / 2) / (rect.width / 2);
-          targetY = (localY - rect.height / 2) / (rect.height / 2);
+          // Ensure inline transitions don't conflict with rAF
+          card.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
+
+          if (!animationFrameId) {
+            animationFrameId = requestAnimationFrame(updateCardPhysics);
+          }
+        });
+
+        card.addEventListener('mousemove', (e) => {
+          if (!cardBounds) cardBounds = getCardBounds();
+
+          // Stable center-relative calculation immune to 3D rotational shift
+          const relX = (e.clientX - cardBounds.centerX) / (cardBounds.width / 2);
+          const relY = (e.clientY - cardBounds.centerY) / (cardBounds.height / 2);
+          targetX = Math.max(-1, Math.min(1, relX));
+          targetY = Math.max(-1, Math.min(1, relY));
+
+          const localX = e.clientX - cardBounds.left;
+          const localY = e.clientY - cardBounds.top;
+          card.style.setProperty('--mouse-x', `${localX.toFixed(1)}px`);
+          card.style.setProperty('--mouse-y', `${localY.toFixed(1)}px`);
+
+          if (!animationFrameId) {
+            animationFrameId = requestAnimationFrame(updateCardPhysics);
+          }
         }, { passive: true });
 
         card.addEventListener('mouseleave', () => {
           isHovered = false;
-          cancelAnimationFrame(animationFrameId);
-          card.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease';
-          card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0) scale3d(1, 1, 1)';
+          targetX = 0;
+          targetY = 0;
+          targetScale = 1;
+          cardBounds = null;
           card.style.removeProperty('--mouse-x');
           card.style.removeProperty('--mouse-y');
+
+          // Keep physics loop active to smoothly glide back to flat resting position
+          if (!animationFrameId) {
+            animationFrameId = requestAnimationFrame(updateCardPhysics);
+          }
         });
+
+        // Recalculate bounds when window scrolls or resizes
+        window.addEventListener('scroll', () => { cardBounds = null; }, { passive: true });
+        window.addEventListener('resize', () => { cardBounds = null; }, { passive: true });
       });
     }
 
