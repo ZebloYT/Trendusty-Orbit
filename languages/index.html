@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Languages of the World & India | Trendusty Orbit</title>
-  <meta name="description" content="Comprehensive linguistic catalog mapping official, national, and regional spoken languages across 195 Sovereign Nations and all 36 States & Union Territories of India with instant Gemini-style URL routing.">
+  <title>Languages of the World &amp; India | Trendusty Orbit</title>
+  <meta name="description" content="Comprehensive linguistic catalog mapping official, national, and regional spoken languages across 195 Sovereign Nations and all 36 States &amp; Union Territories of India with instant Gemini-style URL routing.">
   <link rel="icon" type="image/x-icon" href="../favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="../assets/buttermax-theme.css">
 
   <style>
@@ -30,13 +29,102 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* GUARANTEED 100% UNLOCKED NATIVE SMOOTH SCROLLING */
+    html {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+      scroll-behavior: auto !important;
+    }
+
     body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: var(--font-sans);
-      min-height: 100vh;
-      overflow-x: hidden;
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      user-select: auto !important;
+      touch-action: auto !important;
       position: relative;
+    }
+
+    /* TACTICAL ORBIT DUAL-LERP CURSOR STYLES */
+    .orbit-cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background: #EE00FF !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF, 0 0 3px #ffffff !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+    }
+
+    .orbit-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      border: 1.8px solid #EE00FF !important;
+      background: rgba(238, 0, 255, 0.08) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 16px rgba(238, 0, 255, 0.45) !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .orbit-cursor-ring.is-hovering {
+      width: 58px !important;
+      height: 58px !important;
+      border-color: #00f5b8 !important;
+      background: rgba(0, 245, 184, 0.12) !important;
+      box-shadow: 0 0 25px rgba(0, 245, 184, 0.6) !important;
+    }
+
+    .orbit-cursor-dot.is-hovering {
+      width: 6px !important;
+      height: 6px !important;
+      background: #ffffff !important;
+      box-shadow: 0 0 12px #ffffff, 0 0 20px #00f5b8 !important;
+    }
+
+    .orbit-cursor-ring.is-active {
+      width: 26px !important;
+      height: 26px !important;
+      border-width: 2.4px !important;
+      background: rgba(238, 0, 255, 0.35) !important;
+      box-shadow: 0 0 35px #EE00FF !important;
+    }
+
+    .orbit-cursor-dot.is-active {
+      width: 12px !important;
+      height: 12px !important;
+      box-shadow: 0 0 20px #ffffff, 0 0 35px #EE00FF !important;
+    }
+
+    @media (pointer: coarse) {
+      html.custom-cursor-active,
+      html.custom-cursor-active body,
+      html.custom-cursor-active * {
+        cursor: auto !important;
+      }
+      .orbit-cursor-dot, .orbit-cursor-ring {
+        display: none !important;
+      }
     }
 
     /* TOP NAVIGATION */
@@ -272,13 +360,12 @@
       color: var(--text-sub);
     }
 
-    /* GRID & CARDS */
+    /* GRID & CARDS OPTIMIZED FOR 60 FPS SMOOTH PERFORMANCE */
     .languages-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 22px;
       margin-bottom: 60px;
-      perspective: 1200px;
     }
 
     .lang-card {
@@ -290,15 +377,18 @@
       flex-direction: column;
       justify-content: space-between;
       position: relative;
-      transform-style: preserve-3d;
-      transform-origin: center center;
-      transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
+      content-visibility: auto;
+      contain-intrinsic-size: 380px 240px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.28s ease,
+                  box-shadow 0.28s ease;
       will-change: transform;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
-      transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .lang-card:hover {
+      border-color: rgba(0, 245, 184, 0.55);
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.95), 0 0 30px rgba(0, 245, 184, 0.25), 0 0 60px rgba(56, 189, 248, 0.15);
     }
 
     .card-ambient-bg {
@@ -318,13 +408,18 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle at 30% 35%, rgba(0, 245, 184, 0.09) 0%, transparent 45%),
-                  radial-gradient(circle at 75% 65%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
-                  radial-gradient(circle at 50% 85%, rgba(238, 0, 255, 0.06) 0%, transparent 50%);
-      opacity: 0.55;
-      animation: cardIdleAurora 14s ease-in-out infinite alternate;
-      will-change: transform, opacity;
-      transition: opacity 0.5s ease, filter 0.5s ease;
+      background: radial-gradient(circle at 30% 35%, rgba(0, 245, 184, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 75% 65%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
+                  radial-gradient(circle at 50% 85%, rgba(238, 0, 255, 0.08) 0%, transparent 50%);
+      opacity: 0.35;
+      pointer-events: none;
+      transition: opacity 0.4s ease, filter 0.4s ease;
+    }
+
+    .lang-card:hover .card-ambient-bg::before {
+      opacity: 0.95;
+      filter: brightness(1.25) saturate(1.35);
+      animation: cardHoverSurge 5s ease-in-out infinite alternate;
     }
 
     .card-ambient-bg::after {
@@ -336,28 +431,17 @@
         linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
       background-size: 24px 24px;
       opacity: 0.45;
-      transition: opacity 0.4s ease;
+      pointer-events: none;
       mask-image: radial-gradient(ellipse at 50% 50%, black 45%, transparent 92%);
       -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 45%, transparent 92%);
-    }
-
-    .lang-card:hover {
-      border-color: rgba(0, 245, 184, 0.5);
-      background: #000000 !important;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 245, 184, 0.22), 0 0 70px rgba(56, 189, 248, 0.12);
-    }
-
-    .lang-card:hover .card-ambient-bg::before {
-      opacity: 0.95;
-      filter: brightness(1.25) saturate(1.35);
-      animation: cardHoverSurge 6s ease-in-out infinite alternate;
+      transition: opacity 0.3s ease;
     }
 
     .lang-card:hover .card-ambient-bg::after {
-      opacity: 0.8;
+      opacity: 0.75;
       background-image: 
-        linear-gradient(rgba(0, 245, 184, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 189, 248, 0.045) 1px, transparent 1px);
+        linear-gradient(rgba(0, 245, 184, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
     }
 
     .lang-card::before {
@@ -366,8 +450,8 @@
       top: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, #00f5b8, #38bdf8, #ee00ff, #00f5b8);
       background-size: 300% 100%;
-      animation: cardTopBarIdle 8s linear infinite;
       z-index: 3;
+      pointer-events: none;
       transition: height 0.3s ease, filter 0.3s ease;
     }
 
@@ -380,9 +464,9 @@
     .lang-card::after {
       content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       border-radius: inherit;
-      background: radial-gradient(420px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(0, 245, 184, 0.16) 0%, rgba(56, 189, 248, 0.08) 35%, transparent 75%);
+      background: radial-gradient(380px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(0, 245, 184, 0.16) 0%, rgba(56, 189, 248, 0.08) 35%, transparent 75%);
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -546,21 +630,10 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    @keyframes cardIdleAurora {
-      0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
-      50% { transform: translate3d(5%, 4%, 0) scale(1.08) rotate(5deg); }
-      100% { transform: translate3d(-4%, -3%, 0) scale(1.04) rotate(-4deg); }
-    }
-
     @keyframes cardHoverSurge {
-      0% { transform: translate3d(0, 0, 0) scale(1.1) rotate(0deg); }
-      50% { transform: translate3d(6%, 5%, 0) scale(1.18) rotate(8deg); }
-      100% { transform: translate3d(-5%, -4%, 0) scale(1.14) rotate(-6deg); }
-    }
-
-    @keyframes cardTopBarIdle {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 300% 50%; }
+      0% { transform: translate3d(0, 0, 0) scale(1.05) rotate(0deg); }
+      50% { transform: translate3d(4%, 3%, 0) scale(1.12) rotate(4deg); }
+      100% { transform: translate3d(-3%, -2%, 0) scale(1.08) rotate(-3deg); }
     }
 
     @keyframes cardTopBarHover {
@@ -570,6 +643,10 @@
   </style>
 </head>
 <body class="custom-cursor-active" data-scroll="native">
+
+  <!-- TACTICAL ORBIT DUAL-LERP CURSOR DOM ELEMENTS -->
+  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
 
   <!-- TOP NAVIGATION -->
   <nav class="top-nav">
@@ -772,7 +849,6 @@
       });
 
       container.innerHTML = html;
-      initCardMouseFollower();
     }
 
     function setCategoryFilter(btn, cat) {
@@ -794,97 +870,97 @@
       }
     }
 
-    // Buttery Smooth 3D Turning Physics for Language Cards
+    // BUTTERY SMOOTH 3D TURNING & RADIAL SHEEN FOLLOWER (SINGLE ACTIVE CARD DELEGATION)
     function initCardMouseFollower() {
-      const cards = document.querySelectorAll('.lang-card');
-      if (!cards.length) return;
+      const grid = document.getElementById('languages-grid');
+      if (!grid) return;
 
-      cards.forEach(card => {
-        let isHovered = false;
-        let animationFrameId = null;
-        let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-        let targetScale = 1, currentScale = 1;
-        let cardBounds = null;
+      let activeCard = null;
+      let targetTiltX = 0, targetTiltY = 0;
+      let currentTiltX = 0, currentTiltY = 0;
+      let tiltRaf = null;
 
-        function getCardBounds() {
-          const r = card.getBoundingClientRect();
-          return {
-            left: r.left, top: r.top, width: r.width, height: r.height,
-            centerX: r.left + r.width / 2, centerY: r.top + r.height / 2
-          };
+      function stepCardTilt() {
+        if (!activeCard) {
+          tiltRaf = null;
+          return;
         }
 
-        function updateCardPhysics() {
-          const ease = 0.085;
-          currentX += (targetX - currentX) * ease;
-          currentY += (targetY - currentY) * ease;
-          currentScale += (targetScale - currentScale) * ease;
+        const ease = 0.09;
+        currentTiltX += (targetTiltX - currentTiltX) * ease;
+        currentTiltY += (targetTiltY - currentTiltY) * ease;
 
-          const maxTiltDeg = 10;
-          const rotateX = (-currentY * maxTiltDeg).toFixed(2);
-          const rotateY = (currentX * maxTiltDeg).toFixed(2);
-          const scale = currentScale.toFixed(4);
+        const maxTilt = 5.5; // Luxury subtle 3D turning rotation
+        const rotX = (-currentTiltY * maxTilt).toFixed(2);
+        const rotY = (currentTiltX * maxTilt).toFixed(2);
 
-          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+        activeCard.style.transform = `perspective(1000px) translateY(-6px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.015, 1.015, 1.015)`;
 
-          const isStillMoving = Math.abs(targetX - currentX) > 0.0008 || 
-                                Math.abs(targetY - currentY) > 0.0008 || 
-                                Math.abs(targetScale - currentScale) > 0.0008;
+        const isMoving = Math.abs(targetTiltX - currentTiltX) > 0.001 || Math.abs(targetTiltY - currentTiltY) > 0.001;
+        if (isMoving || activeCard) {
+          tiltRaf = requestAnimationFrame(stepCardTilt);
+        }
+      }
 
-          if (isHovered || isStillMoving) {
-            animationFrameId = requestAnimationFrame(updateCardPhysics);
-          } else {
-            currentX = 0; currentY = 0; currentScale = 1;
-            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-            animationFrameId = null;
+      grid.addEventListener('pointerover', (e) => {
+        const card = e.target.closest('.lang-card');
+        if (card && card !== activeCard) {
+          if (activeCard) {
+            activeCard.style.transform = '';
+            activeCard.style.removeProperty('--mouse-x');
+            activeCard.style.removeProperty('--mouse-y');
           }
+          activeCard = card;
+          targetTiltX = 0;
+          targetTiltY = 0;
+          currentTiltX = 0;
+          currentTiltY = 0;
+          if (!tiltRaf) tiltRaf = requestAnimationFrame(stepCardTilt);
         }
-
-        card.addEventListener('mouseenter', (e) => {
-          isHovered = true;
-          targetScale = 1.025;
-          cardBounds = getCardBounds();
-          const relX = (e.clientX - cardBounds.centerX) / (cardBounds.width / 2);
-          const relY = (e.clientY - cardBounds.centerY) / (cardBounds.height / 2);
-          targetX = Math.max(-1, Math.min(1, relX));
-          targetY = Math.max(-1, Math.min(1, relY));
-
-          const localX = e.clientX - cardBounds.left;
-          const localY = e.clientY - cardBounds.top;
-          card.style.setProperty('--mouse-x', `${localX.toFixed(1)}px`);
-          card.style.setProperty('--mouse-y', `${localY.toFixed(1)}px`);
-
-          card.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
-          if (!animationFrameId) animationFrameId = requestAnimationFrame(updateCardPhysics);
-        });
-
-        card.addEventListener('mousemove', (e) => {
-          if (!cardBounds) cardBounds = getCardBounds();
-          const relX = (e.clientX - cardBounds.centerX) / (cardBounds.width / 2);
-          const relY = (e.clientY - cardBounds.centerY) / (cardBounds.height / 2);
-          targetX = Math.max(-1, Math.min(1, relX));
-          targetY = Math.max(-1, Math.min(1, relY));
-
-          const localX = e.clientX - cardBounds.left;
-          const localY = e.clientY - cardBounds.top;
-          card.style.setProperty('--mouse-x', `${localX.toFixed(1)}px`);
-          card.style.setProperty('--mouse-y', `${localY.toFixed(1)}px`);
-
-          if (!animationFrameId) animationFrameId = requestAnimationFrame(updateCardPhysics);
-        }, { passive: true });
-
-        card.addEventListener('mouseleave', () => {
-          isHovered = false;
-          targetX = 0; targetY = 0; targetScale = 1;
-          cardBounds = null;
-          card.style.removeProperty('--mouse-x');
-          card.style.removeProperty('--mouse-y');
-          if (!animationFrameId) animationFrameId = requestAnimationFrame(updateCardPhysics);
-        });
-
-        window.addEventListener('scroll', () => { cardBounds = null; }, { passive: true });
-        window.addEventListener('resize', () => { cardBounds = null; }, { passive: true });
       });
+
+      grid.addEventListener('pointermove', (e) => {
+        const card = e.target.closest('.lang-card');
+        if (!card) return;
+
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+
+        card.style.setProperty('--mouse-x', `${x.toFixed(1)}px`);
+        card.style.setProperty('--mouse-y', `${y.toFixed(1)}px`);
+
+        targetTiltX = Math.max(-1, Math.min(1, (x - r.width / 2) / (r.width / 2)));
+        targetTiltY = Math.max(-1, Math.min(1, (y - r.height / 2) / (r.height / 2)));
+
+        if (!tiltRaf) tiltRaf = requestAnimationFrame(stepCardTilt);
+      }, { passive: true });
+
+      grid.addEventListener('pointerout', (e) => {
+        if (activeCard && (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('.lang-card'))) {
+          activeCard.style.transform = '';
+          activeCard.style.removeProperty('--mouse-x');
+          activeCard.style.removeProperty('--mouse-y');
+          activeCard = null;
+          targetTiltX = 0;
+          targetTiltY = 0;
+          currentTiltX = 0;
+          currentTiltY = 0;
+        }
+      });
+
+      window.addEventListener('scroll', () => {
+        if (activeCard) {
+          activeCard.style.transform = '';
+          activeCard.style.removeProperty('--mouse-x');
+          activeCard.style.removeProperty('--mouse-y');
+          activeCard = null;
+          targetTiltX = 0;
+          targetTiltY = 0;
+          currentTiltX = 0;
+          currentTiltY = 0;
+        }
+      }, { passive: true });
     }
 
     // Modal controls
@@ -925,7 +1001,106 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       renderLanguagesGrid();
+      initCardMouseFollower();
     });
+
+    // Guarantee 100% immediate, zero-latency native scrolling on Languages
+    window.addEventListener('wheel', function(e) {
+      e.stopImmediatePropagation();
+    }, { passive: true, capture: true });
+  </script>
+
+  <!-- TACTICAL ORBIT CURSOR ANIMATION ENGINE -->
+  <script>
+    (function initOrbitCursor() {
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      if (!dot || !ring) return;
+
+      document.documentElement.classList.add('custom-cursor-active');
+      document.body.classList.add('custom-cursor-active');
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let dotX = mouseX;
+      let dotY = mouseY;
+      let ringX = mouseX;
+      let ringY = mouseY;
+      let isVisible = false;
+
+      function onMouseMove(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          isVisible = true;
+          dotX = mouseX;
+          dotY = mouseY;
+          ringX = mouseX;
+          ringY = mouseY;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+        }
+      }
+
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+      window.addEventListener('mousedown', () => {
+        ring.classList.add('is-active');
+        dot.classList.add('is-active');
+      });
+      window.addEventListener('mouseup', () => {
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
+      });
+      document.addEventListener('mouseleave', () => {
+        isVisible = false;
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      });
+      document.addEventListener('mouseenter', (e) => {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        if (e && e.clientX) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }
+      });
+
+      // Hover expansion on interactive targets
+      document.addEventListener('mouseover', (e) => {
+        const target = e.target;
+        if (target.closest('a, button, input, select, textarea, .lang-pill-item, .filter-btn, .nav-pill, .btn-card-act, .lang-card')) {
+          ring.classList.add('is-hovering');
+          dot.classList.add('is-hovering');
+        }
+      }, { passive: true });
+
+      document.addEventListener('mouseout', (e) => {
+        const target = e.target;
+        if (target.closest('a, button, input, select, textarea, .lang-pill-item, .filter-btn, .nav-pill, .btn-card-act, .lang-card')) {
+          ring.classList.remove('is-hovering');
+          dot.classList.remove('is-hovering');
+        }
+      }, { passive: true });
+
+      // Smooth Gliding Floating Physics Engine (Dual Lerp Deceleration)
+      function renderFollower() {
+        if (isVisible) {
+          dotX += (mouseX - dotX) * 0.42;
+          dotY += (mouseY - dotY) * 0.42;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+
+          ringX += (mouseX - ringX) * 0.18;
+          ringY += (mouseY - ringY) * 0.18;
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+        }
+        requestAnimationFrame(renderFollower);
+      }
+      requestAnimationFrame(renderFollower);
+    })();
   </script>
 </body>
 </html>
