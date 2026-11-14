@@ -306,38 +306,140 @@
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       backdrop-filter: blur(16px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+      transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    /* Ambient Animated Background Canvas inside the card */
+    .card-ambient-bg {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at 50% 120%, rgba(8, 16, 28, 0.95), #000000 85%);
+    }
+
+    /* IDLE ANIMATION 1: Drifting Luminous Cyber Aurora */
+    .card-ambient-bg::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 35%, rgba(0, 245, 184, 0.09) 0%, transparent 45%),
+                  radial-gradient(circle at 75% 65%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+                  radial-gradient(circle at 50% 85%, rgba(238, 0, 255, 0.06) 0%, transparent 50%);
+      opacity: 0.55;
+      animation: cardIdleAurora 14s ease-in-out infinite alternate;
+      will-change: transform, opacity;
+      transition: opacity 0.5s ease, filter 0.5s ease;
+    }
+
+    /* IDLE & HOVER ANIMATION 2: Tactical Micro-Mesh & Shimmer Wave */
+    .card-ambient-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.45;
+      transition: opacity 0.4s ease, background-image 0.4s ease;
+      mask-image: radial-gradient(ellipse at 50% 50%, black 45%, transparent 92%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 45%, transparent 92%);
+    }
+
+    /* HOVER STATE: Energized Aurora & Luminescent Surges */
+    .ofaa-card:hover {
+      border-color: rgba(0, 245, 184, 0.5);
+      background: #000000 !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 245, 184, 0.22), 0 0 70px rgba(56, 189, 248, 0.12);
+    }
+
+    .ofaa-card:hover .card-ambient-bg::before {
+      opacity: 0.95;
+      filter: brightness(1.25) saturate(1.35);
+      animation: cardHoverSurge 6s ease-in-out infinite alternate;
+    }
+
+    .ofaa-card:hover .card-ambient-bg::after {
+      opacity: 0.8;
+      background-image: 
+        linear-gradient(rgba(0, 245, 184, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.045) 1px, transparent 1px);
+    }
+
+    /* Top Accent Line with Idle & Hover Shimmering Laser Flow */
     .ofaa-card::before {
       content: "";
       position: absolute;
       top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, #00f5b8, #38bdf8, #ee00ff);
+      background: linear-gradient(90deg, #00f5b8, #38bdf8, #ee00ff, #00f5b8);
+      background-size: 300% 100%;
+      animation: cardTopBarIdle 8s linear infinite;
       z-index: 3;
+      transition: height 0.3s ease, filter 0.3s ease;
     }
 
+    .ofaa-card:hover::before {
+      height: 3.5px;
+      filter: drop-shadow(0 0 8px #00f5b8);
+      animation: cardTopBarHover 3s linear infinite;
+    }
+
+    /* Interactive Mouse Spotlight Sheen */
     .ofaa-card::after {
       content: "";
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       border-radius: inherit;
-      background: radial-gradient(450px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(0, 245, 184, 0.14), transparent 75%);
+      background: radial-gradient(420px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(0, 245, 184, 0.16) 0%, rgba(56, 189, 248, 0.08) 35%, transparent 75%);
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
       z-index: 1;
     }
 
-    .ofaa-card:hover {
-      border-color: rgba(0, 245, 184, 0.45);
-      background: #000000 !important;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 245, 184, 0.2);
-    }
-
     .ofaa-card:hover::after {
       opacity: 1;
+    }
+
+    @keyframes cardIdleAurora {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+      }
+      50% {
+        transform: translate3d(5%, 4%, 0) scale(1.08) rotate(5deg);
+      }
+      100% {
+        transform: translate3d(-4%, -3%, 0) scale(1.04) rotate(-4deg);
+      }
+    }
+
+    @keyframes cardHoverSurge {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1.1) rotate(0deg);
+      }
+      50% {
+        transform: translate3d(6%, 5%, 0) scale(1.18) rotate(8deg);
+      }
+      100% {
+        transform: translate3d(-5%, -4%, 0) scale(1.14) rotate(-6deg);
+      }
+    }
+
+    @keyframes cardTopBarIdle {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    @keyframes cardTopBarHover {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
     }
 
     .card-top {
@@ -802,6 +904,7 @@
       
       <!-- 1. JARVIS AI ASSISTANT -->
       <div class="ofaa-card" data-category="ai desktop mobile" data-keywords="jarvis ai assistant voice commands controller telemetry android windows">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(245, 158, 11, 0.4); background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, #060b14 80%);">
@@ -837,6 +940,7 @@
 
       <!-- 2. GESTUBE YOUTUBE OPTIMIZER -->
       <div class="ofaa-card" data-category="extensions desktop mobile" data-keywords="gestube youtube skip ads shorts auto-scroll extension chrome edge firefox android windows">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(255, 0, 85, 0.4); background: radial-gradient(circle, rgba(255, 0, 85, 0.15) 0%, #060b14 80%);">
@@ -873,6 +977,7 @@
 
       <!-- 3. ECHONODE MINECRAFT CLOUD -->
       <div class="ofaa-card" data-category="cloud" data-keywords="echonode minecraft paper server cloud 3d webgl console playit guide book">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(0, 245, 184, 0.35);">
@@ -909,6 +1014,7 @@
 
       <!-- 4. RETROSMART CURSORS -->
       <div class="ofaa-card" data-category="extensions desktop" data-keywords="retrosmart cursors xcursor win95 mac system 7 chrome extension pixel font 3d">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(56, 189, 248, 0.4); background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, #060b14 80%);">
@@ -943,6 +1049,7 @@
 
       <!-- 5. TRENDUSTY ORBIT DESKTOP CLIENT -->
       <div class="ofaa-card" data-category="desktop" data-keywords="trendusty orbit desktop client setup windows cop common operating picture radar">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(0, 245, 184, 0.4);">
@@ -979,6 +1086,7 @@
 
       <!-- 6. ORBIT SHARE (P2P FILE TRANSFER) -->
       <div class="ofaa-card" data-category="cloud" data-keywords="orbit share file transfer p2p webrtc encrypted direct browser">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(168, 85, 247, 0.4); background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, #060b14 80%);">
@@ -1012,6 +1120,7 @@
 
       <!-- 7. COLOR LAB & TACTICAL CURSORS -->
       <div class="ofaa-card" data-category="desktop" data-keywords="color lab cursor magnetic follower magenta physics experimental">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(238, 0, 255, 0.4); background: radial-gradient(circle, rgba(238, 0, 255, 0.15) 0%, #060b14 80%);">
@@ -1044,6 +1153,7 @@
 
       <!-- 8. SECURITY VAULT -->
       <div class="ofaa-card" data-category="cloud" data-keywords="security vault kdbx aes-256 encrypted accounts ip defense sentinel guardian">
+        <div class="card-ambient-bg" aria-hidden="true"></div>
         <div class="card-top">
           <div class="card-header-row">
             <div class="card-icon-wrap" style="border-color: rgba(0, 245, 184, 0.4); background: radial-gradient(circle, rgba(0, 245, 184, 0.15) 0%, #060b14 80%);">
@@ -1433,6 +1543,14 @@
       if (!cards.length) return;
 
       cards.forEach(card => {
+        // Ensure ambient animated background canvas exists inside the card
+        if (!card.querySelector('.card-ambient-bg')) {
+          const bg = document.createElement('div');
+          bg.className = 'card-ambient-bg';
+          bg.setAttribute('aria-hidden', 'true');
+          card.insertBefore(bg, card.firstChild);
+        }
+
         let isHovered = false;
         let animationFrameId = null;
         let targetX = 0;
