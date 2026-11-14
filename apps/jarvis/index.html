@@ -648,19 +648,22 @@
   <div id="orbit-cursor-dot" aria-hidden="true"></div>
   <div id="orbit-cursor-ring" aria-hidden="true"></div>
 
-  <!-- TOP NAV -->
+  <!-- TOP NAV (Universal Sovereign Ecosystem Bar) -->
   <nav class="top-nav">
-    <a href="../../home/" class="brand-group">
+    <a href="/home/" class="brand-group">
       <div class="brand-icon">🤖</div>
       <div class="brand-title">TRENDUSTY <span>ORBIT</span> // JARVIS</div>
     </a>
 
     <div class="nav-links">
-      <a href="../../home/" class="nav-pill">&larr; Back to Home</a>
-      <a href="../gestube/" class="nav-pill">GESTUBE</a>
-      <a href="../../echonode/" class="nav-pill">EchoNode</a>
-      <a href="#feedback" class="nav-pill">⭐ Feedback / Report</a>
-      <button type="button" class="nav-pill" id="nav-auth-btn" onclick="openJarvisAuth(event)">👤 Login / Sign Up</button>
+      <a href="/home/" class="nav-pill">&larr; Main Operations Center</a>
+      <a href="/apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.55); color: #00f5b8; background: rgba(0, 245, 184, 0.08);">🤖 JARVIS</a>
+      <a href="/apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.35); color: #ff4b72;"><img src="/assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
+      <a href="/echonode/" class="nav-pill">⛏️ EchoNode</a>
+      <a href="/windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
+      <a href="/share/" class="nav-pill">📤 Share</a>
+      <a href="#feedback" class="nav-pill" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</a>
+      <button type="button" class="nav-pill active" id="orbit-ecosystem-user-pill" onclick="openJarvisAuth(event)">👤 Login / Sign Up</button>
     </div>
   </nav>
 
@@ -896,17 +899,23 @@
       const user = getLoggedInUser();
       const userTag = document.getElementById('auth-user-tag');
       const nameInput = document.getElementById('fb-user-name');
-      const navAuthBtn = document.getElementById('nav-auth-btn');
+      const navAuthBtn = document.getElementById('orbit-ecosystem-user-pill') || document.getElementById('nav-auth-btn');
 
       if (user.isLoggedIn) {
         userTag.innerHTML = `🟢 Logged in as: <strong>${user.name}</strong>`;
         nameInput.value = user.name;
-        if (navAuthBtn) navAuthBtn.textContent = `👤 ${user.name}`;
+        if (navAuthBtn) {
+          navAuthBtn.innerHTML = `👤 ${user.name}`;
+          navAuthBtn.classList.add('active');
+        }
       } else {
         userTag.innerHTML = `⚪ Not Logged In &bull; <a href="../../home/?auth=login" style="color:#00f5b8; text-decoration:underline;">Sign In to Download</a>`;
         nameInput.value = 'Guest Operative';
         nameInput.readOnly = false;
-        if (navAuthBtn) navAuthBtn.textContent = '👤 Sign Up / Login';
+        if (navAuthBtn) {
+          navAuthBtn.innerHTML = '👤 Sign Up / Login';
+          navAuthBtn.classList.remove('active');
+        }
       }
     }
 
