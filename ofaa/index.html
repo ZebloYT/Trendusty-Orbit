@@ -6,7 +6,6 @@
   <title>Other Features &amp; Apps (OFAA) — Sovereign Ecosystem Catalog | Trendusty Orbit</title>
   <meta name="description" content="Explore all standalone applications, mobile controllers, browser extensions, AI agents, and sovereign cloud infrastructure across the Trendusty Orbit ecosystem.">
   <link rel="icon" type="image/svg+xml" href="../assets/trendusty-orbit-icon.svg">
-  <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="../assets/buttermax-theme.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap">
 
@@ -31,12 +30,25 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+      scroll-behavior: smooth !important;
+    }
+
     body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: var(--font-sans);
-      min-height: 100vh;
-      overflow-x: hidden;
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      user-select: auto !important;
+      touch-action: auto !important;
+      -webkit-overflow-scrolling: touch !important;
       background-image: 
         radial-gradient(circle at 12% 18%, rgba(238, 0, 255, 0.07) 0%, transparent 40%),
         radial-gradient(circle at 88% 30%, rgba(0, 245, 184, 0.08) 0%, transparent 45%),
@@ -494,6 +506,130 @@
       font-size: 13px;
     }
 
+    /* UNIVERSAL FEEDBACK / AUTH MODAL BACKDROP */
+    .auth-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 5, 9, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+      padding: 20px;
+    }
+
+    .auth-modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .auth-modal-window {
+      background: #0b111e;
+      border: 1px solid rgba(0, 245, 184, 0.3);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 245, 184, 0.2);
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .auth-modal-backdrop.is-open .auth-modal-window {
+      transform: scale(1) translateY(0);
+    }
+
+    .auth-modal-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .auth-modal-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .auth-modal-body {
+      padding: 24px;
+    }
+
+    .auth-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .auth-close-btn:hover {
+      background: rgba(255, 0, 85, 0.2);
+      color: #ff0055;
+      border-color: #ff0055;
+    }
+
+    /* Orbit Circle Mouse Cursor in #EE00FF */
+    .orbit-cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 8px; height: 8px;
+      background-color: #EE00FF;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2147483647;
+      opacity: 0;
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease;
+    }
+
+    .orbit-cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border: 2px solid #EE00FF;
+      background: rgba(238, 0, 255, 0.05);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2147483646;
+      opacity: 0;
+      box-shadow: 0 0 16px rgba(238, 0, 255, 0.45);
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .orbit-cursor-ring.is-hovering {
+      width: 58px !important;
+      height: 58px !important;
+      border-color: #EE00FF !important;
+      background: rgba(238, 0, 255, 0.18) !important;
+      box-shadow: 0 0 28px rgba(238, 0, 255, 0.75) !important;
+    }
+
+    @media (pointer: coarse) {
+      .orbit-cursor-dot, .orbit-cursor-ring { display: none !important; }
+    }
+
     @media (max-width: 800px) {
       .ofaa-grid {
         grid-template-columns: 1fr;
@@ -502,6 +638,10 @@
   </style>
 </head>
 <body>
+
+  <!-- Orbit Circle Mouse Cursor in #EE00FF -->
+  <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
 
   <!-- TOP NAVIGATION -->
   <nav class="top-nav">
@@ -1095,6 +1235,7 @@
 
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('auth-modal-open');
       document.body.style.overflow = 'hidden';
       initStars();
     };
@@ -1104,6 +1245,7 @@
       if (modal) {
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('auth-modal-open');
         document.body.style.overflow = '';
       }
     };

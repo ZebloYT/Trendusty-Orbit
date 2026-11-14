@@ -1023,10 +1023,13 @@
 
   function setupSmoothScroll() {
     window.addEventListener('wheel', function(e) {
-      if (document.body.classList.contains('auth-modal-open')) return;
+      if (document.body.classList.contains('auth-modal-open') || document.body.classList.contains('modal-open') || document.body.dataset.scroll === 'native') return;
+      if (e.target && e.target.closest && e.target.closest('select, textarea, input, .modal-body, #feedback-modal-backdrop, .auth-modal-backdrop, .auth-modal-window')) return;
+
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      if (maxScroll <= 0) return;
 
       e.preventDefault();
-      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       smoothScrollTarget = Math.max(0, Math.min(maxScroll, smoothScrollTarget + e.deltaY * 1.05));
 
       if (!isSmoothScrolling) {
