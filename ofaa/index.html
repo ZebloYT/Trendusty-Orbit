@@ -13,7 +13,7 @@
     :root {
       --bg-dark: #060911;
       --bg-panel: #0b111e;
-      --bg-card: rgba(14, 22, 38, 0.88);
+      --bg-card: #000000;
       --border-subtle: rgba(0, 245, 184, 0.16);
       --border-glow: rgba(0, 245, 184, 0.45);
       --cyan: #00f5b8;
@@ -290,8 +290,8 @@
     }
 
     .ofaa-card {
-      background: var(--bg-card);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #000000 !important;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 20px;
       overflow: hidden;
       display: flex;
@@ -300,7 +300,7 @@
       position: relative;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       backdrop-filter: blur(16px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
     }
 
     .ofaa-card::before {
@@ -314,7 +314,8 @@
     .ofaa-card:hover {
       transform: translateY(-4px);
       border-color: rgba(0, 245, 184, 0.45);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 245, 184, 0.15);
+      background: #000000 !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 245, 184, 0.15);
     }
 
     .card-top {
@@ -422,7 +423,7 @@
     .card-bottom {
       padding: 16px 26px 24px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(6, 10, 18, 0.4);
+      background: #000000 !important;
     }
 
     .card-action-bar {
