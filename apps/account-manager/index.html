@@ -649,6 +649,11 @@
         <button type="submit" class="btn-vault" id="btn-unlock-submit">
           <span>🔓 Decrypt &amp; Access Vault</span>
         </button>
+        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle); text-align: center;">
+          <button type="button" class="btn-action" onclick="openFeedbackSectionDirectly()" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24; background: rgba(251, 191, 36, 0.08); font-size: 12.5px;">
+            ⭐ View App Reports &amp; Feedback Telemetry
+          </button>
+        </div>
       </form>
     </div>
 
@@ -677,6 +682,11 @@
           <div class="stat-val" style="font-size: 20px; color: var(--cyan);">AES-256-GCM</div>
           <div class="stat-sub">PBKDF2 100K SHA-512 rounds</div>
         </div>
+        <div class="stat-card" onclick="switchTab('feedbacks')" style="cursor: pointer; border-color: rgba(251, 191, 36, 0.35);" title="Click to view App Reports & Feedback">
+          <div class="stat-label">⭐ App Feedbacks &amp; Reports</div>
+          <div class="stat-val" id="stat-total-feedbacks" style="color: #fbbf24;">0</div>
+          <div class="stat-sub" id="stat-sub-feedbacks">Telemetry sync active</div>
+        </div>
       </div>
 
       <!-- Action Bar -->
@@ -698,6 +708,7 @@
         <button class="hud-tab-btn active" id="tab-btn-accounts" onclick="switchTab('accounts')">👥 User Accounts (<span id="tab-count-acc">0</span>)</button>
         <button class="hud-tab-btn" id="tab-btn-ips" onclick="switchTab('ips')">🌐 IP Intelligence &amp; Hacker Ban Center (<span id="tab-count-ips">0</span>)</button>
         <button class="hud-tab-btn" id="tab-btn-logs" onclick="switchTab('logs')">🛡️ Security Audit Logs (<span id="tab-count-logs">0</span>)</button>
+        <button class="hud-tab-btn" id="tab-btn-feedbacks" onclick="switchTab('feedbacks')">⭐ App Feedback &amp; Reports (<span id="tab-count-feedbacks">0</span>)</button>
       </div>
 
       <!-- TAB 1: ACCOUNTS TABLE -->
@@ -762,6 +773,97 @@
             <tbody id="logs-table-body">
               <tr>
                 <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">Fetching audit telemetry...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: APP FEEDBACK & PROBLEM REPORTS -->
+      <div id="tab-pane-feedbacks" style="display: none;">
+        
+        <!-- Feedback Control Toolbar -->
+        <div style="background: var(--bg-panel); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); font-weight: 700;">FILTER BY:</span>
+            <select id="fb-filter-app" onchange="filterFeedbacksTable()" style="background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: inherit;">
+              <option value="ALL">All Applications</option>
+              <option value="GESTUBE">▶️ GESTUBE</option>
+              <option value="JARVIS">🤖 JARVIS</option>
+              <option value="EchoNode">⛏️ EchoNode</option>
+              <option value="Retrosmart">🕹️ Retrosmart</option>
+              <option value="Trendusty Orbit">🌐 Trendusty Orbit Desktop</option>
+              <option value="Share">📤 Sovereign Share</option>
+            </select>
+
+            <select id="fb-filter-category" onchange="filterFeedbacksTable()" style="background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: inherit;">
+              <option value="ALL">All Categories</option>
+              <option value="Bug">🐛 Bug / Malfunction</option>
+              <option value="Feature">💡 Feature Request</option>
+              <option value="UI">🎨 UI &amp; Controls</option>
+              <option value="Rating">⭐ General Rating</option>
+            </select>
+
+            <select id="fb-filter-rating" onchange="filterFeedbacksTable()" style="background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: inherit;">
+              <option value="ALL">All Ratings (1-5★)</option>
+              <option value="5">★★★★★ (5 Stars)</option>
+              <option value="4">★★★★☆ (4 Stars)</option>
+              <option value="3">★★★☆☆ (3 Stars)</option>
+              <option value="2">★★☆☆☆ (2 Stars)</option>
+              <option value="1">★☆☆☆☆ (1 Star)</option>
+            </select>
+
+            <input type="text" id="fb-search-query" oninput="filterFeedbacksTable()" placeholder="Search feedback by user, text, or ticket ID..." style="background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; min-width: 250px; font-family: inherit;">
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-action btn-action-cyan" onclick="loadFeedbacksData(true)">🔄 Sync Telemetry</button>
+            <button class="btn-action" onclick="exportFeedbacksJson()">📥 Export JSON</button>
+          </div>
+        </div>
+
+        <!-- Feedback Metrics Header Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+          <div class="stat-card" style="padding: 14px 18px;">
+            <div class="stat-label">TOTAL REPORTS LOGGED</div>
+            <div class="stat-val" id="fb-metric-total" style="color: #38bdf8; font-size: 24px;">0</div>
+            <div class="stat-sub">Across all ecosystem apps</div>
+          </div>
+          <div class="stat-card" style="padding: 14px 18px;">
+            <div class="stat-label">AVERAGE STAR RATING</div>
+            <div class="stat-val" id="fb-metric-avg" style="color: #fbbf24; font-size: 24px;">5.0 ★</div>
+            <div class="stat-sub">User satisfaction score</div>
+          </div>
+          <div class="stat-card" style="padding: 14px 18px;">
+            <div class="stat-label">BUG MALFUNCTIONS</div>
+            <div class="stat-val" id="fb-metric-bugs" style="color: #ff4757; font-size: 24px;">0</div>
+            <div class="stat-sub">Reported problems</div>
+          </div>
+          <div class="stat-card" style="padding: 14px 18px;">
+            <div class="stat-label">FEATURE REQUESTS</div>
+            <div class="stat-val" id="fb-metric-features" style="color: #00f5b8; font-size: 24px;">0</div>
+            <div class="stat-sub">Toolchain suggestions</div>
+          </div>
+        </div>
+
+        <!-- Feedbacks Table -->
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Target App</th>
+                <th>Operative / User</th>
+                <th>Category</th>
+                <th>Rating</th>
+                <th style="min-width: 280px;">Problem / Feedback Message</th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="feedbacks-table-body">
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading feedback telemetry...</td>
               </tr>
             </tbody>
           </table>
@@ -849,6 +951,19 @@
     </div>
   </div>
 
+  <!-- MODAL: FEEDBACK DETAIL & RESOLVER -->
+  <div class="modal-backdrop" id="modal-feedback-detail">
+    <div class="modal-box" style="max-width: 680px; border-color: rgba(251, 191, 36, 0.45);">
+      <div class="modal-header">
+        <h3 id="modal-feedback-detail-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>⭐ Feedback &amp; Problem Ticket</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-feedback-detail')">✕</button>
+      </div>
+      <div id="modal-feedback-detail-body"></div>
+    </div>
+  </div>
+
   <!-- JavaScript Application Controller -->
   <script>
     let activeMasterKey = sessionStorage.getItem('orbit_active_admin_key') || '';
@@ -861,6 +976,16 @@
 
       if (activeMasterKey) {
         loadVaultData();
+      }
+
+      // Check if URL specifies direct feedback or reports tab
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam === 'feedbacks' || urlParams.has('report') || urlParams.has('feedback')) {
+        openFeedbackSectionDirectly();
+      } else {
+        // Preload feedback telemetry for stats
+        loadFeedbacksData(false);
       }
     });
 
@@ -986,6 +1111,7 @@
       renderAccountsTable(accounts, banned);
       renderIPsTable(accounts, banned);
       renderLogsTable(audit);
+      loadFeedbacksData(false);
     }
 
     // 6. Render Accounts Table
@@ -1328,11 +1454,313 @@
     // UI Helpers: Tabs & Modals
     function switchTab(tab) {
       document.querySelectorAll('.hud-tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`tab-btn-${tab}`).classList.add('active');
+      const btn = document.getElementById(`tab-btn-${tab}`);
+      if (btn) btn.classList.add('active');
 
       document.getElementById('tab-pane-accounts').style.display = (tab === 'accounts') ? 'block' : 'none';
       document.getElementById('tab-pane-ips').style.display = (tab === 'ips') ? 'block' : 'none';
       document.getElementById('tab-pane-logs').style.display = (tab === 'logs') ? 'block' : 'none';
+      const fbPane = document.getElementById('tab-pane-feedbacks');
+      if (fbPane) {
+        fbPane.style.display = (tab === 'feedbacks') ? 'block' : 'none';
+        if (tab === 'feedbacks') {
+          loadFeedbacksData();
+        }
+      }
+    }
+
+    function openFeedbackSectionDirectly() {
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('dashboard-content').style.display = 'block';
+      switchTab('feedbacks');
+      loadFeedbacksData();
+    }
+
+    // -------------------------------------------------------------------------
+    // APP FEEDBACK & PROBLEM REPORTS ENGINE
+    // -------------------------------------------------------------------------
+    let feedbacksList = [];
+
+    async function loadFeedbacksData(notify = false) {
+      const tbody = document.getElementById('feedbacks-table-body');
+      if (tbody && !feedbacksList.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">📡 Syncing feedback telemetry from /api/feedback...</td></tr>`;
+      }
+
+      try {
+        const res = await fetch('/api/feedback?limit=150');
+        const data = await res.json();
+        
+        let remoteList = (data.success && Array.isArray(data.feedbacks)) ? data.feedbacks : [];
+
+        // Also merge local feedback backup from device
+        let localList = [];
+        try {
+          const raw = localStorage.getItem('orbit_feedbacks');
+          if (raw) localList = JSON.parse(raw);
+        } catch(e) {}
+
+        const seenIds = new Set();
+        feedbacksList = [];
+
+        [...remoteList, ...localList].forEach(item => {
+          if (item && item.id && !seenIds.has(item.id)) {
+            seenIds.add(item.id);
+            feedbacksList.push(item);
+          }
+        });
+
+        // Sort latest first
+        feedbacksList.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
+        // Update counters
+        const total = feedbacksList.length;
+        const totalRating = feedbacksList.reduce((sum, f) => sum + (Number(f.rating) || 5), 0);
+        const avgRating = total ? (totalRating / total).toFixed(1) : '5.0';
+        
+        const bugCount = feedbacksList.filter(f => {
+          const cat = (f.category || '').toLowerCase();
+          const msg = (f.message || '').toLowerCase();
+          return cat.includes('bug') || cat.includes('malfunction') || msg.includes('bug') || msg.includes('error');
+        }).length;
+
+        const featureCount = feedbacksList.filter(f => {
+          const cat = (f.category || '').toLowerCase();
+          return cat.includes('feature') || cat.includes('request') || cat.includes('ui');
+        }).length;
+
+        // Populate metrics
+        const statCount = document.getElementById('stat-total-feedbacks');
+        if (statCount) statCount.textContent = total;
+        const statSub = document.getElementById('stat-sub-feedbacks');
+        if (statSub) statSub.textContent = `Avg ${avgRating} ★ across ${total} reports`;
+
+        const tabCount = document.getElementById('tab-count-feedbacks');
+        if (tabCount) tabCount.textContent = total;
+
+        const elTotal = document.getElementById('fb-metric-total');
+        if (elTotal) elTotal.textContent = total;
+        const elAvg = document.getElementById('fb-metric-avg');
+        if (elAvg) elAvg.textContent = `${avgRating} ★`;
+        const elBugs = document.getElementById('fb-metric-bugs');
+        if (elBugs) elBugs.textContent = bugCount;
+        const elFeatures = document.getElementById('fb-metric-features');
+        if (elFeatures) elFeatures.textContent = featureCount;
+
+        renderFeedbacksTable(feedbacksList);
+
+        if (notify) {
+          alert(`✅ Feedback telemetry synced! Retrieved ${total} reports (${avgRating} ★ average score).`);
+        }
+      } catch (err) {
+        console.error('Failed to load feedback telemetry:', err);
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--red); padding: 30px;">⚠️ Telemetry connection failed: ${escapeHtml(err.message)}</td></tr>`;
+        }
+      }
+    }
+
+    function renderFeedbacksTable(list) {
+      const tbody = document.getElementById('feedbacks-table-body');
+      if (!tbody) return;
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">No feedbacks or problem reports match the selected filters.</td></tr>`;
+        return;
+      }
+
+      const appBadges = {
+        'GESTUBE': { icon: '▶️', color: '#ff4b72', bg: 'rgba(255, 0, 85, 0.12)' },
+        'JARVIS': { icon: '🤖', color: '#00f5b8', bg: 'rgba(0, 245, 184, 0.12)' },
+        'ECHONODE': { icon: '⛏️', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' },
+        'RETROSMART': { icon: '🕹️', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)' },
+        'ORBIT': { icon: '🌐', color: '#a855f7', bg: 'rgba(168, 85, 247, 0.12)' },
+        'SHARE': { icon: '📤', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)' }
+      };
+
+      tbody.innerHTML = list.map(item => {
+        const id = escapeHtml(item.id || 'FB-ORBIT-LOG');
+        const rawApp = (item.appName || 'Trendusty Orbit').trim();
+        const appKey = Object.keys(appBadges).find(k => rawApp.toUpperCase().includes(k)) || 'ORBIT';
+        const badge = appBadges[appKey] || { icon: '⭐', color: '#00f5b8', bg: 'rgba(0, 245, 184, 0.1)' };
+
+        const user = escapeHtml(item.userName || 'Anonymous Operative');
+        const email = escapeHtml(item.userEmail || '');
+        const isAuth = user !== 'Anonymous Operative' && user !== 'Anonymous Guest' && user !== 'Guest User';
+
+        const cat = escapeHtml(item.category || 'General Rating');
+        let catColor = '#38bdf8';
+        let catBg = 'rgba(56, 189, 248, 0.12)';
+        if (cat.toLowerCase().includes('bug') || cat.toLowerCase().includes('error') || cat.toLowerCase().includes('malfunction')) {
+          catColor = '#ff4757';
+          catBg = 'rgba(255, 71, 87, 0.15)';
+        } else if (cat.toLowerCase().includes('feature')) {
+          catColor = '#00f5b8';
+          catBg = 'rgba(0, 245, 184, 0.12)';
+        } else if (cat.toLowerCase().includes('rating')) {
+          catColor = '#fbbf24';
+          catBg = 'rgba(251, 191, 36, 0.12)';
+        }
+
+        const rating = Math.min(5, Math.max(1, parseInt(item.rating, 10) || 5));
+        const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+
+        const msg = escapeHtml(item.message || '');
+        const shortMsg = msg.length > 90 ? msg.substring(0, 90) + '...' : msg;
+
+        const date = item.timestamp ? new Date(item.timestamp).toLocaleString('en-US', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        }) : 'Recently';
+
+        return `
+          <tr>
+            <td>
+              <code style="font-family: var(--font-mono); font-size: 11px; background: rgba(255,255,255,0.06); padding: 3px 6px; border-radius: 4px; color: #a5f3fc;">${id}</code>
+            </td>
+            <td>
+              <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700; color: ${badge.color}; background: ${badge.bg}; border: 1px solid ${badge.color}40; padding: 3px 8px; border-radius: 6px; font-size: 11.5px;">
+                <span>${badge.icon}</span> ${escapeHtml(rawApp)}
+              </span>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: #fff; display: flex; align-items: center; gap: 6px;">
+                <span>👤 ${user}</span>
+                ${isAuth ? '<span style="font-size: 9.5px; background: rgba(0,245,184,0.15); color: #00f5b8; border: 1px solid rgba(0,245,184,0.3); padding: 1px 5px; border-radius: 4px;">VERIFIED</span>' : ''}
+              </div>
+              ${email ? `<div style="font-size: 11px; color: var(--text-muted);">${email}</div>` : ''}
+            </td>
+            <td>
+              <span style="display: inline-block; font-size: 11px; font-weight: 700; color: ${catColor}; background: ${catBg}; border: 1px solid ${catColor}40; padding: 2px 7px; border-radius: 999px;">
+                ${cat}
+              </span>
+            </td>
+            <td>
+              <span style="color: #fbbf24; font-size: 13px; font-family: monospace; letter-spacing: 1px;" title="${rating}/5 Stars">${stars}</span>
+              <span style="font-size: 10.5px; color: var(--text-muted); margin-left: 3px;">${rating}/5</span>
+            </td>
+            <td style="line-height: 1.45; font-size: 12.5px; color: #cbd5e1;">
+              <div>${shortMsg}</div>
+            </td>
+            <td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); white-space: nowrap;">
+              ${date}
+            </td>
+            <td>
+              <button class="btn-action btn-action-cyan" style="padding: 4px 10px; font-size: 11px;" onclick="inspectFeedbackDetail('${id}')">🔍 Inspect</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterFeedbacksTable() {
+      const appFilter = (document.getElementById('fb-filter-app').value || 'ALL').toUpperCase();
+      const catFilter = (document.getElementById('fb-filter-category').value || 'ALL').toUpperCase();
+      const ratingFilter = document.getElementById('fb-filter-rating').value || 'ALL';
+      const query = (document.getElementById('fb-search-query').value || '').toLowerCase().trim();
+
+      const filtered = feedbacksList.filter(item => {
+        const app = (item.appName || '').toUpperCase();
+        const cat = (item.category || '').toUpperCase();
+        const rating = String(item.rating || '5');
+        const text = ((item.userName || '') + ' ' + (item.userEmail || '') + ' ' + (item.message || '') + ' ' + (item.id || '')).toLowerCase();
+
+        const matchApp = (appFilter === 'ALL') || app.includes(appFilter);
+        const matchCat = (catFilter === 'ALL') || cat.includes(catFilter);
+        const matchRating = (ratingFilter === 'ALL') || (rating === ratingFilter);
+        const matchQuery = !query || text.includes(query);
+
+        return matchApp && matchCat && matchRating && matchQuery;
+      });
+
+      renderFeedbacksTable(filtered);
+    }
+
+    function inspectFeedbackDetail(ticketId) {
+      const item = feedbacksList.find(f => f.id === ticketId);
+      if (!item) {
+        alert('Ticket not found: ' + ticketId);
+        return;
+      }
+
+      const body = document.getElementById('modal-feedback-detail-body');
+      if (!body) return;
+
+      const rating = Math.min(5, Math.max(1, parseInt(item.rating, 10) || 5));
+      const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+      const isAuth = item.userName && item.userName !== 'Anonymous Operative' && item.userName !== 'Anonymous Guest' && item.userName !== 'Guest User';
+
+      body.innerHTML = `
+        <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px; margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <span style="font-family: var(--font-mono); font-size: 11px; color: #38bdf8; font-weight: 700; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 4px;">TICKET ${escapeHtml(item.id)}</span>
+              <h2 style="font-size: 18px; color: #fff; margin-top: 8px;">${escapeHtml(item.appName || 'Trendusty Orbit')}</h2>
+            </div>
+            <div style="text-align: right;">
+              <div style="color: #fbbf24; font-size: 18px; font-family: monospace;">${stars}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${rating}/5 Star Rating</div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; font-size: 12.5px;">
+            <div>
+              <div style="color: var(--text-muted); font-size: 11px; font-family: var(--font-mono);">OPERATIVE USER</div>
+              <div style="color: #fff; font-weight: 700; margin-top: 2px;">
+                👤 ${escapeHtml(item.userName || 'Anonymous')}
+                ${isAuth ? '<span style="font-size: 10px; color: #00f5b8;"> (Verified Account)</span>' : '<span style="font-size: 10px; color: #fbbf24;"> (Guest)</span>'}
+              </div>
+            </div>
+            <div>
+              <div style="color: var(--text-muted); font-size: 11px; font-family: var(--font-mono);">REPORT TYPE</div>
+              <div style="color: #38bdf8; font-weight: 700; margin-top: 2px;">${escapeHtml(item.category || 'General')}</div>
+            </div>
+            <div>
+              <div style="color: var(--text-muted); font-size: 11px; font-family: var(--font-mono);">TIMESTAMP</div>
+              <div style="color: #cbd5e1; margin-top: 2px;">${item.timestamp ? new Date(item.timestamp).toLocaleString() : 'N/A'}</div>
+            </div>
+            ${item.clientIP ? `
+            <div>
+              <div style="color: var(--text-muted); font-size: 11px; font-family: var(--font-mono);">CLIENT IP</div>
+              <div style="color: #a5f3fc; font-family: var(--font-mono); margin-top: 2px;">${escapeHtml(item.clientIP)}</div>
+            </div>` : ''}
+          </div>
+
+          <div>
+            <div style="color: var(--text-muted); font-size: 11px; font-family: var(--font-mono); margin-bottom: 6px;">PROBLEM DESCRIPTION / FEEDBACK STATEMENT</div>
+            <div style="background: #060911; border: 1px solid rgba(255, 255, 255, 0.12); padding: 14px; border-radius: 8px; color: #f1f5f9; font-size: 13.5px; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(item.message || '')}</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div style="font-size: 11.5px; color: var(--text-muted);">
+            Status: <span style="color: #00f5b8; font-weight: 700;">ACTIVE IN ENGINEERING TELEMETRY</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-action" onclick="copyTicketJson('${ticketId}')">📋 Copy JSON</button>
+            <button class="btn-action btn-action-cyan" onclick="closeModal('modal-feedback-detail')">Close</button>
+          </div>
+        </div>
+      `;
+
+      openModal('modal-feedback-detail');
+    }
+
+    function copyTicketJson(ticketId) {
+      const item = feedbacksList.find(f => f.id === ticketId);
+      if (item) {
+        navigator.clipboard.writeText(JSON.stringify(item, null, 2));
+        alert('✅ Ticket JSON copied to clipboard!');
+      }
+    }
+
+    function exportFeedbacksJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(feedbacksList, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `orbit_feedbacks_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
     }
 
     function openModal(id) {

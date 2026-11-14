@@ -44,11 +44,13 @@ module.exports = async (req, res) => {
     const total = list.reduce((acc, f) => acc + (Number(f.rating) || 5), 0);
     const avg = list.length ? (total / list.length).toFixed(1) : '5.0';
 
+    const limit = parseInt(req.query.limit, 10) || 100;
+
     return res.status(200).json({
       success: true,
       count: list.length,
       averageRating: avg,
-      feedbacks: list.slice(-30).reverse()
+      feedbacks: list.slice(-limit).reverse()
     });
   }
 
