@@ -8,6 +8,18 @@
       "dest": "/api/$1"
     },
     {
+      "src": "^/(.*)/index-(en|es|fr|ar)(\\.html)?$",
+      "dest": "/$1/index-$2.html"
+    },
+    {
+      "src": "^/windows/download-(en|es|fr|ar)(\\.html)?$",
+      "dest": "/windows/download-$1.html"
+    },
+    {
+      "src": "^/index-(en|es|fr|ar)(\\.html)?$",
+      "dest": "/index-$1.html"
+    },
+    {
       "src": "^/security/?$",
       "dest": "/security/index.html"
     },

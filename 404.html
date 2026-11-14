@@ -33,6 +33,11 @@
           return;
         }
 
+        if (/index-(en|es|fr|ar)$/i.test(clean) || /download-(en|es|fr|ar)$/i.test(clean)) {
+          window.location.replace(clean + '.html' + search + hash);
+          return;
+        }
+
         var routeMap = {
           '': '/home/',
           '/': '/home/',
