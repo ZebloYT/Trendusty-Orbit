@@ -1901,7 +1901,13 @@ body.theme-buttermax #orbit-cursor-dot.is-active {
   box-shadow: 0 0 20px rgba(238, 0, 255, 1) !important;
 }
 
+/* Native Instant Scroll Fallback (Zero delay) */
+[data-scroll="native"],
+html:has([data-scroll="native"]) {
+  scroll-behavior: auto !important;
+}
+
 /* Smooth HTML scroll momentum */
-html.has-butter-smooth {
+html.has-butter-smooth:not(:has([data-scroll="native"])) {
   scroll-behavior: smooth !important;
 }

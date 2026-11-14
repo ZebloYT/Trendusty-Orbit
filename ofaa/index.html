@@ -35,7 +35,7 @@
       min-height: 100% !important;
       overflow-x: hidden !important;
       overflow-y: scroll !important;
-      scroll-behavior: smooth !important;
+      scroll-behavior: auto !important;
     }
 
     body {
@@ -49,6 +49,7 @@
       user-select: auto !important;
       touch-action: auto !important;
       -webkit-overflow-scrolling: touch !important;
+      scroll-behavior: auto !important;
       background-image: 
         radial-gradient(circle at 12% 18%, rgba(238, 0, 255, 0.07) 0%, transparent 40%),
         radial-gradient(circle at 88% 30%, rgba(0, 245, 184, 0.08) 0%, transparent 45%),
@@ -693,7 +694,7 @@
     }
   </style>
 </head>
-<body>
+<body class="custom-cursor-active" data-scroll="native">
 
   <!-- Orbit Circle Mouse Cursor in #EE00FF -->
   <div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
@@ -1367,6 +1368,11 @@
       checkAuthUser();
       initStars();
     });
+
+    // Guarantee 100% immediate, zero-latency native scrolling on OFAA
+    window.addEventListener('wheel', function(e) {
+      e.stopImmediatePropagation();
+    }, { passive: true, capture: true });
   </script>
 
   <!-- Tactical Orbit Cursor Animation Engine -->

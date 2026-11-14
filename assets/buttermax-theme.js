@@ -1019,11 +1019,13 @@
   let smoothScrollTarget = window.scrollY;
   let smoothScrollCurrent = window.scrollY;
   let isSmoothScrolling = false;
-  const SCROLL_LERP = 0.088; // Silky butter momentum
+  const SCROLL_LERP = 0.22; // Snappy, responsive momentum without delay
 
   function setupSmoothScroll() {
+    if (document.body.dataset.scroll === 'native' || (window.location && window.location.pathname.includes('/ofaa/'))) return;
+
     window.addEventListener('wheel', function(e) {
-      if (document.body.classList.contains('auth-modal-open') || document.body.classList.contains('modal-open') || document.body.dataset.scroll === 'native') return;
+      if (document.body.classList.contains('auth-modal-open') || document.body.classList.contains('modal-open') || document.body.dataset.scroll === 'native' || (window.location && window.location.pathname.includes('/ofaa/'))) return;
       if (e.target && e.target.closest && e.target.closest('select, textarea, input, .modal-body, #feedback-modal-backdrop, .auth-modal-backdrop, .auth-modal-window')) return;
 
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
