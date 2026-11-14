@@ -879,15 +879,15 @@
           <option value="ne">NE नेपाली (Nepali)</option>
         </optgroup>
       </select>
-      <a href="../home/" class="nav-pill">&larr; Main Operations Center</a>
+      <a href="../home/" class="nav-pill" data-i18n="nav_main">&larr; Main Operations Center</a>
       <a href="../apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;">🤖 JARVIS</a>
       <a href="../apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.35); color: #ff4b72;"><img src="../assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
       <a href="../echonode/" class="nav-pill">⛏️ EchoNode</a>
       <a href="../windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
       <a href="../share/" class="nav-pill">📤 Share</a>
-      <a href="../languages/" class="nav-pill" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">🌐 Languages</a>
-      <button type="button" class="nav-pill" onclick="openFeedbackModal('OFAA Catalog')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
-      <button type="button" class="nav-pill" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
+      <a href="../languages/" class="nav-pill" data-i18n="nav_languages" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">🌐 Languages</a>
+      <button type="button" class="nav-pill" data-i18n="nav_feedback" onclick="openFeedbackModal('OFAA Catalog')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
+      <button type="button" class="nav-pill" id="orbit-ecosystem-user-pill" data-i18n="nav_login" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
     </div>
   </nav>
 
@@ -895,17 +895,17 @@
     <!-- HERO -->
     <section class="hero-section">
       <div class="hero-eyebrow">
-        <span>⚡ SOVEREIGN ECOSYSTEM DIRECTORY</span>
+        <span data-i18n="ofaa_eyebrow">⚡ SOVEREIGN ECOSYSTEM DIRECTORY</span>
       </div>
-      <h1 class="hero-title">Other Features &amp; Applications</h1>
-      <p class="hero-desc" style="color: #64748b !important;">
+      <h1 class="hero-title" data-i18n="ofaa_title">Other Features &amp; Applications</h1>
+      <p class="hero-desc" data-i18n="ofaa_desc" style="color: #64748b !important;">
         Complete catalog of autonomous AI companions, standalone desktop workstations, mobile remote controllers, custom browser extensions, and cloud utility toolchains &mdash; built under one zero-telemetry architecture.
       </p>
 
       <!-- AUTH STATUS BANNER -->
       <div class="auth-banner-box">
         <div>
-          <span style="color: #ffffff !important;">🔒 <strong style="color: #ffffff !important;">Download Authorization:</strong> Website browsing &amp; feature explorations are open for everyone. An authenticated operative account is required to download application installers and binary archives.</span>
+          <span data-i18n="ofaa_auth_banner" style="color: #ffffff !important;">🔒 <strong style="color: #ffffff !important;">Download Authorization:</strong> Website browsing &amp; feature explorations are open for everyone. An authenticated operative account is required to download application installers and binary archives.</span>
         </div>
         <div id="ofaa-auth-status" style="font-family: var(--font-mono); font-weight: 700; color: var(--cyan);">
           Checking session...
@@ -917,16 +917,16 @@
     <div class="catalog-controls">
       <div class="search-input-wrap">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="ofaa-search-input" class="search-input" placeholder="Search applications, features, extensions, or tags..." oninput="filterApps()">
+        <input type="text" id="ofaa-search-input" class="search-input" data-i18n-placeholder="ofaa_search_placeholder" placeholder="Search applications, features, extensions, or tags..." oninput="filterApps()">
       </div>
 
       <div class="filter-pills" id="filter-pills">
-        <button type="button" class="filter-btn active" data-filter="all" onclick="setFilter(this, 'all')">All Apps &amp; Features (8)</button>
-        <button type="button" class="filter-btn" data-filter="ai" onclick="setFilter(this, 'ai')">🤖 AI &amp; Intelligence</button>
-        <button type="button" class="filter-btn" data-filter="desktop" onclick="setFilter(this, 'desktop')">💻 Desktop Workstations</button>
-        <button type="button" class="filter-btn" data-filter="mobile" onclick="setFilter(this, 'mobile')">📱 Mobile &amp; Remote</button>
-        <button type="button" class="filter-btn" data-filter="extensions" onclick="setFilter(this, 'extensions')">🧩 Browser Extensions</button>
-        <button type="button" class="filter-btn" data-filter="cloud" onclick="setFilter(this, 'cloud')">☁️ Cloud &amp; Utilities</button>
+        <button type="button" class="filter-btn active" data-filter="all" data-i18n="filter_all" onclick="setFilter(this, 'all')">All Apps &amp; Features (8)</button>
+        <button type="button" class="filter-btn" data-filter="ai" data-i18n="filter_ai" onclick="setFilter(this, 'ai')">🤖 AI &amp; Intelligence</button>
+        <button type="button" class="filter-btn" data-filter="desktop" data-i18n="filter_desktop" onclick="setFilter(this, 'desktop')">💻 Desktop Workstations</button>
+        <button type="button" class="filter-btn" data-filter="mobile" data-i18n="filter_mobile" onclick="setFilter(this, 'mobile')">📱 Mobile &amp; Remote</button>
+        <button type="button" class="filter-btn" data-filter="extensions" data-i18n="filter_extensions" onclick="setFilter(this, 'extensions')">🧩 Browser Extensions</button>
+        <button type="button" class="filter-btn" data-filter="cloud" data-i18n="filter_cloud" onclick="setFilter(this, 'cloud')">☁️ Cloud &amp; Utilities</button>
       </div>
     </div>
 

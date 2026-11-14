@@ -651,15 +651,15 @@
   <!-- TOP NAVIGATION -->
   <nav class="top-nav">
     <div class="nav-links">
-      <a href="../home/" class="nav-pill">&larr; Main Operations Center</a>
+      <a href="../home/" class="nav-pill" data-i18n="nav_main">&larr; Main Operations Center</a>
       <a href="../apps/jarvis/" class="nav-pill nav-pill-jarvis">🤖 JARVIS</a>
       <a href="../apps/gestube/" class="nav-pill nav-pill-gestube">GESTUBE</a>
       <a href="../echonode/" class="nav-pill">⛏️ EchoNode</a>
       <a href="../windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
       <a href="../share/" class="nav-pill">📤 Share</a>
-      <a href="../ofaa/" class="nav-pill">⚡ OFAA Apps</a>
-      <a href="./" class="nav-pill nav-pill-active">🌐 Languages</a>
-      <button type="button" class="nav-pill nav-pill-fb" onclick="openFeedbackModal('Languages Directory')">⭐ Feedback / Bug Report</button>
+      <a href="../ofaa/" class="nav-pill" data-i18n="nav_ofaa">⚡ OFAA Apps</a>
+      <a href="./" class="nav-pill nav-pill-active" data-i18n="nav_languages">🌐 Languages</a>
+      <button type="button" class="nav-pill nav-pill-fb" data-i18n="nav_feedback" onclick="openFeedbackModal('Languages Directory')">⭐ Feedback / Bug Report</button>
     </div>
     <div class="nav-links">
       <select class="lang-select" id="orbit-lang-select" onchange="window.changeLanguage(this.value)"></select>
@@ -672,17 +672,17 @@
     
     <!-- HERO SECTION -->
     <header class="hero-section">
-      <div class="eyebrow-pill">🌐 GLOBAL MULTILINGUAL SOVEREIGN DIRECTORY</div>
-      <h1 class="hero-title">Languages of the World &amp; India</h1>
-      <p class="hero-desc">
+      <div class="eyebrow-pill" data-i18n="lang_eyebrow">🌐 GLOBAL MULTILINGUAL SOVEREIGN DIRECTORY</div>
+      <h1 class="hero-title" data-i18n="lang_title">Languages of the World &amp; India</h1>
+      <p class="hero-desc" data-i18n="lang_desc">
         Comprehensive linguistic index cataloging official, national, and major regional spoken languages across 195 Sovereign Nations and all 36 States &amp; Union Territories of India. Features real-time search, bidirectional RTL engine, and instant Gemini-style URL routing (<code>?hl=...</code>).
       </p>
 
       <div class="stats-row">
-        <div class="stat-badge"><span>Sovereign Nations:</span> <strong>195</strong></div>
-        <div class="stat-badge"><span>Indian States &amp; UTs:</span> <strong>36</strong></div>
-        <div class="stat-badge"><span>Cataloged Languages:</span> <strong>350+</strong></div>
-        <div class="stat-badge"><span>Dynamic URL Routing:</span> <strong>?hl=... Live</strong></div>
+        <div class="stat-badge" data-i18n="lang_stat_nations"><span>Sovereign Nations:</span> <strong>195</strong></div>
+        <div class="stat-badge" data-i18n="lang_stat_states"><span>Indian States &amp; UTs:</span> <strong>36</strong></div>
+        <div class="stat-badge" data-i18n="lang_stat_catalog"><span>Cataloged Languages:</span> <strong>350+</strong></div>
+        <div class="stat-badge" data-i18n="lang_stat_routing"><span>Dynamic URL Routing:</span> <strong>?hl=... Live</strong></div>
       </div>
     </header>
 
@@ -690,18 +690,18 @@
     <section class="controls-panel">
       <div class="search-input-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="lang-search-input" class="search-input" placeholder="Search by country, state, language, or ISO code (e.g. Japan, Telugu, Pashto, fr, hi-IN)..." autocomplete="off" oninput="filterLanguages()">
+        <input type="text" id="lang-search-input" class="search-input" data-i18n-placeholder="lang_search_placeholder" placeholder="Search by country, state, language, or ISO code (e.g. Japan, Telugu, Pashto, fr, hi-IN)..." autocomplete="off" oninput="filterLanguages()">
       </div>
 
       <div class="filter-pills-row">
-        <button type="button" class="filter-btn active" data-filter="all" onclick="setCategoryFilter(this, 'all')">All Regions (231)</button>
-        <button type="button" class="filter-btn" data-filter="world" onclick="setCategoryFilter(this, 'world')">🌍 World Countries (195)</button>
-        <button type="button" class="filter-btn" data-filter="india" onclick="setCategoryFilter(this, 'india')">🇮🇳 Indian States &amp; UTs (36)</button>
-        <button type="button" class="filter-btn" data-filter="rtl" onclick="setCategoryFilter(this, 'rtl')">🔄 RTL Languages</button>
-        <button type="button" class="filter-btn" data-filter="asia" onclick="setCategoryFilter(this, 'asia')">🌏 Asia</button>
-        <button type="button" class="filter-btn" data-filter="europe" onclick="setCategoryFilter(this, 'europe')">🏰 Europe</button>
-        <button type="button" class="filter-btn" data-filter="africa" onclick="setCategoryFilter(this, 'africa')">🦁 Africa</button>
-        <button type="button" class="filter-btn" data-filter="americas" onclick="setCategoryFilter(this, 'americas')">🌎 Americas</button>
+        <button type="button" class="filter-btn active" data-filter="all" data-i18n="lang_filter_all" onclick="setCategoryFilter(this, 'all')">All Regions (231)</button>
+        <button type="button" class="filter-btn" data-filter="world" data-i18n="lang_filter_world" onclick="setCategoryFilter(this, 'world')">🌍 World Countries (195)</button>
+        <button type="button" class="filter-btn" data-filter="india" data-i18n="lang_filter_india" onclick="setCategoryFilter(this, 'india')">🇮🇳 Indian States &amp; UTs (36)</button>
+        <button type="button" class="filter-btn" data-filter="rtl" data-i18n="lang_filter_rtl" onclick="setCategoryFilter(this, 'rtl')">🔄 RTL Languages</button>
+        <button type="button" class="filter-btn" data-filter="asia" data-i18n="lang_filter_asia" onclick="setCategoryFilter(this, 'asia')">🌏 Asia</button>
+        <button type="button" class="filter-btn" data-filter="europe" data-i18n="lang_filter_europe" onclick="setCategoryFilter(this, 'europe')">🏰 Europe</button>
+        <button type="button" class="filter-btn" data-filter="africa" data-i18n="lang_filter_africa" onclick="setCategoryFilter(this, 'africa')">🦁 Africa</button>
+        <button type="button" class="filter-btn" data-filter="americas" data-i18n="lang_filter_americas" onclick="setCategoryFilter(this, 'americas')">🌎 Americas</button>
         
         <span class="filter-counter" id="active-count-label">Showing 231 of 231 linguistic entities</span>
       </div>
@@ -798,10 +798,21 @@
         return true;
       });
 
+      // Resolve active dictionary
+      const currentLang = document.documentElement.lang || 'en';
+      const dict = (window.OrbitI18n && window.OrbitI18n.COMMON_I18N && (window.OrbitI18n.COMMON_I18N[currentLang] || window.OrbitI18n.COMMON_I18N[currentLang.split('-')[0]])) || {};
+      const officialLabel = dict.lang_official_label || '⚡ Official &amp; National Languages:';
+      const regionalLabel = dict.lang_regional_label || '📍 Regional &amp; Spoken:';
+      const launchLabel = dict.lang_launch_ofaa || 'Launch OFAA in';
+      const testLabel = dict.lang_test_here || 'Test Here';
+
       // Update counter
       const counter = document.getElementById('active-count-label');
       if (counter) {
-        counter.textContent = `Showing ${filtered.length} of ${allEntities.length} linguistic entities`;
+        const showingWord = dict.lang_showing || 'Showing';
+        const ofWord = dict.lang_of || 'of';
+        const entitiesWord = dict.lang_entities || 'linguistic entities';
+        counter.textContent = `${showingWord} ${filtered.length} ${ofWord} ${allEntities.length} ${entitiesWord}`;
       }
 
       // Generate HTML
@@ -831,18 +842,18 @@
                 <span class="region-tag">${item.typeBadge}</span>
               </div>
 
-              <div class="lang-section-label">⚡ Official &amp; National Languages:</div>
+              <div class="lang-section-label">${officialLabel}</div>
               <div class="lang-pills-row">${offPills}</div>
 
               ${item.regionalList.length > 0 ? `
-                <div class="lang-section-label" style="color: var(--text-sub);">📍 Regional &amp; Spoken:</div>
+                <div class="lang-section-label" style="color: var(--text-sub);">${regionalLabel}</div>
                 <div class="lang-pills-row">${regPills}</div>
               ` : ''}
             </div>
 
             <div class="card-footer">
-              <a href="../ofaa/?hl=${item.primaryIso}" class="btn-card-act btn-act-primary">Launch OFAA in ${item.primaryIso} ↗</a>
-              <button type="button" class="btn-card-act btn-act-test" onclick="testLanguage('${item.primaryIso}', '${item.name}')">Test Here</button>
+              <a href="../ofaa/?hl=${item.primaryIso}" class="btn-card-act btn-act-primary">${launchLabel} ${item.primaryIso} ↗</a>
+              <button type="button" class="btn-card-act btn-act-test" onclick="testLanguage('${item.primaryIso}', '${item.name}')">${testLabel}</button>
             </div>
           </div>
         `;
