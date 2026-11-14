@@ -905,7 +905,22 @@
         userTag.innerHTML = `🟢 Logged in as: <strong>${user.name}</strong>`;
         nameInput.value = user.name;
         if (navAuthBtn) {
-          navAuthBtn.innerHTML = `👤 ${user.name}`;
+          let avatar = '👤';
+          try {
+            const sess = localStorage.getItem('orbit_user_session');
+            if (sess) {
+              const parsed = JSON.parse(sess);
+              if (parsed && parsed.avatar) avatar = parsed.avatar;
+            }
+          } catch (e) {}
+          if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+            avatar = localStorage.getItem('orbit_user_avatar');
+          }
+          const lower = (user.name || '').toLowerCase();
+          if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+            avatar = '🥷';
+          }
+          navAuthBtn.innerHTML = `${avatar} ${user.name}`;
           navAuthBtn.classList.add('active');
         }
       } else {

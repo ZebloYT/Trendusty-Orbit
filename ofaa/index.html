@@ -744,8 +744,8 @@
       <a href="../echonode/" class="nav-pill">⛏️ EchoNode</a>
       <a href="../windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
       <a href="../share/" class="nav-pill">📤 Share</a>
-      <button type="button" class="nav-pill" onclick="openFeedbackModal()" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
-      <button type="button" class="nav-pill active" id="ofaa-user-pill" onclick="openAuthModal(event)">👤 Login / Sign Up</button>
+      <button type="button" class="nav-pill" onclick="openFeedbackModal('OFAA Catalog')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
+      <button type="button" class="nav-pill" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
     </div>
   </nav>
 
@@ -1200,26 +1200,50 @@
       const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
 
       const authStatus = document.getElementById('ofaa-auth-status');
-      const userPill = document.getElementById('ofaa-user-pill');
+      const userPill = document.getElementById('orbit-ecosystem-user-pill') || document.getElementById('ofaa-user-pill');
 
       if (isLoggedIn) {
-        authStatus.innerHTML = `🟢 Logged in as: <strong>${name}</strong>`;
-        userPill.innerHTML = `👤 ${name}`;
+        if (authStatus) authStatus.innerHTML = `🟢 Logged in as: <strong>${name}</strong>`;
+        let avatar = '👤';
+        try {
+          if (sess) {
+            const parsed = JSON.parse(sess);
+            if (parsed && parsed.avatar) avatar = parsed.avatar;
+          }
+        } catch (e) {}
+        if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+          avatar = localStorage.getItem('orbit_user_avatar');
+        }
+        const lower = (name || '').toLowerCase();
+        if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+          avatar = '🥷';
+        }
+        if (userPill) {
+          userPill.innerHTML = `${avatar} ${name}`;
+          userPill.classList.add('active');
+        }
       } else {
-        authStatus.innerHTML = `⚪ Not Logged In &bull; <a href="../home/?auth=login" style="color:#00f5b8; text-decoration:underline;">Sign In to Download</a>`;
-        userPill.innerHTML = `👤 Sign Up / Login`;
+        if (authStatus) authStatus.innerHTML = `⚪ Not Logged In &bull; <a href="../home/?auth=login" style="color:#00f5b8; text-decoration:underline;">Sign In to Download</a>`;
+        if (userPill) {
+          userPill.innerHTML = `👤 Sign Up / Login`;
+          userPill.classList.remove('active');
+        }
       }
     }
 
-    function openAuthModal(e) {
+    function handleEcosystemUserClick(e) {
       if (e) e.preventDefault();
       const sess = localStorage.getItem('orbit_user_session');
       const name = localStorage.getItem('orbit_user_name');
       if (sess && name && name !== 'Guest User') {
-        window.location.href = '../home/?auth=account';
+        window.location.href = '/apps/account-manager/';
       } else {
-        window.location.href = '../home/?auth=login';
+        window.location.href = '/home/?auth=login';
       }
+    }
+
+    function openAuthModal(e) {
+      handleEcosystemUserClick(e);
     }
 
     // Global download protection

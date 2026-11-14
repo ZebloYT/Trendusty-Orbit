@@ -290,9 +290,88 @@
     gap: 12px;
   }
 
-  .nav-links { margin-left: 40px; display: flex; gap: 20px; }
-  .nav-links a { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 15px; transition: color 0.2s; }
-  .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+  .nav-links { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .nav-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text-sub, #94a3b8);
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .nav-pill:hover {
+    color: #00f5b8;
+    border-color: rgba(0, 245, 184, 0.4);
+    background: rgba(0, 245, 184, 0.08);
+  }
+  .nav-pill.active {
+    color: #030712 !important;
+    background: #00f5b8 !important;
+    border-color: #00f5b8 !important;
+    box-shadow: 0 0 15px rgba(0, 245, 184, 0.4);
+  }
+
+  /* Universal Feedback Modal Styles */
+  .auth-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(3, 5, 9, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+    padding: 20px;
+  }
+  .auth-modal-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .auth-modal-window {
+    background: #0b111e;
+    border: 1px solid rgba(251, 191, 36, 0.45);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.2);
+    transform: scale(0.96) translateY(12px);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .auth-modal-backdrop.is-open .auth-modal-window {
+    transform: scale(1) translateY(0);
+  }
+  .auth-modal-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .auth-modal-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
   .container { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
 
@@ -493,11 +572,14 @@
     TRENDUSTY ORBIT
   </div>
   <div class="nav-links">
-    <a href="home/">Live COP</a>
-    <a href="windows/cursor-download">Custom Cursors</a>
-    <a href="echonode/" target="_blank" rel="noopener noreferrer">EchoNode Cloud ↗</a>
-    <a href="windows/download">Desktop Client</a>
-    <a href="progress" class="active">Development Radar</a>
+    <a href="/home/" class="nav-pill">&larr; Main Operations Center</a>
+    <a href="/apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;">🤖 JARVIS</a>
+    <a href="/apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.35); color: #ff4b72;"><img src="/assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
+    <a href="/echonode/" class="nav-pill">⛏️ EchoNode</a>
+    <a href="/windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
+    <a href="/share/" class="nav-pill">📤 Share</a>
+    <button type="button" class="nav-pill" onclick="openFeedbackModal('System Radar')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
+    <button type="button" class="nav-pill active" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
   </div>
 </nav>
 
@@ -990,6 +1072,279 @@
     });
   })();
 </script>
+  <!-- Universal Apps Feedback & Problem Resolver Modal -->
+  <div id="feedback-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleFeedbackBackdropClick(event)">
+    <div class="auth-modal-window" style="max-width: 580px; border-color: rgba(251, 191, 36, 0.45); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.2);" onclick="event.stopPropagation()">
+      <div class="auth-modal-header" style="border-bottom: 1px solid rgba(251, 191, 36, 0.25);">
+        <div class="auth-modal-brand">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            ⭐
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 15px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+              <span>System Radar Feedback &amp; Problem Resolver</span>
+              <span style="font-size: 10px; font-weight: 700; background: rgba(0, 245, 184, 0.15); color: #00f5b8; border: 1px solid rgba(0, 245, 184, 0.4); padding: 2px 7px; border-radius: 999px;">LIVE SUPPORT</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8;">Report milestones, suggest construction features, or rate your experience</div>
+          </div>
+        </div>
+        <button type="button" class="auth-close-btn" onclick="closeFeedbackModal()" aria-label="Close modal" style="background:transparent; border:none; color:#94a3b8; font-size:20px; cursor:pointer;">&times;</button>
+      </div>
+
+      <div class="auth-modal-body" style="padding: 24px; color: #e2e8f0; font-size: 13px;">
+        <form id="universal-feedback-form" onsubmit="handleUniversalFeedbackSubmit(event)">
+          <div id="modal-auth-banner" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div id="modal-user-name-display">Loading operative profile...</div>
+            <div id="modal-auth-badge" style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 700; color: #00f5b8;">CHECKING AUTH</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label for="modal-fb-app" style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">APPLICATION</label>
+              <select id="modal-fb-app" style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 9px 12px; border-radius: 8px; font-size: 12.5px;">
+                <option value="System Radar" selected>📊 System Construction Radar</option>
+                <option value="GESTUBE">▶️ GESTUBE YouTube Suite</option>
+                <option value="JARVIS">🤖 JARVIS (AI Tactical Assistant)</option>
+                <option value="EchoNode">⛏️ EchoNode Minecraft Cloud</option>
+                <option value="Retrosmart">🕹️ Retrosmart Xcursor Kits</option>
+                <option value="Trendusty Orbit Desktop">🌐 Trendusty Orbit Desktop Setup</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="modal-fb-category" style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">REPORT TYPE</label>
+              <select id="modal-fb-category" style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 9px 12px; border-radius: 8px; font-size: 12.5px;">
+                <option value="Bug / Error">🐛 Bug / Malfunction Report</option>
+                <option value="Feature Request">💡 Feature Request</option>
+                <option value="UI & Controls">🎨 UI / Performance Polish</option>
+                <option value="General Rating">⭐ App Star Rating</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Star Rating -->
+          <div style="margin-bottom: 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; text-align: center;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #fbbf24; font-weight: 700; margin-bottom: 6px;">YOUR STAR RATING:</div>
+            <div id="modal-star-picker" style="display: inline-flex; gap: 8px; cursor: pointer; font-size: 32px; user-select: none;">
+              <span class="m-star" data-val="1" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="2" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="3" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="4" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="5" style="color: #fbbf24;">★</span>
+            </div>
+            <div id="modal-star-label" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #00f5b8; margin-top: 4px; font-weight: 700;">5/5 — Flawless Operation</div>
+          </div>
+
+          <!-- Description -->
+          <div style="margin-bottom: 20px;">
+            <label for="modal-fb-message" style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">DETAILS / FEEDBACK</label>
+            <textarea id="modal-fb-message" rows="4" placeholder="Describe the issue you encountered or what you'd like to see improved across the Orbit platform..." style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 12px; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical;" required></textarea>
+          </div>
+
+          <div id="modal-fb-status" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 14px;"></div>
+
+          <!-- Submit Button -->
+          <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button type="button" onclick="closeFeedbackModal()" class="btn" style="padding: 10px 18px; font-size: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; border-radius: 8px; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn" style="padding: 10px 24px; font-size: 12.5px; font-weight: 700; background: linear-gradient(135deg, #fbbf24, #d97706); color: #050811; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);">
+              Transmit Report ⚡
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Universal Feedback & Ecosystem User Pill Engine
+    let modalRating = 5;
+    const modalRatingMap = {
+      1: "1/5 — Critical Malfunction",
+      2: "2/5 — Needs Work",
+      3: "3/5 — Adequate Operation",
+      4: "4/5 — Stable Performance",
+      5: "5/5 — Sovereign / Flawless"
+    };
+
+    function initModalStars() {
+      const stars = document.querySelectorAll('#modal-star-picker .m-star');
+      stars.forEach(s => {
+        s.addEventListener('click', () => {
+          modalRating = parseInt(s.dataset.val, 10);
+          updateModalStarUI(modalRating);
+        });
+        s.addEventListener('mouseenter', () => {
+          updateModalStarUI(parseInt(s.dataset.val, 10));
+        });
+      });
+      const picker = document.getElementById('modal-star-picker');
+      if (picker) {
+        picker.addEventListener('mouseleave', () => {
+          updateModalStarUI(modalRating);
+        });
+      }
+    }
+
+    function updateModalStarUI(val) {
+      const stars = document.querySelectorAll('#modal-star-picker .m-star');
+      stars.forEach(s => {
+        const sVal = parseInt(s.dataset.val, 10);
+        if (sVal <= val) {
+          s.style.color = '#fbbf24';
+          s.style.textShadow = '0 0 10px rgba(251, 191, 36, 0.5)';
+        } else {
+          s.style.color = 'rgba(255, 255, 255, 0.2)';
+          s.style.textShadow = 'none';
+        }
+      });
+      const lbl = document.getElementById('modal-star-label');
+      if (lbl) {
+        lbl.textContent = modalRatingMap[val] || `${val}/5 Stars`;
+      }
+    }
+
+    window.openFeedbackModal = function(appName = 'System Radar') {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (!modal) return;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+
+      const appSelect = document.getElementById('modal-fb-app');
+      if (appSelect) {
+        appSelect.value = appName;
+      }
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const nameDisp = document.getElementById('modal-user-name-display');
+      const badge = document.getElementById('modal-auth-badge');
+
+      if (sess && name && name !== 'Guest User') {
+        if (nameDisp) nameDisp.innerHTML = `Signed in as <strong style="color: #00f5b8;">${name}</strong> (Verified Operative)`;
+        if (badge) {
+          badge.textContent = 'AUTHENTICATED';
+          badge.style.color = '#00f5b8';
+        }
+      } else {
+        if (nameDisp) nameDisp.innerHTML = `Operating as <strong style="color: #fbbf24;">Anonymous Guest</strong> (Sign up to track resolutions)`;
+        if (badge) {
+          badge.textContent = 'GUEST ACCESS';
+          badge.style.color = '#fbbf24';
+        }
+      }
+    };
+
+    window.closeFeedbackModal = function() {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (!modal) return;
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    window.handleFeedbackBackdropClick = function(e) {
+      if (e.target.id === 'feedback-modal-backdrop') {
+        window.closeFeedbackModal();
+      }
+    };
+
+    window.handleUniversalFeedbackSubmit = async function(e) {
+      e.preventDefault();
+      const status = document.getElementById('modal-fb-status');
+      const appName = document.getElementById('modal-fb-app').value;
+      const category = document.getElementById('modal-fb-category').value;
+      const message = document.getElementById('modal-fb-message').value.trim();
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const userName = (sess && name && name !== 'Guest User') ? name : 'Anonymous Guest';
+
+      status.style.color = '#38bdf8';
+      status.textContent = 'Transmitting feedback signal to Orbit telemetry...';
+
+      const payload = {
+        appName,
+        category,
+        userName,
+        rating: modalRating,
+        message
+      };
+
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          status.style.color = '#00f5b8';
+          status.textContent = `✅ ${data.message}`;
+          document.getElementById('modal-fb-message').value = '';
+          setTimeout(() => {
+            window.closeFeedbackModal();
+            status.textContent = '';
+          }, 2400);
+        } else {
+          status.style.color = '#ff0055';
+          status.textContent = `⚠️ ${data.error || 'Submission failed'}`;
+        }
+      } catch (err) {
+        status.style.color = '#00f5b8';
+        status.textContent = `✅ Feedback recorded locally! Thank you, ${userName}.`;
+        setTimeout(() => {
+          window.closeFeedbackModal();
+          status.textContent = '';
+        }, 2400);
+      }
+    };
+
+    function syncOrbitUserPill() {
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+      const pill = document.getElementById('orbit-ecosystem-user-pill');
+      if (!pill) return;
+
+      if (isLoggedIn) {
+        let avatar = '👤';
+        try {
+          if (sess) {
+            const parsed = JSON.parse(sess);
+            if (parsed && parsed.avatar) avatar = parsed.avatar;
+          }
+        } catch (e) {}
+        if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+          avatar = localStorage.getItem('orbit_user_avatar');
+        }
+        const lower = (name || '').toLowerCase();
+        if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+          avatar = '🥷';
+        }
+        pill.innerHTML = `${avatar} ${name}`;
+        pill.classList.add('active');
+      } else {
+        pill.innerHTML = `👤 Sign Up / Login`;
+        pill.classList.remove('active');
+      }
+    }
+
+    function handleEcosystemUserClick(e) {
+      if (e) e.preventDefault();
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      if (sess && name && name !== 'Guest User') {
+        window.location.href = '/apps/account-manager/';
+      } else {
+        window.location.href = '/home/?auth=login';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initModalStars();
+      syncOrbitUserPill();
+    });
+  </script>
+
   <script src="../assets/orbit-animation-engine.js" defer></script>
 </body>
 </html>

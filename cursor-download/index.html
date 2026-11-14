@@ -2166,7 +2166,21 @@ pause
       if (!pill) return;
 
       if (isLoggedIn) {
-        pill.innerHTML = `👤 ${name}`;
+        let avatar = '👤';
+        try {
+          if (sess) {
+            const parsed = JSON.parse(sess);
+            if (parsed && parsed.avatar) avatar = parsed.avatar;
+          }
+        } catch (e) {}
+        if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+          avatar = localStorage.getItem('orbit_user_avatar');
+        }
+        const lower = (name || '').toLowerCase();
+        if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+          avatar = '🥷';
+        }
+        pill.innerHTML = `${avatar} ${name}`;
         pill.classList.add('active');
       } else {
         pill.innerHTML = `👤 Sign Up / Login`;

@@ -611,7 +611,7 @@
       <a href="/echonode/" class="nav-pill">⛏️ EchoNode</a>
       <a href="/windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
       <a href="/share/" class="nav-pill">📤 Share</a>
-      <a href="/ofaa/" class="nav-pill" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</a>
+      <button type="button" class="nav-pill" onclick="if (typeof switchHudTab === 'function' && document.getElementById('hud-tabs') && document.getElementById('hud-tabs').style.display !== 'none') { switchHudTab('feedbacks'); } else { window.location.href='/apps/account-manager/?tab=feedbacks'; }" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
       <button type="button" class="nav-pill active" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
     </div>
   </nav>
@@ -1848,7 +1848,21 @@
       if (!pill) return;
 
       if (isLoggedIn) {
-        pill.innerHTML = `👤 ${name}`;
+        let avatar = '👤';
+        try {
+          if (sess) {
+            const parsed = JSON.parse(sess);
+            if (parsed && parsed.avatar) avatar = parsed.avatar;
+          }
+        } catch (e) {}
+        if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+          avatar = localStorage.getItem('orbit_user_avatar');
+        }
+        const lower = (name || '').toLowerCase();
+        if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+          avatar = '🥷';
+        }
+        pill.innerHTML = `${avatar} ${name}`;
         pill.classList.add('active');
       } else {
         pill.innerHTML = `👤 Sign Up / Login`;
