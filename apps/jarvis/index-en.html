@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS — Autonomous AI System Assistant &amp; Controller | Trendusty Orbit</title>
+  <meta name="description" content="JARVIS: Autonomous AI Tactical System Assistant and Android Remote Controller for Trendusty Orbit. Voice recognition, system automation, telemetry link, and neural command orchestration.">
+  <link rel="icon" type="image/svg+xml" href="../../assets/trendusty-orbit-icon.svg">
+  <link rel="stylesheet" href="../../assets/buttermax-theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap">
+
+  <style>
+    :root {
+      --bg-dark: #060911;
+      --bg-panel: #0b111e;
+      --bg-card: rgba(14, 21, 37, 0.88);
+      --border-subtle: rgba(0, 245, 184, 0.16);
+      --border-glow: rgba(0, 245, 184, 0.45);
+      --cyan: #00f5b8;
+      --blue: #38bdf8;
+      --purple: #a855f7;
+      --magenta: #ee00ff;
+      --gold: #fbbf24;
+      --emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+      scroll-behavior: smooth !important;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      user-select: auto !important;
+      touch-action: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 245, 184, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(56, 189, 248, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(168, 85, 247, 0.07) 0%, transparent 45%),
+        linear-gradient(to bottom, #060911, #030509);
+      background-attachment: fixed;
+    }
+
+    /* Ambient cyber grid */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 245, 184, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.02) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* TOP NAVIGATION */
+    .top-nav {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(6, 9, 17, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 28px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #00f5b8 0%, #38bdf8 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px rgba(0, 245, 184, 0.4);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+
+    .brand-title span {
+      color: var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-pill {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--text-sub);
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-pill:hover {
+      color: var(--cyan);
+      border-color: rgba(0, 245, 184, 0.4);
+      background: rgba(0, 245, 184, 0.08);
+    }
+
+    .nav-pill.active {
+      color: #030712;
+      background: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 245, 184, 0.4);
+    }
+
+    /* HERO STYLING */
+    .hero-section {
+      padding: 70px 0 50px;
+      text-align: center;
+      position: relative;
+    }
+
+    .status-badge-under-process {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+    }
+
+    .pulse-dot-amber {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fbbf24;
+      box-shadow: 0 0 10px #fbbf24;
+      animation: pulseAnim 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.25); }
+    }
+
+    .hero-title {
+      font-size: clamp(38px, 5.5vw, 64px);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.08;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #00f5b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-sub);
+      max-width: 780px;
+      margin: 0 auto 34px;
+      line-height: 1.6;
+    }
+
+    /* ARC REACTOR / HUD VISUAL */
+    .hud-ring-wrap {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 30px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hud-outer-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px dashed rgba(0, 245, 184, 0.4);
+      animation: rotateCw 20s linear infinite;
+    }
+
+    .hud-inner-ring {
+      position: absolute;
+      width: 78%;
+      height: 78%;
+      border-radius: 50%;
+      border: 2px solid rgba(56, 189, 248, 0.5);
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      animation: rotateCcw 12s linear infinite;
+    }
+
+    .hud-core-glyph {
+      font-size: 50px;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(0, 245, 184, 0.8));
+    }
+
+    @keyframes rotateCw {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes rotateCcw {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+
+    /* DOWNLOAD CARDS GRID */
+    .downloads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin: 40px 0;
+    }
+
+    .download-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .download-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #00f5b8, #38bdf8);
+      opacity: 0.8;
+    }
+
+    .download-card:hover {
+      border-color: rgba(0, 245, 184, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 245, 184, 0.15);
+    }
+
+    .card-badge-platform {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      width: fit-content;
+    }
+
+    .badge-windows {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+
+    .badge-android {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #4ade80;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+      letter-spacing: -0.4px;
+    }
+
+    .card-meta {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 16px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #cbd5e1;
+      margin-bottom: 24px;
+    }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: var(--font-mono);
+      border: none;
+    }
+
+    .dl-btn-primary {
+      background: linear-gradient(135deg, #00f5b8, #00c997);
+      color: #030712;
+      box-shadow: 0 10px 25px rgba(0, 245, 184, 0.35);
+    }
+
+    .dl-btn-primary:hover {
+      background: #38bdf8;
+      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .dl-btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #f1f5f9;
+      margin-top: 10px;
+    }
+
+    .dl-btn-secondary:hover {
+      background: rgba(0, 245, 184, 0.1);
+      border-color: rgba(0, 245, 184, 0.4);
+      color: var(--cyan);
+    }
+
+    /* AUTH NOTICE PILL */
+    .auth-notice-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(14, 21, 37, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin: 20px 0 35px;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .auth-notice-pill strong {
+      color: #fff;
+    }
+
+    /* FEEDBACK & REVIEWS SECTION */
+    .feedback-section {
+      background: linear-gradient(150deg, rgba(14, 23, 40, 0.95), rgba(7, 12, 22, 0.98));
+      border: 1px solid rgba(0, 245, 184, 0.25);
+      border-radius: 24px;
+      padding: 44px 36px;
+      margin: 50px 0 80px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feedback-section::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #fbbf24, #00f5b8, #ee00ff);
+    }
+
+    .feedback-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .feedback-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* STAR RATING INTERACTIVE */
+    .stars-interactive {
+      display: inline-flex;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .star-icon {
+      font-size: 28px;
+      color: rgba(255, 255, 255, 0.2);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .star-icon.filled,
+    .star-icon.hover {
+      color: #fbbf24;
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+      transform: scale(1.15);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      background: rgba(6, 10, 18, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: #fff;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 245, 184, 0.25);
+      background: rgba(9, 15, 26, 0.95);
+    }
+
+    .form-textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    /* RECENT FEEDBACK LIST */
+    .feedback-feed {
+      margin-top: 36px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .feedback-card {
+      background: rgba(6, 11, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+
+    .fb-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .fb-user {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: #fff;
+    }
+
+    .fb-stars {
+      color: #fbbf24;
+      font-size: 14px;
+    }
+
+    .fb-message {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .fb-meta {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, 0.35);
+      margin-top: 10px;
+    }
+
+    /* Tactical Orbit Buttermax Circle Cursor — #EE00FF */
+    html.custom-cursor-active,
+    html.custom-cursor-active body,
+    html.custom-cursor-active *,
+    html.custom-cursor-active *::before,
+    html.custom-cursor-active *::after {
+      cursor: none !important;
+    }
+    html.custom-cursor-active a,
+    html.custom-cursor-active button,
+    html.custom-cursor-active input,
+    html.custom-cursor-active textarea,
+    html.custom-cursor-active select,
+    html.custom-cursor-active canvas,
+    html.custom-cursor-active [role="button"],
+    html.custom-cursor-active label {
+      cursor: none !important;
+    }
+
+    /* Precision Center Dot */
+    #orbit-cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 8px; height: 8px;
+      background: #EE00FF !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483647 !important;
+      box-shadow: 0 0 10px #EE00FF, 0 0 20px #EE00FF, 0 0 3px #ffffff !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* Outer Weightless Magnetic Follower Ring */
+    #orbit-cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border: 1.8px solid #EE00FF !important;
+      background: rgba(238, 0, 255, 0.08) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow: 0 0 16px rgba(238, 0, 255, 0.45) !important;
+      will-change: transform;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 0.25s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Hover State: Expands gracefully around interactive elements */
+    #orbit-cursor-ring.is-hovering {
+      width: 62px !important;
+      height: 62px !important;
+      border-color: #00f5b8 !important;
+      background: rgba(0, 245, 184, 0.18) !important;
+      box-shadow: 0 0 28px rgba(0, 245, 184, 0.75), inset 0 0 12px rgba(0, 245, 184, 0.25) !important;
+    }
+
+    #orbit-cursor-dot.is-hovering {
+      width: 6px !important;
+      height: 6px !important;
+      background: #ffffff !important;
+      box-shadow: 0 0 12px #ffffff, 0 0 24px #00f5b8 !important;
+    }
+
+    /* Click Active State */
+    #orbit-cursor-ring.is-active {
+      width: 26px !important;
+      height: 26px !important;
+      border-width: 2.4px !important;
+      background: rgba(238, 0, 255, 0.35) !important;
+      box-shadow: 0 0 35px #EE00FF !important;
+    }
+
+    #orbit-cursor-dot.is-active {
+      width: 12px !important;
+      height: 12px !important;
+      box-shadow: 0 0 20px #ffffff, 0 0 35px #EE00FF !important;
+    }
+
+    @media (pointer: coarse) {
+      html.custom-cursor-active,
+      html.custom-cursor-active body,
+      html.custom-cursor-active * {
+        cursor: auto !important;
+      }
+      #orbit-cursor-dot, #orbit-cursor-ring {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Orbit Circle Mouse Cursor in #EE00FF -->
+  <div id="orbit-cursor-dot" aria-hidden="true"></div>
+  <div id="orbit-cursor-ring" aria-hidden="true"></div>
+
+  <!-- TOP NAV (Universal Sovereign Ecosystem Bar) -->
+  <nav class="top-nav">
+    <a href="/home/" class="brand-group">
+      <div class="brand-icon">🤖</div>
+      <div class="brand-title">TRENDUSTY <span>ORBIT</span> // JARVIS</div>
+    </a>
+
+    <div class="nav-links">
+      <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)" style="background: rgba(12, 16, 23, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; font-family: monospace; cursor: pointer;">
+        <option value="en">EN English</option>
+        <option value="es">ES Español</option>
+        <option value="fr">FR Français</option>
+        <option value="ar">AR العربية</option>
+      </select>
+      <a href="/home/" class="nav-pill">&larr; Main Operations Center</a>
+      <a href="/apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.55); color: #00f5b8; background: rgba(0, 245, 184, 0.08);">🤖 JARVIS</a>
+      <a href="/apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.35); color: #ff4b72;"><img src="/assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
+      <a href="/echonode/" class="nav-pill">⛏️ EchoNode</a>
+      <a href="/windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
+      <a href="/share/" class="nav-pill">📤 Share</a>
+      <a href="#feedback" class="nav-pill" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</a>
+      <button type="button" class="nav-pill active" id="orbit-ecosystem-user-pill" onclick="openJarvisAuth(event)">👤 Login / Sign Up</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero-section">
+      <div class="status-badge-under-process">
+        <span class="pulse-dot-amber"></span>
+        <span>UNDER PROCESS &bull; IN ACTIVE DEVELOPMENT (ALPHA)</span>
+      </div>
+
+      <div class="hud-ring-wrap">
+        <div class="hud-outer-ring"></div>
+        <div class="hud-inner-ring"></div>
+        <div class="hud-core-glyph">🤖</div>
+      </div>
+
+      <h1 class="hero-title">JARVIS AI Assistant &amp; Controller</h1>
+      <p class="hero-subtitle">
+        The sovereign neural core of Trendusty Orbit. Coordinates automated system management, tactical voice synthesis, real-time telemetry analytics, and direct Android companion remote link.
+      </p>
+
+      <!-- AUTH NOTIFICATION PILL -->
+      <div class="auth-notice-pill" id="auth-status-bar">
+        <div>
+          <span>🔒 <strong>Download Authentication:</strong> Website browsing is free for everyone. An active account is required to download JARVIS applications.</span>
+        </div>
+        <div id="auth-user-tag" style="font-family: var(--font-mono); font-weight: 700; color: var(--cyan);">
+          Checking session...
+        </div>
+      </div>
+    </section>
+
+    <!-- DOWNLOADS -->
+    <section class="downloads-grid">
+      <!-- Card 1: Windows PC Suite -->
+      <div class="download-card">
+        <div>
+          <span class="card-badge-platform badge-windows">💻 WINDOWS 10 / 11 (64-BIT)</span>
+          <h2 class="card-title">JARVIS PC AI Suite</h2>
+          <div class="card-meta">VERSION 1.0.0 (ALPHA) &middot; 120 MB &middot; ZERO TELEMETRY</div>
+          <p class="card-desc">
+            Complete autonomous AI desktop host engine. Interfaces directly with local audio devices for instant speech synthesis, background process automation, and synchronized Common Operating Picture (COP) hooks.
+          </p>
+        </div>
+
+        <div>
+          <button type="button" class="dl-btn dl-btn-primary" onclick="downloadJarvisApp(event, 'pc-direct')" id="btn-dl-jarvis-pc">
+            <span>⚡ Download JarvisPC.exe (120 MB)</span>
+          </button>
+          <a href="downloads/Install_JarvisPC.bat" download class="dl-btn dl-btn-secondary" onclick="checkAuthBeforeDownload(event)">
+            <span>📦 Setup Batch Script (.bat)</span>
+          </a>
+          <div id="pc-download-progress" style="display: none; margin-top: 12px; font-family: var(--font-mono); font-size: 11.5px; color: var(--cyan); text-align: center;">
+            <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+              <div id="pc-prog-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00f5b8, #38bdf8); transition: width 0.2s;"></div>
+            </div>
+            <span id="pc-prog-text">Assembling binary components: 0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Android Companion Controller -->
+      <div class="download-card">
+        <div>
+          <span class="card-badge-platform badge-android">🤖 ANDROID 8.0+ (ARM64 / UNIVERSAL)</span>
+          <h2 class="card-title">Jarvis Controller Mobile</h2>
+          <div class="card-meta">VERSION 1.0.0 &middot; 13.6 MB &middot; DIRECT APK</div>
+          <p class="card-desc">
+            Wireless tactical companion controller for your smartphone or tablet. Send live voice commands, trigger orbital radar sweeps, monitor host system metrics, and control media playback from across your network.
+          </p>
+        </div>
+
+        <div>
+          <a href="downloads/JarvisController.apk" download="JarvisController.apk" class="dl-btn dl-btn-primary" onclick="checkAuthBeforeDownload(event)" id="btn-dl-jarvis-apk" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <span>🤖 Download Android APK (13.6 MB)</span>
+          </a>
+          <button type="button" class="dl-btn dl-btn-secondary" onclick="document.getElementById('feedback').scrollIntoView({behavior: 'smooth'})">
+            <span>💬 Report Problem / Give Feedback</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEEDBACK & PROBLEMS RESOLVER SECTION -->
+    <section class="feedback-section" id="feedback">
+      <div class="feedback-header-row">
+        <div>
+          <h2 class="feedback-title">⭐ Feedback &amp; Problem Resolver</h2>
+          <p style="color: var(--text-sub); font-size: 14px; margin-top: 4px;">
+            Help our engineering team improve JARVIS and other ecosystem applications. Report bugs, suggest features, and rate your experience.
+          </p>
+        </div>
+
+        <div style="text-align: right;">
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--cyan); margin-bottom: 4px;">YOUR RATING:</div>
+          <div class="stars-interactive" id="star-picker">
+            <span class="star-icon" data-value="1">★</span>
+            <span class="star-icon" data-value="2">★</span>
+            <span class="star-icon" data-value="3">★</span>
+            <span class="star-icon" data-value="4">★</span>
+            <span class="star-icon filled" data-value="5">★</span>
+          </div>
+          <div id="star-desc" style="font-family: var(--font-mono); font-size: 11px; color: #fbbf24; margin-top: 4px;">★★★★★ 5/5 Sovereign Grade</div>
+        </div>
+      </div>
+
+      <!-- FEEDBACK FORM -->
+      <form id="feedback-form" onsubmit="submitFeedback(event)">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="fb-app-select">APPLICATION</label>
+            <select class="form-select" id="fb-app-select">
+              <option value="JARVIS" selected>🤖 JARVIS (Under Process / Active Dev)</option>
+              <option value="GESTUBE">▶️ GESTUBE YouTube Suite</option>
+              <option value="EchoNode">⛏️ EchoNode Minecraft Cloud</option>
+              <option value="Retrosmart">🕹️ Retrosmart Xcursor Kits</option>
+              <option value="Trendusty Orbit Desktop">🌐 Trendusty Orbit Desktop Setup</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="fb-category-select">FEEDBACK TYPE</label>
+            <select class="form-select" id="fb-category-select">
+              <option value="problem">🐛 Bug / Problem Report</option>
+              <option value="feature">💡 Feature Request</option>
+              <option value="performance">⚡ Performance / Lag Issue</option>
+              <option value="general">💬 General Feedback &amp; Review</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="fb-user-name">OPERATIVE NAME</label>
+            <input type="text" class="form-input" id="fb-user-name" placeholder="Logged in user name" readonly style="background: rgba(0, 245, 184, 0.08); border-color: rgba(0, 245, 184, 0.3); color: #00f5b8; font-weight: 700;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fb-message">DETAILED OBSERVATIONS &amp; LOGS</label>
+          <textarea class="form-textarea" id="fb-message" required placeholder="Describe the issue you encountered, error codes, steps to reproduce, or features you'd like to see..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div id="fb-status-msg" style="font-family: var(--font-mono); font-size: 13px;"></div>
+          <button type="submit" class="dl-btn dl-btn-primary" style="width: auto; padding: 13px 30px;">
+            <span>🚀 Submit Report &amp; Rating</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- RECENT ENTRIES FEED -->
+      <div class="feedback-feed" id="feedback-feed">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <!-- AUTH POPUP / DOWNLOAD INTERCEPTOR MODAL -->
+  <div id="auth-gate-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 6, 12, 0.88); backdrop-filter: blur(14px); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: linear-gradient(150deg, #0e1728, #070c18); border: 1px solid rgba(0, 245, 184, 0.4); border-radius: 20px; max-width: 480px; width: 100%; padding: 36px 30px; box-shadow: 0 25px 70px rgba(0,0,0,0.8); text-align: center; position: relative;">
+      <button type="button" onclick="closeAuthGateModal()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: #94a3b8; font-size: 22px; cursor: pointer;">&times;</button>
+      
+      <div style="font-size: 44px; margin-bottom: 14px;">🔒</div>
+      <h3 style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px;">Authentication Required</h3>
+      <p style="color: var(--text-sub); font-size: 14px; line-height: 1.5; margin-bottom: 24px;">
+        To download JARVIS and Trendusty Orbit standalone packages, please log in with your operative account or register for free.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <a href="../../home/?auth=login" class="dl-btn dl-btn-primary" style="text-align: center;">
+          <span>🔑 Log In to Your Account</span>
+        </a>
+        <a href="../../home/?auth=signup" class="dl-btn dl-btn-secondary" style="text-align: center;">
+          <span>⚡ Create Free Operative Account</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Star Rating Logic
+    let currentRating = 5;
+    const ratingLabels = {
+      1: "★☆☆☆☆ 1/5 Critical Bugs / Poor",
+      2: "★★☆☆☆ 2/5 Needs Improvement",
+      3: "★★★☆☆ 3/5 Fair / Usable",
+      4: "★★★★☆ 4/5 Very Good",
+      5: "★★★★★ 5/5 Sovereign Grade"
+    };
+
+    function initStars() {
+      const container = document.getElementById('star-picker');
+      const stars = container.querySelectorAll('.star-icon');
+      const desc = document.getElementById('star-desc');
+
+      stars.forEach(star => {
+        star.addEventListener('mouseenter', () => {
+          const val = parseInt(star.getAttribute('data-value'), 10);
+          stars.forEach(s => {
+            const v = parseInt(s.getAttribute('data-value'), 10);
+            s.classList.toggle('hover', v <= val);
+          });
+          desc.textContent = ratingLabels[val];
+        });
+
+        star.addEventListener('mouseleave', () => {
+          stars.forEach(s => s.classList.remove('hover'));
+          desc.textContent = ratingLabels[currentRating];
+        });
+
+        star.addEventListener('click', () => {
+          currentRating = parseInt(star.getAttribute('data-value'), 10);
+          stars.forEach(s => {
+            const v = parseInt(s.getAttribute('data-value'), 10);
+            s.classList.toggle('filled', v <= currentRating);
+          });
+          desc.textContent = ratingLabels[currentRating];
+        });
+      });
+    }
+
+    // Check logged in user status
+    function getLoggedInUser() {
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      if (sess && name && name !== 'Guest User') {
+        return { isLoggedIn: true, name: name };
+      }
+      return { isLoggedIn: false, name: 'Guest User' };
+    }
+
+    function syncUserUI() {
+      const user = getLoggedInUser();
+      const userTag = document.getElementById('auth-user-tag');
+      const nameInput = document.getElementById('fb-user-name');
+      const navAuthBtn = document.getElementById('orbit-ecosystem-user-pill') || document.getElementById('nav-auth-btn');
+
+      if (user.isLoggedIn) {
+        userTag.innerHTML = `🟢 Logged in as: <strong>${user.name}</strong>`;
+        nameInput.value = user.name;
+        if (navAuthBtn) {
+          let avatar = '👤';
+          try {
+            const sess = localStorage.getItem('orbit_user_session');
+            if (sess) {
+              const parsed = JSON.parse(sess);
+              if (parsed && parsed.avatar) avatar = parsed.avatar;
+            }
+          } catch (e) {}
+          if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+            avatar = localStorage.getItem('orbit_user_avatar');
+          }
+          const lower = (user.name || '').toLowerCase();
+          if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+            avatar = '🥷';
+          }
+          navAuthBtn.innerHTML = `${avatar} ${user.name}`;
+          navAuthBtn.classList.add('active');
+        }
+      } else {
+        userTag.innerHTML = `⚪ Not Logged In &bull; <a href="../../home/?auth=login" style="color:#00f5b8; text-decoration:underline;">Sign In to Download</a>`;
+        nameInput.value = 'Guest Operative';
+        nameInput.readOnly = false;
+        if (navAuthBtn) {
+          navAuthBtn.innerHTML = '👤 Sign Up / Login';
+          navAuthBtn.classList.remove('active');
+        }
+      }
+    }
+
+    function checkAuthBeforeDownload(e) {
+      const user = getLoggedInUser();
+      if (!user.isLoggedIn) {
+        if (e) e.preventDefault();
+        openAuthGateModal();
+        return false;
+      }
+      return true;
+    }
+
+    function openAuthGateModal() {
+      const m = document.getElementById('auth-gate-modal');
+      if (m) m.style.display = 'flex';
+    }
+
+    function closeAuthGateModal() {
+      const m = document.getElementById('auth-gate-modal');
+      if (m) m.style.display = 'none';
+    }
+
+    function openJarvisAuth(e) {
+      if (e) e.preventDefault();
+      const user = getLoggedInUser();
+      if (user.isLoggedIn) {
+        window.location.href = '../../home/?auth=account';
+      } else {
+        window.location.href = '../../home/?auth=login';
+      }
+    }
+
+    // Direct Browser Concatenator for JarvisPC.exe (Combines part1 + part2 smoothly)
+    async function downloadJarvisApp(e, type) {
+      if (!checkAuthBeforeDownload(e)) return;
+
+      const progContainer = document.getElementById('pc-download-progress');
+      const progBar = document.getElementById('pc-prog-bar');
+      const progText = document.getElementById('pc-prog-text');
+      const btn = document.getElementById('btn-dl-jarvis-pc');
+
+      try {
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+        progContainer.style.display = 'block';
+
+        progText.textContent = "Fetching Part 1 (60 MB)...";
+        progBar.style.width = "20%";
+
+        const res1 = await fetch('downloads/JarvisPC.part1');
+        if (!res1.ok) throw new Error("Could not download Part 1");
+        const blob1 = await res1.blob();
+
+        progText.textContent = "Fetching Part 2 (60 MB)...";
+        progBar.style.width = "65%";
+
+        const res2 = await fetch('downloads/JarvisPC.part2');
+        if (!res2.ok) throw new Error("Could not download Part 2");
+        const blob2 = await res2.blob();
+
+        progText.textContent = "Recombining binary components (120 MB)...";
+        progBar.style.width = "90%";
+
+        const fullBlob = new Blob([blob1, blob2], { type: 'application/x-msdownload' });
+        const downloadUrl = URL.createObjectURL(fullBlob);
+
+        progBar.style.width = "100%";
+        progText.textContent = "✅ Download ready! Saving JarvisPC.exe...";
+
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'JarvisPC.exe';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          progContainer.style.display = 'none';
+        }, 3500);
+
+      } catch (err) {
+        console.warn("Client assemble fallback:", err);
+        progText.textContent = "Initiating mirror setup batch...";
+        window.location.href = 'downloads/Install_JarvisPC.bat';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    }
+
+    // Submit Feedback
+    async function submitFeedback(e) {
+      e.preventDefault();
+      const statusMsg = document.getElementById('fb-status-msg');
+      const appName = document.getElementById('fb-app-select').value;
+      const category = document.getElementById('fb-category-select').value;
+      const userName = document.getElementById('fb-user-name').value;
+      const message = document.getElementById('fb-message').value;
+
+      statusMsg.style.color = '#38bdf8';
+      statusMsg.textContent = 'Transmitting report to engineering hub...';
+
+      const payload = {
+        appName,
+        category,
+        userName,
+        rating: currentRating,
+        message
+      };
+
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          statusMsg.style.color = '#00f5b8';
+          statusMsg.textContent = `✅ ${data.message}`;
+          document.getElementById('fb-message').value = '';
+          loadFeedbackFeed();
+        } else {
+          statusMsg.style.color = '#ff0055';
+          statusMsg.textContent = `⚠️ ${data.error || 'Submission failed'}`;
+        }
+      } catch (err) {
+        // Fallback local save
+        let local = JSON.parse(localStorage.getItem('orbit_feedbacks') || '[]');
+        local.unshift({
+          id: 'LOCAL-' + Date.now(),
+          appName,
+          userName,
+          rating: currentRating,
+          message,
+          timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('orbit_feedbacks', JSON.stringify(local));
+
+        statusMsg.style.color = '#00f5b8';
+        statusMsg.textContent = `✅ Feedback recorded locally! Thank you, ${userName}.`;
+        document.getElementById('fb-message').value = '';
+        loadFeedbackFeed();
+      }
+    }
+
+    async function loadFeedbackFeed() {
+      const feed = document.getElementById('feedback-feed');
+      try {
+        const res = await fetch('/api/feedback?app=JARVIS');
+        const data = await res.json();
+        const list = data.feedbacks || [];
+
+        if (!list.length) {
+          feed.innerHTML = `<div style="color:var(--text-sub); font-size:13px; grid-column: 1/-1;">No reports submitted yet. Be the first operative to rate JARVIS!</div>`;
+          return;
+        }
+
+        feed.innerHTML = list.map(item => `
+          <div class="feedback-card">
+            <div class="fb-card-top">
+              <span class="fb-user">${escapeHtml(item.userName)}</span>
+              <span class="fb-stars">${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}</span>
+            </div>
+            <p class="fb-message">${escapeHtml(item.message)}</p>
+            <div class="fb-meta">${new Date(item.timestamp).toLocaleDateString()} &bull; Ticket #${item.id}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        feed.innerHTML = `<div style="color:var(--text-sub); font-size:13px;">Live feedback stream ready.</div>`;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      })[m]);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initStars();
+      syncUserUI();
+      loadFeedbackFeed();
+    });
+  </script>
+
+  <!-- Tactical Orbit Cursor Animation Engine -->
+  <script>
+    (function initCursor() {
+      const dot = document.getElementById('orbit-cursor-dot');
+      const ring = document.getElementById('orbit-cursor-ring');
+      if (!dot || !ring) return;
+
+      document.documentElement.classList.add('custom-cursor-active');
+      document.body.classList.add('custom-cursor-active');
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let dotX = mouseX;
+      let dotY = mouseY;
+      let ringX = mouseX;
+      let ringY = mouseY;
+      let isVisible = false;
+
+      function onMouseMove(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          isVisible = true;
+          dotX = mouseX;
+          dotY = mouseY;
+          ringX = mouseX;
+          ringY = mouseY;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+        }
+      }
+
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+      window.addEventListener('mousedown', () => {
+        ring.classList.add('is-active');
+        dot.classList.add('is-active');
+      });
+      window.addEventListener('mouseup', () => {
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
+      });
+      document.addEventListener('mouseleave', () => {
+        isVisible = false;
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      });
+      document.addEventListener('mouseenter', (e) => {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        if (e && e.clientX) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }
+      });
+
+      function renderFollower() {
+        if (isVisible) {
+          dotX += (mouseX - dotX) * 0.38;
+          dotY += (mouseY - dotY) * 0.38;
+          dot.style.transform = 'translate3d(' + dotX.toFixed(1) + 'px, ' + dotY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+
+          ringX += (mouseX - ringX) * 0.16;
+          ringY += (mouseY - ringY) * 0.16;
+          ring.style.transform = 'translate3d(' + ringX.toFixed(1) + 'px, ' + ringY.toFixed(1) + 'px, 0) translate(-50%, -50%)';
+        }
+        requestAnimationFrame(renderFollower);
+      }
+      requestAnimationFrame(renderFollower);
+
+      const interactiveSelector = 'a, button, input, select, textarea, [role="button"], .interactive, .btn, .dl-btn, .nav-pill, .star-icon, .form-input, .form-textarea, .form-select';
+
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.add('is-hovering');
+          dot.classList.add('is-hovering');
+        }
+      }, { passive: true });
+
+      document.addEventListener('mouseout', (e) => {
+        const el = e.target;
+        if (!el || !el.closest) return;
+        if (el.closest(interactiveSelector)) {
+          ring.classList.remove('is-hovering');
+          dot.classList.remove('is-hovering');
+        }
+      }, { passive: true });
+    })();
+  </script>
+  <script src="/assets/orbit-i18n.js"></script>
+</body>
+</html>

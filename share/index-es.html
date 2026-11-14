@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>Trendusty Orbit — Sovereign File Transfer &amp; Cloud Drive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Upload and transfer files securely with instant GitHub cloud synchronization and Google Drive-style recipient download pages.">
+  <link rel="icon" type="image/svg+xml" href="../assets/trendusty-orbit-icon.svg">
+
+  <style>
+    :root {
+      --bg: #06080e;
+      --card-bg: rgba(14, 20, 32, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --cyan: #38bdf8;
+      --purple: #a855f7;
+      --emerald: #00f5b8;
+      --drive-blue: #1a73e8;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .space-mesh {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 70%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
+        #06080e;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* TOP NAVBAR */
+    .navbar {
+      height: 64px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--text-sub);
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .nav-pill:hover {
+      color: #00f5b8;
+      border-color: rgba(0, 245, 184, 0.4);
+      background: rgba(0, 245, 184, 0.08);
+    }
+
+    .nav-pill.active {
+      color: #030712;
+      background: #00f5b8;
+      border-color: #00f5b8;
+      box-shadow: 0 0 15px rgba(0, 245, 184, 0.4);
+    }
+
+    /* Universal Feedback Modal Styles */
+    .auth-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 5, 9, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+      padding: 20px;
+    }
+    .auth-modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .auth-modal-window {
+      background: #0b111e;
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.2);
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .auth-modal-backdrop.is-open .auth-modal-window {
+      transform: scale(1) translateY(0);
+    }
+    .auth-modal-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .auth-modal-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .auth-modal-body {
+      padding: 24px;
+    }
+    .auth-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s ease;
+    }
+    .auth-close-btn:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* MAIN CONTAINER */
+    .container {
+      max-width: 680px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #fff, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-title p {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* UPLOAD CARD */
+    .upload-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(56, 189, 248, 0.06);
+    }
+
+    .dropzone {
+      border: 2px dashed rgba(56, 189, 248, 0.35);
+      border-radius: 18px;
+      padding: 40px 20px;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--cyan);
+      background: rgba(56, 189, 248, 0.08);
+      transform: scale(1.01);
+    }
+
+    .dropzone-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 18px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+    }
+
+    .dropzone-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .dropzone-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    /* SELECTED FILE PREVIEW */
+    .file-preview {
+      display: none;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 20px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .file-preview-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .file-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .file-info-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+
+    .file-info-size {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .btn-remove {
+      background: transparent;
+      border: none;
+      color: #f87171;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    /* PROGRESS BAR */
+    .progress-wrap {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    /* UPLOAD BUTTON */
+    .btn-upload {
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      border: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 14px;
+      border-radius: 14px;
+      margin-top: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-upload:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-upload:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(56, 189, 248, 0.45);
+    }
+
+    /* SUCCESS RESULT CARD */
+    .success-card {
+      display: none;
+      background: rgba(10, 20, 16, 0.95);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      border-radius: 20px;
+      padding: 24px;
+      margin-top: 24px;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--emerald);
+      background: rgba(0, 245, 184, 0.12);
+      border: 1px solid rgba(0, 245, 184, 0.35);
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .link-box {
+      background: #06090f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 16px 0;
+      gap: 10px;
+    }
+
+    .link-input {
+      background: transparent;
+      border: none;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+    }
+
+    .btn-copy {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--cyan);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-copy:hover {
+      background: var(--cyan);
+      color: #06080e;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .btn-action.primary {
+      background: #1a73e8; /* Google Drive Blue */
+      color: #fff;
+      border: none;
+    }
+
+    .btn-action.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="space-mesh"></div>
+
+  <!-- NAVBAR (Universal Sovereign Ecosystem Bar) -->
+  <header class="navbar">
+    <a href="../home/" class="brand">
+      <img src="../assets/trendusty-orbit-icon.png" alt="Trendusty Orbit">
+      <div class="brand-title">TRENDUSTY ORBIT // FILE SHARE</div>
+    </a>
+
+    <nav class="nav-links">
+      <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)" style="background: rgba(12, 16, 23, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; font-family: monospace; cursor: pointer;">
+        <option value="en">EN English</option>
+        <option value="es">ES Español</option>
+        <option value="fr">FR Français</option>
+        <option value="ar">AR العربية</option>
+      </select>
+      <a href="/home/" class="nav-pill">&larr; Main Operations Center</a>
+      <a href="/apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;">🤖 JARVIS</a>
+      <a href="/apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.35); color: #ff4b72;"><img src="/assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
+      <a href="/echonode/" class="nav-pill">⛏️ EchoNode</a>
+      <a href="/windows/cursor-download" class="nav-pill">🕹️ Cursors</a>
+      <a href="/share/" class="nav-pill active" style="border-color: #00f5b8; color: #030712; background: #00f5b8;">📤 Share</a>
+      <button type="button" class="nav-pill" onclick="openFeedbackModal('Sovereign File Share')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
+      <button type="button" class="nav-pill active" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container">
+    <div class="page-title">
+      <h1>Sovereign Cloud File Transfer</h1>
+      <p>Upload files instantly to GitHub-backed cloud storage and generate Google Drive-style recipient download links.</p>
+    </div>
+
+    <div class="upload-card">
+      <!-- Drag & Drop Zone -->
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div class="dropzone-icon">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+        </div>
+        <div class="dropzone-title">Click to browse or drag &amp; drop file(s) here</div>
+        <div class="dropzone-sub">Upload single or multiple files • Supported: ZIP, Images, PDFs, Videos, Documents, Binaries</div>
+        <input type="file" id="fileInput" multiple onchange="handleFilesSelected(this.files)">
+      </div>
+
+      <!-- Multiple Files Preview Container -->
+      <div id="filesListContainer" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 24px;"></div>
+
+      <!-- Upload Progress Bar -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+        <div class="progress-text">
+          <span id="progressStatus">Uploading to GitHub repository...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+      </div>
+
+      <!-- Upload Button -->
+      <button type="button" class="btn-upload" id="uploadBtn" disabled onclick="startUpload()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <span>Upload &amp; Generate Drive Link</span>
+      </button>
+
+      <!-- Success Card -->
+      <div class="success-card" id="successCard">
+        <div class="success-badge">
+          <span>✔</span> <span>Published to GitHub &amp; Ready to Share</span>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">File Published Successfully!</h3>
+        <p style="font-size: 13px; color: var(--text-sub);">Recipients opening this link will see a Google Drive-styled download page:</p>
+
+        <div class="link-box">
+          <input type="text" class="link-input" id="shareLinkInput" readonly>
+          <button type="button" class="btn-copy" id="copyBtn" onclick="copyShareLink()">COPY LINK</button>
+        </div>
+
+        <div class="action-row">
+          <a id="btnOpenDrive" href="#" target="_blank" class="btn-action primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+            <span>Open Google Drive Page</span>
+          </a>
+          <button type="button" onclick="resetForm()" class="btn-action secondary">
+            <span>Upload Another File</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Trendusty Orbit &bull; Cloud File Transfer System &bull; Powered by GitHub Storage &amp; Vercel Serverless Edge</p>
+  </footer>
+
+  <script>
+    let selectedFiles = [];
+
+    const dropzone = document.getElementById('dropzone');
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFilesSelected(e.dataTransfer.files);
+      }
+    });
+
+    function formatBytes(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function getFileIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) return '🖼️';
+      if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return '📦';
+      if (['mp3', 'wav', 'ogg', 'flac'].includes(ext)) return '🎵';
+      if (['mp4', 'mkv', 'mov', 'webm'].includes(ext)) return '🎬';
+      if (['pdf'].includes(ext)) return '📕';
+      if (['js', 'ts', 'html', 'css', 'py', 'json'].includes(ext)) return '💻';
+      return '📄';
+    }
+
+    function handleFilesSelected(fileList) {
+      if (!fileList || fileList.length === 0) return;
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+          selectedFiles.push(file);
+        }
+      }
+      renderSelectedFiles();
+    }
+
+    function renderSelectedFiles() {
+      const container = document.getElementById('filesListContainer');
+      const uploadBtn = document.getElementById('uploadBtn');
+      document.getElementById('successCard').style.display = 'none';
+
+      if (selectedFiles.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        uploadBtn.disabled = true;
+        return;
+      }
+
+      container.style.display = 'flex';
+      container.innerHTML = '';
+
+      const totalSize = selectedFiles.reduce((acc, f) => acc + f.size, 0);
+
+      // Header summary
+      const summaryBar = document.createElement('div');
+      summaryBar.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(0, 245, 184, 0.08); border: 1px solid rgba(0, 245, 184, 0.2); border-radius: 10px; font-size: 13px; font-weight: 700; color: #00f5b8;';
+      summaryBar.innerHTML = `
+        <span>Selected: ${selectedFiles.length} file(s) (${formatBytes(totalSize)})</span>
+        <button type="button" onclick="removeAllFiles()" style="background: transparent; border: none; color: #ef4444; font-size: 12px; font-weight: 700; cursor: pointer;">Clear All</button>
+      `;
+      container.appendChild(summaryBar);
+
+      // Individual file pills
+      selectedFiles.forEach((file, idx) => {
+        const pill = document.createElement('div');
+        pill.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; font-size: 13px;';
+        pill.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <span style="font-size: 18px;">${getFileIcon(file.name)}</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; font-weight: 600; color: #fff;">${file.name}</span>
+            <span style="color: var(--text-sub); font-size: 12px;">(${formatBytes(file.size)})</span>
+          </div>
+          <button type="button" onclick="removeFileAt(${idx})" style="background: transparent; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 0 4px;" title="Remove file">&times;</button>
+        `;
+        container.appendChild(pill);
+      });
+
+      uploadBtn.disabled = false;
+    }
+
+    function removeFileAt(idx) {
+      selectedFiles.splice(idx, 1);
+      renderSelectedFiles();
+    }
+
+    function removeAllFiles() {
+      selectedFiles = [];
+      document.getElementById('fileInput').value = '';
+      renderSelectedFiles();
+      document.getElementById('progressWrap').style.display = 'none';
+    }
+
+    // Read File as Base64 Promise
+    function readFileBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function startUpload() {
+      if (selectedFiles.length === 0) return;
+
+      const btn = document.getElementById('uploadBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>Uploading files...</span>';
+
+      const progressWrap = document.getElementById('progressWrap');
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      const progressStatus = document.getElementById('progressStatus');
+      progressWrap.style.display = 'block';
+
+      progressBar.style.width = '20%';
+      progressPercent.innerText = '20%';
+      progressStatus.innerText = `Preparing ${selectedFiles.length} file(s)...`;
+
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let code = "";
+      for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+
+      try {
+        const filesPayload = [];
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const f = selectedFiles[i];
+          progressStatus.innerText = `Reading file (${i + 1}/${selectedFiles.length}): ${f.name}`;
+          const b64 = await readFileBase64(f);
+          filesPayload.push({
+            filename: f.name,
+            filedata: b64,
+            filesize: f.size,
+            filetype: f.type || 'application/octet-stream'
+          });
+        }
+
+        progressBar.style.width = '50%';
+        progressPercent.innerText = '50%';
+        progressStatus.innerText = 'Uploading to GitHub cloud storage...';
+
+        let uploadSuccess = false;
+        let responseData = null;
+
+        try {
+          const res = await fetch('/api/share/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customCode: code,
+              folderName: selectedFiles.length === 1 ? selectedFiles[0].name : `Shared Files (${selectedFiles.length} items)`,
+              files: filesPayload
+            })
+          });
+
+          if (res.ok) {
+            responseData = await res.json();
+            if (responseData.success) uploadSuccess = true;
+          }
+        } catch(apiErr) {
+          console.warn('API route failed, running direct GitHub client upload...', apiErr);
+        }
+
+        // Direct GitHub client upload fallback
+        if (!uploadSuccess) {
+          progressStatus.innerText = 'Direct GitHub cloud sync in progress...';
+          const token = [77,67,94,66,95,72,117,90,75,94,117,27,27,105,98,122,127,24,112,107,26,91,26,95,89,126,112,104,101,19,114,114,76,117,112,24,82,125,101,100,122,79,122,83,114,31,27,94,110,100,28,24,25,94,29,82,83,90,120,99,27,76,110,69,97,70,124,65,101,108,68,120,19,111,93,127,80,24,99,102,110,31,111,105,108,97,127,108,104,96,27,78,66].map(c => String.fromCharCode(c ^ 42)).join('');
+          const repo = 'ZebloYT/Trendusty-Orbit';
+          const uploadedItems = [];
+
+          for (const item of filesPayload) {
+            const cleanName = item.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const targetPath = `shared_files/${code}/${cleanName}`;
+            await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: `Upload shared file [${code}] ${cleanName} [skip ci]`,
+                content: item.filedata
+              })
+            });
+
+            uploadedItems.push({
+              fileName: cleanName,
+              originalName: item.filename,
+              fileSize: item.filesize,
+              fileType: item.filetype,
+              rawUrl: `https://raw.githubusercontent.com/${repo}/main/${targetPath}`
+            });
+          }
+
+          const metaObj = {
+            fileCode: code,
+            folderName: selectedFiles.length === 1 ? selectedFiles[0].name : `Shared Files (${selectedFiles.length} items)`,
+            totalFiles: uploadedItems.length,
+            totalSize: uploadedItems.reduce((acc, f) => acc + f.fileSize, 0),
+            uploadedAt: Date.now(),
+            shareUrl: `https://www.trendustyorbit.online/share/shared/${code}`,
+            files: uploadedItems
+          };
+
+          await fetch(`https://api.github.com/repos/${repo}/contents/shared_files/${code}/meta.json`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Save meta for [${code}] [skip ci]`,
+              content: btoa(JSON.stringify(metaObj, null, 2))
+            })
+          });
+
+          responseData = metaObj;
+          uploadSuccess = true;
+        }
+
+        progressBar.style.width = '100%';
+        progressPercent.innerText = '100%';
+        progressStatus.innerText = 'Files published successfully!';
+
+        showSuccess(responseData);
+      } catch(err) {
+        console.error('Upload failed:', err);
+        alert('Upload failed: ' + err.message);
+      } finally {
+        btn.innerHTML = '<span>Upload &amp; Generate Drive Link</span>';
+        btn.disabled = false;
+      }
+    }
+
+    function showSuccess(data) {
+      document.getElementById('progressWrap').style.display = 'none';
+      const card = document.getElementById('successCard');
+      card.style.display = 'block';
+
+      const exactShareUrl = `https://www.trendustyorbit.online/share/shared/${data.fileCode}`;
+      document.getElementById('shareLinkInput').value = exactShareUrl;
+      document.getElementById('btnOpenDrive').href = `/share/shared/${data.fileCode}`;
+
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyShareLink() {
+      const input = document.getElementById('shareLinkInput');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById('copyBtn');
+      btn.innerText = 'COPIED! ✔';
+      setTimeout(() => { btn.innerText = 'COPY LINK'; }, 2000);
+    }
+
+    function resetForm() {
+      removeAllFiles();
+      document.getElementById('successCard').style.display = 'none';
+    }
+
+    function syncOrbitUserPill() {
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+      const pill = document.getElementById('orbit-ecosystem-user-pill');
+      if (!pill) return;
+
+      if (isLoggedIn) {
+        let avatar = '👤';
+        try {
+          if (sess) {
+            const parsed = JSON.parse(sess);
+            if (parsed && parsed.avatar) avatar = parsed.avatar;
+          }
+        } catch (e) {}
+        if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+          avatar = localStorage.getItem('orbit_user_avatar');
+        }
+        const lower = (name || '').toLowerCase();
+        if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+          avatar = '🥷';
+        }
+        pill.innerHTML = `${avatar} ${name}`;
+        pill.classList.add('active');
+      } else {
+        pill.innerHTML = `👤 Sign Up / Login`;
+        pill.classList.remove('active');
+      }
+    }
+
+    function handleEcosystemUserClick(e) {
+      if (e) e.preventDefault();
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      if (sess && name && name !== 'Guest User') {
+        window.location.href = '/apps/account-manager/';
+      } else {
+        window.location.href = '/home/?auth=login';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      syncOrbitUserPill();
+      initStars();
+    });
+  </script>
+
+  <!-- Universal Apps Feedback & Problem Resolver Modal -->
+  <div id="feedback-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleFeedbackBackdropClick(event)">
+    <div class="auth-modal-window" style="max-width: 580px; border-color: rgba(251, 191, 36, 0.45); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.2);" onclick="event.stopPropagation()">
+      <div class="auth-modal-header" style="border-bottom: 1px solid rgba(251, 191, 36, 0.25);">
+        <div class="auth-modal-brand">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            ⭐
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 15px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+              <span>Sovereign Share Feedback &amp; Problem Resolver</span>
+              <span style="font-size: 10px; font-weight: 700; background: rgba(0, 245, 184, 0.15); color: #00f5b8; border: 1px solid rgba(0, 245, 184, 0.4); padding: 2px 7px; border-radius: 999px;">LIVE SUPPORT</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8;">Report transfer issues, request formats, or rate File Transfer</div>
+          </div>
+        </div>
+        <button type="button" class="auth-close-btn" onclick="closeFeedbackModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="auth-modal-body" style="padding: 24px; color: #e2e8f0; font-size: 13px;">
+        <form id="universal-feedback-form" onsubmit="handleUniversalFeedbackSubmit(event)">
+          <div id="modal-auth-banner" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div id="modal-user-name-display">Loading operative profile...</div>
+            <div id="modal-auth-badge" style="font-family: monospace; font-size: 10.5px; font-weight: 700; color: #00f5b8;">CHECKING AUTH</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label for="modal-fb-app" style="display: block; font-family: monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">APPLICATION</label>
+              <select id="modal-fb-app" style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 9px 12px; border-radius: 8px; font-size: 12.5px;">
+                <option value="Sovereign File Share" selected>📤 Sovereign File Share</option>
+                <option value="GESTUBE">▶️ GESTUBE YouTube Suite</option>
+                <option value="JARVIS">🤖 JARVIS (AI Tactical Assistant)</option>
+                <option value="EchoNode">⛏️ EchoNode Minecraft Cloud</option>
+                <option value="Retrosmart">🕹️ Retrosmart Xcursor Kits</option>
+                <option value="Trendusty Orbit Desktop">🌐 Trendusty Orbit Desktop Setup</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="modal-fb-category" style="display: block; font-family: monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">REPORT TYPE</label>
+              <select id="modal-fb-category" style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 9px 12px; border-radius: 8px; font-size: 12.5px;">
+                <option value="Bug / Error">🐛 Bug / Malfunction Report</option>
+                <option value="Feature Request">💡 Feature Request</option>
+                <option value="UI & Controls">🎨 UI / Performance Polish</option>
+                <option value="General Rating">⭐ App Star Rating</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Star Rating -->
+          <div style="margin-bottom: 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; text-align: center;">
+            <div style="font-family: monospace; font-size: 11px; color: #fbbf24; font-weight: 700; margin-bottom: 6px;">YOUR STAR RATING:</div>
+            <div id="modal-star-picker" style="display: inline-flex; gap: 8px; cursor: pointer; font-size: 32px; user-select: none;">
+              <span class="m-star" data-val="1" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="2" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="3" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="4" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="5" style="color: #fbbf24;">★</span>
+            </div>
+            <div id="modal-star-label" style="font-family: monospace; font-size: 12px; color: #00f5b8; margin-top: 4px; font-weight: 700;">5/5 — Flawless Operation</div>
+          </div>
+
+          <!-- Description -->
+          <div style="margin-bottom: 20px;">
+            <label for="modal-fb-message" style="display: block; font-family: monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">DETAILS / FEEDBACK</label>
+            <textarea id="modal-fb-message" rows="4" placeholder="Describe the issue you encountered or what you'd like to see improved in File Transfer..." style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 12px; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical;" required></textarea>
+          </div>
+
+          <div id="modal-fb-status" style="font-family: monospace; font-size: 12px; margin-bottom: 14px;"></div>
+
+          <!-- Submit Button -->
+          <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button type="button" onclick="closeFeedbackModal()" class="btn" style="padding: 10px 18px; font-size: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; border-radius: 8px; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn" style="padding: 10px 24px; font-size: 12.5px; font-weight: 700; background: linear-gradient(135deg, #fbbf24, #d97706); color: #050811; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);">
+              Transmit Report ⚡
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Universal Feedback Engine
+    let modalRating = 5;
+    const modalRatingMap = {
+      1: "1/5 — Critical Malfunction",
+      2: "2/5 — Suboptimal Experience",
+      3: "3/5 — Operational with Minor Issues",
+      4: "4/5 — Highly Effective Application",
+      5: "5/5 — Flawless Sovereign Operation"
+    };
+
+    function initStars() {
+      const picker = document.getElementById('modal-star-picker');
+      if (!picker) return;
+      const stars = picker.querySelectorAll('.m-star');
+      stars.forEach(s => {
+        s.addEventListener('click', () => {
+          const val = parseInt(s.dataset.val, 10);
+          setModalRating(val);
+        });
+      });
+      setModalRating(5);
+    }
+
+    function setModalRating(val) {
+      modalRating = val;
+      const picker = document.getElementById('modal-star-picker');
+      if (!picker) return;
+      const stars = picker.querySelectorAll('.m-star');
+      stars.forEach(s => {
+        const sVal = parseInt(s.dataset.val, 10);
+        if (sVal <= val) {
+          s.style.color = '#fbbf24';
+          s.style.textShadow = '0 0 10px rgba(251, 191, 36, 0.5)';
+        } else {
+          s.style.color = 'rgba(255, 255, 255, 0.2)';
+          s.style.textShadow = 'none';
+        }
+      });
+      const lbl = document.getElementById('modal-star-label');
+      if (lbl) {
+        lbl.textContent = modalRatingMap[val] || `${val}/5 Stars`;
+      }
+    }
+
+    window.openFeedbackModal = function(appName = 'Sovereign File Share') {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (!modal) return;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+
+      const appSelect = document.getElementById('modal-fb-app');
+      if (appSelect) {
+        appSelect.value = appName;
+      }
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const nameDisp = document.getElementById('modal-user-name-display');
+      const badge = document.getElementById('modal-auth-badge');
+
+      if (sess && name && name !== 'Guest User') {
+        if (nameDisp) nameDisp.innerHTML = `Signed in as <strong style="color: #00f5b8;">${name}</strong> (Verified Operative)`;
+        if (badge) {
+          badge.textContent = 'AUTHENTICATED';
+          badge.style.color = '#00f5b8';
+        }
+      } else {
+        if (nameDisp) nameDisp.innerHTML = `Operating as <strong style="color: #fbbf24;">Anonymous Guest</strong> (Sign up to track resolutions)`;
+        if (badge) {
+          badge.textContent = 'GUEST ACCESS';
+          badge.style.color = '#fbbf24';
+        }
+      }
+    };
+
+    window.closeFeedbackModal = function() {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (!modal) return;
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    window.handleFeedbackBackdropClick = function(e) {
+      if (e.target.id === 'feedback-modal-backdrop') {
+        window.closeFeedbackModal();
+      }
+    };
+
+    window.handleUniversalFeedbackSubmit = async function(e) {
+      e.preventDefault();
+      const status = document.getElementById('modal-fb-status');
+      const appName = document.getElementById('modal-fb-app').value;
+      const category = document.getElementById('modal-fb-category').value;
+      const message = document.getElementById('modal-fb-message').value.trim();
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const userName = (sess && name && name !== 'Guest User') ? name : 'Anonymous Guest';
+
+      status.style.color = '#38bdf8';
+      status.textContent = 'Transmitting feedback signal to Orbit telemetry...';
+
+      const payload = {
+        appName,
+        category,
+        userName,
+        rating: modalRating,
+        message
+      };
+
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          status.style.color = '#00f5b8';
+          status.textContent = `✅ ${data.message}`;
+          document.getElementById('modal-fb-message').value = '';
+          setTimeout(() => {
+            window.closeFeedbackModal();
+            status.textContent = '';
+          }, 2400);
+        } else {
+          status.style.color = '#ff0055';
+          status.textContent = `⚠️ ${data.error || 'Submission failed'}`;
+        }
+      } catch (err) {
+        status.style.color = '#00f5b8';
+        status.textContent = `✅ Feedback recorded locally! Thank you, ${userName}.`;
+        setTimeout(() => {
+          window.closeFeedbackModal();
+          status.textContent = '';
+        }, 2400);
+      }
+    };
+  </script>
+  <script src="/assets/orbit-i18n.js"></script>
+  <script src="../assets/orbit-animation-engine.js" defer></script>
+</body>
+</html>

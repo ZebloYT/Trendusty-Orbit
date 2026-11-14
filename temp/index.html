@@ -6348,40 +6348,66 @@ const webglEarth = createRealEarthRenderer(copWebglCanvas);
         }
       });
 
-      // Update URL query param (=en, =es, =fr, =ar)
+      // Update URL query param (?hl=en-IN, ?hl=es, ?hl=fr, ?hl=ar)
+      const hlMap = { 'en': 'en-IN', 'es': 'es', 'fr': 'fr', 'ar': 'ar' };
+      const hlVal = hlMap[lang] || 'en-IN';
+
       if (updateUrl) {
         try {
           const url = new URL(window.location.href);
-          url.searchParams.set('lang', lang);
-          window.history.replaceState({ lang }, '', url.toString());
-        } catch (e) {
-          // fallback for file:// without URL API support
-        }
+          url.searchParams.set('hl', hlVal);
+          url.searchParams.delete('lang');
+          window.history.replaceState({ lang, hl: hlVal }, '', url.toString());
+        } catch (e) {}
       }
 
       localStorage.setItem('orbit_lang', lang);
+      localStorage.setItem('orbit_hl', hlVal);
+
+      // Propagate hl to all internal links
+      try {
+        document.querySelectorAll('a[href]').forEach(a => {
+          const href = a.getAttribute('href');
+          if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+          try {
+            const u = new URL(href, window.location.href);
+            if (u.origin === window.location.origin) {
+              u.searchParams.set('hl', hlVal);
+              u.searchParams.delete('lang');
+              a.setAttribute('href', u.pathname + u.search + u.hash);
+            }
+          } catch(e) {}
+        });
+      } catch(e) {}
     }
 
     window.changeLanguage = function(lang) {
       applyLanguage(lang, true);
     };
 
-    // Auto-detect on load from URL param (e.g. ?lang=es or ending with =es)
+    // Auto-detect on load from URL param (?hl=en-IN or ?lang=es)
     document.addEventListener('DOMContentLoaded', () => {
       let activeLang = 'en';
       const search = window.location.search || '';
       const hash = window.location.hash || '';
 
-      const match = search.match(/[?&]lang=([a-z]{2})/i) || search.match(/=([a-z]{2})/i) || hash.match(/#([a-z]{2})/i);
-      if (match && I18N_DICTS[match[1].toLowerCase()]) {
-        activeLang = match[1].toLowerCase();
+      const hlMatch = search.match(/[?&]hl=([a-z]{2}(?:-[a-z]{2})?)/i);
+      if (hlMatch && hlMatch[1]) {
+        const prefix = hlMatch[1].substring(0, 2).toLowerCase();
+        if (I18N_DICTS[prefix]) activeLang = prefix;
       } else {
-        const saved = localStorage.getItem('orbit_lang');
-        if (saved && I18N_DICTS[saved]) {
-          activeLang = saved;
+        const match = search.match(/[?&]lang=([a-z]{2})/i) || search.match(/=([a-z]{2})/i) || hash.match(/#([a-z]{2})/i);
+        if (match && I18N_DICTS[match[1].toLowerCase()]) {
+          activeLang = match[1].toLowerCase();
+        } else {
+          const saved = localStorage.getItem('orbit_hl') || localStorage.getItem('orbit_lang');
+          if (saved) {
+            const prefix = saved.substring(0, 2).toLowerCase();
+            if (I18N_DICTS[prefix]) activeLang = prefix;
+          }
         }
       }
-      applyLanguage(activeLang, false);
+      applyLanguage(activeLang, true);
     });
   </script>
 

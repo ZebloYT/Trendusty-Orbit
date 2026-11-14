@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trendusty Orbit</title>
+  <script>
+    (function() {
+      var qs = window.location.search || '?hl=en-IN';
+      if (!qs.includes('hl=')) {
+        qs += (qs.includes('?') ? '&' : '?') + 'hl=en-IN';
+      }
+      window.location.replace("/home/index-en.html" + qs);
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting to <a href="/home/index-en.html?hl=en-IN">Trendusty Orbit</a>...</p>
+</body>
+</html>

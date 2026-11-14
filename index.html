@@ -7,10 +7,11 @@
     (function() {
       var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 850 && 'ontouchstart' in window);
       var forceDesktop = localStorage.getItem('orbit_force_desktop') === 'true' || window.location.search.indexOf('view=desktop') !== -1;
+      var qs = window.location.search || '';
       if (isMobile && !forceDesktop) {
-        window.location.replace("android/");
+        window.location.replace("android/" + qs);
       } else {
-        window.location.replace("home/");
+        window.location.replace("home/" + qs);
       }
     })();
   </script>

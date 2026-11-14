@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Trendusty Orbit</title>
+  <script>
+    (function() {
+      var qs = window.location.search || '?hl=fr';
+      if (!qs.includes('hl=')) {
+        qs += (qs.includes('?') ? '&' : '?') + 'hl=fr';
+      }
+      window.location.replace("/home/index-fr.html" + qs);
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting to <a href="/home/index-fr.html?hl=fr">Trendusty Orbit</a>...</p>
+</body>
+</html>

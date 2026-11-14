@@ -915,6 +915,12 @@
     </a>
 
     <div class="nav-links">
+      <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)" style="background: rgba(12, 16, 23, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; font-family: monospace; cursor: pointer;">
+        <option value="en">EN English</option>
+        <option value="es">ES Español</option>
+        <option value="fr">FR Français</option>
+        <option value="ar">AR العربية</option>
+      </select>
       <a href="/home/" class="nav-pill">&larr; Main Operations Center</a>
       <a href="/apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;">🤖 JARVIS</a>
       <a href="/apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.55); color: #ff4b72; background: rgba(255, 0, 85, 0.08);"><img src="assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
@@ -2108,6 +2114,7 @@
   </script>
 
   <script src="../../assets/buttermax-theme.js" defer></script>
+  <script src="/assets/orbit-i18n.js"></script>
   <script src="../../assets/orbit-animation-engine.js" defer></script>
 </body>
 </html>

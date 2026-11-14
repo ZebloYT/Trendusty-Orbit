@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+  <!-- Clean URL & Route Normalizer -->
+  <script>
+    (function() {
+      try {
+        var proto = window.location.protocol;
+        if (proto === 'http:' || proto === 'https:') {
+          var p = window.location.pathname;
+          if (p.endsWith('.html')) {
+            var clean = p.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+            var newUrl = clean + window.location.search + window.location.hash;
+            window.history.replaceState(null, '', newUrl);
+          }
+          document.addEventListener('click', function(e) {
+            var a = e.target.closest('a');
+            if (a && a.href && a.origin === window.location.origin) {
+              if (a.pathname.endsWith('.html')) {
+                var cleanPath = a.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+                a.href = cleanPath + a.search + a.hash;
+              }
+            }
+          }, true);
+        } else if (proto === 'file:') {
+          document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a[href]').forEach(function(a) {
+              var h = a.getAttribute('href');
+              if (h && !h.startsWith('http') && !h.startsWith('#') && !h.startsWith('mailto:') && !h.endsWith('.html') && !h.endsWith('/')) {
+                if (!h.includes('.')) a.setAttribute('href', h + '.html');
+              }
+            });
+          });
+        }
+      } catch(e) {}
+    })();
+  </script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retrosmart Xcursor Kits &amp; Custom Cursors - Trendusty Orbit</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-color: #07090e;
+    --bg-surface: #0c1017;
+    --card-bg: rgba(13, 18, 28, 0.75);
+    --glass-border: rgba(0, 245, 184, 0.16);
+    --glass-border-hover: rgba(0, 245, 184, 0.45);
+    --accent: #00f5b8;
+    --accent-blue: #38bdf8;
+    --accent-dim: rgba(0, 245, 184, 0.12);
+    --text-main: #f0fdf4;
+    --text-sub: rgba(240, 253, 244, 0.65);
+    --primary-grad: linear-gradient(135deg, #00f5b8 0%, #00b4d8 100%);
+    --secondary-bg: #0c1017;
+    --border-color: rgba(0, 245, 184, 0.16);
+    --accent-glow: rgba(0, 245, 184, 0.4);
+  }
+  
+  /* TACTICAL ORBIT CURSOR - ADVANCED STATES */
+  html, body, *, *::before, *::after { cursor: none !important; }
+  a, button, input, textarea, select, canvas, [role="button"], label { cursor: none !important; }
+
+  /* Precision Center Dot */
+  .orbit-cursor-dot {
+    position: fixed; top: 0; left: 0;
+    width: 5px; height: 5px;
+    background: #00f5b8; border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483647 !important;
+    box-shadow: 0 0 12px rgba(0, 245, 184, 1), 0 0 4px #ffffff, 0 0 8px #000000;
+    will-change: transform, width, height;
+    opacity: 0;
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+    transition: width 0.3s cubic-bezier(0.25, 1, 0.25, 1), height 0.3s cubic-bezier(0.25, 1, 0.25, 1), background-color 0.3s ease, border-radius 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+  }
+
+    /* Option 1: Tactical HUD Corner Brackets [ ⌖ ] */
+  .orbit-cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 52px; height: 52px;
+    border: none !important;
+    background: rgba(168, 85, 247, 0.02) !important;
+    border-radius: 0 !important;
+    pointer-events: none !important;
+    z-index: 2147483648 !important;
+    box-shadow: none !important;
+    will-change: transform, width, height;
+    opacity: 0;
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+    transition: width 0.35s cubic-bezier(0.25, 1, 0.25, 1), height 0.35s cubic-bezier(0.25, 1, 0.25, 1), opacity 0.3s ease;
+    overflow: visible;
+  }
+
+  /* 4 Sleek L-shaped corner brackets */
+  .orbit-cursor-ring .tc-bracket {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border: 2px solid #a855f7;
+    pointer-events: none;
+    box-sizing: border-box;
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.8));
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.25, 1);
+  }
+  .orbit-cursor-ring .tc-tl {
+    top: 0; left: 0;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-top-left-radius: 2px;
+  }
+  .orbit-cursor-ring .tc-tr {
+    top: 0; right: 0;
+    border-left: none !important;
+    border-bottom: none !important;
+    border-top-right-radius: 2px;
+  }
+  .orbit-cursor-ring .tc-bl {
+    bottom: 0; left: 0;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom-left-radius: 2px;
+  }
+  .orbit-cursor-ring .tc-br {
+    bottom: 0; right: 0;
+    border-left: none !important;
+    border-top: none !important;
+    border-bottom-right-radius: 2px;
+  }
+
+  /* Central micro-reticle */
+  .orbit-cursor-ring .tc-hud-reticle {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 8px; height: 8px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(56, 189, 248, 0.5);
+    border-radius: 50%;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* Pure CSS Corner Brackets fallback before child elements mount */
+  #orbit-cursor-ring:empty,
+  .orbit-cursor-ring:empty {
+    background: 
+      linear-gradient(to right, #a855f7 2px, transparent 2px) 0 0,
+      linear-gradient(to bottom, #a855f7 2px, transparent 2px) 0 0,
+      linear-gradient(to left, #a855f7 2px, transparent 2px) 100% 0,
+      linear-gradient(to bottom, #a855f7 2px, transparent 2px) 100% 0,
+      linear-gradient(to left, #a855f7 2px, transparent 2px) 100% 100%,
+      linear-gradient(to top, #a855f7 2px, transparent 2px) 100% 100%,
+      linear-gradient(to right, #a855f7 2px, transparent 2px) 0 100%,
+      linear-gradient(to top, #a855f7 2px, transparent 2px) 0 100% !important;
+    background-repeat: no-repeat !important;
+    background-size: 12px 12px !important;
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.65)) !important;
+  }
+
+  /* --- STATES --- */
+
+  /* HOVER (Clickable) */
+  .orbit-cursor-ring.is-hovering {
+    width: 66px !important;
+    height: 66px !important;
+  }
+  .orbit-cursor-ring.is-hovering .tc-bracket {
+    border-color: #c084fc !important;
+    width: 15px !important;
+    height: 15px !important;
+    filter: drop-shadow(0 0 10px #a855f7) drop-shadow(0 0 3px #38bdf8) !important;
+  }
+  .orbit-cursor-ring.is-hovering .tc-hud-reticle {
+    border-color: #38bdf8 !important;
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1.4) !important;
+  }
+  .orbit-cursor-ring.is-hovering:empty {
+    background-size: 15px 15px !important;
+    filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.9)) drop-shadow(0 0 3px #38bdf8) !important;
+  }
+  .orbit-cursor-dot.is-hovering {
+    background: #ffffff;
+    box-shadow: 0 0 12px #a855f7, 0 0 4px #38bdf8;
+    width: 8px; height: 8px;
+  }
+
+  /* TEXT (I-beam) */
+  .orbit-cursor-ring.is-text {
+    width: 22px !important;
+    height: 44px !important;
+  }
+  .orbit-cursor-dot.is-text {
+    width: 2px; height: 24px;
+    border-radius: 1px;
+    background: #a855f7; box-shadow: 0 0 8px #a855f7;
+  }
+
+  /* LOADING (Wait) */
+  .orbit-cursor-ring.is-loading {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .orbit-cursor-dot.is-loading {
+    background: #38bdf8; box-shadow: 0 0 10px #38bdf8;
+  }
+
+  /* ACTIVE (Press/Click) */
+  .orbit-cursor-ring.is-active {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .orbit-cursor-ring.is-active .tc-bracket {
+    border-color: #38bdf8 !important;
+    width: 9px !important;
+    height: 9px !important;
+    filter: drop-shadow(0 0 12px #38bdf8) !important;
+  }
+  .orbit-cursor-ring.is-active:empty {
+    background-size: 9px 9px !important;
+    filter: drop-shadow(0 0 12px #38bdf8) !important;
+  }
+  .orbit-cursor-dot.is-active {
+    background: #38bdf8; box-shadow: 0 0 12px #38bdf8;
+    width: 6px; height: 6px;
+  }
+  .orbit-cursor-dot.is-active {
+    background: #38bdf8; box-shadow: 0 0 12px #38bdf8;
+    width: 6px; height: 6px;
+  }
+  .mouse-trail-dot {
+    position: fixed; width: 4px; height: 4px;
+    background: #a855f7; border-radius: 50%;
+    pointer-events: none !important;
+    z-index: 2147483645 !important;
+    opacity: 0.8;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    box-shadow: 0 0 6px #a855f7;
+  }
+
+  /* Custom Image Cursor */
+  .custom-img-cursor {
+    position: fixed; top: 0; left: 0; 
+    width: 32px; height: 32px; 
+    background-size: contain; background-repeat: no-repeat; 
+    image-rendering: pixelated;
+    pointer-events: none !important; z-index: 2147483648 !important; 
+    opacity: 0;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+    display: none;
+  }
+
+  /* Page Styles */
+  body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: var(--bg-color); 
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 245, 184, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 10% 30%, rgba(0, 180, 216, 0.05) 0%, transparent 40%),
+        linear-gradient(to bottom, #07090e, #05070a);
+    background-attachment: fixed;
+    color: var(--text-main); 
+    margin: 0; 
+    padding: 0; 
+    overflow-x: hidden; 
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-size: 48px 48px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    pointer-events: none; z-index: -1;
+  }
+  
+  .navbar {
+    background: rgba(7, 9, 14, 0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-color);
+    min-height: 70px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    gap: 16px;
+    box-sizing: border-box;
+  }
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .nav-logo {
+    font-size: 20px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+    text-decoration: none;
+  }
+  .nav-logo img {
+    height: 28px;
+    object-fit: contain;
+  }
+  .nav-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .nav-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text-sub);
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .nav-pill:hover {
+    color: #00f5b8;
+    border-color: rgba(0, 245, 184, 0.4);
+    background: rgba(0, 245, 184, 0.08);
+  }
+  .nav-pill.active {
+    color: #030712;
+    background: #00f5b8;
+    border-color: #00f5b8;
+    box-shadow: 0 0 15px rgba(0, 245, 184, 0.4);
+  }
+
+  /* Universal Feedback Modal Styles */
+  .auth-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(3, 5, 9, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+    padding: 20px;
+  }
+  .auth-modal-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .auth-modal-window {
+    background: #0b111e;
+    border: 1px solid rgba(251, 191, 36, 0.45);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.2);
+    transform: scale(0.96) translateY(12px);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .auth-modal-backdrop.is-open .auth-modal-window {
+    transform: scale(1) translateY(0);
+  }
+  .auth-modal-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .auth-modal-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .auth-modal-body {
+    padding: 24px;
+  }
+  .auth-close-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #94a3b8;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+  }
+  .auth-close-btn:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .container {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 40px 24px 140px;
+  }
+
+  /* HERO BANNER */
+  .retrosmart-hero-banner {
+    background: rgba(12, 16, 23, 0.75);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 36px 40px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 36px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .retrosmart-hero-banner::before {
+    content: "";
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0, 245, 184, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .retrosmart-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex: 1;
+  }
+  .retrosmart-logo-box {
+    width: 200px;
+    height: 120px;
+    background: rgba(3, 7, 18, 0.6);
+    border: 1px solid rgba(0, 245, 184, 0.25);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 10px 25px rgba(0, 245, 184, 0.15);
+  }
+  .retrosmart-hero-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(0, 245, 184, 0.5));
+  }
+  .retrosmart-pill-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 245, 184, 0.1);
+    border: 1px solid rgba(0, 245, 184, 0.3);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .status-pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: blip 2s infinite ease-in-out;
+  }
+  @keyframes blip { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } }
+
+  .retrosmart-hero-title {
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .retrosmart-hero-subtitle {
+    font-size: 14px;
+    color: var(--text-sub);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 680px;
+  }
+  .retrosmart-hero-stats {
+    display: flex;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .stat-box {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px 22px;
+    text-align: center;
+    min-width: 90px;
+  }
+  .stat-num {
+    font-size: 22px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  /* FILTER CONTROLS */
+  .filter-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  .filter-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    background: rgba(13, 18, 28, 0.7);
+    border: 1px solid var(--border-color);
+    color: var(--text-sub);
+    padding: 9px 18px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  .filter-pill:hover {
+    color: #fff;
+    border-color: var(--glass-border-hover);
+    background: rgba(255,255,255,0.05);
+  }
+  .filter-pill.active {
+    background: var(--primary-grad);
+    color: #000;
+    border-color: transparent;
+    font-weight: 800;
+    box-shadow: 0 0 15px var(--accent-glow);
+  }
+  .search-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(13, 18, 28, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    padding: 8px 18px;
+    min-width: 280px;
+  }
+  .search-input-wrap input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+  }
+
+  /* GRID & CARDS */
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 26px;
+  }
+  
+  .swz-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+    backdrop-filter: blur(12px);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+  }
+  .swz-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(0, 245, 184, 0.15);
+    border-color: var(--glass-border-hover);
+  }
+  
+  .swz-card.selected-idle { border: 2px solid var(--accent); }
+  .swz-card.selected-click { border: 2px solid #00b4d8; }
+  .swz-card.selected-idle.selected-click { border: 2px solid #fff; }
+  
+  .swz-poster {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: radial-gradient(circle at center, rgba(15, 23, 42, 0.8) 0%, rgba(7, 9, 14, 0.95) 100%);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .retrosmart-card-watermark {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .retrosmart-logo-badge {
+    height: 18px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    opacity: 0.85;
+  }
+  .kit-style-chip {
+    font-size: 10.5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+  }
+  .kit-style-chip.win-3d { color: #38bdf8; border-color: rgba(56, 189, 248, 0.35); }
+  .kit-style-chip.mac-ish { color: #4ade80; border-color: rgba(74, 222, 128, 0.35); }
+  .kit-style-chip.win-ish { color: #fbbf24; border-color: rgba(251, 191, 36, 0.35); }
+  .kit-style-chip.cur-font { color: #c084fc; border-color: rgba(192, 132, 252, 0.35); }
+  
+  .swz-default-view {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center; gap: 40px;
+    transition: opacity 0.3s;
+    z-index: 1;
+  }
+  .cursor-sample-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .swz-big-icon {
+    width: 48px; height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
+    transition: transform 0.2s;
+  }
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+  .sample-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+  }
+  
+  .swz-hover-gif {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 2;
+  }
+  .swz-card:hover .swz-default-view { opacity: 0; }
+  .swz-card:hover .swz-hover-gif { opacity: 1; }
+  
+  .swz-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-palette-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .palette-indicator {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .palette-text {
+    font-size: 11.5px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  
+  .swz-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #fff;
+    line-height: 1.35;
+  }
+  .swz-desc {
+    font-size: 12.5px;
+    color: var(--text-sub);
+    line-height: 1.45;
+    margin: 0 0 18px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .swz-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    gap: 10px;
+  }
+  
+  .swz-buttons {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+  }
+  .swz-btn {
+    border: none;
+    padding: 8px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    border-radius: 8px;
+    transition: 0.2s;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .swz-btn-idle { background: var(--primary-grad); color: #000; }
+  .swz-btn-idle:hover { filter: brightness(1.2); box-shadow: 0 0 10px var(--accent-glow); }
+  
+  .swz-btn-click { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); }
+  .swz-btn-click:hover { background: rgba(56, 189, 248, 0.25); border-color: #38bdf8; }
+
+  .swz-btn-download { background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); }
+  .swz-btn-download:hover { background: rgba(255, 255, 255, 0.15); border-color: #fff; }
+
+  .swz-btn-chrome { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+  .swz-btn-chrome:hover { background: rgba(245, 158, 11, 0.25); border-color: #fbbf24; color: #fff; }
+
+  /* FLOATING COMPILER BAR */
+  .compiler-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(7, 9, 14, 0.92);
+    backdrop-filter: blur(14px);
+    padding: 12px 26px;
+    border-radius: 50px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+  }
+  
+  .selection-info { display: flex; gap: 20px; font-size: 13px; font-weight: 600; color: var(--text-sub); }
+  .selection-info span { color: var(--accent); margin-left: 5px; }
+  
+  .btn-install { background: var(--primary-grad); color: #000; border: none; padding: 10px 20px; font-size: 13px; font-weight: 800; border-radius: 25px; transition: 0.2s; }
+  .btn-install:hover:not(:disabled) { filter: brightness(1.2); box-shadow: 0 0 15px var(--accent-glow); }
+  .btn-install:disabled { background: var(--secondary-bg); color: var(--text-sub); border: 1px solid var(--border-color); box-shadow: none; }
+  .btn-reset-cursor {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #94a3b8;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  .btn-reset-cursor:hover {
+    color: #fff;
+    border-color: #fff;
+  }
+
+  @media (max-width: 900px) {
+    .retrosmart-hero-banner {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 24px;
+    }
+    .retrosmart-hero-left {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .compiler-bar {
+      width: 90%;
+      flex-direction: column;
+      gap: 12px;
+      border-radius: 20px;
+      padding: 16px;
+    }
+    .selection-info {
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Tactical Orbit Mouse Cursor (Dot + Bigger Lighter Follower Ring) -->
+<div class="orbit-cursor-dot" id="orbit-cursor-dot" aria-hidden="true"></div>
+<div class="orbit-cursor-ring" id="orbit-cursor-ring" aria-hidden="true"></div>
+<!-- Custom Custom Cursor -->
+<div class="custom-img-cursor" id="custom-img-cursor"></div>
+
+<div class="navbar">
+  <a href="/home/" class="nav-logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00f5b8" /><stop offset="100%" stop-color="#00b4d8" /></linearGradient></defs><path d="M4 4l16 16M4 20L20 4"/></svg>
+    <span>Retrosmart &amp; Custom Cursors</span>
+  </a>
+  <div class="nav-links">
+    <select class="lang-select" id="lang-select" aria-label="Select Language" onchange="changeLanguage(this.value)" style="background: rgba(12, 16, 23, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; font-family: monospace; cursor: pointer;">
+      <option value="en">EN English</option>
+      <option value="es">ES Español</option>
+      <option value="fr">FR Français</option>
+      <option value="ar">AR العربية</option>
+    </select>
+    <a href="/home/" class="nav-pill">&larr; Main Operations Center</a>
+    <a href="/apps/jarvis/" class="nav-pill" style="border-color: rgba(0, 245, 184, 0.35); color: #00f5b8;">🤖 JARVIS</a>
+    <a href="/apps/gestube/" class="nav-pill" style="border-color: rgba(255, 0, 85, 0.35); color: #ff4b72;"><img src="/assets/gestube-logo.png" alt="" style="width: 14px; height: 14px; object-fit: contain;"> GESTUBE</a>
+    <a href="/echonode/" class="nav-pill">⛏️ EchoNode</a>
+    <a href="/windows/cursor-download" class="nav-pill active" style="border-color: #00f5b8; color: #030712; background: #00f5b8;">🕹️ Cursors</a>
+    <a href="/share/" class="nav-pill">📤 Share</a>
+    <button type="button" class="nav-pill" onclick="openFeedbackModal('Retrosmart Cursors')" style="border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">⭐ Feedback / Bug Report</button>
+    <button type="button" class="nav-pill active" id="orbit-ecosystem-user-pill" onclick="handleEcosystemUserClick(event)">👤 Login / Sign Up</button>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Hero Banner with Retrosmart Logo -->
+  <div class="retrosmart-hero-banner">
+    <div class="retrosmart-hero-left">
+      <div class="retrosmart-logo-box">
+        <img src="retrosmart-banner.png" onerror="if(!this._r){this._r=1;this.src='/windows/retrosmart-banner.png';}else if(!this._r2){this._r2=1;this.src='retrosmart-banner.png';}" alt="Retrosmart Xcursor Kits" class="retrosmart-hero-img">
+      </div>
+      <div>
+        <div class="retrosmart-pill-tag">
+          <span class="status-pulse-dot"></span>
+          <span>OFFICIAL UPSTREAM INTEGRATION &bull; useless-anvil / retrosmart-cursor</span>
+        </div>
+        <h1 class="retrosmart-hero-title">Retrosmart 8-Bit Cursor Kits</h1>
+        <p class="retrosmart-hero-subtitle">
+          Authentic retro pixel cursors inspired by Windows 95/98 3D chrome, classic Mac System 7, and X11 terminal font bitmaps.
+          Featuring 28 curated theme editions with 1-click <code>install.inf</code> Windows installers, live in-browser testing, and custom pack compiler.
+        </p>
+        <div style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <a href="retrosmart/downloads/orbit-retrosmart-chrome-extension.zip" download="orbit-retrosmart-chrome-extension.zip" onclick="openChromeExtModal(event)" style="padding: 10px 18px; font-size: 13px; font-weight: 700; background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 179, 8, 0.35)); border: 1px solid rgba(245, 158, 11, 0.6); color: #fbbf24; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25); cursor: pointer; transition: all 0.2s;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+            <span>Download for Google Chrome Extension ⬇</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="retrosmart-hero-stats">
+      <div class="stat-box" style="border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.08);">
+        <div class="stat-num" style="color: #fbbf24;">Chrome</div>
+        <div class="stat-lbl" style="color: #fde68a;">Extension</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">88</div>
+        <div class="stat-lbl">Variants</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">4</div>
+        <div class="stat-lbl">Styles</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">1-Click</div>
+        <div class="stat-lbl">.INF Setup</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Controls -->
+  <div class="filter-controls-row">
+    <div class="filter-pills" id="filter-pills">
+      <button class="filter-pill active" data-style="all">All Kits (28)</button>
+      <button class="filter-pill" data-style="win-3d">Win-3D Chrome (4)</button>
+      <button class="filter-pill" data-style="mac-ish">Mac-ish Retro (8)</button>
+      <button class="filter-pill" data-style="win-ish">Win-ish 95 (8)</button>
+      <button class="filter-pill" data-style="cur-font">Cur-Font Terminal (8)</button>
+    </div>
+    <div class="search-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="cursor-search" placeholder="Search by name, palette (Catppuccin, Gruvbox, Blue)...">
+    </div>
+  </div>
+  
+  <div class="preview-grid" id="grid">
+    <!-- Generated dynamically via catalog data -->
+  </div>
+</div>
+
+<div class="compiler-bar">
+    <div class="selection-info">
+        <div>Idle Arrow: <span id="lbl-idle">None</span></div>
+        <div>Click Pointer: <span id="lbl-click">None</span></div>
+    </div>
+    <button class="btn-install" id="btn-install" disabled onclick="compileZip()">Download Custom Pack (.zip)</button>
+    <button class="btn-reset-cursor" id="btn-reset-cursor" onclick="resetCursorDefault()">Reset to Neon Follower</button>
+</div>
+
+<script>
+  // Embedded Catalog Data for 28 Kits
+  const CATALOG = [
+  {
+    "id": "win-3d-blue",
+    "name": "Retrosmart Win-3D \u2014 Cobalt Blue",
+    "style": "win-3d",
+    "styleName": "Win-3D Chrome",
+    "palette": "Cobalt Blue Accent",
+    "desc": "Authentic Windows 95/98 3D beveled chrome arrow with glowing blue accents and animated stopwatch.",
+    "preview": "retrosmart/previews/win-3d-blue.png",
+    "arrowIcon": "retrosmart/icons/win-3d-blue_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-3d-blue_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-3d-blue.zip",
+    "arrowCur": "win-3d-blue_arrow.cur",
+    "pointerCur": "win-3d-blue_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADlAAAANgAAAEBAAAAAAAAALwEAABsBAACAgAAAAAAAAOABAABKAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAArElEQVR4nO2Uyw3DIBAFxyi9pQ5SRUqgCnJ1C7TkJsjBwQYRO4eQ3Rx2JCT/pDf7QAbIKOLwAU0JB6Ap4bYrJYlV4HpTk3DdE2GJXaC0ICzRNyAs0QrULQhJHDcgJHFp7lKEx/3o2wxMowX2Bkr4vJSpeQXWaziuCYeJFNezIHoIS7gS/ZQ+ZOYl40N++34gDsXJzxFq4fw/kOKvcjc+1V9P/qdbZRiGYRhf8gSOpjYloEJdrgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAPZJREFUeJztmMkJwzAQANfGvaUOpwqVoCqsb1pwS2kieTgSxIrwFeJodwaEF10IdnRgEZHHq5ikPXsBZ9NK70V6L2LUBAxIkVETMCCrMWYCBqTocp1KxIgJGLDYQ7kJGJDVzM+CiFITMGDzCGUmYECxpXQWRJSYgAGHZ6jcBPMGdMWWcZi+wW2dM1rQ7FnQr8GArGae+dv9c30lGV4CA1JUyvA4THt6/iYIrqq9XgIDUqRsb6/FvAGNrL23e/9+Fii5Fcwb0EmlmfsWGLC6Z3DRFFXvAgzYPTLeApVj3oAj+7X094czAAAAAAAAAAAAAAAAAOD/eALiGEhEwNT53gAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAadJREFUeJzt3cFtg0AUBNAlcm+pw6mCElyFuaYFt5QmkjOLlNUKMNjz3s0SsnwYDZ9vjIdSym+ZGwoxPo7+ABxLAMIJQLihXG/zGWAal8fwtjRAOAEIJwDhljNAzUzw1jRAOAEIJwDh2jNAzUzwVjRAOAEIJwDhljPA59f8iMf9/3cwE7w0DRBOAMIJQLjL6ne43uavp9E9hi9EA4QTgHACEK69B6i19gI1e4JT0wDhBCCcAIRbvwdosSc4NQ0QTgDCCUC4/j1ArXcvULMnOJQGCCcA4QQg3P57gBZ7gkNpgHACEE4AwvXPAPV1//I6fmtmgh1pgHACEE4AwrVngNY5//un73jn8FPRAOEEIJwAhFvOAL3n8Me9734Cu/5T0QDhBCCcAIRbzgCu26NogHACEE4Awg1l6+/be587aOY4lAYIJwDhBCDcpTjnRtMA4QQgnACE2/63gdNYzxTuFzgxDRBOAMIJQLjnPx9g7TOF2JQGCCcA4QQg3BHX2H3/VWwPsCsNEE4AwgkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAT/AF+UEJNfMZprgAAAABJRU5ErkJggg==",
+    "pointerB64": "AAACAAMAICAAAAgAAAAhAQAANgAAAEBAAAAQAAAAlgEAAFcBAACAgAAAIAAAAHUCAADtAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA6ElEQVR4nO2WwRGEIAxF/zr2hbetw63Cmznaha2EyuJhNzs6g4gG5OI/MQ58HiHEABERkRCRxOYUExGJiAgzC4BiEE0p4wcgO0CphGxTJ47jCO89AAgRKdTrNoA9GAAmCHMOWK+m1cW/sJ4+jTUajZows5ps5JxTuM04q0JVT7/FlK1arjdbmR0CBNbYo6CGzHwLQPAZOudMh7mslHvPHQFzHfDeo+s6wFiQ/jobBWsCVv8bBpUahaLdUgpE6XYtCpFr8+o5EH86/fQ94Txc9zjQfkPST4L359hhHkxNSfUreACqAzyqrgXyNNFswBq4sgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAV1JREFUeJztmksSgjAQREfLe8HOc+gp2JGlt/AqcDJcNSVoyhApOjD9NvKna6YzE1KeLJMQwjDbP+U+i8mZLYDNZekNyHzbtmZm1vc9TsERu3KCewcoAGwBbBQAtgA2CgBbAJvF84Bf7G2GKAes/cDYDDGEMLmuFGfIAVu9qNRvBzmALYDdNeSALxnA5iaZYNcGOQAbyERd1/hNykRVVWb22edjx0tDDnirupO1vq7rzCzdCbjv1/HSnOHeAWNW56u9ANUZtQEMw6R5/M2X96gLbMHYBWK1AGMWNeFoyAGpF8IJR0MOmB+I1YKjIgewBbD6P5ADYie81AL3DlAA2ALYJFfc2NdiLuzqD9w7IHkecNSu4N4B2eMutyaUMvaBewcoAGwBbPLH3+0xXRZ+NttrWAH3Dli+HoDMX+/rKHg21H+KuHeAAsAWwEYBYAtgowCwBbBRANgChBBCCB4v1dx4EoA2AFIAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAI8SURBVHic7d1BbtpQFEBRUrEvmHUd7Soyg2F3ka3AyuisEp/KxAoYwj1nRkgCka6eP9/gvK0Wtt/vT1fuf1vqubBa/Xj0E+CxBBAngLj1vR9gPObvdruz+4/H4/gj4xrBmuCOTIA4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADi7v5+gK/yHsL7MgHiBBAngLinXwPMfQ/hfr+f/H3WDOdMgDgBxAkg7unXAHP53ME8JkCcAOIEEPdya4C56ucaTIA4AcQJIG79iWPg+KWXOibW9w1MgDgBxAkg7mIfYDwmbrfb8fZNj4mbzebs9rXz+XO/n2kmQJwA4gQQt/7PXvfkdf0Oh8PZ7VuvCcbH++r3WzNMMwHiBBAngLiL4/W1a/uOxr3zcd9gdDpNnnp4uE/8Pc4F8DoEECeAuItzAXP3BcbX2eM+Ac/NBIgTQJwA4m7+uYBxTcBzMwHiBBAngLira4C5+wJ8LyZAnADiBBCXvz5A7fz/yASIE0CcAOJmrwHsC7wWEyBOAHECiBNAnADiBBAngLib73PP/Wzh0up7/yMTIE4AcQKIu/n7AZwr+F5MgDgBxAkgbvHXvEvvE3jdP80EiBNAnADiBBAngDgBxAkgbvnXwL/+TF8s+ON9oSfyj30AugQQJ4C4+18fYDzm//x994ec5eP9pf838DUmQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBAAAAAAAAPDC/gI2jXiGl38X9gAAAABJRU5ErkJggg=="
+  },
+  {
+    "id": "win-3d-red",
+    "name": "Retrosmart Win-3D \u2014 Crimson Red",
+    "style": "win-3d",
+    "styleName": "Win-3D Chrome",
+    "palette": "Crimson Red Accent",
+    "desc": "Classic 90s beveled desktop chrome with striking crimson red highlights and animated hourglass.",
+    "preview": "retrosmart/previews/win-3d-red.png",
+    "arrowIcon": "retrosmart/icons/win-3d-red_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-3d-red_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-3d-red.zip",
+    "arrowCur": "win-3d-red_arrow.cur",
+    "pointerCur": "win-3d-red_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADTAAAANgAAAEBAAAAAAAAAGgEAAAkBAACAgAAAAAAAANABAAAjAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAmklEQVR4nO2U0QqDMAxFz8L+tvuc+r3xwbVkFXUwm+whB0QbCzm5hQIogUjd3mESAhApIe0jSkIASqCEjAVviS5QTNFTYpeAt8SHQBl+ekgcJuAl8bSLBXgd71XgcbdAT6A1V/rUvBva534qaN36alvrUJuJQI99zoRfsJvSMwUhcPJTvFI4vQeWWV0NV/Hbyf/zqJIkSZLkV1bmuy6069jc9gAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAOFJREFUeJztmO0KgzAMAKP4tuvj1Od1P9YwCATbOeaa3EEx9Ashl1oUETlaS8l69wvczVpFpL7ilCZggAZZTcAA25HNBAzQ4NGaksUEDDibEN0EDLAd9ixQopqAAaMLopmAAd6AdxYoUUzAgKsbzG5CegM2b2BvzzK+p1qwjC/9PRhgO2zmD6dfJsnwGRiggZfhvUlg7wRlslr3wAANotV2L+kNWKSzlqs5C6J8FdIbsMmkmfsWGNA7sbxNCXUvwIBPF+7nU6YgvQFX6tX7+8MZAAAAAAAAAAAAAAAAAPB/PAEBrDPjmRR+FQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAZdJREFUeJzt3cFuglAURVFs/Nv6Ofq97bgPE0pEQfdaMxNjHJycd7lBPE3T9DP9dZrI+Nr7C7AvAYgTgLjTdZgBLnfe86ovw+tpgDgBiBOAuNkMMDITfDYNECcAcQIQtzgDjMwEn0UDxAlAnADEzWaA7+ENt4UPMBO8Nw0QJwBxAhB3fvQDrsPri3sM34oGiBOAOAGIW9wDjJb2AiN7gmPTAHECECcAcQ/vAZbYExybBogTgDgBiFu9Bxit3QuM7An2pQHiBCBOAOKevgdYYk+wLw0QJwBxAhC3egYYr/vvXMdvzUzwRBogTgDiBCBucQZYOvPHA/ofM4Iz/EA0QJwAxAlA3GwGWHuG31beT2DXfywaIE4A4gQgbjYDuG5v0QBxAhAnAHGnaePr8rXPHTRz7EsDxAlAnADEnSdnbpoGiBOAOAGI2/y3gZf5TOF+gQPTAHECECcAcS9/PsCjzxRiWxogTgDiBCBuj2vsVf9VPNkDPJUGiBOAOAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHiBX3LyKVp9OrYKAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAgAAAAYAQAANgAAAEBAAAAQAAAAkwEAAE4BAACAgAAAIAAAAG0CAADhAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA30lEQVR4nO2WQQ6EIAxF/xjvBfcZ70AP4YHKyTobazRBxCnIhr8iBj6PUmqBjIhIiEhyc5qJiEREhJkFQDOIqZXxAKgO0Coh59KJIQTEGAFAiEihPq8BXMEAMEGYc8B6NbMu3sL6+DTWaExqwsxqcpJzTuFO46pKVT39llO1annc7GB2C5BYY4+CGjLzKwDJZ+icMx3mb5Xce+0ImOtAjBHee8BYkHY9jYI1Abv/DZMqjULTbqkEonW7loWotXn3HMg+nXU74WLwuNNlQ7IC8i0wWIxNSfcrGADdAYa66wfK3s8uh2hSjgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAVpJREFUeJztml2SgjAQhNutvRfcZ70DOYQHgpOxT60LmjJkKToy/b2I/HbNdGZC9IJKUkrz6vul9l5KvtQC1HxvvYCZH4YBADBNEw/RER/lhPAOcADUAtQ4AGoBahwAtQA1m+cB7/i0GaIdsPcNczPElNLivFacYQcc9aBW3x3sALUAddewA15kgJuHZEJdG+wAbjATfd/zsygTXdcBeO7zuf2tYQf8qbqLtb5xHAGUO4HXvdvfmjPCO+Ce1fVqL2F1Zm0g87xoHv/mxXPcBY7g3gVytYBjljXhbNgBpSfSCWfDDljvyNWCs2IHqAWo+j+xA3IHotSC8A5wANQC1BRX3NzbYi3q6k/CO6B4HnDWrhDeAdXjrrYmtDL2SXgHOABqAWqqx9/t8RseAOAq0LAH4R2weT2Amf/ZScBV/E+R8A5wANQC1DgAagFqHAC1ADUOgFqAMcYYo+MXjMp11DZf54oAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAI0SURBVHic7d1dbtpAGEBRUrEv2E+zB7yILghWRh8rhgpiBRvCPeeNQAKRrj4PY34+Niubpul85/qPtR4Lm82vZz8AnksAcQKI2y59B+Mx/3A4XFx/Op3GXxnXCNYECzIB4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiFv89QDf5TWEyzIB4gQQJ4C4l18DzH0N4TRNN/+eNcMlEyBOAHECiHv5NcBc3ncwjwkQJ4A4AcS93Rpgrvq5BhMgTgBxAojbfuEYOP7orY6J9X0DEyBOAHECiLvaBxiPifv9frz80GPibre7uHzvfP7c23ObCRAngDgBxG3/s9d983P9jsfjxeVHrwnG+/vu7a0ZbjMB4gQQJ4C4q+P1vc/2HY175+O+weh8vnnq4em+8P84F8D7EECcAOKuzgXM3RcYn2eP+wS8NhMgTgBxAoh7+PsCxjUBr80EiBNAnADi7q4B5u4L8LOYAHECiBNAXP7zAWrn/0cmQJwA4gQQN3sNYF/gvZgAcQKIE0CcAOIEECeAOAHEPXyfe+57C9dW3/sfmQBxAogTQNzDXw/gXMHPYgLECSBOAHGrP+dde5/A8/7bTIA4AcQJIE4AcQKIE0CcAOJWfw785/p7+C58rvVA/rEPQJcA4gQQt/jnA4zH/N9L3+FMn2/+3cD3mABxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBMAAAAAAADAG/sL1p12SH7129wAAAAASUVORK5CYII="
+  },
+  {
+    "id": "win-3d-green",
+    "name": "Retrosmart Win-3D \u2014 Emerald Green",
+    "style": "win-3d",
+    "styleName": "Win-3D Chrome",
+    "palette": "Emerald Green Accent",
+    "desc": "Nostalgic 3D chrome pointer with vibrant emerald green accents and animated stopwatch.",
+    "preview": "retrosmart/previews/win-3d-green.png",
+    "arrowIcon": "retrosmart/icons/win-3d-green_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-3d-green_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-3d-green.zip",
+    "arrowCur": "win-3d-green_arrow.cur",
+    "pointerCur": "win-3d-green_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADpAAAANgAAAEBAAAAAAAAAMAEAAB8BAACAgAAAAAAAAOUBAABPAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAsElEQVR4nO2Uyw3CMBAFJysa4OYW0hO1+EAtrioVcHMJzgFsDMHhgLPmsCNZyk96s89WABIDEedhpIQAjJSQfDFKQgDOl3ES8v5AW6II5Ba0JTYNaEu8CNQtaEk0G9CSONU3McDt2vw2AVNvgdJADp+XMjWPwHp1R+pwYIrhfhZUD2EOPzqsxWZK50nzQnKe9Ol9T4SBk++i1cLufyCGo2KffKu/nvw/t8owDMMwfmUFiygxIzXpmAMAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAAD3SURBVHic7ZjLDYMwDEANYoHeskJ36iwcmIWpOgE3RmgPqSs1akSAqhD7PSnCyk+R/PIRIiKPV3FJe/QCjqYNvUjoRcSpCRiggVcTMCCt8GYCBmhwucWieDEBA5Y6WDcBA9KK9CxQrJqAAWsHWDMBA3INubNAsWICBuydoHYT3BvQ5RrmMX6nYfWcakGzZUH/BgPSijTz1/v3eqkkw0tggAa5DM9j3NPpm2Aa6trrOTBAA2t7uxT3BjRSeG+H/vMssHIruDegk0oz9yswoLTjNLxNMfUuwICtA/UWqB33BuzZr7m/P5wBAAAAAAAAAAAAAAAAAOfjCRfXQ/8YttG9AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABrElEQVR4nO3dwW3CQBQE0HVEA7nRQnpKLRxcC1WlAm6UEM5eR1mtbGzDvHdDshCH0fj7Y8xQSvktU0MhxsfeH4B9CUA4AQg3nC/TGeA2zo/Z7NOwOQ0QTgDCCUC42QxQMxO8Nw0QTgDCCUC45gxQMxO8Fw0QTgDCCUC42Qzw+T094H79/w3MBK9NA4QTgHACEO609A3Ol+nr2+gew1eiAcIJQDgBCNfcA9Rae4GaPcGxaYBwAhBOAMIt3gO02BMcmwYIJwDhBCBc9x6g1rsXqNkT7EsDhBOAcAIQ7ul7gBZ7gn1pgHACEE4AwnXPAPV1/x/X8WszEzyRBggnAOEEIFxzBmid879++o4vzuGHogHCCUA4AQg3mwF6z+H3a9/9BHb9x6IBwglAOAEIN5sBXLdn0QDhBCCcAIQbysrft/c+d9DMsS8NEE4AwglAuFNxzo2mAcIJQDgBCLf6bwNv42ymcL/AgWmAcAIQTgDCbf58gKXPFGJdGiCcAIQTgHB7XGN3/VdxsQd4Kg0QTgDCCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAYeBi1FRt2yIWkAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAgAAAAhAQAANgAAAEBAAAAQAAAAlwEAAFcBAACAgAAAIAAAAHYCAADuAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA6ElEQVR4nO2WQQ6EIAxF/xgvMDtvgweZs2jjycptvEVdzHSiCSJakI1/RQx8HqXUAhERkRCRxOYUExGJiAgzC4BiEE0p4wcgO0CphGxTJ47jCO89AAgRKdTrNoA9GAAmCHMOWK+m1cW/sJ4+jTUajZows5ps5JxTuM04q0JVT7/FlK1arjdbmR0CBNbYo6CGzHwLQPAZOudMh7mslHvPHQFzHfDeo+97wFiQ/jobBWsCVv8bBpUahaLdUgpE6XYtCpFr8+o5EH063fA94Txd9zjSbkPSDZD359hgnmxNSfUreACqAzyqrgX8MNEw6F5JCgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAV5JREFUeJztml0OgjAQhBfjBXzzNnAQzyKNJ4PbcAt8GiNIY6mEqex8L/LPZHe6WxoryySEMM72q9xnMTmxBbA5r70BmW/b1szM+r7HKTjir5zg3gEKAFsAGwWALYCNAsAWwGb1POAb/zZDlAO2fmBshhhCmFxXijPkgL1eVOq3gxzAFsDuGnLAQgawuUsm2LVBDsAGMtE0DX6TMlHXtZl99vnY8dKQA96q7mStr+s6M0t3Au77drw0Z7h3wCur89VegOqM2gDGcdI8fmbhPeoCe/DqArFagDGLmnA05IDUC+GEoyEHzA/EasFRkQPYAlj9H8gBsRNeaoF7BygAbAFskitu7GsxF3b1B+4dkDwPOGpXcO+A7HGXWxNKGfvAvQMUALYANtnj73q3ybLw8Nhfwxa4d8Dq9QBk/nLbRsDw4P5TxL0DFAC2ADYKAFsAGwWALYCNAsAWIIQQQvB4AgTad9ai+CQVAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAACPUlEQVR4nO3d3W0aQRhAURzRQN7SDRSSWgJyZdCNuyBvkRgi8Mqw4L3nvGGwwdLVt8MsP2+rme33+9ON69/meiysVj+e/QB4LgHECSBu/eg7GI/5u93u7Prj8Tj+yrhGsCZ4IBMgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAuIe/HuCrvIbwsUyAOAHECSDu5dcAU19DuN/vr/49a4ZzJkCcAOIEEPfya4CpvO9gGhMgTgBxAohb3Bpgqvq5BhMgTgBxAohbf+IYOP5oUcfE+r6BCRAngDgBxF3sA4zHxO12O16+6zFxs9mcXb51Pn/q7bnOBIgTQJwA4tb/2eu++rl+h8Ph7PK91wTj/X319tYM15kAcQKIE0DcxfH61mf7jsa983HfYHQ6XT318HSf+H+cC2A5BBAngLiLcwFT9wXG59njPgGvzQSIE0CcAOLu/r6AcU3AazMB4gQQJ4C4m2uAqfsCfC8mQJwA4gQQl/98gNr5/5EJECeAOAHETV4D2BdYFhMgTgBxAogTQJwA4gQQJ4C4u+9zT31v4dzqe/8jEyBOAHECiLv76wGcK/heTIA4AcQJIG7257xz7xN43n+dCRAngDgBxAkgTgBxAogTQNzsz4F//bn4Hr4zH+9zPZJ/7APQJYA4AcQ9/PMBxmP+z9+PvsdpPt6X/d3At5gAcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTAAAAAAAAwIL9BQ8XeEqN19A7AAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "win-3d-violet",
+    "name": "Retrosmart Win-3D \u2014 Cyber Violet",
+    "style": "win-3d",
+    "styleName": "Win-3D Chrome",
+    "palette": "Cyber Violet Accent",
+    "desc": "Retro-futuristic 3D chrome with electric purple accents and animated hourglass.",
+    "preview": "retrosmart/previews/win-3d-violet.png",
+    "arrowIcon": "retrosmart/icons/win-3d-violet_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-3d-violet_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-3d-violet.zip",
+    "arrowCur": "win-3d-violet_arrow.cur",
+    "pointerCur": "win-3d-violet_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAAD/AAAANgAAAEBAAAAAAAAAPwEAADUBAACAgAAAAAAAAPMBAAB0AgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAxklEQVR4nO2Uuw2EMBAFh9VVQwVQhCNKoAN6IKUTImpAUAHt+JJbZOAQCfYmHgkJY6Q3u/4AeAwRV3dYSgiApYToi5WEAFRlYyYh5w+pJXYB7UJqiUsHUkscBMIupJK47UAqiU84WLeRaRnu/vVA8bbA3gEN79tZq+YXGD6vI2E4UKzbSFU2aTehhscOu+NSpas737ezd3Xn/82/iWBYOZxOgTItQwF4vRemZYhyAuDhHli3MUbmgaeqwvU3XapMJpPJZKLxBTwrPz+RIR/SAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABBklEQVR4nO2YzQ2CQBBGPwnVWIEUwckS7IAevNIJJ2owUIHt6MUxcXUDglF3572EZDL7k03m7U+QpMvtc0nx6wX8mqKuGtVVIzk1AQMs8GoCBoQJbyZggAW77V677f7e4MUEDJjqkLsJGBAmwrPAyNUEDHh3QG4mYECsIXYWGLmYgAFrJ0jdBPcGlLGG8dxJkvqhfXdOs2CzbEnfBQPCRFj54+H0Mq9EKjwFBlgQq/B47i6Snt4E/dAmtddjYIAFue3tubg3YKOZ93ZdNQ9nQS63gnsDSiVauU+BAXM79kNrpmT1LsCApQPtFkgd9was2a+xvz+cAQAAAAAAAAAAAAAAAAD/xxVFkVkNWk0xkQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAbpJREFUeJzt3cFtwkAUBNB1RDWpIBTBKSWkA3rIlU44UQOCCmgnOXsdxVphbMO8d0OyEIfR+PtjTFdK+Sl9XSHG29IfgGUJQDgBCNfttvveDHC6HAbHzPdxmJsGCCcA4QQg3GAGqJkJXpsGCCcA4QQg3OgMUDMTvBYNEE4AwglAuMEM8PH+2Tvgejv++wZmguemAcIJQDgBCLe59w12233v9elycI/hE9EA4QQgnACEG90D1Mb2AjV7gnXTAOEEIJwAhLt7DzDGnmDdNEA4AQgnAOGa9wC11r1AzZ5gWRognACEE4BwD98DjLEnWJYGCCcA4QQgXPMMUF/3/3EdPzUzwQNpgHACEE4Awo3OAGPn/O+vc9PxxTl8VTRAOAEIJwDhBjNA6zn8ejs23U9g178uGiCcAIQTgHCDGcB1exYNEE4AwglAuK5M/H1763MHzRzL0gDhBCCcAITbFOfcaBognACEE4Bwk/828HQ51DOF+wVWTAOEE4BwAhBu9ucD3PtMIaalAcIJQDgBCLfENXbTfxUXe4CH0gDhBCCcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzOAXaJNdwEFkXREAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAgAAAApAQAANgAAAEBAAAAQAAAAnwEAAF8BAACAgAAAIAAAAH8CAAD+AgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA8ElEQVR4nO2WwRGEIAxF/zpWsxWsJ2zA03ZiA6YCm7GBcLKseFl2dAYRDcjFf2Ic+DxCiAECIiIhIgnNySYiEhERZhYA2SCqXMYPQHKAXAlZx04chgHWWgAQInJQr9sA9mAAqCDUOaC9mtot/oX19Gm00aicCTM7k42MMQ5uM04qX9Vz30JKVi3Xm63MDgE8a/RRcIbMfAuA9xkaY1SHuayYe08dAXUdsNaibVtAWZD+OhsFbQIW/xt6FRuFrN1SDETudi0IkWrz4jkQfDpd0wsATPN42eNIuw1J1/TyeX8PDaZ5VDUlxa/gASgO8Ki4Fk/K03gN/jMUAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABZklEQVR4nO2azRGCMBCFV8dqrEBP0IAnO7EBUoHN2ACcLAtPzxE0Y4gML7Lvu8g/b3ZfdkPGjWUSQuhH+5vcZzHZsgWw2U29AZlvmsbMzLquwyk44q+c4N4BCgBbABsFgC2AjQLAFsBm8jzgG/82Q5QD5n5gbIYYQhhcV4oz5IClXlTqt4McwBbA7hpywIcMYHORTLBrgxyADWSirmv8JmWiqioze+/zseOlIQe8VN3BWl/btmaW7gTc9+14ac5w74BnVservQDVGbUB9P2gefzMh/eoCyzBswvEagHGLGrC2pADUi+EE9aGHDA+EKsFa0UOYAtg9X8gB8ROeKkF7h2gALAFsEmuuLGvxVzY1R+4d0DyPGCtXcG9A7LHXW5NKGXsA/cOUADYAthkj7/T8TJYFr7dr4trmAP3Dpi8HoDMH/bnWQTc7lfqP0XcO0ABYAtgowCwBbBRANgC2CgAbAFCCCEEjwfzyXoel0OjkAAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAkZJREFUeJzt3cFR21AUQFHIuJpUkKxwA1mlkzSAKqAZGsArynJWWfiTkdFgC6N7zs4YsJm58/T9ZYv7u5VN03Q8c//9Ws+Fu7tvn/0E+FwCiBNA3O7aDzAe8x8fH0/uPxwO44+MawRrgisyAeIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAoi7+vsBPsp7CK/LBIgTQJwA4m5+DbD0PYTTNM3+PmuGUyZAnADiBBB382uApXzuYBkTIE4AcQKI29waYKn6uQYTIE4AcQKI273jGDh+aVPHxPq+gQkQJ4A4AcS92QcYj4n7/X68fdFj4sPDw8ntc+fzl34/80yAOAHECSBu95+97tnr+r28vJzcvvSaYHy8j36/NcM8EyBOAHECiHtzvD53bd/RuHc+7huMjsfZUw+f7h1/j3MBbIcA4gQQ9+ZcwNJ9gfF19rhPwG0zAeIEECeAuIt/LmBcE3DbTIA4AcQJIO7sGmDpvgBfiwkQJ4A4AcTlrw9QO/8/MgHiBBAngLjFawD7AttiAsQJIE4AcQKIE0CcAOIEEHfxfe6lny1cW33vf2QCxAkgTgBxF38/gHMFX4sJECeAOAHErf6ad+19Aq/755kAcQKIE0CcAOIEECeAOAHErf4a+NfPP7MXC35+fVrrqfxjH4AuAcQJIO7q1wcYj/k/vv++9kMu8vz6tOn/DXyOCRAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAEAAAAAAABs2F/4Q3qSHxTEdQAAAABJRU5ErkJggg=="
+  },
+  {
+    "id": "mac-ish-classic",
+    "name": "Retrosmart Mac-ish \u2014 System 7 Classic",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Monochrome B&W",
+    "desc": "Iconic Macintosh System 7 / Classic OS X pixel cursor artwork with authentic wristwatch timer.",
+    "preview": "retrosmart/previews/mac-ish-classic.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-classic_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-classic_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-classic.zip",
+    "arrowCur": "mac-ish-classic_arrow.cur",
+    "pointerCur": "mac-ish-classic_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAAC1AAAANgAAAEBAAAAAAAAAAAEAAOsAAACAgAAAAAAAAJ4BAADrAQAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAfElEQVR4nO2TMRLAIAgE75j8/8uXBjOO0aQCGrZCLG4ZFJKEQgwAKiUMAEiWSdgoqiRsPlRI2NrIlngJZEtsBTIljgJZEp8CGRLX6WLNlCSSDBWQhDkjInDlWYGHc0ye+ghHeHTYlt2U3pOXsb+gbPI/5FR7NE3TNE0Tzg2cAFT+9SkBLAAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAMdJREFUeJzt2csOAiEMRuHWzPu/si4EQ5oQQI1Y/vNtnBtmYs+4ULsXJuq2+wZ2e30AqiXIF3DVDXc3s2cJZd833dNPUUA8oFYCBfROqJRAAaMLTi+BAmYvPLUEClhdcFoJFPDuwlNKoIBP3yB7CRSwumD0o1G2Eiigd6JOujfILBMeoYB4oJm8l/36TFv7mu1Z76GAuhEnr0K+AJ99luN3QXPcZtb/K/kCrqyT+xb5ApanH/9Bzl6QfAEAAAAAAAAAAAAAAAUPM2BXbDsWzNsAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAFlSURBVHic7d3BboIAEEXR0vj/v2y37WBCjaLIPWepYFi8zDxYyHK9Xq9fvyzLsnyR8f3uC+C9BCBOAOKW2QFWB+gEp2YCxAlAnADEXeYHc+V7TnBuJkCcAMQJQNyqA0w6wbmZAHECECcAcZsdYNIJzsUEiBOAOAGIu7sDTDrBZzMB4gQgTgDiHu4Ak07wWUyAOAGIE4C4p3eASSc4NhMgTgDiBCBu9w4w6QTHYgLECUCcAMS9vANMOsF7mQBxAhAnAHG7d4CNvyD6z/k6wY5MgDgBiBOAuLs7wNzp965kO/xYTIA4AYgTgLjNDnBj5y/j+3mfPo+fv+e+/kBMgDgBiBOAuFUH2Nr5nIsJECcAcQIQt3pn0KM7f+u5wI3j/16QzvFSJkCcAMQJQNzFzm0zAeIEIE4A4nbf/95NfGwmQJwAxAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAE/0AAhxPwLreyTwAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAMAAADTAAAANgAAAEBAAAAGAAAAIgEAAAkBAACAgAAADAAAALEBAAArAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAmklEQVR4nO2U4QrDIAyEvyt7/1fOfkxB01Y3ltlR8kERbE3O3FHosfIsY2ubmxlmVoUsF3AJrQBJAlg6hcfk/ZEIRQoYWtBkApePsOlUAR8VjbRIlPQDuAyMD76+/dqOzoJ3Gkez0aTfi6j7fo0WgBexkv/8Ec2ICuBZERuFMbI5HFuwm4SknwQQzm/iRyC3d01ikyRJkiS5JU8H9DYd697r4AAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAOlJREFUeJzt19sSwiAMRdHE8f9/OT61IhJ6cyax2euptVAZOFyq4rPuXidl/9YjugHRRqNqIiJmnwFQXYveKgnlE0AHRDcg2mw+l1gLyifgeaFuf07wpE4KCThb0VsbBr+nPlGSgOZ675w+ZUlGk4gUSSifAJXt/V5Gz0//YbJzRPkEuB1gZj8b9czKJ6Cdh8O1wK3Y7ftb9309YQ3Ioe0AFRFV1a8d4M5IQHQDopXvgNHXoIq8z+x3PQEuyidgz2hcSkLWkV+QgANlp0nwvh5JQHKHE7DjXV45EgAAAAAAAAAAAAAAABDhBRhzQUb5RpihAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABeElEQVR4nO3bwXKCQBBFUUnl/3/ZbIOhguMomNxztiqweNXT9IzLZdx15/PlgWtyko+zH4BzCUCcAMTds16v1vzr9fcWYFl+XFJP8MZUgDgBiBOAOAGIE4A4AYgTgLhH3tHNBf4RFSBOAOIEIO7zhHvunScYpaeYoALECUCcAMQd3gOMzg3u+L4zihNUgDgBiBOAuK0e4Nnv6Ye67Rk2egQ9wTcqQJwAxAlA3HKZ399f2fv90ZxH+J0KECcAcQIQN7wXsPGe/bSH4XgqQJwAxAlA3NYCPjQXGL7hzn7/7Od797uYA6yoAHECECcAcVtzgNUaebuf/m6zfuaoAHECECcAcQIQJwBxAhAnAHH3nAf4U3MBs/8xKkCcAMQJQNwz1sdTewJr/hwVIE4A4gQg7hXr5VRPMPrfQz3AHBUgTgDiBCDu5T3AA26fafR6eoABKkCcAMQJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADApC+r0kKIdEtSygAAAABJRU5ErkJggg=="
+  },
+  {
+    "id": "mac-ish-white",
+    "name": "Retrosmart Mac-ish \u2014 Pure White",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Inverted Crisp White",
+    "desc": "High-visibility crisp white fill with razor-sharp black borders in classic Apple pixel style.",
+    "preview": "retrosmart/previews/mac-ish-white.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-white_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-white_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-white.zip",
+    "arrowCur": "mac-ish-white_arrow.cur",
+    "pointerCur": "mac-ish-white_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAAC3AAAANgAAAEBAAAAAAAAABgEAAO0AAACAgAAAAAAAAJQBAADzAQAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAfklEQVR4nO2WSwqAMAxEJ8H7XzluGtF+RFAnm3lQStPFvIQuCgCBQrztZRIOABFRJpETKJPw86FCwvsCW2IQYEtMBZgSSwGWxK0AQ2JbXZjZ4AJgKL7lMoFJqHXrcw6BFm4pQX2EGf532FKgC6dOwVHU+RMCxX8FIYQQQlDYAWcaLRD3CFO4AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAzUlEQVR4nO3W2w6CMBBF0anh/395fOk0iJJSvGDn7JWYEFsIsbuNZmZeP5JuV7/A1dY/gGQJFBAX7m7ubiZWAgVsv1ArgQL2BlRKoIDehOwlUMDRiVlLoIDRG7KVQAFnb8xSAgW8+4DZS5AvYBm9oZTSmxIVdCf+AwrYG4iVrvv75ZQvvM/PyRdQrO7ZWOnVHo+Lh/E2+DxvSvIFtDMgy4qOki+gnQHWX/mUZ4F8AYtNunKfIl/AmdXf/jWcuiD5AgAAAAAAAAAAAAAACu4cM1YNHH6j/gAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAVtJREFUeJzt3UGOgkAARNFm4v2vzKy1TSaMIuB/b63golJdYYHLGGMd95ZBxs/RP4BjCUCcAMQtY94Azz7Dl9IAcQIQJwBx0wZY1/tJsCzTBLAJvogGiBOAOAGI+3MDTF+wCb6KBogTgDgBiNu8AaYL2ASXpgHiBCBOAOJe3gDTBW2CS9EAcQIQJwBxb98A0w1sglPTAHECECcAcbtvgOmGNsGpaIA4AYgTgLiPb4DpB9gEh9IAcQIQJwBxh2+ARzbBZ2mAOAGIE4C42943eHKmb+U9hjvSAHECECcAcZs3wOOZ/o/nBs7wE9EAcQIQJwBx73hPoHcMXZgGiBOAOAGIm54DOKNbNECcAMQJQNyz/wx69cz3XOBCNECcAMQJQNxtOHPTNECcAMQJQNwnzn//TXxiGiBOAOIEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4I1+AUtrNI35Fh0xAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAMAAADTAAAANgAAAEBAAAAGAAAAIgEAAAkBAACAgAAADAAAALEBAAArAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAmklEQVR4nO2U4QrDIAyEvyt7/1fOfkxB01Y3ltlR8kERbE3O3FHosfIsY2ubmxlmVoUsF3AJrQBJAlg6hcfk/ZEIRQoYWtBkApePsOlUAR8VjbRIlPQDuAyMD76+/dqOzoJ3Gkez0aTfi6j7fo0WgBexkv/8Ec2ICuBZERuFMbI5HFuwm4SknwQQzm/iRyC3d01ikyRJkiS5JU8H9DYd697r4AAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAOlJREFUeJzt19sSwiAMRdHE8f9/OT61IhJ6cyax2euptVAZOFyq4rPuXidl/9YjugHRRqNqIiJmnwFQXYveKgnlE0AHRDcg2mw+l1gLyifgeaFuf07wpE4KCThb0VsbBr+nPlGSgOZ675w+ZUlGk4gUSSifAJXt/V5Gz0//YbJzRPkEuB1gZj8b9czKJ6Cdh8O1wK3Y7ftb9309YQ3Ioe0AFRFV1a8d4M5IQHQDopXvgNHXoIq8z+x3PQEuyidgz2hcSkLWkV+QgANlp0nwvh5JQHKHE7DjXV45EgAAAAAAAAAAAAAAABDhBRhzQUb5RpihAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABeElEQVR4nO3bwXKCQBBFUUnl/3/ZbIOhguMomNxztiqweNXT9IzLZdx15/PlgWtyko+zH4BzCUCcAMTds16v1vzr9fcWYFl+XFJP8MZUgDgBiBOAOAGIE4A4AYgTgLhH3tHNBf4RFSBOAOIEIO7zhHvunScYpaeYoALECUCcAMQd3gOMzg3u+L4zihNUgDgBiBOAuK0e4Nnv6Ye67Rk2egQ9wTcqQJwAxAlA3HKZ399f2fv90ZxH+J0KECcAcQIQN7wXsPGe/bSH4XgqQJwAxAlA3NYCPjQXGL7hzn7/7Od797uYA6yoAHECECcAcVtzgNUaebuf/m6zfuaoAHECECcAcQIQJwBxAhAnAHH3nAf4U3MBs/8xKkCcAMQJQNwz1sdTewJr/hwVIE4A4gQg7hXr5VRPMPrfQz3AHBUgTgDiBCDu5T3AA26fafR6eoABKkCcAMQJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADApC+r0kKIdEtSygAAAABJRU5ErkJggg=="
+  },
+  {
+    "id": "mac-ish-catppucin",
+    "name": "Retrosmart Mac-ish \u2014 Catppuccin Mocha",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Catppuccin Pastel",
+    "desc": "Beloved Catppuccin Mocha palette with lavender highlights on deep slate background.",
+    "preview": "retrosmart/previews/mac-ish-catppucin.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-catppucin_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-catppucin_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-catppucin.zip",
+    "arrowCur": "mac-ish-catppucin_arrow.cur",
+    "pointerCur": "mac-ish-catppucin_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADRAAAANgAAAEBAAAAAAAAAFAEAAAcBAACAgAAAAAAAAKgBAAAbAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAmElEQVR4nO2SIRKAIBBFvztGz+ABDBYbJ6B6UqsnsFE5CR2Dg4OKmtgt+xJ/Cby/A5wPEYIQAEhKEADM1ohJUDpISVAeJCToPuCWeAhwSxQFOCVeBbgkPgU4JNq3i2XdLtn5EKeha6oKLOuG2Zoz13jwgfMh9v0Y05pTzmc1IeBoztK2RKkl5xZIrPkfzgeWP6AoiqIoijg7FO1efmekTa8AAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAADbSURBVHic7dkxDoJAEEbhwVB6Els7T2DrSW09gR0tJ6HHwozFJAirxs3s/76KsGAI85ZGG8ZpHsZpNlG72g9Q2+sFqJYgX0DvB5fzycyeJZiZHQ/7rtIz/RUFxBNqJVDA0oJKCRSwdkHrJVDA1gtbLYECSm9orQQK+PTGVkqggG9/IHsJFFB6w/V2f7uerQQKWFrwSfsej7JMeA0FxBM+eZ+w72kvIftXP6IAP4iTVyFfQLd1L8dvgctejnwBfdbJ/Yp8AcXTj/8gZy9IvgAAAAAAAAAAAAAAgIIHZPtctsZrVWcAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAFvSURBVHic7d0xTgIBFEVRMZSuxNbOFdi6UltXYGfrSuy11U8xIYCMc8/pICGheHn/MQ2794/Pr5sfHu7vdjdk3F77C3BdAhAnAHG7uQEmm2DbNECcAMQJQNx+vvH89PjrtecE26YB4gQgTgDiDjbAZBNsmwaIE4A4AYhb3ACTTbAtGiBOAOIEIO7oDTDZBP+bBogTgDgBiDt5A0w2wf+iAeIEIE4A4s6+ASabYN00QJwAxAlA3MU3wGQTrIsGiBOAOAGI+/MNMNkE16UB4gQgTgDiLr4BXl7fTvq8TXBZGiBOAOIEIO7oDTBv+vwdv8QNXxcNECcAcQIQt7gB5s2fN3z+Tp+bwLP+ddMAcQIQJwBxBxtg6eazLRogTgDiBCDu4D+DTr35S88FJpvjujRAnADECUDc3s1t0wBxAhAnAHEXv//+m3jdNECcAMQJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBl9A6znVqIGBJY1AAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAMAAAD5AAAANgAAAEBAAAAGAAAAOAEAAC8BAACAgAAADAAAAMkBAABnAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAwElEQVR4nO2UvQ3EIAyFH+jm8AgMwAS0TJo2E6RLkyIDMEN6rjhx4ghSyImfIv4akAv7+WEDRBApT6Q8RkCk/Lofft2PriJkr0JFjHDhdSUojTm3iW4CpnkBAFij47uvKUQC96d/mpesO/8giJSPOw0FrrBGV3HhZwtKCtdGOreJ0HkqIsTTs6oA4DNQLZIXCxjJV8AdF2oNIACcksRb0bo4kHmCnBPW6CYDCGQcAM5fsHObiGO1v2OGYRiGYZ7NG1MjXXNyb9hpAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA/0lEQVR4nO3Y0Q2CMBDG8atxDkZwACfw1Ul5ZQIGcAQW0acjWry0NpKe3v/3JAgJ6X29FpIYhuF0fz5elluyrv1lh94P0Numqlr5cZpfzl8vZxH5vySETwAD0PsBejPnc5ReED4Bx9Yb832CxXtSSEDrjVZveHPe9Y6SBOiP2jndSpOhifCShPAJSKX1XuX/t/K2jwifAHMAxmn+WtU9C5+AdR5avcCSr/ul4/w+eoAT6z5AK6LrdIT5L0ICGIDwA7B5G9yrF3jr/ip8AorV+HR/kPNaeRU+AcUvQrU9Ya+3x72FT0D1vCx9MdKkWNfRAwAAAAAAAAAAAAAAADp5AH08b2FphMr2AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABkElEQVR4nO3cwVHDMBAFUMxQR0qgACrgSqVcqYACKCGNkLNlxmJHxo75790ycWwf/qykteLpoehyef5e+/56/Zqq5+Q4j0ffAMcSgHACEK47Xrdj/vvH5+rxb68vs8/mBPdNBQgnAOEEIJwAhBOAcAIQTgDCldfo+gL/iwoQTgDCCUC4p70v2NtPUGVOMUYFCCcA4QQg3O5zgGrf4BfH26M4QAUIJwDhBCDcYg6w9Tp9b+2coZ0jmBPMqQDhBCCcAISbRp/vt3q/35v9COtUgHACEE4AwpWfBfywzt7sZtifChBOAMIJQLjFmrjaF6jqPe8f/b53PX2AORUgnACEE4Bwiz5AO0a2z9PvrdfPGBUgnACEE4BwAhBOAMIJQDgBCNfdD3C2voDef40KEE4AwglAuOHx8a/3D/QY88eoAOEEIJwAhBt+R9DWfYKz/ffw7FSAcAIQTgDCbb5mHn3HUDunqJ5PH6BGBQgnAOEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABg0A38lW5Ja/rEHgAAAABJRU5ErkJggg=="
+  },
+  {
+    "id": "mac-ish-everforest",
+    "name": "Retrosmart Mac-ish \u2014 Everforest Sage",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Everforest Sage",
+    "desc": "Comfortable, earthy green-tinted cursor palette inspired by calm pine groves.",
+    "preview": "retrosmart/previews/mac-ish-everforest.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-everforest_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-everforest_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-everforest.zip",
+    "arrowCur": "mac-ish-everforest_arrow.cur",
+    "pointerCur": "mac-ish-everforest_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADPAAAANgAAAEBAAAAAAAAAFAEAAAUBAACAgAAAAAAAAKcBAAAZAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAlklEQVR4nO2SsRGAIAxFvznXobTRPSxYgllYwoJBWICBsPDwUFErkiav4oeC93MgxZAhCAGApAQBgHVeTILKQUqC6iAhQfcBt8RDgFuiKcAp8SrAJfEpwCExvl1s3l1yiiGbeR26CmzewTp/5h4PPkgxZDMtuay55HrWEwKO5ixtW7Racm6BxJr/kWJg+QOKoiiKooizA72DXWddAocwAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA20lEQVR4nO3ZwQ2CQBBG4cHQjg1YiAeboBaa8EAhNEBBeDDjYRKEVeNm9n/fibBgCPOWi7bM07rM02qiTrUfoLbXC1AtQb6A3g9uw2hmzxLMzM6Xa1fpmf6KAuIJtRIoYGtBpQQK2Lug9RIo4OiFrZZAAaU3tFYCBXx6YyslUMC3P5C9BAooveE+Dm/Xs5VAAVsLPmnf41GWCe+hgHjCJ+8T9j3tJWT/6kcU4Adx8irkC+iO7uX4LXDZy5EvoM86uV+RL6B4+vEf5OwFyRcAAAAAAAAAAAAAAFDwAFXlYBOr4jCJAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABbklEQVR4nO3dwU0CARRFUTC2YwMW4sImqMUmXFiIDViQbvWzmBBAhrnn7CAhYfHy/mM27L8+P753vzw9v+x3ZDzc+gtwWwIQJwBx+7kBJptg2zRAnADECUDc43zj9fD257XnBNumAeIEIE4A4o42wGQTbJsGiBOAOAGIW9wAk02wLRogTgDiBCDu5A0w2QT3TQPECUCcAMSdvQEmm+C+aIA4AYgTgLiLb4DJJlg3DRAnAHECEHf1DTDZBOuiAeIEIE4A4v59A0w2wW1pgDgBiBOAuKtvgPe3w1mftwmuSwPECUCcAMSdvAHmTZ+/45e44euiAeIEIE4A4hY3wLz584bP3+lzE3jWv24aIE4A4gQg7mgDLN18tkUDxAlAnADEHf1n0Lk3f+m5wGRz3JYGiBOAOAGIe3Rz2zRAnADECUDc1e+//yZeNw0QJwBxAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHBBP1MDW09Qh7oaAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAMAAAD2AAAANgAAAEBAAAAGAAAAPAEAACwBAACAgAAADAAAAM4BAABoAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvUlEQVR4nO2UvQ3EIAyFH+jWoaRiE5ZgFpZIkT1IQ8lAXHHixBGkkBM/Rfw1IBf288MGyBBSRSFVxAqEVDEcewzHPlUEn1WoiRUuvK4ElbHgHZsmYLMGAKCNze6IPYVw4P70b9ZU3fkHJqSKeaepwBXa2C4u/GxBS+He8OAdS52XIlK8PLsKAD4DNSJ5s4CVfAXccaHXAALAKUm+FaOLA5UnqDmhjR0ygEDFAeD8BQfvWB7r/R0TBEEQBPFs3pQXX9x1StYMAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABA0lEQVR4nO3YQQ6CMBCF4anxOi5deRMvwVm4BDdx5dIDwWqIlkxaG0lH5v9WgpCQ9nU6kMRwud7m9+PX85Gsa//ZqfcD9HbOT+jMT+Pwcf4+yCxyvCSETwAD0PsBejPXs10LRhE5Ti0In4DNLlAr7xMs3pNCAlpvtGqD1T8ob4kgAfqjdk230mR46yjDJyCV9nuV/9/KWx8RPgHmAEzj8LNZ9yx8AtZ1aNUCS77vl47z+6gBTqx9gM6I7tMR1r8ICWAAwg/A5m1wr1rgrfqr8Akozsa3/UHO68yr8AkofhGqrQl7vT3uLXwCqtdl6YuRJsW6jhoAAAAAAAAAAAAAAADQyQKjRWt32Dc8SwAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAZVJREFUeJzt3LttwzAUBVAryDopU2WTLOFZvEQ2SZUyA8W1KEDEAxV9cM/pDMuyi4tH8pHWdCt6e//4W3v/9+d7qt6T47wc/QM4lgCEE4Bwr70L2jH/63Ffvf7zfptdb05wbipAOAEIJwDhBCCcAIQTgHACEK68Rq/3BR6z1/oC56IChBOAcAIQrrsXsLXeeYIqc4oxKkA4AQgnAOF2nwNU+wbV8wctc4R1KkA4AQgnAOEWc4Ct1+l7a+cMziiuUwHCCUA4AQg3je7vt3qf35vzCOtUgHACEE4AwpX3Apbr7PU5AeemAoQTgHACEG6xJq72Bap6+/2j7/e+Tx9gTgUIJwDhBCDcog/QjpHtfvrZev2MUQHCCUA4AQgnAOEEIJwAhBOAcN3zAFfrC+j916gA4QQgnACEGx4f//v8QI8xf4wKEE4AwglAuOFnBG3dJ7jafw+vTgUIJwDhBCDc5mvm0WcMtXOK6v30AWpUgHACEE4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGPQE+D2ttQtqWbwAAAABJRU5ErkJggg=="
+  },
+  {
+    "id": "mac-ish-gruvbox",
+    "name": "Retrosmart Mac-ish \u2014 Gruvbox Retro",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Gruvbox Warm",
+    "desc": "Warm retro terminal hues with sandy beige outline and deep coffee fill.",
+    "preview": "retrosmart/previews/mac-ish-gruvbox.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-gruvbox_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-gruvbox_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-gruvbox.zip",
+    "arrowCur": "mac-ish-gruvbox_arrow.cur",
+    "pointerCur": "mac-ish-gruvbox_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADRAAAANgAAAEBAAAAAAAAAFgEAAAcBAACAgAAAAAAAAKkBAAAdAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAmElEQVR4nO2SwQ2AIAxFv40rOIIJSzCCjuMQjIMjOAYjMAQeDAYV9UR76Tvxy4H3GxCDTxCEAEBSggDATouYBOWDlASVQUKC7gNuiYcAt0RVgFPiVYBL4lOAQ6J/u9hWd8kx+DSMc9dUYFsd7LScucWDD2LwyRiT8ppzLmctIeBoztK2Rq0l5xZIrPkfMXiWP6AoiqIoijg7f9Jd4tjBg2cAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAADdSURBVHic7dnBDYJAEEbhwdCCJViGJWg5FmE5WIJlUAJF4MGMh0kQVo2b2f99J8KCIcxbLto0DvM0DrOJ2tV+gNpeL0C1BPkCej84ni5m9izBzGx/OHeVnumvKCCeUCuBApYWVEqggLULWi+BArZe2GoJFFB6Q2slUMCnN7ZSAgV8+wPZS6CA0hvut+vb9WwlUMDSgk/a93iUZcJrKCCe8Mn7hH1PewnZv/oRBfhBnLwK+QK6rXs5fgtc9nLkC+izTu5X5Asonn78Bzl7QfIFAAAAAAAAAAAAAAAUPAC8+V3SvcJKbgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAXBJREFUeJzt3cFNAgEURVExtGAJlmEJWo5FWI6WYBmWYBG61c9iQgAZ556zg4SExcv7j9mw+/x4/br54e7+aXdDxu21vwDXJQBxAhC3mxtgsgm2TQPECUCcAMTt5xsPj8+/XntOsG0aIE4A4gQg7mADTDbBtmmAOAGIE4C4xQ0w2QTbogHiBCBOAOKO3gCTTfC/aYA4AYgTgLiTN8BkE/wvGiBOAOIEIO7sG2CyCdZNA8QJQJwAxF18A0w2wbpogDgBiBOAuD/fAJNNcF0aIE4A4gQg7uIb4P3t5aTP2wSXpQHiBCBOAOKO3gDzps/f8Uvc8HXRAHECECcAcYsbYN78ecPn7/S5CTzrXzcNECcAcQIQd7ABlm4+26IB4gQgTgDiDv4z6NSbv/RcYLI5rksDxAlAnADE7d3cNg0QJwBxAhB38fvvv4nXTQPECUCcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJzRN4z7WDrbXd1GAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAMAAAD1AAAANgAAAEBAAAAGAAAANQEAACsBAACAgAAADAAAAMYBAABgAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvElEQVR4nO2UzQ3DIAyFH1GH8RKMwDoMkXGSEbKEpYyQIdxDRUUJUkjFzyH+LiAf7OeHDRBBREJEghEQkRz7Ise+dBUx9SpUxAgXXleC0hgzm24CtnUGAFjn47vUFDIB96d/W+esO/9giEjiTkOBK6zzVVz42YKSwrWZmNmEzlMRIZ6eVQUAn4FqkbxYwEi+Au64UGsAAeCUJN6K1sWBzBPknLDONxlAIOMAcP6CmdnEsdrfsaIoiqIoz+YNcxxeXOFVJocAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAAD8SURBVHic7djhDcIgEIZhMA7DEo7gOg7RdTpCl2Ab/XWNUi8gkXB67/PL1jZpuI+DNgZFSun+fJxzjtq1v+w0+wFmO1RVKr+ty8v5y/UWQvi/JLhPAAMw+wFmU+ezl17gPgHn3hvLfYLGelJIQO+NWm94c970jpIEyI/WOd1LkiGJsJIE9wmItfVelP/3sraPcJ8AdQC2dfla1S1zn4B9Hmq9QFOu+7Xj8j56gBH7PkAqIuu0h/kfAglgANwPwOFtcFQvsNb9hfsEVKvx6f6gZLXywn0Cql+EWnvCqLfH0dwnoHle1r4YSVK06+gBAAAAAAAAAAAAAAAAkzwA1kBu7jXjI1sAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAGNSURBVHic7dzRUYQwFAVQcSyGJizBdrYI27EEm6Ab/d7gEN8EYfGe87ezLPBx5yV5ZJmeiuZ5/tr6flmWqXpOzvN89g1wLgEIJwDhuuN1O+Z/frxvHv/6drv7bE7w2FSAcAIQTgDCCUA4AQgnAOEEIFx5ja4v8L+oAOEEIJwAhHs5+oK9/QRV5hRjVIBwAhBOAMIdPgeo9g1+cbw9igNUgHACEE4Awq3mAHuv04/WzhnaOYI5wT0VIJwAhBOAcNPo8/1W7/dHsx9hmwoQTgDCCUC48rOAH9bZu90Mx1MBwglAOAEIt1oTV/sCVb3n/aPf966nD3BPBQgnAOEEINyqD9COke3z9Efr9TNGBQgnAOEEIJwAhBOAcAIQTgDCdfcDXK0voPdfowKEE4BwAhBueHz86/0DPcb8MSpAOAEIJwDhht8RtHef4Gr/Pbw6FSCcAIQTgHC7r5lH3zHUzimq59MHqFEBwglAOAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABj0DSKRbjD7O7QLAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "mac-ish-rose_pine",
+    "name": "Retrosmart Mac-ish \u2014 Ros\u00e9 Pine",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Ros\u00e9 Pine Dusk",
+    "desc": "Minimalist dusk palette blending soft rose quartz with tranquil pine needle gray.",
+    "preview": "retrosmart/previews/mac-ish-rose_pine.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-rose_pine_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-rose_pine_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-rose_pine.zip",
+    "arrowCur": "mac-ish-rose_pine_arrow.cur",
+    "pointerCur": "mac-ish-rose_pine_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADOAAAANgAAAEBAAAAAAAAAEgEAAAQBAACAgAAAAAAAAKUBAAAWAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAlUlEQVR4nO2SMQ6AIAxFv42ju3EzxgO4cv+B1RMQDsGOg8GogE60S9/ELwPvN8C7ECEIAYCkBAGAMZuYBKWDlATdg4QEvQfcEpkAt0RRgFOiKsAl8SnAIdHXLqzdH9m7EOdl6JoKWLvDmO3KLR7M8C7EaVxjWnPK91lLCDibs7QtUWrJuQUSa/6Hd4HlDyiKoiiKIs4B1/hemtEDICIAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAADZSURBVHic7dkxDoJAEEbhwVB6COMJbLl/QesJCIegx8KMxSQIq8bN7P++irBgCPOWRpunZZ2nZTVRp9oPUNvrBaiWIF9A7wfDcDOzZwlmZpfruavzSP9FAfGEWgkUsLWgUgIF7F3QegkUcPTCVkuggNIbWiuBAj69sZUSKODbH8heAgWU3jCO97fr2UqggK0Fn7Tv8SjLhPdQQDzhk/cJ+572ErJ/9SMK8IM4eRXyBXRH93L8Frjs5cgX0Ged3K/IF1A8/fgPcvaC5AsAAAAAAAAAAAAAACh4AORXW3oqXjfZAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABbElEQVR4nO3dMU4CARRFUTCWLsK4Alv2X9i6AuMi7LXVTzEhgAxzz+kgIaF4ef8xDfvPj6/v3S/PL0/7HRkPt/4C3JYAxAlA3H5ugMkm2DYNECcAcQIQ9zjfOBxe/7z2nGDbNECcAMQJQNzRBphsgm3TAHECECcAcYsbYLIJtkUDxAlAnADEnbwBJpvgvmmAOAGIE4C4szfAZBPcFw0QJwBxAhB38Q0w2QTrpgHiBCBOAOKuvgEmm2BdNECcAMQJQNy/b4DJJrgtDRAnAHECEHf1DfD29n7W522C69IAcQIQJwBxJ2+AedPn7/glbvi6aIA4AYgTgLjFDTBv/rzh83f63ASe9a+bBogTgDgBiDvaAEs3n23RAHECECcAcUf/GXTuzV96LjDZHLelAeIEIE4A4h7d3DYNECcAcQIQd/X777+J100DxAlAnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABc0A8B+FT6qbjchwAAAABJRU5ErkJggg==",
+    "pointerB64": "AAACAAMAICAAAAMAAAD2AAAANgAAAEBAAAAGAAAANQEAACwBAACAgAAADAAAAMcBAABhAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvUlEQVR4nO2UPQ7DIAyFH6h3QOwcgJX7D6w5AIqyIfbsdKioKEFKUvEzxN8C8mA/P2yADClUlEJFzEAKFbd1j9u6DxXBRxW6xAwXXmeCypgPjg0TYO0CADBG5/fYUggH7k+/tUvVnX9gUqiYd5oKnGGMbuLCzxZcKdwa7oNjqfNSRIqXZ1MBwGegeiS/LGAmXwF3XGg1gABwSJJvRe/iQOUJak4Yo7sMIFBxADh+wT44lsdaf8cEQRAEQTybNx5zXEa1oNA7AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA/ElEQVR4nO3YMQ7CMAyFYQdxB8TOAVh7/yFrD8COOAVMriDFSoioYvD/TbS0UhW/OGmTGI6H0/35+Hq7JOvaX7Yb/QCjraqqlc95fjk/TWcR+b8khE8AAzD6AUYz53OUXhA+AfveG8t9gsV7UkhA741Wb3hz3vWOkgToj9Y53UuToYnwkoTwCUi19V6V//fyto8InwBzAHKev1Z1z8InYJmHVi+wlOt+7bi8jx7gxLIP0IroOh1h/ouQAAYg/ACs3ga36gXeur8Kn4BqNT7dH5S8Vl6FT0D1i1BrT9jq7XFr4RPQPC9rX4w0KdZ19AAAAAAAAAAAAAAAAIBBHqU+cADtY1jGAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABjklEQVR4nO3cMVLDMBAFUMxwB4aeA9Dm/kVaDkDPcApSW2YsdmTsmP9el4lju/izktaKp4eil+fX77XvP78+puo5Oc7j0TfAsQQgnACE647X7Zh/vb6vHn+5vM0+mxPcNxUgnACEE4BwAhBOAMIJQDgBCFdeo+sL/C8qQDgBCCcA4Z72vmBvP0GVOcUYFSCcAIQTgHC7zwGqfYNfHG+P4gAVIJwAhBOAcIs5wNbr9L21c4Z2jmBOMKcChBOAcAIQbhp9vt/q/X5v9iOsUwHCCUA4AQhXfhbwwzp7o1vhCCpAOAEIJwDhFmvial+gqve8f/T73vX0AeZUgHACEE4Awi36AO0Y2T5Pv7deP2NUgHACEE4AwglAOAEIJwDhBCBcdz/A2foCev81KkA4AQgnAOGGx8e/3j/QY8wfowKEE4BwAhBu+B1BW/cJzvbfw7NTAcIJQDgBCLf5mnn0HUPtnKJ6Pn2AGhUgnACEEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgEE39+FuhmJroz4AAAAASUVORK5CYII="
+  },
+  {
+    "id": "mac-ish-solarized_dark",
+    "name": "Retrosmart Mac-ish \u2014 Solarized Dark",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Solarized Cyan",
+    "desc": "Scientifically calibrated low-strain Solarized Dark palette with cyan/slate contrast.",
+    "preview": "retrosmart/previews/mac-ish-solarized_dark.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-solarized_dark_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-solarized_dark_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-solarized_dark.zip",
+    "arrowCur": "mac-ish-solarized_dark_arrow.cur",
+    "pointerCur": "mac-ish-solarized_dark_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADMAAAANgAAAEBAAAAAAAAAEQEAAAIBAACAgAAAAAAAAKUBAAATAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAk0lEQVR4nO2VMQ6AIAxFv423cfc6HoCwcgjXxgP0pDgYDCrqRLv0Tfwy8No0ASySYQgBgKUEAUBcNzMJKgcrCaqDhQTdC9oSDwFtiaaApsSrgJbEp4CGxPh2wSlcs0iOyzJ0FeAUENftzD0efMAiGdOcy5hLrms9Of6CFHS6bdHqUnMKZNb5HyyisgOO4ziO45izA5r4VocwlKQJAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA2ElEQVR4nO3ZQQ6CMBBG4cFwTw5g2HoIt40H6ElxIe1iEoSqkUz/961IoYYwDzZaynlJOS8m6nL2DZytPgDVEuQLGMvBfH+Y2asEM7N5moaT7umvKMAvqJVAAVsnVEqggL0Lei+BAo5e2GsJFNC6obcSKODTjb2UQAHf/kD0EiigdUO6Xd+fD1YCBWydKJMu77gXZcJ7KMAv1MmvE67v9FpC9K++RwHlwE9ehXwBw9F32X8L6nrwcuQLGKNO7lfkC2ievv8HOXpB8gUAAAAAAAAAAAAAABQ8AS74YQOfKiwhAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABbElEQVR4nO3dMW7CUBREUYjYJwuIaLOItCgLYKVJm3wXFgLHxvecjgikFKN5gxuO19vt+/DL5Xw+Hsh4W/sfYF0CECcAccdxA4xsgn3TAHECECcAcafxD5fPrz+vPSfYNw0QJwBxAhA32QAjm2DfNECcAMQJQNzsBhjZBPuiAeIEIE4A4u7eACOb4LVpgDgBiBOAuIc3wMgmeC0aIE4A4gQg7ukbYGQTbJsGiBOAOAGIW3wDjGyCbdEAcQIQJwBx/74BRjbBujRAnADECUDc4hvg+vH+2OdtgkVpgDgBiBOAuLs3wHjTx+/xc9zwbdEAcQIQJwBxsxtgcvOHGz75nj5sAs/6t00DxAlAnADETTbA3M1nXzRAnADECUDc5DeDHr35c88FJu+3OValAeIEIE4A4k5ubpsGiBOAOAGIW/z++23ibdMAcQIQJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABP9AOOw133Qw5NQgAAAABJRU5ErkJggg==",
+    "pointerB64": "AAACAAMAICAAAAMAAAD4AAAANgAAAEBAAAAGAAAAPAEAAC4BAACAgAAADAAAAMoBAABqAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAv0lEQVR4nO2VMQ6EIBREH8bb2HMpQ+shbAkH4Dr0noctNgZR4uoG2WL/a0wwcYb5A8KWQUcGHWlIvxW30wiAmYksQbUw0LUQuc6go/U+Wu+bjaI/fVsyUXk0pwZSJxxZPyoaeXfgZvvtNJbT+QKVt98lgQ+Y2VVJITsFV4Rr07EEte58b2Jd3z/rGgD2Jlry84soGbiRQq0CAhw/sjkVT4tDaQSFJMzsHikglBKA4yWzBJWtNfpTCoIgCILwH7wAqCxR0MpycJEAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAAEDSURBVHic7dhBDoIwEIXh1ngb916KuOUQbomXcu95ZEEroc2ktZF0ZP5vBQgJad9Mi95JLtf35vz19OK9f+zU+wV6O2dXwsxP47C5fLu7JREHS4L5BDAAvV+gN7mexV7wWA4O0gvMJyBfBWql+wSJ8qSQgNYHpd4g7h8iZYkgAZ+j2ppuFJOhbUdpPgG+uN4H6e+ttO0jzCdAHIBpHH4265qZT8Bah0IvkKTrfuk8fY4eoMS6DwgzEtdpC/XvHAlgAMwPQP41uFMv0Nb9I/MJKM/Gl/uDlNaZj8wnoPyPUGVP2OvrcW/mE1Bfl6V/jGKNS/fRAwAAAAAAAAAAAAAAAPqYASbSXVkIKksMAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABkUlEQVR4nO3cQU7DMBAF0AZxG/ZcCrHlEGwRl2LPeeg6jmRr5JCk+u8t2zTt4mtsj90st6qX17/u+78/S/menObp7B/AuQQgnACEex5e0Yz5Xx9v3cvfP2/rOYI5waWpAOEEIJwAhBOAcAIQTgDCCUC4+hq93Bf4Xr+gL3ApKkA4AQgnAOHGewF7G50nqDKnmKIChBOAcAIQ7vA5QLVvUD5/0DJH6FIBwglAOAEIt50D7L1OP1g7Z3BGsU8FCCcA4QQg3DK9v98Yff5oziP0qQDhBCCcAIQr7wVs19n9OQHXpgKEE4BwAhBuuyYu9gWqRvv9s++Pvk8fYE0FCCcA4QQg3LYP0IyR7X761Xr9zFEBwglAOAEIJwDhBCCcAIQTgHDj8wAP1hfQ+69RAcIJQDgBCDc/Pv7z+YERY/4cFSCcAIQTgHDzzwjauU/waP89fHQqQDgBCCcA4fZfM88+Y6hdx1fvpw9QogKEE4BwAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMOkOaetds8EY+6gAAAAASUVORK5CYII="
+  },
+  {
+    "id": "mac-ish-violet",
+    "name": "Retrosmart Mac-ish \u2014 Neon Violet",
+    "style": "mac-ish",
+    "styleName": "Mac-ish Retro",
+    "palette": "Neon Violet",
+    "desc": "Electric violet cyberpunk outline on pitch black fill for OLED displays.",
+    "preview": "retrosmart/previews/mac-ish-violet.png",
+    "arrowIcon": "retrosmart/icons/mac-ish-violet_arrow.png",
+    "pointerIcon": "retrosmart/icons/mac-ish-violet_pointer.png",
+    "downloadZip": "retrosmart/downloads/mac-ish-violet.zip",
+    "arrowCur": "mac-ish-violet_arrow.cur",
+    "pointerCur": "mac-ish-violet_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADCAAAANgAAAEBAAAAAAAAAEAEAAPgAAACAgAAAAAAAAKgBAAAIAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAiUlEQVR4nO2VwQ3AIAhFf0m3chzG8MwYjsNc9lIbo7Y9CRfeyY8HH4RECGuFIwQAnhIEALkkNwlqBy8J6oOHBI0Fa4lJwFpiKWAp8SpgJfEpYCFxvl0I65hrLunYKiCsyCU9eceDE/d4axtzy31tJ+0vsOl2xapLyymQW+d/CKvJDgRBEARB4M4FUchQzBigFHEAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAADXSURBVHic7dlBDsIgEEDRwfRWHodjuOYYHodz1YXFkEkIoMY6zH8bW1pMIx83lRTznmLexanL2Q9wttcP4LUE9wVs5eB2v4rIs4TjPJz0TD9FAXrAWwkU0LrgpQQK6N2wegkUMHrjqiVQwOyE1UqggHcnrlICBXz6BdZLoIDZCSnm3nVTJVBA60JZ6bLHNSsr3EMBeqBa+XCclz0t9ae1vd5CAeVAr7wX7gsIo3tZ/xdU4zIy/1+5L2CzunLf4r6A6dXXb5CtF+S+AAAAAAAAAAAAAACABw9MkV9MsSXmMQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAW9JREFUeJzt3buNwlAARFFY0RXlUAYxZVAOde2mywPJQmAwvudk5ieC0bwxCdvT4fK7+ed43m83ZPx8+gvwWQIQJwBx23EDjGyCddMAcQIQJwBxu/GB43l/de13gnXTAHECECcAcTcbYGQTrJsGiBOAOAGIm9wAI5tgXTRAnADECUDcwxtgZBN8Nw0QJwBxAhD39AYY2QTfRQPECUCcAMS9fAOMbIJl0wBxAhAnAHGzb4CRTbAsGiBOAOIEIO7tG2BkE3yWBogTgDgBiJt9A5wOl2ffbxPMSAPECUCcAMQ9vAHGM328j5/iDF8WDRAnAHECEDe5Ae6c+dvh+fE+fXz9+Hnu6xdEA8QJQJwAxN1sgKkzn3XRAHECECcAcTf/GfTsmT/1u8Cd119d2xzvpQHiBCBOAOJ2ztw2DRAnAHECEDf7+e+/iZdNA8QJQJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvNAfQ/Bc4Mf4lb8AAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAMAAADcAAAANgAAAEBAAAAGAAAAKwEAABIBAACAgAAADAAAALoBAAA9AgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAo0lEQVR4nO2UUQqAIBBEn9GtOk7H6LtjdBzPVT8KtqUVbRa0DyTQcMedYWHNHFY1mrT42HvG3kch1QW8QirADVMHULUL7cH5nginKaBoQZIJRD7UuhMFXLpU0yJHSD+AyECR8O9tO1YWnCmsTUOSfiki7suvtgCkiJp8cxAdoRXA3CVzKYyaxWHfgk0nhql7JICQf4kcMk7sqY5jwzAMwzD+zQJlfDdtOCTV5QAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAPJJREFUeJzt18kNgzAQheFxlK4ohzI4UwblUBc5oTiOx2yRZsj834nFRpb9vJBEtxT3qVH2th7WDbBWG9VFRGTs54+Hw9S16txW+ATQAdYNsNaazyHWgvAJeF6oW54TNK6TQgLOVtTWhspz1ydKEpBd753Tp6zJyBLhIgnhE5Bke7+X2vuzvJ0jwidA7YCxn3826p6FT0A+D6trgabc97fuy3rCGuBD3gFJRNIwdV87wD8jAdYNsBa+A2p/g0nkfWb/1xPgKnwC9ozGpSR4HfkVCThQtpkE7e+RBDh3OAE7vqWVIwEAAAAAAAAAAAAAAAAWXjVrQpaJhpVSAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABgUlEQVR4nO3bTVLCQBSFUbDclctxGY5dhstxXToVKkVoGhL1O2eakGRw6/XrH46HcV8r1483PJOdPO39AexLAOIEIO6a8fpkzH9//bx489vHyy3vYCcqQJwAxAlAnADECUCcAMQJQNwtc3TrAv+IChAnAHECEPe8wzvXzhOM0lNMUAHiBCBOAOI27wFG1w2uuN8ZxQkqQJwAxAlA3FIPcO95+qbOe4aFHkFP8IMKECcAcQIQdzzM7++fWPv91pxHuEwFiBOAOAGIG94LWJhn3+1j2J4KECcAcQIQtzQnHloXGLW23z97fe19B+sAJ1SAOAGIE4C4pXWAkzHyfD/9t631M0cFiBOAOAGIE4A4AYgTgDgBiLvmPMCfWhew9j9GBYgTgDgBiLvH+LhrT2DMn6MCxAlAnADEPWK8nOoJRv97qAeYowLECUCcAMQ9vAe4wfk3jT5PDzBABYgTgDgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACY9A3ahEPYR+hRawAAAABJRU5ErkJggg=="
+  },
+  {
+    "id": "win-ish-classic",
+    "name": "Retrosmart Win-ish \u2014 Windows 95 Classic",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Win 95 Classic B&W",
+    "desc": "Pure 1995 nostalgia: traditional asymmetric black outline with bright white body and classic pointing hand.",
+    "preview": "retrosmart/previews/win-ish-classic.png",
+    "arrowIcon": "retrosmart/icons/win-ish-classic_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-classic_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-classic.zip",
+    "arrowCur": "win-ish-classic_arrow.cur",
+    "pointerCur": "win-ish-classic_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAAC+AAAANgAAAEBAAAAAAAAAEgEAAPQAAACAgAAAAAAAAKsBAAAGAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAhUlEQVR4nO2WSwrAIAxEJ6H3v3K60WL9tIvWmU0eiBgX8wwiAkBAiJdZJuEAEBEyidoBmYS3C4WE9wW2xCDAlpgKMCWWAiyJRwGGxLHaMLPBBcBQ/MqtA5NQ68bvXAIl3KoE9RLW8N1hS4EunNoFh+jkrcAMWhde3wE1AfGPKUmSJEm2cwIwTjEUCp9/ywAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAANlJREFUeJztl+EKgzAMBtPh+79y9scU5yZddVvXfHcgFJNKaS4Bzcx8fSS5jT7AaLYXIGkCBsTC3c3dzcRMwID9CzUTMOAooGICBrQSspuAAe8mZjUBA3o3ZDMBA85uzGICBlz9wOwmyBuw9G4opbRSwoJm4j+AAUeBqPTa3y9TvnCenyNvQLG1Z6PSmx6PxUO8Bp/zpkTegDoDslS0F3kD6gywduVTzgJ5AxabtHKfQt6AM9VPNQvkDeACRh9gNFf6df+bOFXvB/IGAAAAAAAAAAAAAAAAgAp3fe9aFKBGvsYAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAFySURBVHic7d1JjsJAEADB9oj/f5k5QyMhFm9kxHnAHFLVhaUxyxjjOm4tg4y/vT8A+xJAnADiljHvAI/+hh9lAsQJIE4AcdMOcL3ergTLMq0AdoIfYgLECSBOAHFPd4DpBXaCn2ICxAkgTgBxL+8A0xvYCU7NBIgTQJwA4j7eAaY3tBOcigkQJ4A4AcR9fQeYLmAnODQTIE4AcQKIW30HmC5oJzgUEyBOAHECiNt8B5g+gJ1gVyZAnADiBBC3+w5wz06wLRMgTgBxAoi7rH2BB2f6qzzHcEUmQJwA4gQQ9/IOcH+mv3HfwBl+ICZAnADiBBD3jecEesbQiZkAcQKIE0DcdB/AGd1iAsQJIE4AcY9+M+jTM999gRMxAeIEECeAuMtw5qaZAHECiBNA3Bbnv/sCB2YCxAkgTgBxAogTQJwA4gQQt8d37Gf/TOh7/4ZMgDgBxAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAD/zmFOJxmCAwpAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAUAAADWAAAANgAAAEBAAAAKAAAAQAEAAAwBAACAgAAAFAAAAN8BAABMAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAnUlEQVR4nO2V3QqAIAxGv0nv/8rrIqUypalzRuyA0NV23E8CZTie6YRScmYGMycRcwFTXEAiMHUgt9fsxzCCiK4SpCXQ1IJsO1Sq0j0DWmsacN6mOZiGREiBSsFS//NvTW4tkCbRlAkAiEhtqLsEsFLisQWzei0RWFKFobcgCg9Z5wLmVfjkayiqgkb5awKm1G4g3cV1fzDHcZzfsANEKjoTx4J1vAAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAQdJREFUeJztmskOgzAMBe2K//9l91AFUQqFiAQHvZkTa2I5E7O6nSdW615x7rC8sgPI5swohplZxLcA7vOpjzZB3gASkB1ANiQgO4BsSEB2ANlMDdp49B0iBlxtYOMOcW3EvOtqXz3AgF4NnzBjCCPkDbg9ARFR7Aj7vYLcjrwBk+2PQtc5WmrEojak1AQMKAsV1/PN44+2jwoG7O1YzNEmHY1qhrwBL/tUX3f3ZqP9JDBgsSxpgrwBh0+Do1bvVsgbsJUAqVogb0C3N0JHjPJ1Wd6AfwmQqAUYkB1ANvIJqJncm/8KVXc4SPUvyBtAArIDyKa6BiT13Q15AwAAAAAAAAAAAECLN94fM3ReLeXdAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABpklEQVR4nO3dy3KCQBRAQUj5/7+sW0VLg0KNeLq3eeji1OUy5DFP2zu/+Pi8w2vypr/Rb4CxBBAngLgtrsc31/zz+fkKMM93L2knGMgEiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIO40+g1MfoZwKBMgTgBxAogbvgP842cIX+0Id1/y/rvpMQHiBBAngLjhO8BaG+wMdoQrJkCcAOIEEHe4HWCt5c7wYEdI7wQmQJwA4gQQd5peP49fOvQ1005wywSIE0CcAOLuzgF2eD6/6vt/+vmsYwLECSBOAHGrnwU8uI/e7M1swc6wjgkQJ4A4AcSdpsXZ9/I+3zX1t5kAcQKIE0Dco3MAO0GICRAngDgBxH38ewF2gmMzAeIEECeAuHce5v/UuUD9/xiaAHECiBNA3M//fYCl+jV/yQSIE0CcAOK2uP4d6lzADnDLBIgTQJwA4gQQJ4A4AcQJIG6Pe+CvOhdw3/+cCRAngDgBxAkgTgBxAogTQNzu5wBfyDnAFRMgTgBxAgAAAAAAAAAAAAAAAAAAAAAAAAAA+BIXegw/uF+/FCYAAAAASUVORK5CYII="
+  },
+  {
+    "id": "win-ish-inverted",
+    "name": "Retrosmart Win-ish \u2014 Dark Inverted",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Inverted High Contrast",
+    "desc": "Inverted Windows 95 pixel layout with glowing white outline and midnight black fill.",
+    "preview": "retrosmart/previews/win-ish-inverted.png",
+    "arrowIcon": "retrosmart/icons/win-ish-inverted_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-inverted_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-inverted.zip",
+    "arrowCur": "win-ish-inverted_arrow.cur",
+    "pointerCur": "win-ish-inverted_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAAC7AAAANgAAAEBAAAAAAAAADgEAAPEAAACAgAAAAAAAALUBAAD/AQAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAgklEQVR4nO2UOxLAIAhEd5nc/8qbBjOOMbECGl6lWOzDHyQJhRgAVEoYAJAsk7AxqJKweVIhYWshW+IlkC2xFciU+BTIkvgVyJC4vhbWTEkiyVABSZgzIgJXniPwcI7OUy/hCI8O27Lr0mvyYewrKOv8RNYuHP+BUuRUezRN0zRNKDeQH1725qQgXwAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAANVJREFUeJztmksOwyAMBe0q979yuyhUCAkBSRRq3swm/BwhPGYRxd4JE+W1egOr+R2AqgnyBhy54e5m9jUh9X3Rnh4FA+oBNRMwoDWhYgIG9BbsbgIGjC7c1QQMmA3YzQQMOBu4iwkYcPUF0U3AgNmA3kejaCZgQGsiZ7qVyCgZ7oEB9UCReU/9XNNWPqPVegsMyI068yrIG+CjtVzfBcW4jcT/K/IGHFEzdxfyBkxnf7e7QN4ADmD1BlZzul7rv0mi1X5G3gAAAAAAAAAAAAAAAABQ4QMQCF5zCzbu5AAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAXxJREFUeJzt3cFuglAQQFFp/P9fttt2NKHGgsg9Z1mpcXEzb2Chy+12u11+WJZluZDx9e4PwHsJIE4AccvcAe4usBOcmgkQJ4A4AcRd5x/mke85wbmZAHECiBNA3N0OMNkJzs0EiBNAnADiVneAyU5wLiZAnADiBBD39A4w2Qk+mwkQJ4A4AcS9vANMdoLPYgLECSBOAHH/vgNMdoJjMwHiBBAngLjNd4DJTnAsJkCcAOIEELf7DjDZCd7LBIgTQJwA4jbfAVa+gugv/28n2JAJECeAOAHEPb0DzDP92SPZGX4sJkCcAOIEELe6Azw485fx+rxPn9fP93NffyAmQJwA4gQQd7cDrJ35nIsJECeAOAHE3f1m0Ktn/tpzgQfX//5Ado5dmQBxAogTQNzVmdtmAsQJIE4AcZuf/54LHJsJECeAOAHECSBOAHECiBNA3O732PO5wOS+f18mQJwA4gQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALCDb/XIVs977L+NAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAUAAADPAAAANgAAAEBAAAAKAAAAIQEAAAUBAACAgAAAFAAAANMBAAAmAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAlklEQVR4nO2V0Q6AIAhFuc7//2V60aZp6RKkLc5jOTm7KBJ14ETvnzqpMGcP7XpBu4ALLAtoH8g4WgDgFCm+YZvAk4yEyOszAIAkWhO4wEIi5o2IqNmsTFiw7RVVC2aLSMoEALAa+0QpAUuJ5hZo9XooYJXC0lvAzMvD6HoLtqfwvddwNgWJ+LsCu7l9DS2Hk+M4zr84ABMmUiEE9BeKAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA6ElEQVR4nO2ZSw6DMAwF66r3v7K7shShWklF2mfwzIpPSCxnMAHssYi7+7hvZrZ6bWWe6gDUTGcxZv444SHE1U1obwAJUAeghgSoA1BDAtQBqHmd7eDqK0QMONvBhxWiJ+1KmoEBv+p4ZkYVIzDg3wPGxA9vmVITMEBVtauYgAGxsfo8z9rPjlcFA7ITwz26ZaCqZmBAVN/s6+/dwYDY6GoCBswa3N0EDDge6FYLMEA1cJW/yxiQnehSC9obQALUAahZvrF31YIq1T9obwAJUAeg5uuV4K5vhFVobwAAAAAAAAAAAAD04g0Hf0eT8ejeIgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAZpJREFUeJzt3cFOwkAUQFFr+P9fruvWBhxaM8A9Z6tBFjevjwHq8nWxdV3Xez9flmW5+m/yvO/ZT4C5BBAngLjT1+P9Nf/RJX6/ItgJ5jIB4gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiLvNfgI+QziXCRAngDgBxE3fAf7wGcK7O8LB49kZBpgAcQKIE0Dc9B1g1NmdwY6wZQLECSBOAHFvtwOM2l/yD77LmN4JTIA4AcQJIO5WO2u3E2yZAHECiBNA3K9zgKvfnx99/LO/zxgTIE4AcQKIG34v4OB19GVP5gp2hjEmQJwA4gQQd9uffY/e+5f3ZgLECSBOAHFH7wXYCUJMgDgBxAkg7vT3AuwE780EiBNAnADiHu4AzgU+mwkQJ4A4AcR9/P0B9vzv4i0TIE4AcQKIe+Z7Ac4FPogJECeAOAHECSBOAHECiBNA3OUv2l/tXMDZ/30mQJwA4gQQJ4A4AcQJIE4Acf/+mcBXu48gWyZAnADiBAAAAAAAAAAAAAAAAAAAAAAAAAAA8CJ+AKJUR+tvYNd+AAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "win-ish-catppucin",
+    "name": "Retrosmart Win-ish \u2014 Catppuccin Mocha",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Catppuccin Mocha",
+    "desc": "Win95 pointer geometries rendered in soft Catppuccin lavender and mocha tones.",
+    "preview": "retrosmart/previews/win-ish-catppucin.png",
+    "arrowIcon": "retrosmart/icons/win-ish-catppucin_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-catppucin_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-catppucin.zip",
+    "arrowCur": "win-ish-catppucin_arrow.cur",
+    "pointerCur": "win-ish-catppucin_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADZAAAANgAAAEBAAAAAAAAAKQEAAA8BAACAgAAAAAAAAMYBAAA4AgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAoElEQVR4nO2UsRGEIBBFvztXx5ZAAVZgaqWmVmBmYmAB1GCOwQ2Od6JG/E32RXwIeH9nAKohwRABAEsJAYBhnMwkJC+sJOQcLCTkf4MtcRFgSxQFmBK3AiyJRwGGxOfuoO/an6waUoxLU1Wg71oM43TkGhdeUA1pXreUx5zzea8mAnybU9qWKLVkTkHMmr/BmsLrP2CKaqC8BMdxHMcxZQddBFir9H0NRwAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAPBJREFUeJztmssNwjAQBTcodbiEFEAFuaZSrlRAAZSQRsJpOawU8gFhrd/MyfInsvzGthTZShmWUobFRLnUnkBt3gugaoK8Ab0XbveHmZlN43UxM5vnZ1dpTn8FA2KFmgkYsNagYgIGbHVo3QQM2NuxVRMw4OiA1kzAgLMDWzEBA779QHYTMODogGm8fmz3v0pZTMCAtQZP2vd4JEvCW2BArPDkPWE/3d2E7Kd+BAO8EJNXQd6Abu+97f3irZDdHHkD+qzJ/Qp5Aw6n39pZIG8AC1B7ArU5vV/ja5Jse9+RNwAAAAAAAAAAAAAAAABUeAG5Xm8gEgIzaQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAY1JREFUeJzt3cFNAlEUQFEx1mEJFkAFbK3UrRVYgCXQiG71sZgYBIa55+wg0bi4ef/NJ5Hd8/PL18MPx+Pn7oGMx1v/AdyWAOIEELebO8BkJ9g2EyBOAHECiHuab7y9f/x6/XrYuyfYMBMgTgBxAog72QEmO8G2mQBxAogTQNziDjDZCbbFBIgTQJwA4v68A0x2gvtmAsQJIE4AcWfvAJOd4L6YAHECiBNA3L/vAJOdYN1MgDgBxAkg7uI7wGQnWBcTIE4AcQKIu/oOMNkJbssEiBNAnADiLr4DvB72Z/28/2N4WSZAnADiBBD35x1gnunzOX6JM3xdTIA4AcQJIG5xB5hn/jzD59393Anc9a+bCRAngDgBxJ3sAEtnPttiAsQJIE4AcSffGXTumT9/39JnBXaO2zIB4gQQJ4C4J2dumwkQJ4A4AcRd/Px3L7BuJkCcAOIEECeAOAHECSBOAHFXf8ae9wKT5/7rMgHiBBAnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAK/gGctNxyChYhPQAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAUAAAD5AAAANgAAAEBAAAAKAAAAPQEAAC8BAACAgAAAFAAAAO0BAABsAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAwElEQVR4nO2VvQ3DIBCFn5HnuBEYgAlomdStJ3DnxoUHYAb3pLAchYTEPxwQybwKATo+3TvugICIpCOSLnSWXETSjfPixnnJAiFSP1ABogFSF2S7d6HrBwCA0eoJYe3UZAP4BcMBcrkGun4AhzVi8/hKMA6IdgsE+D6/7r+vOeVZcPQRThhh7dQYrdgCngYA1mouBfHxC1J5vQtQKgtRs8BoFd2MPIASWfi/aXg0CxzpDwLk1tdpWLI5VVVVVd1LD5VRT/8Ks0/mAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABBElEQVR4nO2awRGCMBBFg2MdlGABVuDVSr1agQVYAo3gaWeQIZMwEP/ivneCEJKdzWPJoF2qpO8v4/R8GN5d7b2eOakDUFNcRVv5x/P11X6/XVNKxzchvAEkQB2AGhKgDkANCVAHoOa8dYCj7xAxYOsACzvEcamfVzMwoNXAJTO8GIEBv57QzDAj1CZgwPw9brReGS8mYIAd1L7Pc/1L7V7BgNyFyTO6y0RezcAAq772zHtdqVZggB1ENQEDSh3+3QQMmDdEqwUYoJrYy6/LGJC7EKUWhDeABKgDUFNdgXP/FVqLl+pvhDeABKgDULN6J7jXN0IvhDcAAAAAAAAAAAAAYvEBXGJjEngHXVcAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAG0SURBVHic7d3BUcJQFEBRcaiDEizACtxaqVsrsABLoBFd5+MEI3EC3HN2joyyuPPy+GDcPazscHj6mvv+8fi5W/t38nePWz8BtiWAOAHEXXw9Hq/5b+8fs49/fXmefG0n2JYJECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQNx+6yfgM4TbMgHiBBAngLjNd4BffIZwdkcY2RmWMQHiBBAngLjNd4ClLt0Z7AhTJkCcAOIEEHdzO8BS484w7gj1ncAEiBNAnADi9ufejx/d+jXTTjBlAsQJIE4AcSfnAGu/P7/051/6eJYxAeIEECeAuMXvBfzwOnq1J7MGO8MyJkCcAOIEELcfz77H1/muqffNBIgTQJwA4k7OAewELSZAnADiBBB38d8F2AlumwkQJ4A4AcSd3QGcC9w3EyBOAHECiLv7+wOM/O/iKRMgTgBxAohbvAM4F7gvJkCcAOIEECeAOAHECSBOAHGrn4OP9x3c+lzA2f88EyBOAHECiBNAnADiBBAngLh//0zgtd1HkCkTIE4AcQIAAAAAAAAAAAAAAAAAAAAAAAAAALgS37rPY2rsexQNAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "win-ish-everforest",
+    "name": "Retrosmart Win-ish \u2014 Everforest Sage",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Everforest Sage",
+    "desc": "Relaxing natural forest tones applied to classic Windows arrow and pointer vectors.",
+    "preview": "retrosmart/previews/win-ish-everforest.png",
+    "arrowIcon": "retrosmart/icons/win-ish-everforest_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-everforest_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-everforest.zip",
+    "arrowCur": "win-ish-everforest_arrow.cur",
+    "pointerCur": "win-ish-everforest_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADXAAAANgAAAEBAAAAAAAAAKAEAAA0BAACAgAAAAAAAAMUBAAA1AgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAnklEQVR4nO2UsRHDIBAEzz9qh5CITtQEtdAEgfuQE4cUhAMPGtkgKeI++Y04CNj7GYDzoUIRAQBNCQGAnKKahLSFloQcg4aE/G+wJToBtsRQgClxKsCSuBRgSCxnB2tMP9n5UMt7e0wVWGNCTnHPMy7scD7U8nrWNuaWj3szEeDbnNJ2xKglcwqi1vwO1hRu/wFVnA+Ul2AYhmEYqnwAUCBWy3jiu5cAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAADvSURBVHic7Zo7DoMwEAWXiOtQUnETLsFZuERukiplDgTVpliJ8EkUa/1mKssfZPmNbQnZun5Yun5YTJRb6QmU5r0AqibIG9B64T5PZmY2TraYmb2ej6bQnP4KBsQKNRMwYKtBxQQM2OtQuwkYcLRjrSZgwNkBtZmAAVcH1mICBnz7gewmYMDZAeM0f2z3v0pZTMCArQZP2vd4JEvCe2BArPDkPWE/3d2E7Kd+BAO8EJNXQd6A5ui97f3irZDdHHkD2qzJ/Qp5A06nX9tZIG8AC1B6AqW5vF/ja5Jse9+RNwAAAAAAAAAAAAAAAABUWAGsdmlAdv8/zgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAYxJREFUeJzt3TFOAlEUQFEwbsfSyp24CdbCJtyJlaUL0lYfxYQgMM49p4NEY3Hz/ptPIvun55ev3Q+fH+/7HRkP9/4DuC8BxAkgbj93gMlOsG0mQJwA4gQQ9zjfeDsefr1+PezcE2yYCRAngDgBxJ3sAJOdYNtMgDgBxAkgbnEHmOwE22ICxAkgTgBxZ+8Ak53gfzMB4gQQJ4C4i3eAyU7wv5gAcQKIE0Dcn+8Ak51g3UyAOAHECSDu6jvAZCdYFxMgTgBxAoi7+Q4w2QnuywSIE0CcAOKuvgO8Ho4X/bz/Y3hdJkCcAOIEEHf2DjDP9Pkcv8QZvi4mQJwA4gQQt7gDzDN/nuHz7n7uBO76180EiBNAnADiTnaApTOfbTEB4gQQJ4C4k+8MuvTMn79v6bMCO8d9mQBxAogTQNyjM7fNBIgTQJwA4q5+/rsXWDcTIE4AcQKIE0CcAOIEECeAuJs/Y897gclz/22ZAHECiBMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMANfAPik2sc6VD/MwAAAABJRU5ErkJggg==",
+    "pointerB64": "AAACAAMAICAAAAUAAAD2AAAANgAAAEBAAAAKAAAAPAEAACwBAACAgAAAFAAAAO0BAABoAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvUlEQVR4nO2VwQ3DIAxFf1DW4ciJTViCWVgih+yRXHJkIHKoUoWUNmkwUKn+JwTIPPkbG0hIKh2k0iF1VlxS6eDnMfh5rAIhSj/AANkApQuyP7swOAsAMBZPCL9MXTWATzAUILdrYHAWFNaIzeM7wSgg+i0QEPu83z+uKRVZcPURShjhl6kz1pEF/BoAeFRzK4iXX1DK61OAVlnImgXGuuxmFAG0yMLvTcOrWaBIfxKgtt5Ow5bNicVisf5LK/FdTpF0+olUAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABA0lEQVR4nO2awQ3CMAxFU8Q6HDmxCUt0li7BJpw4MlB7soBIUVLR8F383qmE0FjOq+tWDKmR0/kyv39+Pu5D6289c1AHoOZYm2A7f5vGj/HrmOaU9m9CeANIgDoANSRAHYAaEqAOQE21D6ix9w4RA749QalDzPFqBgb0OnHNDC9GYMCvFzQzvDxNYkB+Hzd674wXEzDADlrv56X5tXGvYEDpi9c1Om2ykFczMMCqr13zXneqFxhgB1FNwIDahH83AQPygWi1AANUC1uHyfsAMUUDotSC8AaQAHUAaporcOm/QmvxUv2N8AaQAHUAalZ3glu9I/RCeAMAAAAAAAAAAAAgFgsJ41uRKOtpggAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAbRJREFUeJzt3LFRAlEUQFFxaMfQyE5swlpswk6MDC1I4/3MwHx3nQXuOakMEtx5PD7LHh429vT88nPu799fn4et/yd/97j3C2BfAogTQNxx7ROM7/kf729nH//69rB4vJ1gXyZAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcauvB1jLNYT7MgHiBBAngLjdd4DZawgvsTPMMQHiBBAngLjdd4BZa3cGO8KSCRAngDgBxN3cDjBr3Bn8NnHJBIgTQJwA4o6Xvo8f3fp7pp1gyQSIE0CcAOJOzgG2/n5+9vnXPp45JkCcAOIEEDf9XcDp5+j3zV7MFuwMc0yAOAHECSDuOJ59j5/zvafeNxMgTgBxAog7OQewE7SYAHECiBNA3OrfBdgJbpsJECeAOAHEXdwBnAvcNxMgTgBxAoi7+/sDjMZrGGu/BRyZAHECiBNA3PQO4FzgvpgAcQKIE0CcAOIEECeAOAHEbX4OPt53cO9zAWf/55kAcQKIE0CcAOIEECeAOAHE/fs1gdd2H0GWTIA4AcQJAAAAAAAAAAAAAAAAAAAAAAAAAADgSvwCUNdb6ZYP2XsAAAAASUVORK5CYII="
+  },
+  {
+    "id": "win-ish-gruvbox",
+    "name": "Retrosmart Win-ish \u2014 Gruvbox Warm",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Gruvbox Warm",
+    "desc": "Vintage 1980s computer terminal amber-cream and warm dark brown aesthetic.",
+    "preview": "retrosmart/previews/win-ish-gruvbox.png",
+    "arrowIcon": "retrosmart/icons/win-ish-gruvbox_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-gruvbox_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-gruvbox.zip",
+    "arrowCur": "win-ish-gruvbox_arrow.cur",
+    "pointerCur": "win-ish-gruvbox_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADWAAAANgAAAEBAAAAAAAAAJgEAAAwBAACAgAAAAAAAAL4BAAAyAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAnUlEQVR4nO2Uyw2DMBBEJyuKmSYogXYognJCCTRhKSWkCHNAjviYcPLsZd/JYx/8ZiUbJDMcMQDwlDAAWObJTcLKwkvC9sFDws4baomLgFqiKqCUuBVQSfwVUEh0dwf9MB4yyZxSejUV6IcRyzz9cosLL5DM3887lzGXvN9riQFbc0nbGrWWyimYW/MnVFN4/AdcISl5CUEQBEHgygrdz1fAz/2cEQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAO1JREFUeJzt2tENgjAURuEfwzBdghFYhyFcxxFcgm3w6YJpglA0Nr33fE/GgmnoaU2MSiktKaVFQd1qT6C29QFELSF8Ab29eD7ukqRhnBZJmue5qzSnv6KA/I1oJVDA3kCUEijg6ALvJVDA2Qu9lkABpTd4K4ECrt7opQQK+PYDWi+BAkpvGMbp47j9qtRKCRSwN2ArbXs818oKHwlfQGd79u00l7StcD5u8utaFb6A9QzwsqKlwhfQnf3e9noWhC+gb3XlfiV8AcWr7+0sCF8AD6D2BGq7vF/zf5O0tvdN+AIAAAAAAAAAAAAQxQvMpG8WmxFFBQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAYVJREFUeJzt3MFtwkAQQFGIKIYmKCHtUETaSQlpgm6Sa1hHshCxAf/3biCBOHzNjvfA/ng8fu9+uVwu+x0Zb4/+ATyWAOIEELcfd4CRnWDbTIA4AcQJIO4wvvH1+XH1+vR+dk+wYSZAnADiBBA32QFGdoJtMwHiBBAngLjZHWBkJ9gWEyBOAHECiLt5BxjZCV6bCRAngDgBxN29A4zsBK/FBIgTQJwA4v59BxjZCZ6bCRAngDgBxC2+A4zsBM/FBIgTQJwA4lbfAUZ2gscyAeIEECeAuMV3gNP7+a7P+x/DZZkAcQKIE0DczTvAeKaPz/FznOHPxQSIE0CcAOIm/xX8x9381evxDJ/7/Gju+1iXCRAngDgBxE3uAZzRLSZAnADiBBA3uQe498x3L/BaTIA4AcQJIO7gzG0zAeIEECeAuMXPf/cCz80EiBNAnADiBBAngDgBxAkgbvVn7PFeYOS5f10mQJwA4gQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALCCH00ScYb5ToQlAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAUAAAD3AAAANgAAAEBAAAAKAAAANgEAAC0BAACAgAAAFAAAAOoBAABjAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4nO2V0Q3DIAxELyjDeAlGYB2GyDjJCFnCUkbIEPSjSlVa1NBgoFJ9XwiQefgMBhIiokBEIbVWXUQU9m0O+zY3gTC1D1CAYoDaBTmebViXCQBgnX9AMPPQDOATjATI5RpYlwkS1pjD4yvBJCDGIxAQ+/w8/zqWVGRB7iGSMIaZB+u8WMCvAYB7NfeCeHsFtbw+BeiVhaJeYJ0v/owigB5Z+L1umJsFifQnAVoreYPc/12yLatUKtX/6gYDwFMHo0vA/gAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAP1JREFUeJztmtENgzAMBUPVYbJER+g6HaLrdIQukW3olyWKiBIE9Jn67gtCSCzncJBgSJ3knMfpeSll6L3XMxd1AGqaq2gr/349v9pv90dK6fwmhDeABKgDUEMC1AGoIQHqANRctw5w9jdEDNg6wMIb4rjUz6sZGHDUwC0zvBiBAb+e0MwwI9QmYMB8HzeOXhkvJmCAHfTu57X+rXavYEDtwuQZ3WUir2ZggFVfe+a9rtRRYIAdRDUBA1od/t0EDJg3RKsFGKCa2MvXZQyoXYhSC8IbQALUAajprsC1f4XW4qX6G+ENIAHqANSsrgF7QQ0AAAAAAAAAAAAAEPABM4RlN7eiHBsAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAGxSURBVHic7d3BUcJQFEBRcSiGJizBdizCdizBJuhG1/k4wZg4Ae45O0dGWdx5efwgHp42djqdvua+fz6fD1v/Tv7uee8nwL4EECeAuNXX4/Ga//nxPvv4l9e3ydd2gn2ZAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQd934C3kO4LxMgTgBxAojbfQf4xXsIZ3eEkZ1hGRMgTgBxAojbfQdYau3OYEeYMgHiBBAngLi72wGWGneGcUeo7wQmQJwA4gQQd7x2P35079dMO8GUCRAngDgBxF2cA2x9f37pz1/7eJYxAeIEECeAuMX3An54Hb3Zk9mCnWEZEyBOAHECiDuOZ9/j63zX1MdmAsQJIE4AcRfnAHaCFhMgTgBxAohb/XcBdoL7ZgLECSBOAHFXdwDnAo/NBIgTQJwA4h7+8wFG/nfxlAkQJ4A4AcQt3gGcCzwWEyBOAHECiBNAnADiBBAngLjNz8HHzx3c+1zA2f88EyBOAHECiBNAnADiBBAngLh/Pwe4Nc4BpkyAOAHECQAAAAAAAAAAAAAAAAAAAAAAAAAA4EZ8AxYmZY+yDOnpAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "win-ish-rose_pine",
+    "name": "Retrosmart Win-ish \u2014 Ros\u00e9 Pine",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Ros\u00e9 Pine Dusk",
+    "desc": "Windows 95 hand and arrow redrawn in Scandinavian Ros\u00e9 Pine pastel colors.",
+    "preview": "retrosmart/previews/win-ish-rose_pine.png",
+    "arrowIcon": "retrosmart/icons/win-ish-rose_pine_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-rose_pine_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-rose_pine.zip",
+    "arrowCur": "win-ish-rose_pine_arrow.cur",
+    "pointerCur": "win-ish-rose_pine_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADWAAAANgAAAEBAAAAAAAAAJwEAAAwBAACAgAAAAAAAAMMBAAAzAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAnUlEQVR4nO2UMQ7DIBAEN6f8AdHzALf8v6D1A6woXeTePSksLGJwXLHX3FQsFMyeBPAuZCgiAKApIQCQ0qwmIWWhJSF10JCQ8wZbohFgS3QFmBKXAiyJvwIMiefVQYzTT/Yu5M+6PIYKxDghpfnIIy5s8C7k92vLZcwl13sjEWBvTmnbo9eSOQVRa34Hawq3/4Aq3gXKSzAMwzAMVb7Jl1kCYrQlCwAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAO5JREFUeJztmjsKwzAQBdfBdzDucwC3un/hNgdIH3IKp9oUC44/CRGrN1MJfYzQG0lgZONwXcbhupgol9oTqM17AVRNkDeg98I838zMrJRpMTN7PO9dnSn9FwyIFWomYMBag4oJGLDVoXUTMGBvx1ZNwICjA1ozAQPODmzFBAz49gPZTcCAowNKmT62+1+lLCZgwFqDJ+17PJIl4S0wIFZ48p6wn+5uQvZTP4IBXojJqyBvQLf33vZ+8VbIbo68AX3W5H6FvAGH02/tLJA3gAWoPYHanN6v8TVJtr3vyBsAAAAAAAAAAAAAAAAAKrwAwiNvUyPGaBIAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAGKSURBVHic7d0xTgJRFEBRMe7B2LsAWvZf2LoAe+MqtNVHMSEIDHPP6SDRWNy8/+aTyO7l+fX74ZfPr4/dAxmPt/4DuC0BxAkgbjd3gMlOsG0mQJwA4gQQ9zTfeHt7//P6cNi7J9gwEyBOAHECiDvaASY7wbaZAHECiBNA3OIOMNkJtsUEiBNAnADiTt4BJjvBfTMB4gQQJ4C4s3eAyU5wX0yAOAHECSDu33eAyU6wbiZAnADiBBB38R1gshOsiwkQJ4A4AcRdfQeY7AS3ZQLECSBOAHEX3wEOh/1ZP+//GF6WCRAngDgBxJ28A8wzfT7HL3GGr4sJECeAOAHELe4A88yfZ/i8u587gbv+dTMB4gQQJ4C4ox1g6cxnW0yAOAHECSDu6DuDzj3z5+9b+qzAznFbJkCcAOIEEPfkzG0zAeIEECeAuIuf/+4F1s0EiBNAnADiBBAngDgBxAkg7urP2PNeYPLcf10mQJwA4gQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAFP4FvclOc04OcAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAUAAAD2AAAANgAAAEBAAAAKAAAAOwEAACwBAACAgAAAFAAAAOwBAABnAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvUlEQVR4nO2VPQ7DIAyFX1DugNg5AKvvP7DmAFGULcqenQ5RqtLS5gcDlcKbECDzyc/YQEBKaqekdqGz5FJSu3FY3DgsWSBE6gcqQDRA6oJs9y5Y2wEAiMwTYpr7JhvALxgOkMs1YG0HDmvE5vGVYBwQ7RYI8H1+3X9fc8qz4OgjnDBimvuGyLAFPA0ArNVcCuLjF6TyehegVBaiZgGRiW5GHkCJLPzfNDyaBY70BwFy6+s0LNmcqqqqqu6lB7myT9iXb08qAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABAklEQVR4nO2aQQ6CMBBFi/EOxr0HcMv9F2w9gHvjKXA1CRKalkD9g/PeCkppJ9PH0KBdquR6uY3T89f72dXe65mTOgA1xVW0lR+Gx1d7399TSsc3IbwBJEAdgBoSoA5ADQlQB6DmvHWAo+8QMWDrAAs7xHGpn1czMKDVwCUzvBiBAb+e0MwwI9QmYMD8PW60XhkvJmCAHdS+z3P9S+1ewYDchckzustEXs3AAKu+9sx7XalWYIAdRDUBA0od/t0EDJg3RKsFGKCa2MuvyxiQuxClFoQ3gASoA1BTXYFz/xVai5fqb4Q3gASoA1Czeie41zdCL4Q3AAAAAAAAAAAAAGLxAYnoZDpSZzc1AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABs0lEQVR4nO3dMU4CURRAUTHswdi7AFv2X9C6AHvjKrSejwHHGTPAPaczEqW4efP44Lh7WNnz08vXue9/fL7v1v6d/N3j1k+AbQkgTgBxi6/H4zX/eHw7+/jD4XXytZ1gWyZAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4Acfutn4DPEG7LBIgTQJwA4jbfAX7xGcKzO8LIzjCPCRAngDgBxG2+A8y1dGewI0yZAHECiBNA3M3tAHONO8O4I9R3AhMgTgBxAojbX3o/fnTr10w7wZQJECeAOAHEnZwDrP3+/Nyfv/TxzGMCxAkgTgBxs98L+OF19EpPZR12hnlMgDgBxAkgbj+efY+v811T75sJECeAOAHEnZwD2AlaTIA4AcQJIG7x3wXYCW6bCRAngDgBxF3cAZwL3DcTIE4AcQKIu/v7A4z87+IpEyBOAHECiJu9AzgXuC8mQJwA4gQQJ4A4AcQJIE4Acaufg4/3Hdz6XMDZ/3kmQJwA4gQQJ4A4AcQJIE4Acf/+mcBru48gUyZAnADiBAAAAAAAAAAAAAAAAAAAAAAAAAAAcCW+AZaBZJKS51wtAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "win-ish-solarized_dark",
+    "name": "Retrosmart Win-ish \u2014 Solarized Dark",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Solarized Dark",
+    "desc": "Crisp Ethan Schoonover Solarized Dark theme applied to retro Windows pointers.",
+    "preview": "retrosmart/previews/win-ish-solarized_dark.png",
+    "arrowIcon": "retrosmart/icons/win-ish-solarized_dark_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-solarized_dark_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-solarized_dark.zip",
+    "arrowCur": "win-ish-solarized_dark_arrow.cur",
+    "pointerCur": "win-ish-solarized_dark_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADYAAAANgAAAEBAAAAAAAAAJwEAAA4BAACAgAAAAAAAAMMBAAA1AgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAn0lEQVR4nO2UsQ3EIAxFP1a2oWepiPaGSIsyAOvQM49TcQoXcmmC3fhJSGAKP1sGwAeGIgQAmhIEAOmzqklQ22hJ0PmgIUG/AWmJi4C0xFBAUuJWQErir4CExHJ3Ebe9D/jAqMW9LdB14JK0FtetCXwF4rYDtbgmITqELfnsZGNGVfrAKWdOOfP8V6BW+RNCXXj8B3TxYfoMGIZhGIY6B22+R2FPDC/sAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA7klEQVR4nO2aQQ6CMBBFB8Nt2HMpw9ZDsDVeyr3nwYWMJjUIRWMz/e+tmnZKms6bNiE16/rJun4yUQ6lF1Ca1waImiBvQOuN8+loZmbDaA8LbtemzJL+CwakHWomYMDSgIoJGLAWULsJGLA1sFYTMCB3Qm0mYMDeibWYgAHffiC6CRiQO2EYL58D/K9SEBMwYGnAM+01/kaQDK+BAWnHs8bnDPvp7iZEP/VTMMAbaeZVkDeg2Xxvz3HprRDdHHkD2qiZ+xXyBuRnv7KzQN4ANqD0Akqzv17T1yTBat+RNwAAAAAAAAAAAAAAAABUuANqD1nKEd6QIgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAYpJREFUeJzt3TFOAlEUQFEw7sbeTRlaF2Fr3JS969FW3xQTg8A495wOCkJx8/6bgcDx8PD4efju4/14IOPu1m+A2xJAnADijosdYLIT7JoJECeAOAHE3c8nXp+ffjw+vRzcJ9gxEyBOAHECiFvsAJOdYN9MgDgBxAkgbnUHmOwE+2ICxAkgTgBxv94BJjvB/2YCxAkgTgBxZ+8Ak53gfzEB4gQQJ4C4P98BJjvBtpkAcQKIE0DcxXeAyU6wLSZAnADiBBB39R1gshPclgkQJ4A4AcRdfAc4vbyd9wJ+x/CiTIA4AcQJIO7XO8A80+d1/Cpn+KaYAHECiBNA3OoOsLiOH2f4vHc/dwL3+rfNBIgTQJwA4hY7wNqZz76YAHECiBNA3PI/g84988frrX1WYOe4LRMgTgBxAoi7d+a2mQBxAogTQNzlz3/3BTbNBIgTQJwA4gQQJ4A4AcQJIO7619jz+weT6/6rMgHiBBAnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAK/gCOqFalsDnBh0AAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAUAAADwAAAANgAAAEBAAAAKAAAANwEAACYBAACAgAAAFAAAAOkBAABdAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAt0lEQVR4nO2WMQ6DMAxFPxG3YedSKCuHyIq4FDvnSScQCVZJ4bupVL8JgeQ8/E0CINH1EV0fxWdkWmnxaRwAAD4gYl0aTQGnWdwEOALKA3kewoxkIDeIg3kp8FaGIHJ7BqZxACMat2d8oxhDot0LIcv5cD+/ZpJEULoIU8ZhXRofZlrBzwUA1JQ4fQVaWV8LVOrCo7PAh/nxZpQKVOjCD56GhV1gtF8W+DLyG5Tu78r/i4ZhGP/BCye4Q9rFhT0JAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA/klEQVR4nO2aQQ6CQAxFwXgb917KuPUQbo2Xcu95dKHFIJl0iMAv9r0VDAPTdB5lILRNLbv9o7d/v7XV5wZmow5Azdbt8Z75y+nQaz6em5cRKzchvQEkQB2AGhKgDkANCVAHoMZfB3isfIWIAb9eoLhC/CaoGRgw14VdM4IYgQFLD2hmRHmbxIDBc9yYeWaimIABtlH9PC/099qjggGlA5979DrJQFHNwACrvnbPR52pucCAbiupCRjgdfh3EzBg0JKsFmCAauBuhcn3AC1lA5LUgvQGkAB1AGrqK3DhX6GxRKn+RnoDSIA6ADWja8BkUAMAAAAAAAAAAAAAlucJ/jhQks3dtdkAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAGwSURBVHic7dxBTsJQFEBRMezGuZsyTl2EU+OmnLseHbdNIN/WFHrPmUqQwc3r41M4PWzt6fnn4t+/v06b/0/+7HHvF8C+BBAngLjz6meYXfM/3l4uPvz1/WG6I9gJdmUCxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEELf+foC13EO4KxMgTgBxAojbfQcYvofwGjvDEBMgTgBxAojbfQcYtXpnsCNMmABxAogTQNzd7QCj5juD7yZOmQBxAogTQNz56ufxc3d+zbQTTJkAcQKIE0Dc4hxg88/nB59/7eMZYwLECSBOAHHDnwUs30d/bvZitmBnGGMCxAkgTgBx5/nZ9/x9vmvqsZkAcQKIE0Dc8hzATpBiAsQJIE4Acau/F2AnuG8mQJwA4gQQd30HcC5waCZAnADiBBB3+N8HmFvcwxj7LuCcCRAngDgBxI3vAM4FDsUEiBNAnADiBBAngDgBxAkgbvtz8NnvDu59LuDs/zITIE4AcQKIE0CcAOIEECeAuH8/B7g5zgEmTIA4AcQJAAAAAAAAAAAAAAAAAAAAAAAAAADgRvwCMKZQ6mP17Y0AAAAASUVORK5CYII="
+  },
+  {
+    "id": "win-ish-violet",
+    "name": "Retrosmart Win-ish \u2014 Neon Violet",
+    "style": "win-ish",
+    "styleName": "Win-ish 95",
+    "palette": "Neon Violet",
+    "desc": "Cyberpunk synthwave violet border on pitch-black Windows pointer silhouettes.",
+    "preview": "retrosmart/previews/win-ish-violet.png",
+    "arrowIcon": "retrosmart/icons/win-ish-violet_arrow.png",
+    "pointerIcon": "retrosmart/icons/win-ish-violet_pointer.png",
+    "downloadZip": "retrosmart/downloads/win-ish-violet.zip",
+    "arrowCur": "win-ish-violet_arrow.cur",
+    "pointerCur": "win-ish-violet_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADHAAAANgAAAEBAAAAAAAAAHQEAAP0AAACAgAAAAAAAAMABAAAaAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAjklEQVR4nO2Vuw3AIAxEL1a2YhzGoGYMxmEu0oQI8QkV58avwqbg+SQA0ecCRQQANCUEAEJyahJSF1oS0hYaEtI32BKDAFtiKsCUWAqwJH4FGBL3aiP63NclJHcdFYg+IyT31ScOHHjjLTXmWre9k9S/gDPtjNmUzBREbfIdrBS274Aq0WfKTTAMwzAMVR4eGVgkveKSTAAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAORJREFUeJztmssNwyAMQE2VrToOY/TMGB2HudJDQ4QsISCtSsHvXcLPEcLPnJDg4x583MUot9EbGM15AFZNMG/AlhqP511E3iYcfTdoTz8FA/SANRMwoDRhxQQMqC1Y3QQMaF24qgkY0BuwmgkYcDVwFRMw4NMfzG4CBvQGBB9r81OZgAGliZTpVOOaWTJcAwP0QJZ5d/RTTUv+na3WS2BAaujMW8G8Aa61lvVdkI1LS/y/Yt6AbdbMfQvzBnRnf7W7wLwBHMDoDYzmcr3q1ySz1X7CvAEAAAAAAAAAAAAAAABghRcUOWZTeNfS/wAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAYdJREFUeJzt3cFNAlEUQFExdEU5luHaMiiHunSrD5KJQYZx7jk7FIyLm/ffnw2Hj7fL58s37+fT4YWM12f/AzyXAOIEEHeYO8BkJ9g3EyBOAHECiDvOH7yfTz9ee06wbyZAnADiBBB3tQNMdoJ9MwHiBBAngLjFHWCyE+yLCRAngDgBxP16B5jsBP+bCRAngDgBxN29A0x2gv/FBIgTQJwA4v58B5jsBNtmAsQJIE4AcQ/fASY7wbaYAHECiBNA3Oo7wGQneC4TIE4AcQKIe/gO8PF2uffzdoIHMgHiBBAngLhf7wDzTJ/3+CXO8G0xAeIEECeAuMUd4MaZfxi/n/f0+f7599zrN8QEiBNAnADirnaApTOffTEB4gQQJ4C4q+8MuvfMX3oucOP9P17bOdZlAsQJIE4AcUdnbpsJECeAOAHEPfz891xg20yAOAHECSBOAHECiBNAnADiVr9jz+cCk3v/ukyAOAHECQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAVfDatj75h4lakAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAUAAADnAAAANgAAAEBAAAAKAAAALQEAAB0BAACAgAAAFAAAAN8BAABKAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAArklEQVR4nO2WzQ2AIAyFn8StGIcxODMG4zAXHhSDir8UerAvISFA2i9toQAFOROiMyGW9pprcRwBdIFQrR0IQDVA64Ic7w5Yr1eQbG3oBnAFQwHyuQas16BIjUo5/mKMAmJMhgAcjKX1/ZxSmxQ8dUIJo6zXgzOBzOBrAGCuZi6Iwy1oletbAK4oVPUCZ0L1Y7S/Bd2jwN4Ni8p/RWeDqkOyR+C0G3I+TiKRSPQvTRvhVX26/2RhAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA9ElEQVR4nO2ZwQ2DMAxFoepWjNMxOHcMxulc9FJLEcJKKtJ+g987QQiJZR4mwDg08ny81nJ/Xqax9dzI3NQBqKleRbvy8zJt24dP+6lNSG8ACVAHoIYEqANQQwLUAai5Hx3g7CtEDDg6wM4KcXX6hTQDA341cM2MKEZgwL8nNDOKt0ypCRigqtpRTMAA22h9nnv9a+1RwQDvQHGPdpkoqhkYYNXX+/p7dTDANrKagAG1Dlc3AQO2DdlqAQaoJo7ydxkDvANZakF6A0iAOgA1zRW4Vy2IUv2N9AaQAHUAar5eCfb6RhiF9AYAAAAAAAAAAABALt776VYDQQHMNAAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAaZJREFUeJzt3cFRwlAUQFFx6IpyLIO1ZVCOdek6MQN+EifAPWfnyCCLO4/nB8LhbWOfH1/f135/vpwOW/9N7ve+9wNgXwKIE0Dc6ufj+XP++XK6dfvJz3aCfZkAcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxB33fgDeQ7gvEyBOAHECiNt9B/jDewiv7ggL92dnGGACxAkgTgBxu+8Ao9buDHaEKRMgTgBxAoh7uh1g1HxnWPgsY3onMAHiBBAngLhj7azdTjBlAsQJIE4Acb/OAbZ+fX70/tfenjEmQJwA4gQQN/xawML/0Zs9mC3YGcaYAHECiBNA3HF+9j167V+emwkQJ4A4AcQtvRZgJwgxAeIEECeAuNWfC7ATPDcTIE4AcQKIu7kDOBd4bSZAnADiBBD38tcHmPPdxVMmQJwA4gQQd8/nApwLvBATIE4AcQKIE0CcAOIEECeAuM3PwR/tXMDZ/3UmQJwA4gQQJ4A4AcQJIE4Acf/+nsBHu44gUyZAnADiBAAAAAAAAAAAAAAAAAAAAAAAAAAA8CB+AC+UVlvuh2epAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "cur-font-classic",
+    "name": "Retrosmart Cur-Font \u2014 X11 Terminal Classic",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "X11 Monochrome",
+    "desc": "Original X Window System core cursor font vectors with precision crosshair & arrow.",
+    "preview": "retrosmart/previews/cur-font-classic.png",
+    "arrowIcon": "retrosmart/icons/cur-font-classic_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-classic_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-classic.zip",
+    "arrowCur": "cur-font-classic_arrow.cur",
+    "pointerCur": "cur-font-classic_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAACtAAAANgAAAEBAAAAAAAAA8wAAAOMAAACAgAAAAAAAAIsBAADWAQAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAdElEQVR4nO2VOxLAIAhEd5nc/8qkQcd8dNLIFuFVoAWPAUd4ABEGACShkrAWqCRsTBQSdj/IlngIZEu8CmRKTAWyJJYCGRLH7CJrDy8C7g6SPeeYbKKPIIqzdZ66hK347mKfic49Qu0rkKH+pouiKIqi+A8nWNBM/MARR9oAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAAC6SURBVHic7dnBDsIgEEBBMP7/L+OlJGQTYqsHAjtzsdJiGnnloLW11sqg1lpLIq/VN7Daux/0he9FZClBAXEgWwkKmJ3IUoICvl1wegkKuHvhqSUo4OmE00pQwK8TTylBAf9+wO4lKODphPAD0vYUMDvRV3r2SO/2rM8oIA4MK1+v9313L+Prrrt+pIB+EFc+i/QF3F7tuBcM4+Ua37Kc9AX4AlbfwGqPn9vT/k1OXwAAAAAAAAAAcL4Pas9Dc77b2I4AAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAFSSURBVHic7d3LjoJQFETRpuP//zI97qORGB8ge62hEuOgUrdgoMu6ruvPHcuyLPfe57v97v0F2JcAxAlA3GW+MI/8uRFsgnPRAHECECcAcVcbYLIJzk0DxAlAnADEbW6AySY4Fw0QJwBxAhD38AaYbILvpgHiBCBOAOKe3gCTTfBdNECcAMQJQNzLN8BkExybBogTgDgBiHv7BphsgmPRAHECECcAcR/fAJNNsC8NECcAcQIQ9/YNsPETROxMA8QJQJwAxD28AeaZ/uhtuvv6Y9EAcQIQJwBxmxvgxpm/jPfns/t5/fw8z/oPRAPECUCcAMRdbYCtM59z0QBxAhAnAHEvP9+3ngvcuP7/F7I5PkoDxAlAnADECUCcAMQJQJwAxL39ntt/Ex+bBogTgDgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40h86sEOz8Hp6IgAAAABJRU5ErkJggg==",
+    "pointerB64": "AAACAAMAICAAAAAAAgDWAAAANgAAAEBAAAAAAAQAJgEAAAwBAACAgAAAAAAIAL4BAAAyAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAnUlEQVR4nO2UwQ6EIBBD243//8vdC5KuynCAcS/zLiSi05eiEgAkCQEkGe2vQEmazZeUJkHMCwDJNImwARfLkmALkocMb06QONrgLuKzZ0ezTcDD3wh1fqqMGrD6tx5DHxI1cL2+U2LYwBk4k1qVuD3sX4SLZIQDwOdhuB9LD8wIBx4asPDbO5H5RxxKtMXXd/lr+EWiKIqiKIoihS9rTo/+7/xoYgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAO1JREFUeJztl8kOwyAMBU3V//9leonVyqrL4kqYMHMibEF6I5MUuai1VglQSimR9at4rD7AaoomHw1QBdrNBAwQkSryTnB6oyv43UzAgNka4BmzmwkYoA37HWCTHN54ExOON+CpDZtQqzZEb40sYIDtsMnfJWmP4w1wK/NsDfhS/e1zqtsAA2zHbA1ozc9qAgZ4A14NsAlHTVltAga0Jnj/CB/jfS9KlryCAb0TW7dDb3+W5BUMGF3Q+52QPXkFA2YXeibskryCAdENfpiQOnnleAP+Rr1YfY5RMAAAAAAAAAAAAAAAAAAAAABuzwvllJUqwE+wugAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAYVJREFUeJzt28tywjAQBEArlf//ZXNGpiwcSRZhuo88fZja2ZKhbJV93/f6sTuVUsrK70/zs/oCWEsAwglAuFJ3/uoKrlcQO8FcJkA4AQgnAOHKtm1Ppbv4GOCwg9gJ5jIBwglAOAEId/s5wNUdw04wlwkQTgDCCUC4Q3+2fg/Q6uTZ7ARjmQDhBCCcAIT7rR9odWjvucHqew08MwHCCUA4AQh32AFqrc7X6f+bCRBOAMIJQLjL5+Z3nwO8cfbfet69gRMmQDgBCCcA4Zr9ePc5QO/n2wmuMQHCCUA4AQg3/Ryg1eGrd4r0ncAECCcA4QQgXHf/Xf0fwYv3917C6ffp/HMmQDgBCCcA4Yb3Ye+9g9Gv1/nnTIBwAhBOAMJN78fRvyfQ+WOZAOEEIJwAhLu9L6/uBDp/LhMgnACEE4Bwy/vzDzvB8mv+JiZAOAEIJwDhPq5PX+wEH3eN38QECCcA4QQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKDTA5F5kXO5kDLXAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "cur-font-white",
+    "name": "Retrosmart Cur-Font \u2014 Pure White",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "Inverted Crisp White",
+    "desc": "High-contrast inverted X11 terminal cursor set with solid white strokes.",
+    "preview": "retrosmart/previews/cur-font-white.png",
+    "arrowIcon": "retrosmart/icons/cur-font-white_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-white_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-white.zip",
+    "arrowCur": "cur-font-white_arrow.cur",
+    "pointerCur": "cur-font-white_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAACvAAAANgAAAEBAAAAAAAAA+gAAAOUAAACAgAAAAAAAAIEBAADfAQAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAdklEQVR4nO2VQQ7AIAgEF9L/f5leJNEW6wk4dCchET3shGgEABvVggKAmaFLQn3RJaFz0yGhz41qiZdAtUQoUCmxFaiS+BSokLh2ByKSlbmwTCAIlalyBUa4uETpJfTw7LCIXaiNCaTLHV9BJ63fNCGEEEL+ww0BLSwKpEFm8QAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAMFJREFUeJzt2cEOgjAQRdEZ4///8riQNoISLUYb3rtnRWxrCL1loRkRFWsZRi6zb2C2/gCqKqoq4l7EtgpZFLD9wK0ECtgbcCmBAt5NUC+BAj6dqFoCBYwuUCuBAo4uVCmBAr79grOXYF/AdXRBptYPRhSwN9B2ejnfL6f84H7+zr6AjOXN3Xb64Yy3i9V4H3yed0r2BfR3gMqOjrIvYGS3Jd8F9gXwAGbfwGxHzq3Uv8n2BQAAAAAAAAAAAAAAAH03E6lRCxB445cAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAFISURBVHic7d3JjoJQAERR6Pj/v4zr5nXaODB5z9kagUWlKFngPE3TMv1vfvA5F/Zz9AVwLAGIE4C4eVptgGX5PQnmeZgANsEX0QBxAhAnAHEPN8DwBZvgq2iAOAGIE4C4pzfAcACb4NI0QJwAxAlA3NsbYDigTXApGiBOAOIEIO7jG2A4gU1wahogTgDiBCBu8w0wnNAmOBUNECcAcQIQt/sGGC7AJjiUBogTgDgBiDt8A6zZBPvSAHECECcAcbetT/DHPZ0T0QBxAhAnAHFPb4D1Pf2F5wZGwYlogDgBiBOAuE+8J9A7hi5MA8QJQJwAxA3PAdyjWzRAnADECUDcFvd3zwUuRAPECUCcAMQJQJwAxAlAnADE7fGb238Tn5gGiBOAOAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHjTHR5jMYP179kNAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAAAAgDWAAAANgAAAEBAAAAAAAQAJgEAAAwBAACAgAAAAAAIAL4BAAAyAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAnUlEQVR4nO2UwQ6EIBBD243//8vdC5KuynCAcS/zLiSi05eiEgAkCQEkGe2vQEmazZeUJkHMCwDJNImwARfLkmALkocMb06QONrgLuKzZ0ezTcDD3wh1fqqMGrD6tx5DHxI1cL2+U2LYwBk4k1qVuD3sX4SLZIQDwOdhuB9LD8wIBx4asPDbO5H5RxxKtMXXd/lr+EWiKIqiKIoihS9rTo/+7/xoYgAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAO1JREFUeJztl8kOwyAMBU3V//9leonVyqrL4kqYMHMibEF6I5MUuai1VglQSimR9at4rD7AaoomHw1QBdrNBAwQkSryTnB6oyv43UzAgNka4BmzmwkYoA37HWCTHN54ExOON+CpDZtQqzZEb40sYIDtsMnfJWmP4w1wK/NsDfhS/e1zqtsAA2zHbA1ozc9qAgZ4A14NsAlHTVltAga0Jnj/CB/jfS9KlryCAb0TW7dDb3+W5BUMGF3Q+52QPXkFA2YXeibskryCAdENfpiQOnnleAP+Rr1YfY5RMAAAAAAAAAAAAAAAAAAAAABuzwvllJUqwE+wugAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAYVJREFUeJzt28tywjAQBEArlf//ZXNGpiwcSRZhuo88fZja2ZKhbJV93/f6sTuVUsrK70/zs/oCWEsAwglAuFJ3/uoKrlcQO8FcJkA4AQgnAOHKtm1Ppbv4GOCwg9gJ5jIBwglAOAEId/s5wNUdw04wlwkQTgDCCUC4Q3+2fg/Q6uTZ7ARjmQDhBCCcAIT7rR9odWjvucHqew08MwHCCUA4AQh32AFqrc7X6f+bCRBOAMIJQLjL5+Z3nwO8cfbfet69gRMmQDgBCCcA4Zr9ePc5QO/n2wmuMQHCCUA4AQg3/Ryg1eGrd4r0ncAECCcA4QQgXHf/Xf0fwYv3917C6ffp/HMmQDgBCCcA4Yb3Ye+9g9Gv1/nnTIBwAhBOAMJN78fRvyfQ+WOZAOEEIJwAhLu9L6/uBDp/LhMgnACEE4Bwy/vzDzvB8mv+JiZAOAEIJwDhPq5PX+wEH3eN38QECCcA4QQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKDTA5F5kXO5kDLXAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "cur-font-catppucin",
+    "name": "Retrosmart Cur-Font \u2014 Catppuccin Mocha",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "Catppuccin Mocha",
+    "desc": "X11 terminal font glyphs recolored into cozy Catppuccin developer hues.",
+    "preview": "retrosmart/previews/cur-font-catppucin.png",
+    "arrowIcon": "retrosmart/icons/cur-font-catppucin_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-catppucin_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-catppucin.zip",
+    "arrowCur": "cur-font-catppucin_arrow.cur",
+    "pointerCur": "cur-font-catppucin_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADMAAAANgAAAEBAAAAAAAAABQEAAAIBAACAgAAAAAAAAJgBAAAHAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAk0lEQVR4nO2VIRKAIBBFvztGz+ABDBYbJ7B6UqsnsFE5CR2DA+OoqIXd4L7EXwJvdwaAdT5Y5wOEIACYRgMpCYoLKQk6BgkJOhe4JS4C3BK3ApwSWQEuiUcBDok6tzEva6kz8wLzsmIaTcpD11TFDazzoW379BzHfKyVhIC9c5Zuv8I5hddbIIb0N60oiqIoyn/YAAPsVnyGSKK/AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAzElEQVR4nO3ZMQ7CMAxGYRd15CSsbJyAlZOycgI2Vk7SHaZfqixFNCBkxX7fVLUNipqXLEyP5/KyleNhP1khu+gJRJt1cTmfzMxMRVQpgQL8jWolUEDrQZUSKODTC9lLoICtL2YtgQJ6B2QrgQK+HZilBAr49QdGL4ECegdcb/d/zCMMBbQeaKW1x73R9noLBfgbWnmtsE53lTD6qe9RgC78yldRvoDNq+3PAhm9nPIF8AGiJxCte99m+ze5fAEAAAAAAAAAAAAAACC/N86bSe/a88ucAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABX0lEQVR4nO3dIU4DARRFUUqQrASLYwVYVoplBTgsK8GD5jfppCml07nnOECAuPnzpobdx+fX980Bjw/3u0M/57rdXvoP4LIEECeAuLv5jZfnp19fz41gE2yLCxAngDgBxO1tgMkm2DYXIE4AcQKIW9wAk02wLS5AnADiBBB39AaYbILr5gLECSBOAHEnb4DJJrguLkCcAOIEEPfnG2CyCdbNBYgTQJwA4s6+ASabYF1cgDgBxAkg7t83wGQTXJYLECeAOAHEnX0DvL69n/tXcAIXIE4AcQKIO3oDzGf6fI9f4r1+XVyAOAHECSBucQPMZ/58hs/P7ucm8Fn/urkAcQKIE0Dc3gZYeuazLS5AnADiBBD358/3pc8FJpvjslyAOAHECSBOAHECiBNAnADizv7O7X8Tr5sLECeAOAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJzoB6f6Si/0J6MmAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAAAAgD0AAAANgAAAEBAAAAAAAQAOgEAACoBAACAgAAAAAAIAM0BAABkAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAu0lEQVR4nO2TsQ3DIBBFPxJlZvAAKdKkYwJaJk2bCdLR3iT0pMK+EAyFfUSK7knIQkb6T5/DAECklNHhfr2Y3v8j2EgpB++6hyKlLCVhg3d4PF/dQ8E7MQnTa4CLFdGzJQywzcCoDQkJC2xDVrcxuprTBHj4jNBdIqW8LLd1RUrrKvvyFQvnoXV4vReT4IEjqaOZX9PMXwTQHkSpJ/khsdeCWP0jianhLYnp4S2J6eFc4mfhiqIoiqL8PW/ThfK3j6QSbAAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAQFJREFUeJzt2TEOgkAQQFHWUHoSWztOYOtJbT2BHS0nocfGacZMFndMdpb9ryIIG5P5WTCm4WNe1m1wuF7OyXN/LafaX6C2USZ/v02uhWSd1kqgAJn84/lyLSTrtFZC9wWk0j3AKkYXFb0ECpAD/R7g3RtaKaH7AkY50BPK7Q3ep0YUFKBP6MkfZdKW7gswd+bSPUCXE/1pQAH6ROkekLs+agkUYH1g7QF6wt5SapdAAbkLrN8IotXJi+4L+HoT1GRSuoS9e0HUyYvuC/h5GnvfE6JPXlBA6Y1WCa1MXlCAdwGrhOiTF90X8Dfzsm7ef5hroAAAAAAAAAAAAAAAAHB4bxxOldT1PyrNAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABlElEQVR4nO3dMU7EMBQE0ASl5CS0dJyAlpPScgI6Wk6yPRRUOIVl2bFB816ZYjfF6M+Xk9XuW+Hj8/ZVXpvp8eF+X/n9ae5W3wBrCUA4AQh3lJ3/8vy06l62bTvvIHaCa5kA4QQgnACEO8rOf317X3QrP8r7sRNcywQIJwDhBCDcPvscoHXHqO0odoI+JkA4AQgnAOFO/Vl7H2D1uYGdYCwTIJwAhBOAcEd5odahvecGq5818JsJEE4AwglAuNMOUKp1vk7/30yAcAIQTgDCNZ+bzz4HqO0cng30MQHCCUA4AQhX7cfZ5wC9n28naGMChBOAcAIQ7vJzgFqHr94p0ncCEyCcAIQTgHDd/df6O4KSzl/LBAgnAOEEIFz1ncCaslNrO8HocwGd38cECCcA4QQg3OX9OPp9Ap0/lgkQTgDCCUC46X3ZuhPo/GuZAOEEIJwAhFven607gc4fywQIJwDhBCDcn+tT/xE0lwkQTgDCCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQKdvsgWS6cc8heQAAAAASUVORK5CYII="
+  },
+  {
+    "id": "cur-font-everforest",
+    "name": "Retrosmart Cur-Font \u2014 Everforest Sage",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "Everforest Sage",
+    "desc": "Organic sage green X11 terminal cursor vectors for coding and distraction-free work.",
+    "preview": "retrosmart/previews/cur-font-everforest.png",
+    "arrowIcon": "retrosmart/icons/cur-font-everforest_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-everforest_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-everforest.zip",
+    "arrowCur": "cur-font-everforest_arrow.cur",
+    "pointerCur": "cur-font-everforest_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADJAAAANgAAAEBAAAAAAAAABQEAAP8AAACAgAAAAAAAAJgBAAAEAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAkElEQVR4nO2VsRGAIAxFvznXobTRPSxcgllYwoJBWICBsPDwOBW1ISnMq/ih4CV3AGLwKQafIAQBwGIdpCQoL6QkqAwSEnQucEtcBLglbgU4JaoCXBKPAhwSfW1jdbbVmXWB1Vks1h3ZjHPX3CAGn8wwHc9xzmWtJQTsnbN0+xXOKbzeAjGkv2lFURRFUf7DBnXjVWWCzcv5AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAzElEQVR4nO3ZsQ3CMBBG4QvKOizAIBQskVmyBAWDsAADkeqX0ElWYhA6+e59VZTEyIqf3TC9no+3fThfrpMVcoqeQLRZF7dlNTMzFVGlBArwN6qVQAGtB1VKoIC9F7KXQAFHX8xaAgX0DshWAgV8OzBLCRTw6w+MXgIF9A64r8s/5hGGAloPtNLa495oe72FAvwNrbxWWKe7Shj91PcoQBd+5asoX8Dh1fZngYxeTvkC+ADRE4jWvW+z/ZtcvgAAAAAAAAAAAAAAAJDfBkO2TkhpH3P3AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABX0lEQVR4nO3dsU3DABRFUYJYhwUYhIIlMkuWoGAQFmAgqPmRYkUh2Mk9pwMKKK6+n9Ow+/r8+H444fnldXfq59y2x7X/ANYlgDgBxD3Nb7ztD7++nhvBJrgvLkCcAOIEEHe0ASab4L65AHECiBNA3OIGmGyC++ICxAkgTgBxZ2+AySa4bS5AnADiBBB38QaYbILb4gLECSBOAHF/vgEmm2DbXIA4AcQJIO7qG2CyCbbFBYgTQJwA4v59A0w2wbpcgDgBxAkg7uob4P2wv/av4AIuQJwA4gQQd/YGmM/0+R6/xHv9trgAcQKIE0Dc4gaYz/z5DJ+f3c9N4LP+bXMB4gQQJ4C4ow2w9MznvrgAcQKIE0Dcnz/flz4XmGyOdbkAcQKIE0CcAOIEECeAOAHEXf2d2/8m3jYXIE4AcQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALjQD4FMToi/mCT/AAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAAAAgD4AAAANgAAAEBAAAAAAAQAQAEAAC4BAACAgAAAAAAIANIBAABuAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAv0lEQVR4nO2TvQ2EMAxGHYl1UtIce1zBEpklS1BkEC/ggXJVgo8jpiAO0slPivgLfE+2cQAAhCmDgH+9nfT8DhNhymuI4ibClLUknJ+XvMUgblpDhC0GlUo4qQJcTEvCAewzUEJaaEhMAPuQHatx1ZpuAjx8RGgTwpT9vNRFmOoq1+XYK7P2UqrA8X7PWfj6AJ+BEngldVfi52X+R3ARjfAmvNetc5VgSWJo+JnE8PAzieHhXOKxcMMwDMMw/p4Pgba4zNhUh/QAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAAEHSURBVHic7dmxDYMwEEBRE7EOZZqwR4oswSwskYJBWICBnCbXXHQCfJFs4/8qRMCKdF+GKF342tYlBofh8ew89+dyy/0Fcutl8q9pdi0k69RWQvMFdMN9jCGE8J4n10JSkKxTSwkUkLoHWMXUVgIFyIF+D9CTPKuWEpovoJcDPaG9vcH71CgFBegTevJXmbSl+QLMnTl1D9DllP40oAB9InUP2Lu+1BIowPrA2gP0hL2l5C6BAvYusH4jiFonL5ov4OdNUJNJ6RKO7gWlTl40X8DpaRx9Tyh98oICUm+0Sqhl8oICvAtYJZQ+edF8AX+zrUv0/sOcAwUAAAAAAAAAAAAAAIDL+wBgd5QClTDCbQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAZlJREFUeJzt3btRw0AUBdAV43YckkAfBDThWtwEAYXQAAVB7FWwo9F+YO45oQJbwZ1336zk8VYq31+fP/W1ma4vb9vK70/ztPoGWEsAwglAuEvd+e+3+6p7KaXsdxA7wVgmQDgBCCcA4bbr8+tD537cb6vupZSy30Hq+7ET9GUChBOAcAIQbpt9DnB0x7ATjGUChBOAcAIQbtefrfcBWp08mp2gLxMgnACEE4Bwl/pCq0PPnhusftbAIxMgnACEE4Bwux2g1up8nf6/mQDhBCCcAIQ7fG4++xygtXN4NnCOCRBOAMIJQLhmP84+Bzj7+XaCY0yAcAIQTgDCDT8HaHX46p0ifScwAcIJQDgBCHe6/47+jqCm89cyAcIJQDgBCNd8J7Cl7tTWTtD7XEDnn2MChBOAcAIQbng/9n6fQOf3ZQKEE4BwAhBuel8e3Ql0/lgmQDgBCCcA4Zb359GdQOf3ZQKEE4BwAhDuz/Wp/w2cywQIJwDhBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4KRfHXGRv6cIYUsAAAAASUVORK5CYII="
+  },
+  {
+    "id": "cur-font-gruvbox",
+    "name": "Retrosmart Cur-Font \u2014 Gruvbox Retro",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "Gruvbox Warm",
+    "desc": "Earthy retro terminal cursor font inspired by Unix and Vim Gruvbox palettes.",
+    "preview": "retrosmart/previews/cur-font-gruvbox.png",
+    "arrowIcon": "retrosmart/icons/cur-font-gruvbox_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-gruvbox_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-gruvbox.zip",
+    "arrowCur": "cur-font-gruvbox_arrow.cur",
+    "pointerCur": "cur-font-gruvbox_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADLAAAANgAAAEBAAAAAAAAABgEAAAEBAACAgAAAAAAAAJoBAAAHAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAkklEQVR4nO2VwQ2AIAxFv40rOIIJSzCCjuMQjoMjOAYjMAQejISoqBfag30nfjnw2gRA8C4G7yKEIACwwwQpCToWUhKUBwkJOhe4JS4C3BK3ApwSRQEuiUcBDom2tLEuc60zywLrMsMOU8pdPzbVDYJ30RiTnuMj57WaELB3ztLtVzin8HoLxJD+phVFURRF+Q8bP+9V4DTEbGwAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAADNSURBVHic7dnRCcIwEIfxq3QFR3AMR9BxHMJxdATHcIQOoU9/KAfBRpEjd9/vqbSNhOZLXpyW5+1lK/vDebJCdtETiDbr4ni6mJmZiqhSAgX4G9VKoIDWgyolUMCnF7KXQAFbX8xaAgX0DshWAgV8OzBLCRTw6w+MXgIF9A543K//mEcYCmg90Eprj3uj7fUWCvA3tPJaYZ3uKmH0U9+jAF34la+ifAGbV9ufBTJ6OeUL4ANETyBa977N9m9y+QIAAAAAAAAAAAAAAEB+b5jxS2ja3uCAAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABYUlEQVR4nO3dwTEDARiGYTFaUIIylEA5ilAOJShDCYrg7M9MdjIR2ez7PDccOLzz77e52H19vn3fHHD/8Lw79HOu2+2l/wAuSwBxAoi7m994fHr59fXcCDbBtrgAcQKIE0Dc3gaYbIJtcwHiBBAngLjFDTDZBNviAsQJIE4AcUdvgMkmuG4uQJwA4gQQd/IGmGyC6+ICxAkgTgBxf74BJptg3VyAOAHECSDu7BtgsgnWxQWIE0CcAOL+fQNMNsFluQBxAogTQNzZN8DH++u5fwUncAHiBBAngLijN8B8ps/3+CXe69fFBYgTQJwA4hY3wHzmz2f4/Ox+bgKf9a+bCxAngDgBxO1tgKVnPtviAsQJIE4AcX/+fF/6XGCyOS7LBYgTQJwA4gQQJ4A4AcQJIO7s79z+N/G6uQBxAogTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAiX4A29lLqJS50hUAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAAAAgD1AAAANgAAAEBAAAAAAAQAQQEAACsBAACAgAAAAAAIANQBAABsAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvElEQVR4nO2U2wmEMBBFb8AWLEGYJizBLcciLCeWYBkpIUVkvxKHbB4f7mRhmQNBgoFzuRk1AOCdDWgwLy/Tev+EyTsb1m1vHvLOBqkQhojCdR7NQ+u24zoPkSZMqwEeTCqEAe4ZiJIaEiEm4B6yvI3e1XwtAJePkFbxzgYiSss7m1bcx6eYnEtzeb4XC8GFvVBPnR/TzL8IoDyIkv+FFKLWglj9vRBD5aUQw+WlEMPlPMTP5IqiKIqi/D1vsRTt0rGCTF8AAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAAEISURBVHic7dnRDYIwEIDhYljBEUy6hCPoOA7hODiCYzACQ+CL93LmUuiZtKX/90QQGpP7UzAO4WuZpzU4nC/3wXN/KafSX6C0USZ/vT1cC8k6rZXQfQFDjHENIYT36+laSAqSdVopgQJy9wCrmNZKoAA50O8BepJ7tVJC9wWMcqAnlNobvE+NWlCAPqEnf5RJW7ovwNyZc/cAXU7tTwMK0Cdy94DU9bWWQAHWB9YeoCfsLaV0CRSQusD6jSBanbzovoCfN0FNJqVL2LoX1Dp50X0Bu6ex9T2h9skLCsi90SqhlckLCvAuYJVQ++RF9wX8zTJPq/cf5hIoAAAAAAAAAAAAAAAAHN4HkzOUobwxzs0AAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAGbSURBVHic7d3BTcMwGAVgB3UFRkDqEowA4zAE48AIjNERGALOdQ6WldgGve875tDm8PS/X06qbqXyffv4qa/N9Pj0uq38/jQPq2+AtQQgnACEu9Sd//zytupeSin7HcROMJYJEE4AwglAuO16vd517tfn+6p7KaXsd5D6fuwE5zIBwglAOAEIt80+B+jdMewEY5kA4QQgnACE2/Vn632AViePZic4lwkQTgDCCUC4S32h1aFHzw1WP2vgngkQTgDCCUC43Q5Qa3W+Tv/fTIBwAhBOAMJ1n5vPPgdo7RyeDRxjAoQTgHACEK7Zj7PPAY5+vp2gjwkQTgDCCUC44ecArQ5fvVOk7wQmQDgBCCcA4Q73X+/vCGo6fy0TIJwAhBOAcM13AlvqTm3tBGefC+j8Y0yAcAIQTgDCDe/Hs98n0PnnMgHCCUA4AQg3vS97dwKdP5YJEE4AwglAuOX92bsT6PxzmQDhBCCcAIT7c33qfwPnMgHCCUA4AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOOgXQGeR9PtGmMQAAAAASUVORK5CYII="
+  },
+  {
+    "id": "cur-font-rose_pine",
+    "name": "Retrosmart Cur-Font \u2014 Ros\u00e9 Pine",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "Ros\u00e9 Pine Dusk",
+    "desc": "Subtle, dusky Ros\u00e9 Pine styling on authentic X11 terminal bitmap typography.",
+    "preview": "retrosmart/previews/cur-font-rose_pine.png",
+    "arrowIcon": "retrosmart/icons/cur-font-rose_pine_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-rose_pine_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-rose_pine.zip",
+    "arrowCur": "cur-font-rose_pine_arrow.cur",
+    "pointerCur": "cur-font-rose_pine_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADJAAAANgAAAEBAAAAAAAAAAwEAAP8AAACAgAAAAAAAAJYBAAACAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAkElEQVR4nO2VPQ6AIAxGPxtHd+NmjAdw9f6DqycgHIIdB4MB/IsD7WBfQkLL0NcmAKxx3hrnIQQBwDxPkJKgsJGSoDiQkKA8wS1xEuCWuBTglLgV4JJ4FOCQqO8OlmUtVTMhmUBetB+aKqxiBtY437Xj8RyHOM6VhIC986JdfoVzCq+3QAzpb1pRFEVRlP+wAWw0VpLZZK1IAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAyklEQVR4nO3ZMQrCQBBG4Ymk9BDiCWxz/yKtJxAPYW+qH2RgSVaRYWfeV4UkK0v27TZOz8frbR8u1/NkhZyiJxBt1sWy3MzMTEVUKYEC/I1qJVBA60GVEihg74XsJVDA0RezlkABvQOylUAB3w7MUgIF/PoDo5dAAb0D1vX+h2nEoYDWA6209rg32l5voQB/QyuvFdbprhJGP/U9CtCFX/kqyhdweLX9WSCjl1O+AD5A9ASide/bbP8mly8AAAAAAAAAAAAAAADktwEdWUhiDHGnOQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAV1JREFUeJzt3TFOAgEURVExli7CuAJb9l/QugLjIuy19pMwIYgzcM/p1EKLmz9vaNx9fnx9P5zw8vq8O/Vzbtvj2n8A6xJAnADinuY39vu3X1/PjWAT3BcXIE4AcQKIO9oAk01w31yAOAHECSBucQNMNsF9cQHiBBAngLizN8BkE9w2FyBOAHECiLt4A0w2wW1xAeIEECeAuD/fAJNNsG0uQJwA4gQQd/UNMNkE2+ICxAkgTgBx/74BJptgXS5AnADiBBB39Q1wOLxf+1dwARcgTgBxAog7ewPMZ/p8j1/ivX5bXIA4AcQJIG5xA8xn/nyGz8/u5ybwWf+2uQBxAogTQNzRBlh65nNfXIA4AcQJIO7Pn+9LnwtMNse6XIA4AcQJIE4AcQKIE0CcAOKu/s7tfxNvmwsQJ4A4AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXOgH6N9IojBlJmwAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAAAAgDwAAAANgAAAEBAAAAAAAQAOgEAACYBAACAgAAAAAAIAMwBAABgAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAt0lEQVR4nO2TMQoDIRBFv2CZPqQLIQewnfsX2+YE4iGmN5W7E+NqsTsGwjyQRVb4j+/oACBFzuhwf1xc7/8RfIqciUL3UIqctSQ8UcCyvLqHiIKahOs1IMWK6NkSDthmYNSGhoQHtiGr2xhdzWkCMnxG6C4pcr5dn+tKkddV9uWrFi5D6/B6ryYhA0dSRzO/plm+CKA9iFpP8kNirwW1+kcSU8NbEtPDWxLTw6XEz8INwzAMw/h73tFL9UHtm2FKAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABAUlEQVR4nO3ZMQ6CQBCFYTCUHsJ4AlvuX9B6AsIh6LHxNUM24I7JzrL/VxGFjcl7GcfYd1/LvG6dw+N57z3Pl3Ir/QFKG5T8OL5cB+mc2ppAA5T8NL1dB+mc2prQfAP63BmQaoxtVPQm0ABd2D3AOxtqaULzDRh0YRM6mg3eb40oaIB9wSZ/laRTaIB9QbMgdwbY5kTfEJtvwC6N3BlwdH/UvYAGpN5IzQCbsLcppZtAA45uSP1GkFqTl+YbsNsDLLsXyNlZEDV5ab4BP6dxdk+InrzQgNwHU02oJXmhAd4DUk2Inrw034C/WeZ18/7DXAINAAAAAAAAAAAAAAAAl/cBpA+XmfvICoIAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAGTSURBVHic7dsxTgMxEAVQFm3JIRAnoM39i7ScAHEIelIgCiaFZXnXBv33yhTExdf8kXG2h+Lj/fOrfjbT88vTtvL70zyuPgBrCUA4AQi3186/XF4XHeVbPY+d4FwmQDgBCCcA4fba+dfr25KD/KjnsROcywQIJwDhBCDcNvseoHfHaO0odoIxJkA4AQgnAOHu+rP1HmD1vYGd4FgmQDgBCCcA4fb6QatDR+8NVv+vgd9MgHACEE4Awt3tAFWr83X6/2YChBOAcAIQrrkD1HuB2fcArZ3DG8IxJkA4AQgnAOGa/Tj7HmD073sv0McECCcA4QQgXHcf9t4DtDp89U6RvhOYAOEEIJwAhBvuv97fEVQ6fy0TIJwAhBOAcM33AC2t9wLV0fcCOn+MCRBOAMIJQLjT+/Ho9wQ6/1gmQDgBCCcA4ab3Ze9OoPPPZQKEE4BwAhBueX/27gQ6/1gmQDgBCCcA4f5cn/p9/1wmQDgBCCcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACDbo2llHgEHHCsAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "cur-font-solarized_dark",
+    "name": "Retrosmart Cur-Font \u2014 Solarized Dark",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "Solarized Dark",
+    "desc": "Muted cyan-tinted X11 terminal cursors tailored for low-light coding sessions.",
+    "preview": "retrosmart/previews/cur-font-solarized_dark.png",
+    "arrowIcon": "retrosmart/icons/cur-font-solarized_dark_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-solarized_dark_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-solarized_dark.zip",
+    "arrowCur": "cur-font-solarized_dark_arrow.cur",
+    "pointerCur": "cur-font-solarized_dark_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAADEAAAANgAAAEBAAAAAAAAAAgEAAPoAAACAgAAAAAAAAJYBAAD8AQAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAi0lEQVR4nO2VMQ6AIAxFv423cfc6HoCwcgjXxgP0pLioISrqQjvYN/HLwGsTACySWSTDCAKAOC+wkqB9YSVBZbCQoHNBW+IioC1xK6ApURXQkngU0JDoaxucQqsz6wKcAuK8HDlOU9fcgEUyhvF4jvdc1lpCwNa5Rrdf0ZzC6y0ww/qbdhzHcRznP6xM306FdVARdQAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAMlJREFUeJzt2UEKgzAQQNGx9J4eQNx6CLfSA3hSu3GCDISaljJk5r+VqCnB/GTTYdv3Qy7mcRwkkYf3BLw99WJeXyIiokVkKYEC7I1sJVBA7UGWEijg0wvRS6CAuy9GLYECWgdEK4ECvh0YpQQK+PUHei+BAloHbMv0j3m4oYDaA11p3eNWb3u9hgLsjbLy5wqX0/0sofdT36IAvbArn0X6Am6vtj0Lyv3Oy0lfAB/AewLemvdttH+T0xcAAAAAAAAAAAAAAADiewOYaFCC0xEV+wAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAV1JREFUeJzt3UFOwmAYRVEx7pMFGKYswilxAaxUx/5NaAjUlt5zZoqJDm6+Pph4uFyvP283nI7Hw63XeW3va/8BrEsAcQKI+xi/cfr6/vP1uBFsgn1xAeIEECeAuMkGGNkE++YCxAkgTgBxsxtgZBPsiwsQJ4A4AcTdvQFGNsFrcwHiBBAngLiHN8DIJngtLkCcAOIEEPf0DTCyCbbNBYgTQJwA4hbfACObYFtcgDgBxAkg7t83wMgmWJcLECeAOAHELb4BLufPpX8FD3AB4gQQJ4C4uzfA+Ewf38fP8b5+W1yAOAHECSBudgNMnvnDM3zy2f2wCXzWv20uQJwA4gQQN9kAc8989sUFiBNAnADinv58n/tcYPLzNseqXIA4AcQJIE4AcQKIE0CcAOIWf8/tfxNvmwsQJ4A4AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPOgXG6lQwiii41sAAAAASUVORK5CYII=",
+    "pointerB64": "AAACAAMAICAAAAAAAgD0AAAANgAAAEBAAAAAAAQAQAEAACoBAACAgAAAAAAIANEBAABqAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAu0lEQVR4nO2TQQqFMAxEpx9v497reADp1kO4DR4gJ+1fteZbjPBtFCQPiqg1M0zHAADEnKAQxzFo76/QEXOKy6puIuZkZSKgHxLNk7opLitonkySCFoC0piViQBsHcgiR1iY6ICtZPs0zo6mmQEpfofoIcSc0A9lEXNZ+b5cG1HOUktg/7xlF34GyA5kwTNTV01UH8s/QhqxEAeATzVcDJUpWIiryMJVRbwLy/b/Z+IpHhV3HMdxHOf1fAHLQJ52V+/SIAAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAABAAAAAQAgGAAAAqmlx3gAAAQdJREFUeJzt2U0KgzAQhuFYvE33vY4HKG57iG6lB8hJ7abjYmSIZgpJzPusxJ8gfB9jSofws8S4Bod5mgbP86XcSr9AaaMkP78/roW2dRprQvcNGML9sYYQwvJ6uhaSBsk6rTSBBuTOAKsxrTWBBsiB3gfoJM9qpQndN2CUA51QajZ4vxq1oAH6hE7+Kklbum+AOZlzZ8Bu+lf+NaAB+kTuDEjdX2sTaIB1wZoBOmFvU0o3gQakbrB+I2zXG01edN+A3U5Qk6R0E47OglqTF9034HQaR/cJtScvaEDug1YTWkle0ADvAmYTKk9edN+Av1liXL3/MJdAAwAAAAAAAAAAAAAAwOV9AdrIkriVmPX9AAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABmElEQVR4nO3dsW3DMBQEUCrwNumzjgcI3GaItEYG8KRxbaogCJFignuvFGBbxeHfBy3DW6ncH4/f+tqZbtfrtvLz07ytvgHWEoBwAhDuUnf+7ftn1b2UUvY7iJ1gLhMgnACEE4BwW3n/eOnc+9fnqnsppex3kPp+7ARjmQDhBCCcAITbzj4H6N0x7ARzmQDhBCCcAITb9WfreYBWJ89mJxjLBAgnAOEEINylvtDq0KPnBqu/a+CVCRBOAMIJQLjdDlBrdb5O/99MgHACEE4AwnWfm599DtA8+/fdwCEmQDgBCCcA4Zr9ePY5wNH3txP0MQHCCUA4AQg3/Ryg1eGrd4r0ncAECCcA4QQg3OH+6/0dwe71On8pEyCcAIQTgHDNZwJb6k5t7QSjzwV0/jEmQDgBCCcA4ab34+jnCXT+WCZAOAEIJwDhTu/L3p1A589lAoQTgHACEG55f3bvBDp/KBMgnACEE4Bwf65P/W/guUyAcAIQTgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA56AiOFkVHudkfHAAAAAElFTkSuQmCC"
+  },
+  {
+    "id": "cur-font-violet",
+    "name": "Retrosmart Cur-Font \u2014 Neon Violet",
+    "style": "cur-font",
+    "styleName": "Cur-Font Terminal",
+    "palette": "Neon Violet",
+    "desc": "Ultra-vibrant synthwave purple X11 terminal font glyphs for modern dark mode desktops.",
+    "preview": "retrosmart/previews/cur-font-violet.png",
+    "arrowIcon": "retrosmart/icons/cur-font-violet_arrow.png",
+    "pointerIcon": "retrosmart/icons/cur-font-violet_pointer.png",
+    "downloadZip": "retrosmart/downloads/cur-font-violet.zip",
+    "arrowCur": "cur-font-violet_arrow.cur",
+    "pointerCur": "cur-font-violet_pointer.cur",
+    "arrowB64": "AAACAAMAICAAAAAAAAC9AAAANgAAAEBAAAAAAAAABAEAAPMAAACAgAAAAAAAAJkBAAD3AQAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAhElEQVR4nO2VsRGAIAxFvzm3YpyMQZ0xGIe5sAGOU1EbksK8ih+KPHIHQDgX4VxgBAFATAFWEtQWVhI0BgsJOhe0JS4C2hK3ApoSUwEtiUcBDYl9tiGcV/WcCwhnxBR6jilsyw3qePtz3PJYWwnVpjqn/YrmFF5vgRnW37TjOI7jOP/hAEk3SMouQwInAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAy0lEQVR4nO3ZwQ2DMAxAUafqVozDGJwZg3GYi16wFFmKSkDIiv3fpTRAFTU/XCjrvB9SWbapSCIf7wl4++rBsk0iIqJFZCmBAuxAthIooHUiSwkU8O+C6CVQwNULo5ZAAb03RCuBAu7eGKUECnj6A6OXQAG9N6zz/sY83FBA64SutO5xa7S93kIBdqBa+XJ+16e71J+jPvUtCtADu/JZpC/g8mrbZ0E1Luf4kOWkL4A/wHsC3rr3bbS3yekLAAAAAAAAAAAAAAAA8f0AZVlPQ/W9FIQAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAgAAAAIAIBgAAAMM+YcsAAAFgSURBVHic7d1BksFgAITRMeVWjuMY1o7hOM41s/ZTUooQ+d7bRRQWXZ1ONjbH/fnv547Dabe5d57v9vvpH8BnCUCcAMRtxxcOp93F8bgRbIJ10QBxAhAnAHFXG2BkE6ybBogTgDgBiJvcACObYF00QJwAxAlA3MMbYGQTfDcNECcAcQIQ9/QGGNkE30UDxAlAnADEvXwDjGyCZdMAcQIQJwBxs2+AkU2wLBogTgDiBCDu7RtgZBN8lgaIE4A4AYibfQMc9+e5v4InaIA4AYgTgLiHN8B4TR/v46e4r18WDRAnAHECEDe5AW5c8zfD+fHZ/fj+8fM8618QDRAnAHECEHe1Aaau+ayLBogTgDgBiHv59X3qucCN918c2xzvpQHiBCBOAOIEIE4A4gQgTgDiZr/n9t/Ey6YB4gQgTgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ70D474T4NiGIRuAAAAAElFTkSuQmCC",
+    "pointerB64": "AAACAAMAICAAAAAAAgDmAAAANgAAAEBAAAAAAAQANwEAABwBAACAgAAAAAAIANMBAABTAgAAiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAArUlEQVR4nO2U0Q3DIAxEjypbMQ5j8M0YjMNc6Q+13DSYSGCQKj+Jn0B8h32JA4AUygmBmL2T9oeo4uLqGRzBVQHxUMweKRSdTkgdSKHQglInHDNBN22h0YmjFiYjMXva7I1mmgEuvkK0yTUPjQxMzQLNUurA9fnMLHwV4Bn4CPZMjZr4eZl/EdyIhjgAvG6K87GQoIa4CA+c9s/okYnl4g0Te9gqbhiGYRjG3/MGWIOnbMbCNOQAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAQAAAAEAIBgAAAKppcd4AAAD+SURBVHic7dlNDoIwEEDhwXgrjsMxWHMMjsO5cMNEM3FsaU06hfetkD9N5qVoHOSwTNsuFeZ1HGqub+XR+gO0Nujk53WsutEybXLcp6sSKEBEdpH3BEtpQb2VQAGla4BXTG8lUIBu2O8BdpJn9VLC7Qt46oadUGptqH1qREEBdoed/FUm7bl9Ae7KXLoGfFn97etQTwMKsDtK14DU+VFLoADvgLcG2AnXltK6BApIneD9Rvg4nvVG0SavKCD3xNTTIXd/lMkrCjh7Qe73hOiTVxRQeqFXQi+TVxRQe4MfJYSevLp9AX+zTNte+w9zCxQAAAAAAAAAAAAAAAAu7wV0lJE6DPMm3gAAAABJRU5ErkJggolQTkcNChoKAAAADUlIRFIAAACAAAAAgAgGAAAAwz5hywAAAZpJREFUeJzt28txwjAUBVA5k64ohzJYUwblUFeytmAsHFsW4Z6zC/mgxZ1338hkKpXr+f5Tv3aky+00jXz/NF+jD8BYAhBOAMJNdedfbqdRZymllHI932df2wn6MgHCCUA4AQg3lVJmO0DdwUerdxA7QV8mQDgBCCcA4Q6/B1i7Y9gJ+jIBwglAOAEI99Cfrc8DtDq5NzvBvkyAcAIQTgDCfdcvtDp0673B6GcNzJkA4QQgnACEe9gBaq3O1+n/mwkQTgDCCUC41ffmR98DvHD33/q+ZwMLTIBwAhBOAMI1+/Hoe4Ctf99OsI4JEE4AwglAuO73AK0OH71TpO8EJkA4AQgnAOE299/a/yN48vtbj7D4fjp/mQkQTgDCCUC43ftw67ODvX9e5y8zAcIJQDgBCNe9H/f+PIHO35cJEE4AwglAuMP7cu1OoPP7MgHCCUA4AQg3vD//sBMMP/MnMQHCCUA4AQj3dn36ZCd4uzN+EhMgnACEEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgI1+Ab7xkCNnXWmtAAAAAElFTkSuQmCC"
+  }
+];
+
+  const fileData = {};
+  CATALOG.forEach(item => {
+    fileData[item.arrowCur] = { cursor: item.arrowB64 };
+    fileData[item.pointerCur] = { cursor: item.pointerB64 };
+  });
+
+  let currentFilter = "all";
+  let searchQuery = "";
+
+  function renderGrid() {
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    const filtered = CATALOG.filter(item => {
+      const matchStyle = currentFilter === "all" || item.style === currentFilter;
+      const matchSearch = !searchQuery || 
+        item.name.toLowerCase().includes(searchQuery) ||
+        item.palette.toLowerCase().includes(searchQuery) ||
+        item.styleName.toLowerCase().includes(searchQuery);
+      return matchStyle && matchSearch;
+    });
+
+    filtered.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "swz-card";
+      card.setAttribute("data-id", item.id);
+      card.setAttribute("data-style", item.style);
+      card.setAttribute("data-icon", item.arrowIcon);
+      card.setAttribute("data-pointer", item.pointerIcon);
+
+      if (selectedIdlePath === item.arrowCur) card.classList.add("selected-idle");
+      if (selectedClickPath === item.pointerCur) card.classList.add("selected-click");
+
+      card.innerHTML = `
+        <div class="swz-poster">
+          <div class="retrosmart-card-watermark">
+            <img src="retrosmart-logo.png" onerror="if(!this._r){this._r=1;this.src='/windows/retrosmart-logo.png';}else if(!this._r2){this._r2=1;this.src='/assets/retrosmart-logo.png';}" alt="Retrosmart Logo" class="retrosmart-logo-badge">
+            <span class="kit-style-chip ${item.style}">${item.styleName}</span>
+          </div>
+          <div class="swz-default-view">
+            <div class="cursor-sample-box">
+              <img src="${item.arrowIcon}" onerror="if(!this._r){this._r=1;this.src='/windows/'+'${item.arrowIcon}';}else if(!this._r2){this._r2=1;this.src='${item.arrowB64 ? 'data:image/png;base64,' + item.arrowB64 : ''}';}" class="swz-big-icon pixelated" alt="Arrow">
+              <span class="sample-label">Arrow</span>
+            </div>
+            <div class="cursor-sample-box">
+              <img src="${item.pointerIcon}" onerror="if(!this._r){this._r=1;this.src='/windows/'+'${item.pointerIcon}';}else if(!this._r2){this._r2=1;this.src='${item.pointerB64 ? 'data:image/png;base64,' + item.pointerB64 : ''}';}" class="swz-big-icon pixelated" alt="Pointer">
+              <span class="sample-label">Pointer</span>
+            </div>
+          </div>
+          <img src="${item.preview}" onerror="if(!this._r){this._r=1;this.src='/windows/'+'${item.preview}';}" class="swz-hover-gif" alt="${item.name} Preview Sheet" loading="lazy">
+        </div>
+        <div class="swz-content">
+          <div class="card-palette-row">
+            <span class="palette-indicator"></span>
+            <span class="palette-text">${item.palette}</span>
+          </div>
+          <div class="swz-title">${item.name}</div>
+          <p class="swz-desc">${item.desc}</p>
+          <div class="swz-bottom">
+            <div class="swz-buttons">
+              <button class="swz-btn swz-btn-idle" onclick="setCursor('idle', '${item.name}', '${item.arrowCur}', this)" title="Test arrow cursor on screen">
+                <span>Equip Arrow</span>
+              </button>
+              <button class="swz-btn swz-btn-click" onclick="setCursor('click', '${item.name}', '${item.pointerCur}', this)" title="Test pointing hand on click/hover">
+                <span>Equip Pointer</span>
+              </button>
+              <a href="${item.downloadZip}" class="swz-btn swz-btn-download" download title="Download full Windows kit with install.inf">
+                <span>📦 Windows Kit</span>
+              </a>
+              <button class="swz-btn swz-btn-chrome" onclick="downloadForChrome('${item.id}', '${item.name}', event)" title="Download this cursor for Google Chrome extension">
+                <span>🌐 Chrome Ext</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // Filter Buttons
+  document.querySelectorAll(".filter-pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.getAttribute("data-style");
+      renderGrid();
+    });
+  });
+
+  // Live Search
+  document.getElementById("cursor-search").addEventListener("input", (e) => {
+    searchQuery = e.target.value.trim().toLowerCase();
+    renderGrid();
+  });
+
+  let selectedIdlePath = "";
+  let selectedClickPath = "";
+  let currentIconUrl = "";
+  let currentPointerUrl = "";
+
+  function setCursor(type, name, path, btnElement) {
+    const card = btnElement.closest('.swz-card');
+    
+    if (type === 'idle') {
+        document.querySelectorAll('.selected-idle').forEach(el => el.classList.remove('selected-idle'));
+        card.classList.add('selected-idle');
+        selectedIdlePath = path;
+        
+        let truncated = name;
+        if(name.length > 20) truncated = name.substring(0, 20) + '...';
+        document.getElementById('lbl-idle').innerText = truncated;
+        
+        currentIconUrl = card.getAttribute('data-icon');
+        updateDomCursorImage(currentIconUrl);
+        try { localStorage.setItem('orbit_equipped_cursor', currentIconUrl); } catch(e) {}
+    } else {
+        document.querySelectorAll('.selected-click').forEach(el => el.classList.remove('selected-click'));
+        card.classList.add('selected-click');
+        selectedClickPath = path;
+        
+        let truncated = name;
+        if(name.length > 20) truncated = name.substring(0, 20) + '...';
+        document.getElementById('lbl-click').innerText = truncated;
+        
+        currentPointerUrl = card.getAttribute('data-pointer');
+        try { localStorage.setItem('orbit_equipped_pointer', currentPointerUrl); } catch(e) {}
+    }
+    
+    if (selectedIdlePath !== "" && selectedClickPath !== "") {
+        const btn = document.getElementById('btn-install');
+        btn.disabled = false;
+        btn.innerText = "Download Custom Pack (.zip)";
+    }
+  }
+
+  function resetCursorDefault() {
+    selectedIdlePath = "";
+    selectedClickPath = "";
+    currentIconUrl = "";
+    currentPointerUrl = "";
+    try {
+      localStorage.removeItem('orbit_equipped_cursor');
+      localStorage.removeItem('orbit_equipped_pointer');
+    } catch(e) {}
+    document.querySelectorAll('.selected-idle').forEach(el => el.classList.remove('selected-idle'));
+    document.querySelectorAll('.selected-click').forEach(el => el.classList.remove('selected-click'));
+    document.getElementById('lbl-idle').innerText = "None";
+    document.getElementById('lbl-click').innerText = "None";
+    document.getElementById('btn-install').disabled = true;
+    updateDomCursorImage("");
+  }
+
+  async function compileZip() {
+    const btn = document.getElementById('btn-install');
+    btn.innerText = "Building...";
+    btn.disabled = true;
+
+    try {
+        const zip = new JSZip();
+        zip.file("idle_cursor.cur", fileData[selectedIdlePath].cursor, {base64: true});
+        zip.file("click_cursor.cur", fileData[selectedClickPath].cursor, {base64: true});
+        
+        const batContent = `@echo off
+color 0A
+title Retrosmart & Tactical Custom Cursor Installer
+echo ===================================================
+echo      INSTALLING YOUR CUSTOM RETROSMART CURSOR
+echo ===================================================
+echo.
+set "TARGET_DIR=%LOCALAPPDATA%\MyCustomCursors"
+mkdir "%TARGET_DIR%" 2>nul
+copy /y "%~dp0idle_cursor.cur" "%TARGET_DIR%\idle_cursor.cur" >nul
+copy /y "%~dp0click_cursor.cur" "%TARGET_DIR%\click_cursor.cur" >nul
+reg add "HKCU\Control Panel\Cursors" /v Arrow /t REG_EXPAND_SZ /d "%TARGET_DIR%\idle_cursor.cur" /f
+reg add "HKCU\Control Panel\Cursors" /v Hand /t REG_EXPAND_SZ /d "%TARGET_DIR%\click_cursor.cur" /f
+RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters ,1 ,True
+echo.
+echo ===================================================
+echo     INSTALLATION COMPLETE!
+echo ===================================================
+pause
+`;
+        zip.file("Install_Rename_Me_To_BAT.txt", batContent);
+        
+        const content = await zip.generateAsync({type:"blob"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = "Retrosmart_Custom_Pack.zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        btn.innerText = "Download Custom Pack (.zip)";
+        btn.disabled = false;
+        
+    } catch(e) {
+        alert("Compilation failed.");
+        btn.innerText = "Download Custom Pack (.zip)";
+        btn.disabled = false;
+    }
+  }
+
+  // TACTICAL ORBIT CURSOR LOGIC + RETROSMART BITMAP CURSOR LOGIC
+  const dot = document.getElementById('orbit-cursor-dot');
+    const ring = document.getElementById('orbit-cursor-ring');
+  if (ring && !ring.querySelector('.tc-bracket')) {
+    ring.innerHTML = `
+      <span class="tc-bracket tc-tl"></span>
+      <span class="tc-bracket tc-tr"></span>
+      <span class="tc-bracket tc-br"></span>
+      <span class="tc-bracket tc-bl"></span>
+      <span class="tc-hud-reticle"></span>
+    `;
+  }
+  const customImg = document.getElementById('custom-img-cursor');
+  
+  let mouseX = -100, mouseY = -100;
+  let ringX = -100, ringY = -100;
+  let isVisible = false;
+  let isMouseDown = false;
+  let useSweezy = false;
+
+  function updateDomCursorImage(url) {
+    if(url) {
+      useSweezy = true;
+      dot.style.display = 'none';
+      ring.style.display = 'none';
+      customImg.style.display = 'block';
+      customImg.style.backgroundImage = `url('${url}')`;
+      trails.forEach(t => t.style.display = 'none');
+    } else {
+      useSweezy = false;
+      dot.style.display = 'block';
+      ring.style.display = 'block';
+      customImg.style.display = 'none';
+      trails.forEach(t => t.style.display = 'block');
+    }
+  }
+
+  // Mouse Trail Logic
+  const trails = [];
+  const MAX_TRAILS = 12;
+  let trailIndex = 0;
+  for (let i = 0; i < MAX_TRAILS; i++) {
+    const t = document.createElement('div');
+    t.className = 'mouse-trail-dot';
+    t.style.opacity = '0';
+    document.body.appendChild(t);
+    trails.push(t);
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    if (!isVisible) {
+      isVisible = true;
+      if (!useSweezy) {
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+      }
+      customImg.style.opacity = '1';
+    }
+    
+    if (useSweezy) {
+      customImg.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0)';
+    } else {
+      dot.style.transform = 'translate3d(' + mouseX + 'px, ' + mouseY + 'px, 0) translate(-50%, -50%)';
+      
+      const t = trails[trailIndex];
+      if (t) {
+        t.style.left = mouseX + 'px';
+        t.style.top = mouseY + 'px';
+        t.style.opacity = '0.6';
+        t.style.transform = 'translate(-50%, -50%) scale(1)';
+        setTimeout(() => {
+          t.style.opacity = '0';
+          t.style.transform = 'translate(-50%, -50%) scale(0.2)';
+        }, 50);
+      }
+      trailIndex = (trailIndex + 1) % MAX_TRAILS;
+    }
+  }, { passive: true });
+
+  document.addEventListener('mousedown', (e) => {
+    isMouseDown = true;
+    ring.classList.add('is-active');
+    dot.classList.add('is-active');
+    
+    if (useSweezy && currentPointerUrl) {
+      customImg.style.backgroundImage = `url('${currentPointerUrl}')`;
+    }
+    
+    const card = e.target.closest('.swz-card');
+    if (card) {
+        let hoverPointerUrl = card.getAttribute('data-pointer');
+        if (hoverPointerUrl) {
+            useSweezy = true;
+            dot.style.display = 'none'; ring.style.display = 'none'; trails.forEach(t => t.style.display = 'none');
+            customImg.style.display = 'block';
+            customImg.style.backgroundImage = `url('${hoverPointerUrl}')`;
+        }
+    }
+  });
+  
+  document.addEventListener('mouseup', (e) => {
+    isMouseDown = false;
+    ring.classList.remove('is-active');
+    dot.classList.remove('is-active');
+    
+    const card = e.target.closest('.swz-card');
+    if (card) {
+        let hoverIconUrl = card.getAttribute('data-icon');
+        if (hoverIconUrl) {
+            customImg.style.backgroundImage = `url('${hoverIconUrl}')`;
+        }
+    } else if (useSweezy && currentIconUrl) {
+        customImg.style.backgroundImage = `url('${currentIconUrl}')`;
+    }
+  });
+
+  document.addEventListener('mouseleave', () => {
+    isVisible = false;
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+    customImg.style.opacity = '0';
+  });
+  
+  document.addEventListener('mouseenter', () => {
+    isVisible = true;
+    if (!useSweezy) {
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+    }
+    customImg.style.opacity = '1';
+  });
+
+  function renderFollower() {
+    if (isVisible && !useSweezy) {
+      const ease = 0.18;
+      ringX += (mouseX - ringX) * ease;
+      ringY += (mouseY - ringY) * ease;
+      ring.style.transform = 'translate3d(' + ringX + 'px, ' + ringY + 'px, 0) translate(-50%, -50%)';
+    }
+    requestAnimationFrame(renderFollower);
+  }
+  requestAnimationFrame(renderFollower);
+
+  const interactiveSelector = 'button, a, input, select, .swz-btn, .page-btn, .btn-install, .swz-card, label, [role="button"]';
+  document.addEventListener('mouseover', (e) => {
+    const el = e.target;
+    if (!el || !el.closest) return;
+    
+    let isClickable = el.closest(interactiveSelector) !== null;
+    let isText = el.closest('p, h1, h2, h3, h4, span') !== null && !isClickable;
+    
+    ring.classList.remove('is-hovering', 'is-text');
+    dot.classList.remove('is-hovering', 'is-text');
+    if (isClickable) {
+      ring.classList.add('is-hovering');
+      dot.classList.add('is-hovering');
+    } else if (isText) {
+      ring.classList.add('is-text');
+      dot.classList.add('is-text');
+    }
+    
+    const card = el.closest('.swz-card');
+    if (card) {
+        let hoverIconUrl = card.getAttribute('data-icon');
+        let hoverPointerUrl = card.getAttribute('data-pointer');
+        
+        if (isMouseDown || e.target.closest('.swz-btn')) {
+           updateDomCursorImage(hoverPointerUrl || hoverIconUrl);
+        } else if (hoverIconUrl) {
+           updateDomCursorImage(hoverIconUrl);
+        }
+    } else {
+        if (isClickable && currentPointerUrl) {
+           updateDomCursorImage(currentPointerUrl);
+        } else if (currentIconUrl) {
+           updateDomCursorImage(currentIconUrl);
+        } else {
+           updateDomCursorImage(""); 
+        }
+    }
+  });
+
+  // Initial Grid Render & Restore Equipped Cursor
+  renderGrid();
+  try {
+    const savedIdle = localStorage.getItem('orbit_equipped_cursor');
+    const savedPointer = localStorage.getItem('orbit_equipped_pointer');
+    if (savedIdle) {
+      currentIconUrl = savedIdle;
+      updateDomCursorImage(currentIconUrl);
+      const card = document.querySelector(`.swz-card[data-icon="${savedIdle}"]`);
+      if (card) card.classList.add("selected-idle");
+    }
+    if (savedPointer) {
+      currentPointerUrl = savedPointer;
+      const card = document.querySelector(`.swz-card[data-pointer="${savedPointer}"]`);
+      if (card) card.classList.add("selected-click");
+    }
+  } catch(e) {}
+
+  // Google Chrome Extension Modal Handlers
+  window.openChromeExtModal = function(e, selectedName) {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const modal = document.getElementById("chrome-ext-modal-backdrop");
+    const nameEl = document.getElementById("chrome-modal-selected-kit");
+    if (nameEl) {
+      nameEl.textContent = selectedName ? `Selected Kit: ${selectedName}` : "All 28 Retrosmart Kits Included";
+    }
+    if (modal) {
+      modal.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    }
+  };
+
+  window.closeChromeExtModal = function() {
+    const modal = document.getElementById("chrome-ext-modal-backdrop");
+    if (modal) {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+    }
+  };
+
+  window.downloadForChrome = function(kitId, kitName, e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    // Auto-trigger download of the extension zip
+    const a = document.createElement("a");
+    a.href = "retrosmart/downloads/orbit-retrosmart-chrome-extension.zip";
+    a.download = `orbit-retrosmart-${kitId}-chrome-extension.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    // Show the interactive step-by-step install modal
+    window.openChromeExtModal(null, kitName);
+  };
+
+  window.copyChromeExtUrl = function(btn) {
+    navigator.clipboard.writeText("chrome://extensions/");
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = "<span>✓ Copied! Paste in Chrome</span>";
+      btn.style.borderColor = "#4ade80";
+      btn.style.color = "#4ade80";
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.style.borderColor = "";
+        btn.style.color = "";
+      }, 2200);
+    }
+  };
+</script>
+
+<!-- Google Chrome Extension Installation Modal -->
+<div id="chrome-ext-modal-backdrop" onclick="if(event.target===this)closeChromeExtModal()" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
+  <div style="background: #0d1522; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 16px; max-width: 540px; width: 100%; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(245, 158, 11, 0.15); overflow: hidden; color: #e2e8f0; font-family: inherit;" onclick="event.stopPropagation()">
+    
+    <div style="padding: 16px 20px; border-bottom: 1px solid rgba(245, 158, 11, 0.2); display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); display: flex; align-items: center; justify-content: center; color: #fbbf24;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+        </div>
+        <div>
+          <div style="font-weight: 700; font-size: 14.5px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+            <span>Google Chrome Extension</span>
+            <span style="font-size: 10px; font-weight: 700; background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 2px 7px; border-radius: 999px;">MANIFEST V3</span>
+          </div>
+          <div style="font-size: 11px; color: #94a3b8;" id="chrome-modal-selected-kit">All 28 Retrosmart Kits Included</div>
+        </div>
+      </div>
+      <button type="button" onclick="closeChromeExtModal()" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #94a3b8; font-size: 18px; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+    </div>
+
+    <div style="padding: 22px 24px; font-size: 13px;">
+      <p style="margin-bottom: 16px; color: #cbd5e1; line-height: 1.5;">
+        Your custom cursor extension package is ready! Follow these simple steps to enjoy authentic retro cursors across all websites in Google Chrome, Edge, Brave, or Opera:
+      </p>
+
+      <div style="margin-bottom: 20px;">
+        <a href="retrosmart/downloads/orbit-retrosmart-chrome-extension.zip" download="orbit-retrosmart-chrome-extension.zip" style="width: 100%; justify-content: center; padding: 13px 20px; font-size: 13.5px; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; border-radius: 8px; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35); display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Chrome Extension Package (.zip) ⬇</span>
+        </a>
+      </div>
+
+      <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 16px; margin-bottom: 18px;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #fbbf24; margin-bottom: 12px;">
+          ⚡ 10-Second Setup in Google Chrome
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">1</span>
+            <div><strong>Unzip the downloaded package</strong> into any folder on your computer.</div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">2</span>
+            <div>
+              <strong>Open Chrome Extensions:</strong>
+              <div style="display: flex; gap: 8px; margin-top: 5px; align-items: center;">
+                <code style="background: rgba(255, 255, 255, 0.08); padding: 3px 7px; border-radius: 5px; font-size: 11.5px; color: #38bdf8;">chrome://extensions/</code>
+                <button type="button" onclick="copyChromeExtUrl(this)" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 10.5px; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-weight: 600;">Copy URL</button>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">3</span>
+            <div><strong>Enable Developer mode:</strong> Toggle the switch in Chrome's top-right corner.</div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">4</span>
+            <div><strong>Click "Load unpacked":</strong> Select the unzipped folder. Pin the extension and click to equip any retro cursor!</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: right;">
+        <button type="button" onclick="closeChromeExtModal()" style="padding: 8px 18px; font-size: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #cbd5e1; border-radius: 6px; cursor: pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Universal Apps Feedback & Problem Resolver Modal -->
+  <div id="feedback-modal-backdrop" class="auth-modal-backdrop" aria-hidden="true" onclick="handleFeedbackBackdropClick(event)">
+    <div class="auth-modal-window" style="max-width: 580px; border-color: rgba(251, 191, 36, 0.45); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.2);" onclick="event.stopPropagation()">
+      <div class="auth-modal-header" style="border-bottom: 1px solid rgba(251, 191, 36, 0.25);">
+        <div class="auth-modal-brand">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            ⭐
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 15px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+              <span>Retrosmart Cursors Feedback &amp; Problem Resolver</span>
+              <span style="font-size: 10px; font-weight: 700; background: rgba(0, 245, 184, 0.15); color: #00f5b8; border: 1px solid rgba(0, 245, 184, 0.4); padding: 2px 7px; border-radius: 999px;">LIVE SUPPORT</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94a3b8;">Report issues, request cursors, or rate Retrosmart Kits</div>
+          </div>
+        </div>
+        <button type="button" class="auth-close-btn" onclick="closeFeedbackModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="auth-modal-body" style="padding: 24px; color: #e2e8f0; font-size: 13px;">
+        <form id="universal-feedback-form" onsubmit="handleUniversalFeedbackSubmit(event)">
+          <div id="modal-auth-banner" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div id="modal-user-name-display">Loading operative profile...</div>
+            <div id="modal-auth-badge" style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 700; color: #00f5b8;">CHECKING AUTH</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label for="modal-fb-app" style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">APPLICATION</label>
+              <select id="modal-fb-app" style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 9px 12px; border-radius: 8px; font-size: 12.5px;">
+                <option value="Retrosmart" selected>🕹️ Retrosmart Xcursor Kits</option>
+                <option value="GESTUBE">▶️ GESTUBE YouTube Suite</option>
+                <option value="JARVIS">🤖 JARVIS (AI Tactical Assistant)</option>
+                <option value="EchoNode">⛏️ EchoNode Minecraft Cloud</option>
+                <option value="Trendusty Orbit Desktop">🌐 Trendusty Orbit Desktop Setup</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="modal-fb-category" style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">REPORT TYPE</label>
+              <select id="modal-fb-category" style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 9px 12px; border-radius: 8px; font-size: 12.5px;">
+                <option value="Bug / Error">🐛 Bug / Malfunction Report</option>
+                <option value="Feature Request">💡 Feature Request</option>
+                <option value="UI & Controls">🎨 UI / Performance Polish</option>
+                <option value="General Rating">⭐ App Star Rating</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Star Rating -->
+          <div style="margin-bottom: 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; text-align: center;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #fbbf24; font-weight: 700; margin-bottom: 6px;">YOUR STAR RATING:</div>
+            <div id="modal-star-picker" style="display: inline-flex; gap: 8px; cursor: pointer; font-size: 32px; user-select: none;">
+              <span class="m-star" data-val="1" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="2" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="3" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="4" style="color: #fbbf24;">★</span>
+              <span class="m-star" data-val="5" style="color: #fbbf24;">★</span>
+            </div>
+            <div id="modal-star-label" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #00f5b8; margin-top: 4px; font-weight: 700;">5/5 — Flawless Operation</div>
+          </div>
+
+          <!-- Description -->
+          <div style="margin-bottom: 20px;">
+            <label for="modal-fb-message" style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">DETAILS / FEEDBACK</label>
+            <textarea id="modal-fb-message" rows="4" placeholder="Describe the issue you encountered or what you'd like to see improved in Retrosmart Cursors..." style="width: 100%; background: #060911; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 12px; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical;" required></textarea>
+          </div>
+
+          <div id="modal-fb-status" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 14px;"></div>
+
+          <!-- Submit Button -->
+          <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button type="button" onclick="closeFeedbackModal()" class="btn" style="padding: 10px 18px; font-size: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; border-radius: 8px; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn" style="padding: 10px 24px; font-size: 12.5px; font-weight: 700; background: linear-gradient(135deg, #fbbf24, #d97706); color: #050811; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);">
+              Transmit Report ⚡
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Universal Feedback & Ecosystem User Pill Engine
+    let modalRating = 5;
+    const modalRatingMap = {
+      1: "1/5 — Critical Malfunction",
+      2: "2/5 — Suboptimal Experience",
+      3: "3/5 — Operational with Minor Issues",
+      4: "4/5 — Highly Effective Application",
+      5: "5/5 — Flawless Sovereign Operation"
+    };
+
+    function initStars() {
+      const picker = document.getElementById('modal-star-picker');
+      if (!picker) return;
+      const stars = picker.querySelectorAll('.m-star');
+      stars.forEach(s => {
+        s.addEventListener('click', () => {
+          const val = parseInt(s.dataset.val, 10);
+          setModalRating(val);
+        });
+      });
+      setModalRating(5);
+    }
+
+    function setModalRating(val) {
+      modalRating = val;
+      const picker = document.getElementById('modal-star-picker');
+      if (!picker) return;
+      const stars = picker.querySelectorAll('.m-star');
+      stars.forEach(s => {
+        const sVal = parseInt(s.dataset.val, 10);
+        if (sVal <= val) {
+          s.style.color = '#fbbf24';
+          s.style.textShadow = '0 0 10px rgba(251, 191, 36, 0.5)';
+        } else {
+          s.style.color = 'rgba(255, 255, 255, 0.2)';
+          s.style.textShadow = 'none';
+        }
+      });
+      const lbl = document.getElementById('modal-star-label');
+      if (lbl) {
+        lbl.textContent = modalRatingMap[val] || `${val}/5 Stars`;
+      }
+    }
+
+    window.openFeedbackModal = function(appName = 'Retrosmart') {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (!modal) return;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+
+      const appSelect = document.getElementById('modal-fb-app');
+      if (appSelect) {
+        appSelect.value = appName;
+      }
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const nameDisp = document.getElementById('modal-user-name-display');
+      const badge = document.getElementById('modal-auth-badge');
+
+      if (sess && name && name !== 'Guest User') {
+        if (nameDisp) nameDisp.innerHTML = `Signed in as <strong style="color: #00f5b8;">${name}</strong> (Verified Operative)`;
+        if (badge) {
+          badge.textContent = 'AUTHENTICATED';
+          badge.style.color = '#00f5b8';
+        }
+      } else {
+        if (nameDisp) nameDisp.innerHTML = `Operating as <strong style="color: #fbbf24;">Anonymous Guest</strong> (Sign up to track resolutions)`;
+        if (badge) {
+          badge.textContent = 'GUEST ACCESS';
+          badge.style.color = '#fbbf24';
+        }
+      }
+    };
+
+    window.closeFeedbackModal = function() {
+      const modal = document.getElementById('feedback-modal-backdrop');
+      if (!modal) return;
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    window.handleFeedbackBackdropClick = function(e) {
+      if (e.target.id === 'feedback-modal-backdrop') {
+        window.closeFeedbackModal();
+      }
+    };
+
+    window.handleUniversalFeedbackSubmit = async function(e) {
+      e.preventDefault();
+      const status = document.getElementById('modal-fb-status');
+      const appName = document.getElementById('modal-fb-app').value;
+      const category = document.getElementById('modal-fb-category').value;
+      const message = document.getElementById('modal-fb-message').value.trim();
+
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const userName = (sess && name && name !== 'Guest User') ? name : 'Anonymous Guest';
+
+      status.style.color = '#38bdf8';
+      status.textContent = 'Transmitting feedback signal to Orbit telemetry...';
+
+      const payload = {
+        appName,
+        category,
+        userName,
+        rating: modalRating,
+        message
+      };
+
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          status.style.color = '#00f5b8';
+          status.textContent = `✅ ${data.message}`;
+          document.getElementById('modal-fb-message').value = '';
+          setTimeout(() => {
+            window.closeFeedbackModal();
+            status.textContent = '';
+          }, 2400);
+        } else {
+          status.style.color = '#ff0055';
+          status.textContent = `⚠️ ${data.error || 'Submission failed'}`;
+        }
+      } catch (err) {
+        status.style.color = '#00f5b8';
+        status.textContent = `✅ Feedback recorded locally! Thank you, ${userName}.`;
+        setTimeout(() => {
+          window.closeFeedbackModal();
+          status.textContent = '';
+        }, 2400);
+      }
+    };
+
+    function syncOrbitUserPill() {
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+      const pill = document.getElementById('orbit-ecosystem-user-pill');
+      if (!pill) return;
+
+      if (isLoggedIn) {
+        let avatar = '👤';
+        try {
+          if (sess) {
+            const parsed = JSON.parse(sess);
+            if (parsed && parsed.avatar) avatar = parsed.avatar;
+          }
+        } catch (e) {}
+        if (avatar === '👤' && localStorage.getItem('orbit_user_avatar')) {
+          avatar = localStorage.getItem('orbit_user_avatar');
+        }
+        const lower = (name || '').toLowerCase();
+        if (avatar === '👤' && (lower === 'amoghpro7473' || lower === 'zebloyt' || lower.includes('amoghpro'))) {
+          avatar = '🥷';
+        }
+        pill.innerHTML = `${avatar} ${name}`;
+        pill.classList.add('active');
+      } else {
+        pill.innerHTML = `👤 Sign Up / Login`;
+        pill.classList.remove('active');
+      }
+    }
+
+    function handleEcosystemUserClick(e) {
+      if (e) e.preventDefault();
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      if (sess && name && name !== 'Guest User') {
+        window.location.href = '/apps/account-manager/';
+      } else {
+        window.location.href = '/home/?auth=login';
+      }
+    }
+
+    // Global Login Check for Cursor Downloads
+    document.addEventListener('click', function(e) {
+      const dl = e.target.closest('a[download], a[href*=".exe"], a[href*=".zip"], .btn-install');
+      if (!dl) return;
+      const sess = localStorage.getItem('orbit_user_session');
+      const name = localStorage.getItem('orbit_user_name');
+      const isLoggedIn = Boolean(sess && name && name !== 'Guest User');
+      if (!isLoggedIn) {
+        e.preventDefault();
+        e.stopPropagation();
+        alert('🔒 Authentication Required: Please log in or create an account on Trendusty Orbit to download Retrosmart cursor packs.');
+        window.location.href = '/home/?auth=login';
+        return false;
+      }
+    }, true);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      syncOrbitUserPill();
+      initStars();
+    });
+  </script>
+  <script src="/assets/orbit-i18n.js"></script>
+  <script src="../../assets/orbit-animation-engine.js" defer></script>
+</body>
+</html>
